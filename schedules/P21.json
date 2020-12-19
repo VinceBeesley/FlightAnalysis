@@ -1,0 +1,77 @@
+{
+  "name": "P21",
+  "category": "F3A",
+  "entry": "inverted",
+  "manoeuvres":[
+    {
+      "name": "vertical 8",
+      "k": 3,
+      "elements": [
+        {
+          "classification": "roll",
+          "proportion": 0.5
+        },
+        {
+          "classification": "loop",
+          "proportion": -1
+        },
+        {
+          "classification": "loop",
+          "proportion": 1
+        },
+        {
+          "classification": "roll",
+          "proportion": 0.5
+        },
+        {
+          "classification": "line",
+          "proportion": 0.25
+        }
+      ]
+    },
+    {
+      "name": "stallturn",
+      "k": 3,
+      "elements": [
+        {
+          "classification": "line",
+          "proportion": 0.25
+        },
+        {
+          "classification": "loop",
+          "proportion": -0.25
+        },
+        {
+          "classification": "line",
+          "proportion": 1
+        },
+        {
+          "classification": "stallturn",
+          "proportion": 1
+        },
+        {
+          "classification": "line",
+          "proportion": 0.5
+        },
+        {
+          "classification": "roll",
+          "proportion": 0.5,
+          "points": 0.25
+        },
+        {
+          "classification": "line",
+          "proportion": 0.5
+        },
+        {
+          "classification": "loop",
+          "proportion": 0.25
+        },
+        {
+          "classification": "line",
+          "proportion": 0.25
+        }
+      ]
+
+    }
+  ]
+}

@@ -1,2 +1,3 @@
 # FlightAnalysis
-Tools for transforming the flight log data
+
+Tools for analysing flight log data
