@@ -10,6 +10,7 @@ class State():
         self.pos = pos
         self.att = att
 
+
     @staticmethod
     def from_flight(props: dict):
         return State(
@@ -32,3 +33,6 @@ class State():
                 {key[-1]: value for key, value in value.items() if 'q' in key}
             )
         )
+
+    def to_dict():
+        return 
