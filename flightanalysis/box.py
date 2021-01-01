@@ -11,6 +11,7 @@ this program. If not, see <http://www.gnu.org/licenses/>.
 """
 
 from geometry import GPSPosition, Coord, Point, Quaternion
+from geometry.coordinate_frame import Transformation
 from geometry.point import cross_product
 import numpy as np
 import pandas as pd
@@ -63,8 +64,7 @@ class FlightLine(object):
     def __init__(self, world: Coord, contest: Coord):
         self.world = world
         self.contest = contest
-
-        
+        self.transform = Transformation(self.contest, self.world)
 
     @staticmethod
     def from_boxes(startup_box: Box, desired_box: Box):
@@ -82,25 +82,3 @@ class FlightLine(object):
                 desired_box.z_direction
             )
         )
-
-
-    def point_to_box(self, location: Point):
-        new_point = location + self.world.origin - self.contest.origin
-        return new_point.rotate(self.contest.inverse_rotation_matrix)
-
-    def _field_point_to_box(self, x, y, z):
-        box_point = self.point_to_box(Point(x, y, z))
-        return box_point.x, box_point.y, box_point.z
-
-    @property
-    def field_point_to_box(self):
-        return np.vectorize(self._field_point_to_box)
-
-    def _field_quat_to_box(self, w, x, y, z):
-
-        box_point = self.point_to_box(Quaternion(w, Point(x, y, z)))
-        return box_point.w, box_point.x, box_point.y, box_point.z
-
-    @property
-    def field_quat_to_box(self):
-        return np.vectorize(self._field_quat_to_box)
