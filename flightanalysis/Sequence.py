@@ -15,31 +15,14 @@ class Sequence():
 
     @staticmethod
     def from_flight(flight: Flight, flightline: FlightLine):
-        dat = flight.read_fields([
-            Fields.GLOBALPOSITION,
-            Fields.POSITION,
-            Fields.VELOCITY,
-            Fields.AXISRATE,
-            Fields.TXCONTROLS,
-            Fields.WIND
-        ])
-
         df = pd.DataFrame(columns=Sequence.columns)
-
-        pos_transform = np.vectorize(flightline.transform.pos)
-
-        quat_transform = np.vectorize(flightline.transform.eul_to_quat)
-
-        df.x, df.y, df.z = pos_transform(
+        df.index = flight.data.index
+        df.x, df.y, df.z = flightline.transform.pos_vec(
             flight.read_field_tuples(Fields.POSITION))
-        df.rx, df.ry, df.rz = quat_transform(
+        df.rw, df.rx, df.ry, df.rz = flightline.transform.eul_vec(
             flight.read_field_tuples(Fields.POSITION))
 
-        return Sequence(data)
-
-    @staticmethod
-    def _generate_row(pos: Point, eul: Point, flightline: FlightLine):
-        pass
+        return Sequence(df)
 
     def __getattr__(self, name):
         if name in Sequence.columns:
