@@ -15,16 +15,17 @@ from geometry.coordinate_frame import Transformation
 from geometry.point import cross_product
 from typing import Union
 from flightdata import Flight, Fields
+from math import atan, sin, cos
 
 
 class Box(object):
     '''Class to define an aerobatic box in the world'''
 
-    def __init__(self, name, pilot_position: GPSPosition, y_axis_position: GPSPosition):
+    def __init__(self, name, pilot_position: GPSPosition, heading: float):
         self.name = name
         self.pilot_position = pilot_position
-        self.y_axis_position = y_axis_position
-        self._y_direction = None
+        self.heading = heading
+        self.y_direction = Point(cos(self.heading), sin(self.heading), 0)
         self._x_direction = None
         self.z_direction = Point(0, 0, -1)
 
@@ -39,14 +40,7 @@ class Box(object):
         )
 
     def __str__(self):
-        return self.name + '\n' + str(self.pilot_position) + '\n' + str(self.y_axis_position)
-
-    @property
-    def y_direction(self) -> Point:
-        if not self._y_direction:
-            self._y_direction = (self.y_axis_position -
-                                 self.pilot_position).unit()
-        return self._y_direction
+        return self.name + '\n' + str(self.pilot_position) + '\n' + str(self.heading)
 
     @property
     def x_direction(self) -> Point:
@@ -56,8 +50,20 @@ class Box(object):
         return self._x_direction
 
     @staticmethod
-    def from_flight_origin(self, flight:Flight):
-        pass
+    def from_flight_initial(flight: Flight):
+        '''Generate a box representing the default flight coordinate frame'''
+        first = flight.data.iloc[0]
+        home = GPSPosition(
+            first.global_position_latitude,
+            first.global_position_longitude
+        )
+
+        heading = Point(1, 0, 0).rotate(
+            Point(first.attitude_roll, first.attitude_pitch,
+                  first.attitude_yaw).to_rotation_matrix()
+        )
+
+        return Box('origin', home, atan(heading.y / heading.x))
 
 
 class FlightLine(object):
