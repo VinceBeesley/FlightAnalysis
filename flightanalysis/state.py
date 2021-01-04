@@ -33,6 +33,3 @@ class State():
                 {key[-1]: value for key, value in value.items() if 'q' in key}
             )
         )
-
-    def to_dict():
-        return 

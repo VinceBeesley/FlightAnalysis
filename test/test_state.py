@@ -34,7 +34,7 @@ class TestState(unittest.TestCase):
         self.assertEqual(state.att.w, 1)
         self.assertEqual(state.att.x, 1)
 
-        sd2 = state.to_dict('tt')
+        sd2 = state.to_dict(prefix='tt')
 
         self.assertEqual(sd2['ttx'], sdict['x'])
         self.assertEqual(sd2['ttqx'], sdict['qx'])

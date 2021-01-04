@@ -26,7 +26,7 @@ class Box(object):
         self.y_axis_position = y_axis_position
         self._y_direction = None
         self._x_direction = None
-        self.z_direction = Point(0, 0, 1)
+        self.z_direction = Point(0, 0, -1)
 
     @staticmethod
     def from_f3a_zone_file(file_path: str):
@@ -54,6 +54,10 @@ class Box(object):
             self._x_direction = cross_product(
                 self.z_direction, self.y_direction)
         return self._x_direction
+
+    @staticmethod
+    def from_flight_origin(self, flight:Flight):
+        pass
 
 
 class FlightLine(object):
