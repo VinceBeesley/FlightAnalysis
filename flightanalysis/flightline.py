@@ -15,7 +15,7 @@ from geometry.coordinate_frame import Transformation
 from geometry.point import cross_product
 from typing import Union
 from flightdata import Flight, Fields
-from math import atan, sin, cos
+from math import atan2, sin, cos
 
 
 class Box(object):
@@ -27,7 +27,7 @@ class Box(object):
         self.heading = heading
         self.y_direction = Point(cos(self.heading), sin(self.heading), 0)
         self._x_direction = None
-        self.z_direction = Point(0, 0, -1)
+        self.z_direction = Point(0, 0, 1)
 
     @staticmethod
     def from_f3a_zone_file(file_path: str):
@@ -50,7 +50,7 @@ class Box(object):
         return self._x_direction
 
     @staticmethod
-    def from_flight_initial(flight: Flight):
+    def from_initial(flight: Flight):
         '''Generate a box representing the default flight coordinate frame'''
         first = flight.data.iloc[0]
         home = GPSPosition(
@@ -63,7 +63,7 @@ class Box(object):
                   first.attitude_yaw).to_rotation_matrix()
         )
 
-        return Box('origin', home, atan(heading.y / heading.x))
+        return Box('origin', home, atan2(heading.y , heading.x))
 
 
 class FlightLine(object):
