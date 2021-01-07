@@ -16,6 +16,7 @@ from geometry.point import cross_product
 from typing import Union
 from flightdata import Flight, Fields
 from math import atan2, sin, cos
+import numpy as np
 
 
 class Box(object):
@@ -46,7 +47,7 @@ class Box(object):
     def x_direction(self) -> Point:
         if not self._x_direction:
             self._x_direction = cross_product(
-                self.z_direction, self.y_direction)
+                self.y_direction, self.z_direction)
         return self._x_direction
 
     @staticmethod
@@ -63,7 +64,25 @@ class Box(object):
                   first.attitude_yaw).to_rotation_matrix()
         )
 
-        return Box('origin', home, atan2(heading.y , heading.x))
+        return Box('origin', home, atan2(heading.y, heading.x))
+
+    @staticmethod
+    def from_covariance(flight: Flight):
+        pos = flight.read_fields(Fields.POSITION).iloc[:, :2]
+        ca = np.cov(pos, y=None, rowvar=0, bias=1) # generate the covariance matrix
+        v, vect = np.linalg.eig(ca)  # calculate the eigenvectors
+        rotmat = np.identity(3) # convert to a 3x3
+        rotmat[:-1, :-1] = np.linalg.inv(np.transpose(vect))
+        heading = Point(1, 0, 0).rotate(rotmat)
+        first = flight.data.iloc[0]
+        return Box(
+            'covariance',
+            GPSPosition(
+                first.global_position_latitude,
+                first.global_position_longitude
+            ),
+            atan2(heading.y, heading.x)
+        )
 
 
 class FlightLine(object):
@@ -72,30 +91,49 @@ class FlightLine(object):
     def __init__(self, world: Coord, contest: Coord):
         self.world = world
         self.contest = contest
-        self.transform = Transformation(self.contest, self.world)
+        self.transform_to = Transformation(self.contest, self.world)
+        self.transform_from = Transformation(self.world, self.contest)
 
     @staticmethod
-    def from_boxes(startup_box: Box, desired_box: Box):
+    def from_box(box):
         return FlightLine(
+            Coord.from_zx(Point(0, 0, 0), Point(0, 0, 1), Point(1, 0, 0)),
             Coord(
                 Point(0, 0, 0),
-                startup_box.x_direction,
-                startup_box.y_direction,
-                startup_box.z_direction
-            ),
-            Coord(
-                desired_box.origin - startup_box.origin,
-                desired_box.x_direction,
-                desired_box.y_direction,
-                desired_box.z_direction
+                -box.x_direction,
+                box.y_direction,
+                -box.z_direction
             )
         )
 
     @staticmethod
     def from_initial_position(flight: Flight):
-        # this.get_df('XKF2').where(row => row.MN!=0).first().TimeUS + 3
-        _eul = flight.read_fields(Fields.ATTITUDE).iloc(0)
-        quat = Quaternion.from_euler(Point(_eul.roll, _eul.pitch, _eul.yaw))
-        ac_x_axis = quat.transform_point(Point(1, 0, 0))
+        return FlightLine.from_box(Box.from_initial(flight))
 
-        pass
+    @staticmethod
+    def from_heading(flight: Flight, heading: float):
+        """generate a flightlint based on the turn on gps position and a heading
+
+        Args:
+            flight (Flight): the flight to take the initial gps position from.
+            heading (float): the direction towards centre in radians
+        """
+
+        return FlightLine.from_box(
+            Box(
+                'heading',
+                GPSPosition(
+                    flight.data.iloc[0].global_position_latitude,
+                    flight.data.iloc[0].global_position_longitude
+                ),
+                heading
+            ))
+
+    @staticmethod
+    def from_covariance(flight: Flight):
+        """generate a flightline from a flight based on the covariance matrix
+
+        Args:
+            flight (Flight): 
+        """
+        return FlightLine.from_box(Box.from_covariance(flight))
