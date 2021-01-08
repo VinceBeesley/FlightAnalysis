@@ -21,3 +21,13 @@ class TestSequence(unittest.TestCase):
         self.assertIsInstance(seq.ry, pd.Series)
         self.assertIsInstance(seq.rz, pd.Series)
         self.assertGreater(seq.z.mean(), 0)
+
+
+    def test_from_line(self):
+        dat = np.zeros(shape=(1,len(Sequence.columns)))
+        dat[:,0:3] = [-30, 170, 100] # initial position
+        dat[:,3:6] = [-30, 0, 0] # initial velocity
+        dat[:,9:13] = [0, np.cos(np.pi / 4), np.cos(np.pi / 4), 0] # initial attitude (I think)
+        initial = pd.DataFrame(data=dat, columns=Sequence.columns)
+
+        

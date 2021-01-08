@@ -10,9 +10,7 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see <http://www.gnu.org/licenses/>.
 """
 
-from geometry import GPSPosition, Coord, Point, Quaternion
-from geometry.coordinate_frame import Transformation
-from geometry.point import cross_product
+from geometry import GPSPosition, Coord, Point, Quaternion, Transformation, cross_product
 from typing import Union
 from flightdata import Flight, Fields
 from math import atan2, sin, cos

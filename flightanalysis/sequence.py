@@ -1,11 +1,13 @@
 from flightdata import Flight, Fields
+from geometry import Point, Quaternion
 from .flightline import FlightLine, Box
 from .state import State
 import numpy as np
 import pandas as pd
-from geometry import Point
+from .schedule import Element
 
 
+#TODO I think this should be called 'Section' or something like that, Sequence can be confused with Schedule.
 class Sequence():
     columns = 'x,y,z,dx,dy,dz,dx2,dy2,dz2,rw,rx,ry,rz,drw,drx,dry,drz,drw2,drx2,dry2,drz2'.split(
         ',')
@@ -58,3 +60,33 @@ class Sequence():
     @property
     def racc(self):
         return self.data[['drw2', 'drx2', 'dry2', 'drz2']]
+
+    @staticmethod
+    def from_line(initial, length: float, npoints: int):
+        df = pd.DataFrame(columns=Sequence.columns)
+        return df        
+
+    @staticmethod
+    def from_element(element: Element, initial, space):
+        """This function will generate a template set of data for a specified element
+        and initial condition. The element will be as big as it can be within the supplied
+        space.
+
+        Args:
+            element (Element): The element to generate, from the schedule description
+            initial (Sequence): The previous sequence, last value will be taken as the starting point
+            space (?Point?): TBC Limits of an available space, in A/C body frame (Xfwd, Yright, Zdwn)
+        """
+        pass
+
+    @staticmethod
+    def from_position(pos: Point, att: Quaternion, vel:Point):
+        """Generate a Sequence with one datapoint based on defined initial conditions
+
+        Args:
+            pos (Point): [description]
+            att (Quaternion): [description]
+            vel (Point): [description]
+        """
+
+        df = pd.DataFrame(columns=Sequence.columns)
