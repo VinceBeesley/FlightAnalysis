@@ -1,36 +1,30 @@
 from flightdata import Fields
 from geometry import Point, Quaternion
-from operator import itemgetter
+from typing import Dict
 
 
 class State():
     """Describes the position and orientation of a body in 3D space"""
+    columns = 'x,y,z,dx,dy,dz,dx2,dy2,dz2,rw,rx,ry,rz,drw,drx,dry,drz,drw2,drx2,dry2,drz2'.split(
+        ',')
 
-    def __init__(self, pos: Point, att: Quaternion):
-        self.pos = pos
-        self.att = att
+    def __init__(self, data: Dict):
+        self.data = data
 
+    def __getattr__(self, name):
+        if name in State.columns:
+            return self.data[name]
+        else:
+            raise AttributeError
 
-    @staticmethod
-    def from_flight(props: dict):
-        return State(
-            Point(*itemgetter(*Fields.POSITION.names)(props)),
-            Quaternion.from_euler(
-                Point(*itemgetter(*Fields.ATTITUDE.names)(props)))
+    def pos(self):
+        return Point(self.x, self.y, self.z)
+
+    def vel(self):
+        return Point(self.dx, self.dy, self.dz)
+
+    def att(self):
+        return Quaternion(
+            self.rw,
+            Point(self.rx, self.ry, self.rz)
         )
-
-    def to_dict(self, prefix=''):
-        return dict(self.pos.to_dict(prefix), **self.att.to_dict(prefix + 'q'))
-
-    @staticmethod
-    def from_dict(value: dict):
-        # TODO this will fail if the prefix contains the letter q
-        return State(
-            Point.from_dict(
-                {key[-1]: value for key, value in value.items() if not 'q' in key}
-            ),
-            Quaternion.from_dict(
-                {key[-1]: value for key, value in value.items() if 'q' in key}
-            )
-        )
-
