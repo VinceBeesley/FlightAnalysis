@@ -1,4 +1,4 @@
-from flightanalysis.sequence import Sequence
+from flightanalysis.section import Section, State
 from flightanalysis.flightline import Box, FlightLine
 import unittest
 from geometry import Point, Quaternion
@@ -10,9 +10,21 @@ import pandas as pd
 flight = Flight.from_csv('test/P21.csv')
 
 
-class TestSequence(unittest.TestCase):
+class TestState(unittest.TestCase):
+    def from_posattvel(self):
+        seq = State.from_posattvel(
+            Point(50, 170, 150),
+            Quaternion.from_euler(Point(0, 0, np.pi)),
+            Point(-30, 0, 0)
+        )
+        self.assertEqual(seq.x, 50)
+        self.assertEqual(seq.rx, 0)
+        self.assertEqual(seq.dx, -30)
+
+
+class TestSection(unittest.TestCase):
     def test_from_flight(self):
-        seq = Sequence.from_flight(
+        seq = Section.from_flight(
             flight, FlightLine.from_initial_position(flight))
         self.assertIsInstance(seq.x, pd.Series)
         self.assertIsInstance(seq.y, pd.Series)
@@ -23,22 +35,12 @@ class TestSequence(unittest.TestCase):
         self.assertIsInstance(seq.rz, pd.Series)
         self.assertGreater(seq.z.mean(), 0)
 
-    def test_from_position(self):
-        seq = Sequence.from_initial_position(
-            Point(50, 170, 150),
-            Quaternion.from_euler(Point(0, 0, np.pi)),
-            Point(-30, 0, 0)
-        )
-        self.assertEqual(seq.x.iloc[0], 50)
-        self.assertEqual(seq.rx.iloc[0], 00)
-        self.assertEqual(seq.dx.iloc[0], -30)
-
     def test_from_line(self):
-        initial = Sequence.from_initial_position(
+        initial = State.from_posattvel(
             Point(50, 170, 150),
             Quaternion.from_euler(Point(0, 0, np.pi)),
             Point(-30, 0, 0)
         )
 
-        line = Sequence.from_line(initial, 50, 50)
+        line = Section.from_line(initial, 50, 50)
         pass
