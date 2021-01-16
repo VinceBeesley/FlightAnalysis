@@ -17,6 +17,9 @@ class TestState(unittest.TestCase):
             Quaternion.from_euler(Point(0, 0, np.pi)),
             Point(-30, 0, 0)
         )
+
         self.assertEqual(seq.x, 50)
         self.assertEqual(seq.rx, 0)
         self.assertEqual(seq.dx, -30)
+        self.assertIsInstance(seq.pos, tuple)
+        self.assertEqual(Point(*seq.pos).x, 50)

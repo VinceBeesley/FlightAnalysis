@@ -13,6 +13,14 @@ class Section(State):
     def __init__(self, data: pd.DataFrame):
         super().__init__(data)
 
+    def __getattr__(self, name):
+        if name in State.columns:
+            return self.data[name].to_numpy()
+        elif name in State.constructs:
+            return self.data[[State.constructs[name]]].to_numpy()
+        else:
+            raise AttributeError
+
     @staticmethod
     def from_flight(flight: Flight, flightline: FlightLine):
         df = pd.DataFrame(columns=State.columns)
@@ -31,6 +39,12 @@ class Section(State):
                 '2'] = np.vectorize(lambda n, d: n / d)(df['d' + nam].diff(), dt)
 
         return Section(df.iloc[2:-2])
+
+    def get_state_from_index(self, index):
+        return State(self.data.iloc[index])
+
+    def get_state_from_time(self, time):
+        return self.get_state_from_index(self.data.get_loc(time, method='nearest'))
 
     @property
     def pos(self):
@@ -58,11 +72,44 @@ class Section(State):
 
     @staticmethod
     def from_line(initial: State, length: float, npoints: int):
-        df = initial.data.copy()
+        df = pd.DataFrame(initial.data).transpose()
 
-        return df
+        t0 = df.index[0]
+        vel = Point(*initial.vel)
+        t1 = t0 + length / abs(vel)
 
-    @staticmethod
+        df = df.reindex(np.linspace(t0, t0 + length / abs(vel), npoints))
+
+        df['x'], df['y'], df['z'] = np.vectorize(
+            lambda ti: (Point(*initial.pos) + vel * ((ti - t0) /
+                                                     (t1 - t0))).to_tuple()
+        )(df.index)
+
+        return Section(df.ffill())
+
+    def from_roll(initial: State, length: float, angle: float, npoints: int):
+        line = Section.from_line(initial, length, npoints)
+
+        initial_att = Quaternion.from_tuple(*initial.att)
+
+        t0 = initial.data.name  # TODO passes the test but not correct
+        # Need to deide whether state knows anything about time, or if times
+        # for generated sections should be shifted when they are assembled
+        t1 = line.data.index[-1]
+
+        # generate the roll as an euler angle in the body frame, then rotate it by the initial attitude
+        line.data['rw'], line.data['rx'], line.data['ry'], line.data['rz'] = np.vectorize(
+            lambda ti: (Quaternion.from_euler(Point(
+                ((ti - t0) /
+                 (t1 - t0)) * angle / npoints,
+                0,
+                0
+            )) * initial_att).to_tuple()
+        )(line.data.index)
+
+        return line
+
+    @ staticmethod
     def from_element(element: Element, initial, space):
         """This function will generate a template set of data for a specified element
         and initial condition. The element will be as big as it can be within the supplied

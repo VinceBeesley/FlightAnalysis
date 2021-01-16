@@ -21,9 +21,9 @@ class State():
 
     def __getattr__(self, name):
         if name in State.columns:
-            return self.data[name].iloc[0]
+            return self.data[name]
         elif name in State.constructs:
-            return self.data[[State.constructs[name]]].to_numpy()[0]
+            return tuple(self.data[State.constructs[name]])
         else:
             raise AttributeError
 
@@ -42,4 +42,4 @@ class State():
         dat[:, 3:6] = vel.to_list()  # initial velocity
         dat[:, 9:13] = att.to_list()  # initial attitude
 
-        return State(pd.DataFrame(dat, columns=State.columns))
+        return State(pd.DataFrame(dat, columns=State.columns).iloc[0])
