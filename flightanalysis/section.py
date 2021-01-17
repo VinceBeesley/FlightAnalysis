@@ -74,7 +74,9 @@ class Section(State):
     def from_line(initial: State, length: float, npoints: int):
         df = pd.DataFrame(initial.data).transpose()
 
-        t0 = df.index[0]
+        t0 = df.index[0]  # TODO passes the test but not correct
+        # Need to deide whether state knows anything about time, or if times
+        # for generated sections should be shifted when they are assembled
         vel = Point(*initial.vel)
         t1 = t0 + length / abs(vel)
 
@@ -92,9 +94,7 @@ class Section(State):
 
         initial_att = Quaternion.from_tuple(*initial.att)
 
-        t0 = initial.data.name  # TODO passes the test but not correct
-        # Need to deide whether state knows anything about time, or if times
-        # for generated sections should be shifted when they are assembled
+        t0 = line.data.index[0]
         t1 = line.data.index[-1]
 
         # generate the roll as an euler angle in the body frame, then rotate it by the initial attitude

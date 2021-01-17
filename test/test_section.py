@@ -60,7 +60,7 @@ class TestSection(unittest.TestCase):
             *line.get_state_from_index(0).att).transform_point(Point(0, 0, 1))
         self.assertAlmostEqual(model_up_vec.x, 0)
         self.assertAlmostEqual(model_up_vec.y, 0)
-        self.assertAlmostEqual(model_up_vec.z, 1)
+        self.assertAlmostEqual(model_up_vec.z, -1)
 
         model_up_vec = Quaternion.from_tuple(
             *line.get_state_from_index(-1).att).transform_point(Point(0, 0, 1))
