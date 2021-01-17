@@ -24,9 +24,9 @@ class Section(State):
     @staticmethod
     def from_flight(flight: Flight, flightline: FlightLine):
         df = pd.DataFrame(columns=State.columns)
-        df.x, df.y, df.z = flightline.transform_to.pos_vec(
+        df.x, df.y, df.z = flightline.transform_from.pos_vec(
             *flight.read_field_tuples(Fields.POSITION))
-        df.rw, df.rx, df.ry, df.rz = flightline.transform_to.eul_vec(
+        df.rw, df.rx, df.ry, df.rz = flightline.transform_from.eul_vec(
             *flight.read_field_tuples(Fields.ATTITUDE))
         df.index = flight.data.index
 
