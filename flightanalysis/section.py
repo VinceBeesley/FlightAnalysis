@@ -1,11 +1,11 @@
 from flightdata import Flight, Fields
-from geometry import Point, Quaternion
+from geometry import Point, Quaternion, Coord, Transformation, transformation
 from .flightline import FlightLine, Box
 from .state import State
 import numpy as np
 import pandas as pd
 from .schedule import Element
-from typing import Dict
+from typing import Callable, Tuple, List
 
 
 # TODO not really happy with the name, not very descriptive.
@@ -20,25 +20,48 @@ class Section(State):
             return self.data[[State.constructs[name]]].to_numpy()
         else:
             raise AttributeError
-
+    
     @staticmethod
     def from_flight(flight: Flight, flightline: FlightLine):
+        #read position and attitude directly (after transforming to flightline)
         df = pd.DataFrame(columns=State.columns)
-        df.x, df.y, df.z = flightline.transform_from.pos_vec(
+        df[State.constructs['pos']] = flightline.transform_from.pos_vec(
             *flight.read_field_tuples(Fields.POSITION))
-        df.rw, df.rx, df.ry, df.rz = flightline.transform_from.eul_vec(
+
+        df[State.constructs['att']] = flightline.transform_from.eul_vec(
             *flight.read_field_tuples(Fields.ATTITUDE))
+
+        df.index = flight.data.index
+ 
+        #read the world frame positions and velocities
+        worldvels = pd.DataFrame()
+        worldvels[State.constructs['vel']] = flightline.transform_from.pos_vec(
+            *flight.read_field_tuples(Fields.VELOCITY))
+
+        #worldvels[State.constructs['rvel']] = flightline.transform_from.pos_vec(
+        #    *flight.read_field_tuples(Fields.VELOCITY))
+
+        # TODO where to rotational velocities come from?
+
+        worldvels.index = flight.data.index
+
+        dt = pd.Series(worldvels.index).diff()
+
+        names = np.column_stack((
+            State.construct_names('vel', 'rvel'),
+            State.construct_names('acc', 'racc')
+        ))
+        for nam in names:
+            worldvels[nam[1]] = np.vectorize(
+                lambda n, d: n / d
+            )(worldvels[nam[0]].diff(), dt)
+
+        #now convert to body frame
+
+
         df.index = flight.data.index
 
-        dt = pd.Series(df.index).diff()
-
-        for nam in 'x,y,z,rx,ry,rz'.split(','):
-            df['d' + nam] = np.vectorize(lambda n,
-                                         d: n / d)(df[nam].diff(), dt)
-            df['d' + nam +
-                '2'] = np.vectorize(lambda n, d: n / d)(df['d' + nam].diff(), dt)
-
-        return Section(df.iloc[2:-2])
+        return Section(df.iloc[1:-1])
 
     def get_state_from_index(self, index):
         return State(self.data.iloc[index])
@@ -46,68 +69,170 @@ class Section(State):
     def get_state_from_time(self, time):
         return self.get_state_from_index(self.data.get_loc(time, method='nearest'))
 
-    @property
-    def pos(self):
-        return self.data[['x', 'y', 'z']]
+    def body_to_world(self, pin: Point) -> pd.DataFrame:
+        """generate world frame trace of a body frame point 
 
-    @property
-    def att(self):
-        return self.data[['rw', 'rx', 'ry', 'rz']]
+        Args:
+            pin (Point): point in the body frame
 
-    @property
-    def vel(self):
-        return self.data[['dx', 'dy', 'dz']]
+        Returns:
+            pd.DataFrame: trace of points
+        """
+        df = self.data.apply(
+            lambda row: tuple(State(row).body_to_world(pin)),
+            axis=1,
+            result_type='expand'
+        )
 
-    @property
-    def rvel(self):
-        return self.data[['drw', 'drx', 'dry', 'drz']]
+        # pd.DataFrame(
+        #    np.array(np.vectorize(
+        #        lambda row: State(row).body_to_world(pin)
+        #    )(self.data)).T,
+        #    columns=list('xyz')
+        # )
+        df.index = self.data.index
+        return df
 
-    @property
-    def acc(self):
-        return self.data[['dx2', 'dy2', 'dz2']]
+    @staticmethod
+    def generate(
+            initial: State,
+            func: Callable[[float], Tuple[float]],
+            cols: List[str],
+            t1: float,
+            npoints: int):
+        """Generate a Section by calling the supplied function at npoint intervals between 0 and t1.
+        Any column not returned by func will be copied down from the initial state
+        Args:
+            initial (State): the initial state
+            func (Callable): function returns the value of one of the columns in State for 
+                            the ratio between 0 and t1 
+            cols (list[str]): list of column names returned by func
+            t1 (float): The last time value
+            npoints (int): number of points to generate
 
-    @property
-    def racc(self):
-        return self.data[['drw2', 'drx2', 'dry2', 'drz2']]
+        Returns:
+            [Section]: The generated section
+        """
+        df = pd.DataFrame(initial.data).transpose().reindex(
+            np.linspace(0, t1, npoints)
+        )
+
+        data = pd.DataFrame(
+            np.array(np.vectorize(
+                lambda ti: tuple([ti]) + tuple(func(ti / t1))
+            )(df.index)).T,
+            columns=['t'] + cols
+        ).set_index('t')
+
+        df[data.columns] = data
+        return Section(df.ffill())
 
     @staticmethod
     def from_line(initial: State, length: float, npoints: int):
-        df = pd.DataFrame(initial.data).transpose()
+        """generate a section representing a line. 
 
-        t0 = df.index[0]  # TODO passes the test but not correct
-        # Need to deide whether state knows anything about time, or if times
-        # for generated sections should be shifted when they are assembled
+        Args:
+            initial (State): The initial state, the line will be drawn in the direction
+                            of the initial velocity vector. 
+            length (float): length of the line
+            npoints (int): number of points to generate
+
+        Returns:
+            Section: Section class representing the line
+        """
         vel = Point(*initial.vel)
-        t1 = t0 + length / abs(vel)
+        pos = Point(*initial.pos)
 
-        df = df.reindex(np.linspace(t0, t0 + length / abs(vel), npoints))
+        return Section.generate(
+            initial,
+            lambda ratio: pos + vel * ratio,
+            list('xyz'),
+            length / abs(vel),
+            npoints
+        )
 
-        df['x'], df['y'], df['z'] = np.vectorize(
-            lambda ti: (Point(*initial.pos) + vel * ((ti - t0) /
-                                                     (t1 - t0))).to_tuple()
-        )(df.index)
-
-        return Section(df.ffill())
-
+    @staticmethod
     def from_roll(initial: State, length: float, angle: float, npoints: int):
-        line = Section.from_line(initial, length, npoints)
+        """generate a section representing a roll. 
+            TODO it would be nice to remove the stuff that is the same as from_line
+        Args:
+            initial (State): The initial state, the roll will be drawn on a line in the direction
+                            of the initial velocity vector. 
+            length (float): length of line on which roll occurs
+            angle (float): Amount of roll to do, about body X axis so +ve is right
+            npoints (int): number of points to generate
 
-        initial_att = Quaternion.from_tuple(*initial.att)
+        Returns:
+            Section: Section class representing a roll
+        """
+        vel = Point(*initial.vel)
+        pos = Point(*initial.pos)
+        att = Quaternion(*initial.att)
+        t1 = length / abs(vel)
+        initial.data['drw,drx,dry,drz'.split(',')] = tuple(
+            att * Quaternion.from_euler(
+                Point(angle, 0, 0) / t1
+            ))
+        # generate the roll as an euler angle in the body frame,
+        # then rotate it by the initial attitude
+        return Section.generate(
+            initial,
+            lambda ratio: tuple(
+                pos + vel * ratio
+            ) + tuple(
+                att * Quaternion.from_euler(Point(ratio * angle, 0, 0)
+                                            )),
+            'x,y,z,rw,rx,ry,rz'.split(','),
+            t1,
+            npoints
+        )
 
-        t0 = line.data.index[0]
-        t1 = line.data.index[-1]
+    @staticmethod
+    def from_radius(initial: State, radius: float, angle: float, npoints: int):
+        """Generate a section representing a radius. 
+            TODO if angle were 2D this method could represent KE radii
+        Args:
+            initial (State): The initial State, aircraft heading must align with velocity
+                             vector, this is not checked internally
+            radius (float): The radius in meters
+            angle (float): The amount of rotation in radians. About body frame so positive values 
+                            are pulled (up elevator), negative values are pushed (down elevator)
+            npoints (int): number of points to generate
 
-        # generate the roll as an euler angle in the body frame, then rotate it by the initial attitude
-        line.data['rw'], line.data['rx'], line.data['ry'], line.data['rz'] = np.vectorize(
-            lambda ti: (Quaternion.from_euler(Point(
-                ((ti - t0) /
-                 (t1 - t0)) * angle / npoints,
-                0,
-                0
-            )) * initial_att).to_tuple()
-        )(line.data.index)
+        Returns:
+            Section: Section class representing the radius.
+        """
 
-        return line
+        vel = Point(*initial.vel)
+        pos = Point(*initial.pos)
+
+        centre = initial.body_to_world(Point(0, 0, - radius * np.sign(angle)))
+        # Easiest to think about circles in 2D, so generate a transform to and from a
+        # coordinate frame, centre on the centre of the arc, x axis pointing to the aircraft,
+        # Y axis body forward
+        transform = Transformation(
+            Coord.from_nothing(),
+            Coord.from_xy(
+                centre,
+                pos - centre,
+                initial.body_to_world(Point(1, 0, 0))
+            ))
+
+        # generate the roll as an euler angle in the body frame,
+        # then rotate it by the initial attitude
+        # TODO it would be nice to remove the stuff that is the same as from_line
+        return Section.generate(
+            initial,
+            lambda ratio: tuple(
+                transformation.point(
+                    radius * (np.cos(ratio / angle) - np.sin(ratio / angle)))
+            ) + tuple(
+
+            ),
+            State.construct_names('pos', 'att', 'vel', 'rvel', 'acc'),
+            angle * radius / abs(vel),
+            npoints
+        )
 
     @ staticmethod
     def from_element(element: Element, initial, space):
@@ -120,3 +245,4 @@ class Section(State):
             initial (Sequence): The previous sequence, last value will be taken as the starting point
             space (?Point?): TBC Limits of an available space, in A/C body frame (Xfwd, Yright, Zdwn)
         """
+        pass

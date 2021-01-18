@@ -4,17 +4,20 @@ import pandas as pd
 
 
 class State():
-    """Describes the position and orientation of a body in 3D space"""
-    columns = 'x,y,z,dx,dy,dz,dx2,dy2,dz2,rw,rx,ry,rz,drw,drx,dry,drz,drw2,drx2,dry2,drz2'.split(
-        ',')
+    """Describes the position and orientation of a body in 3D space
+        Position and attitude in world frame, velocities and accelerations in body frame.
+    """
+
     constructs = {
         'pos': ['x', 'y', 'z'],
         'att': ['rw', 'rx', 'ry', 'rz'],
-        'vel': ['dx', 'dy', 'dz'],
-        'rvel': ['drw', 'drx', 'dry', 'drz'],
-        'acc': ['dx2', 'dy2', 'dz2'],
-        'racc': ['drw2', 'drx2', 'dry2', 'drz2']
+        'vel': ['vx', 'vy', 'vz'],
+        'rvel': ['rvw', 'rvx', 'rvy', 'rvz'],
+        'acc': ['ax', 'ay', 'az'],
+        'racc': ['raw', 'rax', 'ray', 'raz']
     }
+
+    columns = np.ndarray(constructs.values()).flatten()
 
     def __init__(self, data):
         self.data = data
@@ -36,10 +39,26 @@ class State():
             att (Quaternion): [description]
             vel (Point): [description]
         """
+        dat = pd.Series()
+        dat.index = State.columns
+        
+        dat[State.constructs['pos']] = list(pos)
+        dat[State.constructs['att']] = list(att)
+        dat[State.constructs['vel']] = list(vel)
+        
+        return State(dat.fillna(0))
 
-        dat = np.zeros(shape=(1, len(State.columns)))
-        dat[:, 0:3] = pos.to_list()  # initial position
-        dat[:, 3:6] = vel.to_list()  # initial velocity
-        dat[:, 9:13] = att.to_list()  # initial attitude
+    def body_to_world(self, pin: Point) -> Point:
+        """Rotate a point in the body frame to a point in the data frame
 
-        return State(pd.DataFrame(dat, columns=State.columns).iloc[0])
+        Args:
+            pin (Point): Point on the aircraft
+
+        Returns:
+            Point: Point in the world
+        """
+        return Point(*self.pos) + Quaternion(*self.att).transform_point(pin)
+
+    @staticmethod
+    def construct_names(*args):
+        return np.ndarray([State.constructs[name] for name in args]).flatten()

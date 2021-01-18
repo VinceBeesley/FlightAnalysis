@@ -56,14 +56,33 @@ class TestSection(unittest.TestCase):
         self.assertEqual(line.y[-1], 170)
         self.assertEqual(line.dx[-1], -30)
 
-        model_up_vec = Quaternion.from_tuple(
-            *line.get_state_from_index(0).att).transform_point(Point(0, 0, 1))
-        self.assertAlmostEqual(model_up_vec.x, 0)
-        self.assertAlmostEqual(model_up_vec.y, 0)
-        self.assertAlmostEqual(model_up_vec.z, -1)
+        def get_up_vec(index):
+            return Quaternion(
+                *line.get_state_from_index(index).att
+            ).transform_point(Point(0, 0, 1))
 
-        model_up_vec = Quaternion.from_tuple(
-            *line.get_state_from_index(-1).att).transform_point(Point(0, 0, 1))
-        self.assertAlmostEqual(model_up_vec.x, 0)
-        self.assertAlmostEqual(model_up_vec.y, 0)
-        self.assertAlmostEqual(model_up_vec.z, 1)
+        initial_up_vec = get_up_vec(0)
+        self.assertAlmostEqual(initial_up_vec.x, 0)
+        self.assertAlmostEqual(initial_up_vec.y, 0)
+        self.assertAlmostEqual(initial_up_vec.z, -1)
+
+        end_up_vec = get_up_vec(-1)
+        self.assertAlmostEqual(end_up_vec.x, 0)
+        self.assertAlmostEqual(end_up_vec.y, 0)
+        self.assertAlmostEqual(end_up_vec.z, 1)
+
+    def test_from_radius(self):
+        initial = State.from_posattvel(
+            Point(0, 170, 150),
+            Quaternion.from_euler(Point(0, 0, np.pi)),
+            Point(-30, 0, 0)
+        )
+
+    def test_body_to_world(self):
+        seq = Section.from_flight(
+            flight, FlightLine.from_initial_position(flight))
+
+        pnew = seq.body_to_world(Point(1,0,0))
+
+        self.assertIsInstance(pnew, Point)
+        
