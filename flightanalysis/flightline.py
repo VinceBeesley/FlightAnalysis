@@ -89,8 +89,8 @@ class FlightLine(object):
     def __init__(self, world: Coord, contest: Coord):
         self.world = world
         self.contest = contest
-        self.transform_to = Transformation(self.contest, self.world)
-        self.transform_from = Transformation(self.world, self.contest)
+        self.transform_to = Transformation.from_coords(self.contest, self.world)
+        self.transform_from = Transformation.from_coords(self.world, self.contest)
 
     @staticmethod
     def from_box(box):

@@ -1,32 +1,49 @@
 from geometry import Point, Quaternion
 import numpy as np
 import pandas as pd
+from typing import Dict
+from json import load
+
+
+class SVars(object):
+    """Handles the variables described in svars.json"""
+    def __init__(self, constructs):
+        self.constructs = constructs
+        self.columns = np.array(list(dict.fromkeys(
+            [col for construct in constructs.values() for col in construct]
+        )))
+
+    @staticmethod
+    def from_json(file='flightanalysis/svars.json'):
+        with open(file) as f:
+            constructs = load(f)
+        return SVars(constructs)
+
+    def __getattr__(self, name):
+        if name in self.constructs:
+            return self.constructs[name]
+        else:
+            raise AttributeError
+
+    def __getitem__(self, indices):
+        return self.columns[indices]
+
 
 
 class State():
-    """Describes the position and orientation of a body in 3D space
-        Position and attitude in world frame, velocities and accelerations in body frame.
+    """Describes the position and orientation of a body in 3D space.
+    Uses a pandas series, with the SVars class to describe the index
     """
+    vars = SVars.from_json()
 
-    constructs = {
-        'pos': ['x', 'y', 'z'],
-        'att': ['rw', 'rx', 'ry', 'rz'],
-        'vel': ['vx', 'vy', 'vz'],
-        'rvel': ['rvw', 'rvx', 'rvy', 'rvz'],
-        'acc': ['ax', 'ay', 'az'],
-        'racc': ['raw', 'rax', 'ray', 'raz']
-    }
-
-    columns = np.ndarray(constructs.values()).flatten()
-
-    def __init__(self, data):
+    def __init__(self, data: pd.Series):
         self.data = data
-
+    
     def __getattr__(self, name):
-        if name in State.columns:
+        if name in State.vars:
             return self.data[name]
-        elif name in State.constructs:
-            return tuple(self.data[State.constructs[name]])
+        elif name in State.vars.constructs:
+            return tuple(self.data[State.vars.constructs[name]])
         else:
             raise AttributeError
 
@@ -41,11 +58,11 @@ class State():
         """
         dat = pd.Series()
         dat.index = State.columns
-        
+
         dat[State.constructs['pos']] = list(pos)
         dat[State.constructs['att']] = list(att)
         dat[State.constructs['vel']] = list(vel)
-        
+
         return State(dat.fillna(0))
 
     def body_to_world(self, pin: Point) -> Point:

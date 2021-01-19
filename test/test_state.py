@@ -1,4 +1,4 @@
-from flightanalysis.state import State
+from flightanalysis.state import State, SVars
 from flightanalysis.flightline import Box, FlightLine
 import unittest
 from geometry import Point, Quaternion
@@ -10,7 +10,23 @@ import pandas as pd
 flight = Flight.from_csv('test/P21.csv')
 
 
+class TestSvars(unittest.TestCase):
+    def test_columns(self):
+        vars = SVars.from_json()
+        self.assertEqual(len(vars.columns), 5*3+5*4)
+        self.assertEqual(vars.pos, ['x', 'y', 'z'])
+        self.assertEqual(vars[0], 'x')
+        self.assertEqual(tuple(vars[:3]), tuple(list('xyz')))
+        self.assertTrue('x' in vars)
+        self.assertFalse('bra' in vars)
+
+
 class TestState(unittest.TestCase):
+    def test_classmethods(self):
+        st = State(pd.Series({col: 0 for col in State.vars}))
+        self.assertEqual(st.x, 0)
+        
+
     def test_from_posattvel(self):
         seq = State.from_posattvel(
             Point(50, 170, 150),

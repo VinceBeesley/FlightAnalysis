@@ -14,10 +14,10 @@ class Section(State):
         super().__init__(data)
 
     def __getattr__(self, name):
-        if name in State.columns:
+        if name in State.vars:
             return self.data[name].to_numpy()
-        elif name in State.constructs:
-            return self.data[[State.constructs[name]]].to_numpy()
+        elif name in State.vars.constructs:
+            return self.data[[State.vars[name]]].to_numpy()
         else:
             raise AttributeError
     
@@ -25,41 +25,19 @@ class Section(State):
     def from_flight(flight: Flight, flightline: FlightLine):
         #read position and attitude directly (after transforming to flightline)
         df = pd.DataFrame(columns=State.columns)
-        df[State.constructs['pos']] = flightline.transform_from.pos_vec(
+        
+        df[State.vars.pos] = flightline.transform_from.pos_vec(
             *flight.read_field_tuples(Fields.POSITION))
 
-        df[State.constructs['att']] = flightline.transform_from.eul_vec(
+        df[State.vars.att] = flightline.transform_from.eul_vec(
             *flight.read_field_tuples(Fields.ATTITUDE))
+
+        df[State.vars.vel] = flightline.transform_from.pos_vec(
+            *flight.read_field_tuples(Fields.VELOCITY))
 
         df.index = flight.data.index
  
-        #read the world frame positions and velocities
-        worldvels = pd.DataFrame()
-        worldvels[State.constructs['vel']] = flightline.transform_from.pos_vec(
-            *flight.read_field_tuples(Fields.VELOCITY))
-
-        #worldvels[State.constructs['rvel']] = flightline.transform_from.pos_vec(
-        #    *flight.read_field_tuples(Fields.VELOCITY))
-
-        # TODO where to rotational velocities come from?
-
-        worldvels.index = flight.data.index
-
-        dt = pd.Series(worldvels.index).diff()
-
-        names = np.column_stack((
-            State.construct_names('vel', 'rvel'),
-            State.construct_names('acc', 'racc')
-        ))
-        for nam in names:
-            worldvels[nam[1]] = np.vectorize(
-                lambda n, d: n / d
-            )(worldvels[nam[0]].diff(), dt)
-
-        #now convert to body frame
-
-
-        df.index = flight.data.index
+        # TODO rotational velocities and accelerations from the Quaternion methods.
 
         return Section(df.iloc[1:-1])
 
