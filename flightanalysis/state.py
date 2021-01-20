@@ -3,21 +3,17 @@ import numpy as np
 import pandas as pd
 from typing import Dict
 from json import load
+from .svars import svars
 
 
 class SVars(object):
     """Handles the variables described in svars.json"""
-    def __init__(self, constructs):
+
+    def __init__(self, constructs=svars):
         self.constructs = constructs
         self.columns = np.array(list(dict.fromkeys(
             [col for construct in constructs.values() for col in construct]
         )))
-
-    @staticmethod
-    def from_json(file='flightanalysis/svars.json'):
-        with open(file) as f:
-            constructs = load(f)
-        return SVars(constructs)
 
     def __getattr__(self, name):
         if name in self.constructs:
@@ -29,16 +25,15 @@ class SVars(object):
         return self.columns[indices]
 
 
-
 class State():
     """Describes the position and orientation of a body in 3D space.
     Uses a pandas series, with the SVars class to describe the index
     """
-    vars = SVars.from_json()
+    vars = SVars()
 
     def __init__(self, data: pd.Series):
         self.data = data
-    
+
     def __getattr__(self, name):
         if name in State.vars:
             return self.data[name]
@@ -56,12 +51,10 @@ class State():
             att (Quaternion): [description]
             vel (Point): [description]
         """
-        dat = pd.Series()
-        dat.index = State.columns
-
-        dat[State.constructs['pos']] = list(pos)
-        dat[State.constructs['att']] = list(att)
-        dat[State.constructs['vel']] = list(vel)
+        dat = pd.Series(index=State.vars.columns)
+        dat[State.vars.constructs['pos']] = list(pos)
+        dat[State.vars.constructs['att']] = list(att)
+        dat[State.vars.constructs['vel']] = list(vel)
 
         return State(dat.fillna(0))
 

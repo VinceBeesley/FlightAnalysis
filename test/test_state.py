@@ -12,8 +12,8 @@ flight = Flight.from_csv('test/P21.csv')
 
 class TestSvars(unittest.TestCase):
     def test_columns(self):
-        vars = SVars.from_json()
-        self.assertEqual(len(vars.columns), 5*3+5*4)
+        vars = SVars()
+        self.assertEqual(len(vars.columns), 31)
         self.assertEqual(vars.pos, ['x', 'y', 'z'])
         self.assertEqual(vars[0], 'x')
         self.assertEqual(tuple(vars[:3]), tuple(list('xyz')))
@@ -25,9 +25,9 @@ class TestState(unittest.TestCase):
     def test_classmethods(self):
         st = State(pd.Series({col: 0 for col in State.vars}))
         self.assertEqual(st.x, 0)
-        
 
     def test_from_posattvel(self):
+        # TODO this method needs to be reconsidered with the new columns.
         seq = State.from_posattvel(
             Point(50, 170, 150),
             Quaternion.from_euler(Point(0, 0, np.pi)),
@@ -36,7 +36,7 @@ class TestState(unittest.TestCase):
 
         self.assertEqual(seq.x, 50)
         self.assertEqual(seq.rx, 0)
-        self.assertEqual(seq.dx, -30)
+        self.assertEqual(seq.vx, 30)
         self.assertIsInstance(seq.pos, tuple)
         self.assertEqual(Point(*seq.pos).x, 50)
 
@@ -47,7 +47,7 @@ class TestState(unittest.TestCase):
             Point(-30, 0, 0)
         )
 
-        pt = st.body_to_world(Point(0,1,0))
+        pt = st.body_to_world(Point(0, 1, 0))
         self.assertEqual(pt.x, 50)
         self.assertEqual(pt.y, 169)
         self.assertEqual(pt.z, 150)
