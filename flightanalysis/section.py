@@ -20,23 +20,24 @@ class Section(State):
             return self.data[[State.vars[name]]].to_numpy()
         else:
             raise AttributeError
-    
+
     @staticmethod
     def from_flight(flight: Flight, flightline: FlightLine):
-        #read position and attitude directly (after transforming to flightline)
-        df = pd.DataFrame(columns=State.columns)
-        
-        df[State.vars.pos] = flightline.transform_from.pos_vec(
-            *flight.read_field_tuples(Fields.POSITION))
+        # read position and attitude directly from the log(after transforming to flightline)
 
-        df[State.vars.att] = flightline.transform_from.eul_vec(
-            *flight.read_field_tuples(Fields.ATTITUDE))
+        def makerow(*args):
+            pos = flightline.transform_from.point(Point(*args[0:3]))
+            att = flightline.transform_from.quat(
+                Quaternion.from_euler(Point(*args[3:6])))
+            return tuple(pos) + tuple(att)
 
-        df[State.vars.vel] = flightline.transform_from.pos_vec(
-            *flight.read_field_tuples(Fields.VELOCITY))
+        df = pd.DataFrame(index=flight.data.index, columns=list(State.vars))
+        df[State.vars.pos + State.vars.att] = np.array(
+            np.vectorize(makerow)(
+                *flight.read_numpy([Fields.POSITION, Fields.ATTITUDE]))
+        ).T
 
-        df.index = flight.data.index
- 
+        # TODO differentiate position for velocity and acceleration (or use log velocity)
         # TODO rotational velocities and accelerations from the Quaternion methods.
 
         return Section(df.iloc[1:-1])
