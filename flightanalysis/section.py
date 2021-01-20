@@ -17,7 +17,7 @@ class Section(State):
         if name in State.vars:
             return self.data[name].to_numpy()
         elif name in State.vars.constructs:
-            return self.data[[State.vars[name]]].to_numpy()
+            return self.data[State.vars.constructs[name]].to_numpy()
         else:
             raise AttributeError
 
@@ -37,10 +37,60 @@ class Section(State):
                 *flight.read_numpy([Fields.POSITION, Fields.ATTITUDE]))
         ).T
 
-        # TODO differentiate position for velocity and acceleration (or use log velocity)
-        # TODO rotational velocities and accelerations from the Quaternion methods.
+        def get_velocity(*args):
+            pos1 = Point(*args[0:3])
+            att1 = Quaternion(*args[3:7])
+            pos2 = Point(*args[7:10])
+            att2 = Quaternion(*args[10:14])
+            dt = args[14]
+            return tuple(pos1 - pos2 / dt) + \
+                tuple(Quaternion.axis_rates(att1, att2) / dt) + \
+                tuple(Quaternion.body_axis_rates(att1, att2) / dt)
 
-        return Section(df.iloc[1:-1])
+        posatt = df[State.vars.pos + State.vars.att]
+
+        veldata = np.array(
+            np.vectorize(get_velocity)(
+                *np.column_stack((
+                    np.concatenate(
+                        [posatt.iloc[:-1].to_numpy(), posatt.iloc[1:].to_numpy()],
+                        axis=1
+                    ),
+                    np.diff(df.index)
+                )).T
+            ))
+        #Copy the last row down and put the whole lot in the dataframe
+        df[State.vars.vel + State.vars.rvel + State.vars.brvel] = np.column_stack((veldata, veldata[:,-1])).T
+
+        def get_acceleration(*args):
+            vel1 = Point(*args[0:3])
+            rvel1 = Point(*args[3:6])
+            brvel1 = Point(*args[6:9])
+            vel2 = Point(*args[9:12])
+            rvel2 = Point(*args[12:15])
+            brvel2 = Point(*args[15:18])
+            dt = args[18]
+            return tuple((vel2 - vel1) / dt) + \
+                tuple((rvel2 - rvel1) / dt) + \
+                tuple((brvel2 - brvel1) / dt)
+
+        vel = df[State.vars.vel + State.vars.rvel + State.vars.brvel]
+
+        accdata = np.array(
+            np.vectorize(get_acceleration)(
+                *np.column_stack((
+                    np.concatenate(
+                        [vel.iloc[:-1].to_numpy(), vel.iloc[1:].to_numpy()],
+                        axis=1
+                    ),
+                    np.diff(df.index)
+                )).T
+            ))
+        #Copy the last row down and put the whole lot in the dataframe
+        df[State.vars.acc + State.vars.racc + State.vars.bracc] = np.column_stack((accdata, accdata[:,-1])).T
+
+
+        return Section(df)
 
     def get_state_from_index(self, index):
         return State(self.data.iloc[index])
