@@ -43,7 +43,7 @@ class Section(State):
             pos2 = Point(*args[7:10])
             att2 = Quaternion(*args[10:14])
             dt = args[14]
-            return tuple(pos1 - pos2 / dt) + \
+            return tuple(pos2 - pos1 / dt) + \
                 tuple(Quaternion.axis_rates(att1, att2) / dt) + \
                 tuple(Quaternion.body_axis_rates(att1, att2) / dt)
 
@@ -59,8 +59,9 @@ class Section(State):
                     np.diff(df.index)
                 )).T
             ))
-        #Copy the last row down and put the whole lot in the dataframe
-        df[State.vars.vel + State.vars.rvel + State.vars.brvel] = np.column_stack((veldata, veldata[:,-1])).T
+        # Copy the last row down and put the whole lot in the dataframe
+        df[State.vars.vel + State.vars.rvel +
+            State.vars.brvel] = np.column_stack((veldata, veldata[:, -1])).T
 
         def get_acceleration(*args):
             vel1 = Point(*args[0:3])
@@ -86,9 +87,9 @@ class Section(State):
                     np.diff(df.index)
                 )).T
             ))
-        #Copy the last row down and put the whole lot in the dataframe
-        df[State.vars.acc + State.vars.racc + State.vars.bracc] = np.column_stack((accdata, accdata[:,-1])).T
-
+        # Copy the last row down and put the whole lot in the dataframe
+        df[State.vars.acc + State.vars.racc +
+            State.vars.bracc] = np.column_stack((accdata, accdata[:, -1])).T
 
         return Section(df)
 
