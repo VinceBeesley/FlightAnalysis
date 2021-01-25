@@ -1,5 +1,5 @@
 from flightdata import Flight, Fields
-from geometry import Point, Quaternion, Coord, Transformation, transformation
+from geometry import Point, Quaternion, Coord, Transformation, transformation, Points, Quaternions
 from .flightline import FlightLine, Box
 from .state import State
 import numpy as np
@@ -8,7 +8,6 @@ from .schedule import Element
 from typing import Callable, Tuple, List
 
 
-# TODO not really happy with the name, not very descriptive.
 class Section(State):
     def __init__(self, data: pd.DataFrame):
         super().__init__(data)
@@ -17,7 +16,7 @@ class Section(State):
         if name in State.vars:
             return self.data[name].to_numpy()
         elif name in State.vars.constructs:
-            return self.data[State.vars.constructs[name]].to_numpy()
+            return self.data[State.vars.constructs[name]]
         else:
             raise AttributeError
 
@@ -25,71 +24,44 @@ class Section(State):
     def from_flight(flight: Flight, flightline: FlightLine):
         # read position and attitude directly from the log(after transforming to flightline)
 
-        def makerow(*args):
-            pos = flightline.transform_from.point(Point(*args[0:3]))
-            att = flightline.transform_from.quat(
-                Quaternion.from_euler(Point(*args[3:6])))
-            return tuple(pos) + tuple(att)
-
         df = pd.DataFrame(index=flight.data.index, columns=list(State.vars))
-        df[State.vars.pos + State.vars.att] = np.array(
-            np.vectorize(makerow)(
-                *flight.read_numpy([Fields.POSITION, Fields.ATTITUDE]))
-        ).T
 
-        def get_velocity(*args):
-            pos1 = Point(*args[0:3])
-            att1 = Quaternion(*args[3:7])
-            pos2 = Point(*args[7:10])
-            att2 = Quaternion(*args[10:14])
-            dt = args[14]
-            return tuple(pos2 - pos1 / dt) + \
-                tuple(Quaternion.axis_rates(att1, att2) / dt) + \
-                tuple(Quaternion.body_axis_rates(att1, att2) / dt)
+        pos = flightline.transform_from.point(
+            Points(flight.read_numpy(Fields.POSITION).T))
+        att = flightline.transform_from.quat(
+            Quaternions.from_euler(
+                Points(flight.read_numpy(Fields.ATTITUDE).T))
+        )
 
-        posatt = df[State.vars.pos + State.vars.att]
+        df[State.vars.pos] = pos.to_pandas(columns=State.vars.pos)
+        df[State.vars.att] = att.to_pandas(columns=State.vars.att)
 
-        veldata = np.array(
-            np.vectorize(get_velocity)(
-                *np.column_stack((
-                    np.concatenate(
-                        [posatt.iloc[:-1].to_numpy(), posatt.iloc[1:].to_numpy()],
-                        axis=1
-                    ),
-                    np.diff(df.index)
-                )).T
+        dt = np.diff(df.index)
+
+        # derivatives calculated by subtracting the following value. copy the final
+        # value down one to make the data end up the same length
+        pos2 = Points(np.vstack([pos.data[1:, :], pos.data[-1, :]]))
+
+        att2 = Quaternions(np.vstack([att.data[1:, :], att.data[-1, :]]))
+
+        vels = {}
+        vels['vel'] = (pos2 - pos) / dt
+        vels['bvel'] = att.transform_point(vels['vel'])
+        vels['rvel'] = Quaternions.axis_rates(att, att2) / dt
+        vels['brvel'] = Quaternions.body_axis_rates(att, att2) / dt
+
+        accs = ['acc', 'bacc', 'racc', 'bracc']
+
+        for vs, acs in zip(vels.keys(), accs):
+            vars = State.vars.constructs[vs]
+            df[vars] = Points(vels[vs]).to_pandas(columns=vars)
+
+            v2 = Points(np.vstack([
+                vels[vs].data[1:, :],
+                vels[vs].data[-1, :]]
             ))
-        # Copy the last row down and put the whole lot in the dataframe
-        df[State.vars.vel + State.vars.rvel +
-            State.vars.brvel] = np.column_stack((veldata, veldata[:, -1])).T
 
-        def get_acceleration(*args):
-            vel1 = Point(*args[0:3])
-            rvel1 = Point(*args[3:6])
-            brvel1 = Point(*args[6:9])
-            vel2 = Point(*args[9:12])
-            rvel2 = Point(*args[12:15])
-            brvel2 = Point(*args[15:18])
-            dt = args[18]
-            return tuple((vel2 - vel1) / dt) + \
-                tuple((rvel2 - rvel1) / dt) + \
-                tuple((brvel2 - brvel1) / dt)
-
-        vel = df[State.vars.vel + State.vars.rvel + State.vars.brvel]
-
-        accdata = np.array(
-            np.vectorize(get_acceleration)(
-                *np.column_stack((
-                    np.concatenate(
-                        [vel.iloc[:-1].to_numpy(), vel.iloc[1:].to_numpy()],
-                        axis=1
-                    ),
-                    np.diff(df.index)
-                )).T
-            ))
-        # Copy the last row down and put the whole lot in the dataframe
-        df[State.vars.acc + State.vars.racc +
-            State.vars.bracc] = np.column_stack((accdata, accdata[:, -1])).T
+            df[State.vars.constructs[acs]] = (v2 - vels[vs]) / dt
 
         return Section(df)
 
