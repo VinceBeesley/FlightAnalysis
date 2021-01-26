@@ -2,7 +2,7 @@ from flightanalysis.section import Section
 from flightanalysis.state import State
 from flightanalysis.flightline import Box, FlightLine
 import unittest
-from geometry import Point, Quaternion
+from geometry import Point, Quaternion, Points
 from flightdata import Flight, Fields
 import numpy as np
 import pandas as pd
@@ -22,6 +22,7 @@ class TestSection(unittest.TestCase):
         self.assertIsInstance(seq.rx, pd.Series)
         self.assertIsInstance(seq.ry, pd.Series)
         self.assertIsInstance(seq.rz, pd.Series)
+
         self.assertGreater(seq.z.mean(), 0)
 
     def test_generate_state(self):
@@ -79,10 +80,25 @@ class TestSection(unittest.TestCase):
         )
 
     def test_body_to_world(self):
+
         seq = Section.from_flight(
             flight, FlightLine.from_initial_position(flight))
 
-        pnew = seq.body_to_world(Point(1,0,0))
+        pnew = seq.body_to_world(Point(1, 0, 0))
 
-        self.assertIsInstance(pnew, Point)
-        
+        self.assertIsInstance(pnew, Points)
+
+    def test_subset(self):
+        seq = Section.from_flight(
+            flight, FlightLine.from_initial_position(flight))
+
+        self.assertIsInstance(seq.subset(100, 200), Section)
+        self.assertAlmostEqual(seq.subset(100, 200).data.index[-1], 200, 2)
+
+        self.assertAlmostEqual(seq.subset(-1, 200).data.index[-1], 200, 2)
+
+        self.assertAlmostEqual(
+            seq.subset(-1, -1).data.index[-1],
+            seq.data.index[-1],
+            2
+        )

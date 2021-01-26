@@ -5,8 +5,8 @@ from .state import State
 import numpy as np
 import pandas as pd
 from .schedule import Element
-from typing import Callable, Tuple, List
-
+from typing import Callable, Tuple, List, Union
+from numbers import Number
 
 class Section(State):
     def __init__(self, data: pd.DataFrame):
@@ -19,6 +19,17 @@ class Section(State):
             return self.data[State.vars.constructs[name]]
         else:
             raise AttributeError
+    
+    def subset(self, start: Number, end: Number):
+        if start==-1 and not end==-1:
+            return Section(self.data.loc[:end])
+        elif end==-1 and not start==-1:
+            return Section(self.data.loc[start:])
+        elif start==-1 and end==-1:
+            return Section(self.data)
+        else:
+            return Section(self.data[start:end])
+
 
     @staticmethod
     def from_flight(flight: Flight, flightline: FlightLine):
@@ -41,8 +52,8 @@ class Section(State):
         dt = np.diff(df.index)
         dt = np.array(list(dt) + [dt[-1]])
 
-        # derivatives calculated by subtracting the following value. copy the final
-        # value down one to make the data end up the same length
+        # derivatives calculated by subtracting the following value.
+        # final value is copied down one to make the data end up the same length
         pos2 = Points(np.vstack([pos.data[1:, :], pos.data[-1, :]]))
 
         att2 = Quaternions(np.vstack([att.data[1:, :], att.data[-1, :]]))
@@ -76,30 +87,22 @@ class Section(State):
     def get_state_from_time(self, time):
         return self.get_state_from_index(self.data.get_loc(time, method='nearest'))
 
-    def body_to_world(self, pin: Point) -> pd.DataFrame:
+    def body_to_world(self, pin: Union[Point, Points]) -> pd.DataFrame:
         """generate world frame trace of a body frame point 
 
         Args:
             pin (Point): point in the body frame
+            pin (Points): points in the body frame
 
         Returns:
-            pd.DataFrame: trace of points
+            Points: trace of points
         """
-        df = self.data.apply(
-            lambda row: tuple(State(row).body_to_world(pin)),
-            axis=1,
-            result_type='expand'
-        )
 
-        # pd.DataFrame(
-        #    np.array(np.vectorize(
-        #        lambda row: State(row).body_to_world(pin)
-        #    )(self.data)).T,
-        #    columns=list('xyz')
-        # )
-        df.index = self.data.index
-        return df
-
+        if isinstance(pin, Points) or isinstance(pin, Point):
+            return Quaternions.from_pandas(self.att).transform_point(pin) + Points.from_pandas(self.pos)
+        else:
+            return NotImplemented
+        
     @staticmethod
     def generate(
             initial: State,
@@ -149,6 +152,7 @@ class Section(State):
         """
         vel = Point(*initial.vel)
         pos = Point(*initial.pos)
+
 
         return Section.generate(
             initial,
