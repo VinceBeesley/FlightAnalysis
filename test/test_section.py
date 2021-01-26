@@ -15,13 +15,13 @@ class TestSection(unittest.TestCase):
     def test_from_flight(self):
         seq = Section.from_flight(
             flight, FlightLine.from_initial_position(flight))
-        self.assertIsInstance(seq.x, np.ndarray)
-        self.assertIsInstance(seq.y, np.ndarray)
-        self.assertIsInstance(seq.z, np.ndarray)
-        self.assertIsInstance(seq.rw, np.ndarray)
-        self.assertIsInstance(seq.rx, np.ndarray)
-        self.assertIsInstance(seq.ry, np.ndarray)
-        self.assertIsInstance(seq.rz, np.ndarray)
+        self.assertIsInstance(seq.x, pd.Series)
+        self.assertIsInstance(seq.y, pd.Series)
+        self.assertIsInstance(seq.z, pd.Series)
+        self.assertIsInstance(seq.rw, pd.Series)
+        self.assertIsInstance(seq.rx, pd.Series)
+        self.assertIsInstance(seq.ry, pd.Series)
+        self.assertIsInstance(seq.rz, pd.Series)
         self.assertGreater(seq.z.mean(), 0)
 
     def test_generate_state(self):

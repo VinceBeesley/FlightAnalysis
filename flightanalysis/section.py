@@ -14,7 +14,7 @@ class Section(State):
 
     def __getattr__(self, name):
         if name in State.vars:
-            return self.data[name].to_numpy()
+            return self.data[name]
         elif name in State.vars.constructs:
             return self.data[State.vars.constructs[name]]
         else:
@@ -33,10 +33,13 @@ class Section(State):
                 Points(flight.read_numpy(Fields.ATTITUDE).T))
         )
 
-        df[State.vars.pos] = pos.to_pandas(columns=State.vars.pos)
-        df[State.vars.att] = att.to_pandas(columns=State.vars.att)
+        df[State.vars.pos] = pos.to_pandas(
+            columns=State.vars.pos).set_index(df.index)
+        df[State.vars.att] = att.to_pandas(
+            columns=State.vars.att).set_index(df.index)
 
         dt = np.diff(df.index)
+        dt = np.array(list(dt) + [dt[-1]])
 
         # derivatives calculated by subtracting the following value. copy the final
         # value down one to make the data end up the same length
@@ -54,14 +57,16 @@ class Section(State):
 
         for vs, acs in zip(vels.keys(), accs):
             vars = State.vars.constructs[vs]
-            df[vars] = Points(vels[vs]).to_pandas(columns=vars)
+            df[vars] = vels[vs].to_pandas(columns=vars).set_index(df.index)
 
             v2 = Points(np.vstack([
                 vels[vs].data[1:, :],
                 vels[vs].data[-1, :]]
             ))
 
-            df[State.vars.constructs[acs]] = (v2 - vels[vs]) / dt
+            df[State.vars.constructs[acs]] = ((v2 - vels[vs]) / dt).to_pandas(
+                columns=State.vars.constructs[acs]
+            ).set_index(df.index)
 
         return Section(df)
 
