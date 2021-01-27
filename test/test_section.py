@@ -102,3 +102,10 @@ class TestSection(unittest.TestCase):
             seq.data.index[-1],
             2
         )
+
+
+    def test_get_state(self):
+        seq = Section.from_flight(
+            flight, FlightLine.from_initial_position(flight))        
+        st = seq.get_state_from_time(100)
+        self.assertIsInstance(st, State)

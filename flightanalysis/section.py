@@ -8,6 +8,7 @@ from .schedule import Element
 from typing import Callable, Tuple, List, Union
 from numbers import Number
 
+
 class Section(State):
     def __init__(self, data: pd.DataFrame):
         super().__init__(data)
@@ -19,17 +20,16 @@ class Section(State):
             return self.data[State.vars.constructs[name]]
         else:
             raise AttributeError
-    
+
     def subset(self, start: Number, end: Number):
-        if start==-1 and not end==-1:
+        if start == -1 and not end == -1:
             return Section(self.data.loc[:end])
-        elif end==-1 and not start==-1:
+        elif end == -1 and not start == -1:
             return Section(self.data.loc[start:])
-        elif start==-1 and end==-1:
+        elif start == -1 and end == -1:
             return Section(self.data)
         else:
             return Section(self.data[start:end])
-
 
     @staticmethod
     def from_flight(flight: Flight, flightline: FlightLine):
@@ -37,55 +37,52 @@ class Section(State):
 
         df = pd.DataFrame(index=flight.data.index, columns=list(State.vars))
 
-        pos = flightline.transform_from.point(
-            Points(flight.read_numpy(Fields.POSITION).T))
-        att = flightline.transform_from.quat(
-            Quaternions.from_euler(
-                Points(flight.read_numpy(Fields.ATTITUDE).T))
-        )
+        def savevars(vars: list, data: Union[Points, Quaternions]):
+            df[vars] = data.to_pandas(columns=vars).set_index(df.index)
+            return data
 
-        df[State.vars.pos] = pos.to_pandas(
-            columns=State.vars.pos).set_index(df.index)
-        df[State.vars.att] = att.to_pandas(
-            columns=State.vars.att).set_index(df.index)
+        pos = savevars(
+            State.vars.pos,
+            flightline.transform_from.point(
+                Points(
+                    flight.read_numpy(Fields.POSITION).T
+                )))
 
-        dt = np.diff(df.index)
-        dt = np.array(list(dt) + [dt[-1]])
+        att = savevars(
+            State.vars.att,
+            flightline.transform_from.quat(
+                Quaternions.from_euler(Points(
+                    flight.read_numpy(Fields.ATTITUDE).T
+                ))))
 
-        # derivatives calculated by subtracting the following value.
-        # final value is copied down one to make the data end up the same length
-        pos2 = Points(np.vstack([pos.data[1:, :], pos.data[-1, :]]))
+        dt = np.gradient(df.index)
 
-        att2 = Quaternions(np.vstack([att.data[1:, :], att.data[-1, :]]))
-
-        vels = {}
-        vels['vel'] = (pos2 - pos) / dt
-        vels['bvel'] = att.transform_point(vels['vel'])
-        vels['rvel'] = Quaternions.axis_rates(att, att2) / dt
-        vels['brvel'] = Quaternions.body_axis_rates(att, att2) / dt
-
-        accs = ['acc', 'bacc', 'racc', 'bracc']
-
-        for vs, acs in zip(vels.keys(), accs):
-            vars = State.vars.constructs[vs]
-            df[vars] = vels[vs].to_pandas(columns=vars).set_index(df.index)
-
-            v2 = Points(np.vstack([
-                vels[vs].data[1:, :],
-                vels[vs].data[-1, :]]
-            ))
-
-            df[State.vars.constructs[acs]] = ((v2 - vels[vs]) / dt).to_pandas(
-                columns=State.vars.constructs[acs]
-            ).set_index(df.index)
+        vel = savevars(State.vars.vel, pos.diff(dt))
+        savevars(State.vars.bvel, att.transform_point(vel))
+        savevars(State.vars.rvel, att.diff(dt))
+        savevars(State.vars.brvel, att.body_diff(dt))
 
         return Section(df)
+
+    def acceleration(self, velconst: str):
+        """Generate an acceleration dataframe for the requested velocity data
+
+        Args:
+            velocity (pd.DataFrame): 3 columns of the velocity date, index is time
+        """
+        return Points.from_pandas(
+            self.__getattr__(velconst)
+        ).diff(
+            np.gradient(self.data.index)
+        ).to_pandas().set_index(self.data.index)
 
     def get_state_from_index(self, index):
         return State(self.data.iloc[index])
 
     def get_state_from_time(self, time):
-        return self.get_state_from_index(self.data.get_loc(time, method='nearest'))
+        return self.get_state_from_index(
+            self.data.index.get_loc(time, method='nearest')
+        )
 
     def body_to_world(self, pin: Union[Point, Points]) -> pd.DataFrame:
         """generate world frame trace of a body frame point 
@@ -102,7 +99,7 @@ class Section(State):
             return Quaternions.from_pandas(self.att).transform_point(pin) + Points.from_pandas(self.pos)
         else:
             return NotImplemented
-        
+
     @staticmethod
     def generate(
             initial: State,
@@ -152,7 +149,6 @@ class Section(State):
         """
         vel = Point(*initial.vel)
         pos = Point(*initial.pos)
-
 
         return Section.generate(
             initial,

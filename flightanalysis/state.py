@@ -1,4 +1,5 @@
-from geometry import Point, Quaternion, Points, Quaternions
+from geometry import Point, Quaternion, Points, Quaternions, Transformation
+from geometry.point import cross_product
 import numpy as np
 import pandas as pd
 from typing import Dict, Union
@@ -63,35 +64,17 @@ class State():
         """project the state forward in time by dt given no change in velocity and rotational velocity.
         assume the 
         """
-        df = self.data.copy()
-        pos = Point(*self.pos)
-        vel = Point(*self.vel)
-        bvel = Point(*self.bvel)
-
-        att = Quaternion(*self.att)
-        brvel = Point(*self.brvel)
+        #df = self.data.copy()
+        b1v1 = Point(*self.bvel)
+        b1r = dt * Point(*self.brvel) 
+        l = abs(b1v1) * dt
         
-        p2 = pos + bvel * dt # project a straight line
+        b1v2 = Quaternion.from_axis_angle(b1r).transform_point(b1v1)
 
-        axis_angle = dt * brvel 
-
-        att2 = att.body_rotate(axis_angle)
-        vel2 = att2.inverse().transform_point(Point(*self.bvel))
-
-        arclength = bvel * dt
-
-        radius = Point(
-            0, 
-            0 if axis_angle.z == 0 else arclength.x / axis_angle.z, 
-            0 if axis_angle.y == 0 else arclength.x / axis_angle.y
-            )
-
+        axis = cross_product(b1v1, b1v2)
         
-        bpos2 = Point(
-            radius.z * np.sin(axis_angle.y) + radius.y * np.sin(axis_angle.z),
-            radius.z - radius.z * np.cos(axis_angle.y),
-            radius.y - radius.y * np.cos(axis_angle.z)
-        )
+
+
 
 
         pass
@@ -110,7 +93,19 @@ class State():
         elif isinstance(pin, Points):
             return Points.from_point(*self.pos, pin.count) + \
                 Quaternions.from_quaternion(*self.att, pin.count).transform_point(pin)
+        else:
+            return NotImplemented
 
     @staticmethod
     def construct_names(*args):
         return np.ndarray([State.constructs[name] for name in args]).flatten()
+
+    @property
+    def transform(self):
+        return Transformation(Point(*self.pos), Quaternion(*self.att))
+
+    @property
+    def transform_to(self):
+        return Transformation(-Point(*self.pos), Quaternion(*self.att).inverse())
+
+    

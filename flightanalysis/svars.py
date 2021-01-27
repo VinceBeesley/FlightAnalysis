@@ -3,20 +3,12 @@ svars = {
     "att": ["rw", "rx", "ry", "rz"],
     "vel": ["vx", "vy", "vz"],
     "rvel": ["rvr", "rvp", "rvy"],
-    "acc": ["ax", "ay", "az"],
-    "racc": ["rar", "rap", "ray"],
     "bvel": ["bvx", "bvy", "bvz"],
     "brvel": ["brvr", "brvp", "brvy"],
-    "bacc": ["bax", "bay", "baz"],
-    "bracc": ["brar", "brap", "bray"],
     "wp": ["x", "y", "z", "rw", "rx", "ry", "rz"],
     "wv": ["vx", "vy", "vz", "rvr", "rvp", "rvy"],
-    "wa": ["ax", "ay", "az", "rar", "rap", "ray"],
     "bv": ["bvx", "bvy", "bvz", "brvr", "brvp", "brvy"],
-    "ba": ["bax", "bay", "baz", "brar", "brap", "bray"],
     "world": ["x", "y", "z", "rw", "rx", "ry", "rz",
-              "vx", "vy", "vz", "rvr", "rvp", "rvy",
-              "ax", "ay", "az", "rar", "rap", "ray"],
-    "body": ["bvx", "bvy", "bvz", "brvr", "brvp", "brvy",
-             "bax", "bay", "baz", "brar", "brap", "bray"]
+              "vx", "vy", "vz", "rvr", "rvp", "rvy"],
+    "body": ["bvx", "bvy", "bvz", "brvr", "brvp", "brvy"]
 }
