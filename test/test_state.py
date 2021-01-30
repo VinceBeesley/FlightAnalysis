@@ -13,7 +13,7 @@ flight = Flight.from_csv('test/P21.csv')
 class TestSvars(unittest.TestCase):
     def test_columns(self):
         vars = SVars()
-        self.assertEqual(len(vars.columns), 31)
+        self.assertEqual(len(vars.columns), 19)
         self.assertEqual(vars.pos, ['x', 'y', 'z'])
         self.assertEqual(vars[0], 'x')
         self.assertEqual(tuple(vars[:3]), tuple(list('xyz')))
@@ -34,11 +34,9 @@ class TestState(unittest.TestCase):
             Point(30, 0, 0)
         )
 
-        self.assertEqual(seq.x, 50)
-        self.assertEqual(seq.rx, 0)
-        self.assertEqual(seq.vx, 30)
-        self.assertIsInstance(seq.pos, tuple)
-        self.assertEqual(Point(*seq.pos).x, 50)
+        np.testing.assert_array_equal(list(seq.pos), [50, 170, 150])
+        np.testing.assert_array_equal(list(seq.bvel), [30, 0, 0])
+        np.testing.assert_array_equal(list(seq.brvel), [0, 0, 0])
 
     def test_body_to_world(self):
         st = State.from_posattvel(
@@ -51,26 +49,3 @@ class TestState(unittest.TestCase):
         self.assertEqual(pt.x, 50)
         self.assertEqual(pt.y, 169)
         self.assertEqual(pt.z, 150)
-
-    def test_cv_projection(self):
-        st = State.from_posattvel(
-            Point(50, 170, 150),
-            Quaternion.from_euler(Point(0, 0, np.pi)),
-            Point(-30, 0, 0)
-        )
-        cv = st.constant_velocity_projection(1)
-        np.testing.assert_array_equal(cv.pos, [20, 170, 150])
-
-    def test_cv_projection_radius(self):
-        st = State.from_posattvel(
-            Point(0, 0, 0),
-            Quaternion.from_euler(Point(0, 0, 0)),
-            Point(30, 0, 0)
-        )
-        # rotating at 90 deg /s about y
-        st.data[State.vars.brvel] = list(Point(0, np.pi/2, 0))
-
-        cv = st.constant_velocity_projection(1)
-        np.assert_array_equal(cv.pos, [0, 0, 0])
-
-

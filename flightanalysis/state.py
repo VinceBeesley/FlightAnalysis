@@ -8,7 +8,7 @@ from .svars import svars
 
 
 class SVars(object):
-    """Handles the variables described in svars.json"""
+    """Handles the variables described in svars.py"""
 
     def __init__(self, constructs=svars):
         self.constructs = constructs
@@ -44,7 +44,7 @@ class State():
             raise AttributeError
 
     @staticmethod
-    def from_posattvel(pos: Point, att: Quaternion, vel: Point):
+    def from_posattvel(pos: Point, att: Quaternion, bvel: Point):
         """Generate a State
 
         Args:
@@ -55,29 +55,9 @@ class State():
         dat = pd.Series(index=State.vars.columns)
         dat[State.vars.constructs['pos']] = list(pos)
         dat[State.vars.constructs['att']] = list(att)
-        dat[State.vars.constructs['vel']] = list(vel)
-        dat[State.vars.constructs['bvel']] = list(att.transform_point(vel))
-        
+        dat[State.vars.constructs['bvel']] = list(bvel)
+        dat[State.vars.constructs['brvel']] = np.zeros(3)
         return State(dat.fillna(0))
-
-    def constant_velocity_projection(self, dt):
-        """project the state forward in time by dt given no change in velocity and rotational velocity.
-        assume the 
-        """
-        #df = self.data.copy()
-        b1v1 = Point(*self.bvel)
-        b1r = dt * Point(*self.brvel) 
-        l = abs(b1v1) * dt
-        
-        b1v2 = Quaternion.from_axis_angle(b1r).transform_point(b1v1)
-
-        axis = cross_product(b1v1, b1v2)
-        
-
-
-
-
-        pass
 
     def body_to_world(self, pin: Union[Point, Points]) -> Point:
         """Rotate a point in the body frame to a point in the data frame
@@ -92,7 +72,8 @@ class State():
             return Point(*self.pos) + Quaternion(*self.att).transform_point(pin)
         elif isinstance(pin, Points):
             return Points.from_point(*self.pos, pin.count) + \
-                Quaternions.from_quaternion(*self.att, pin.count).transform_point(pin)
+                Quaternions.from_quaternion(
+                    *self.att, pin.count).transform_point(pin)
         else:
             return NotImplemented
 
@@ -107,5 +88,3 @@ class State():
     @property
     def transform_to(self):
         return Transformation(-Point(*self.pos), Quaternion(*self.att).inverse())
-
-    

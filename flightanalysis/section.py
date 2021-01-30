@@ -32,37 +32,40 @@ class Section(State):
             return Section(self.data[start:end])
 
     @staticmethod
-    def from_flight(flight: Flight, flightline: FlightLine):
-        # read position and attitude directly from the log(after transforming to flightline)
+    def from_constructs(t, pos, att, bvel, brvel):
 
-        df = pd.DataFrame(index=flight.data.index, columns=list(State.vars))
+        df = pd.DataFrame(index=t, columns=list(State.vars))
 
         def savevars(vars: list, data: Union[Points, Quaternions]):
             df[vars] = data.to_pandas(columns=vars).set_index(df.index)
-            return data
 
-        pos = savevars(
-            State.vars.pos,
-            flightline.transform_from.point(
-                Points(
-                    flight.read_numpy(Fields.POSITION).T
-                )))
-
-        att = savevars(
-            State.vars.att,
-            flightline.transform_from.quat(
-                Quaternions.from_euler(Points(
-                    flight.read_numpy(Fields.ATTITUDE).T
-                ))))
-
-        dt = np.gradient(df.index)
-
-        vel = savevars(State.vars.vel, pos.diff(dt))
-        savevars(State.vars.bvel, att.transform_point(vel))
-        savevars(State.vars.rvel, att.diff(dt))
-        savevars(State.vars.brvel, att.body_diff(dt))
+        savevars(State.vars.pos, pos)
+        savevars(State.vars.att, att)
+        savevars(State.vars.bvel, bvel)
+        savevars(State.vars.brvel, brvel)
 
         return Section(df)
+
+    @staticmethod
+    def from_flight(flight: Flight, flightline: FlightLine):
+        # read position and attitude directly from the log(after transforming to flightline)
+        t = flight.data.index
+        pos = flightline.transform_from.point(
+            Points(
+                flight.read_numpy(Fields.POSITION).T
+            ))
+
+        att = flightline.transform_from.quat(
+            Quaternions.from_euler(Points(
+                flight.read_numpy(Fields.ATTITUDE).T
+            )))
+
+        dt = np.gradient(t)
+
+        bvel = att.transform_point(pos.diff(dt))
+        brvel = att.body_diff(dt)
+
+        return Section.from_constructs(t, pos, att, bvel, brvel)
 
     def acceleration(self, velconst: str):
         """Generate an acceleration dataframe for the requested velocity data
@@ -135,7 +138,7 @@ class Section(State):
         return Section(df.ffill())
 
     @staticmethod
-    def from_line(initial: State, length: float, npoints: int):
+    def from_line(initial: State, t: np.array):
         """generate a section representing a line. 
 
         Args:
@@ -147,51 +150,34 @@ class Section(State):
         Returns:
             Section: Section class representing the line
         """
-        vel = Point(*initial.vel)
-        pos = Point(*initial.pos)
+        ipos = Point(*initial.pos)
+        iatt = Quaternion(*initial.att)
+        ibvel = Point(*initial.bvel)
+        ibrvel = Point(*initial.brvel)
 
-        return Section.generate(
-            initial,
-            lambda ratio: pos + vel * ratio,
-            list('xyz'),
-            length / abs(vel),
-            npoints
+        ivel = initial.transform.rotate(ibvel)
+
+        pos = Points(
+            np.array(np.vectorize(
+                lambda elapsed: tuple(ipos + elapsed * ivel)
+            )(t)).T
         )
 
-    @staticmethod
-    def from_roll(initial: State, length: float, angle: float, npoints: int):
-        """generate a section representing a roll. 
-            TODO it would be nice to remove the stuff that is the same as from_line
-        Args:
-            initial (State): The initial state, the roll will be drawn on a line in the direction
-                            of the initial velocity vector. 
-            length (float): length of line on which roll occurs
-            angle (float): Amount of roll to do, about body X axis so +ve is right
-            npoints (int): number of points to generate
+        if abs(ibrvel) == 0:
+            att = Quaternions.from_quaternion(iatt, len(t))
+        else:
+            angles = Points.from_point(ibrvel, len(t)) * t
+            att = Quaternions.from_quaternion(
+                iatt, len(t)).body_rotate(angles)
 
-        Returns:
-            Section: Section class representing a roll
-        """
-        vel = Point(*initial.vel)
-        pos = Point(*initial.pos)
-        att = Quaternion(*initial.att)
-        t1 = length / abs(vel)
-        initial.data['drw,drx,dry,drz'.split(',')] = tuple(
-            att * Quaternion.from_euler(
-                Point(angle, 0, 0) / t1
-            ))
-        # generate the roll as an euler angle in the body frame,
-        # then rotate it by the initial attitude
-        return Section.generate(
-            initial,
-            lambda ratio: tuple(
-                pos + vel * ratio
-            ) + tuple(
-                att * Quaternion.from_euler(Point(ratio * angle, 0, 0)
-                                            )),
-            'x,y,z,rw,rx,ry,rz'.split(','),
-            t1,
-            npoints
+        bvel = att.transform_point(ivel)
+
+        return Section.from_constructs(
+            t,
+            pos,
+            att,
+            bvel,
+            Points.from_point(ibrvel, len(t))
         )
 
     @staticmethod
