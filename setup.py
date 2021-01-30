@@ -20,6 +20,5 @@ setup(
     author='Thomas David',
     author_email='thomasdavid0@gmail.com',
     packages=['flightanalysis'],
-    install_requires=['numpy', 'pandas', 'ardupilot_log_reader',
-                      'pint', 'flightdata', 'geometry', 'scipy'],
+    install_requires=['numpy', 'pandas', 'flightdata', 'geometry', 'scipy'],
 )

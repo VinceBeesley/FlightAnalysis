@@ -1,8 +1,5 @@
 numpy
 pandas
-pint
-pymavlink
-ardupilot_log_reader
 flightdata
 geometry
 scipy

@@ -10,8 +10,16 @@ The general Idea
 5. analyse each element according to the judging criteria of that element.
 
 # TODO:
-- the Sequence class contains sequence frame data, add support for an equivalent body frame Class
-- Expand the schedule module to generate a perfect sequence
+- Expand the section module to generate artificial elements
 - detect areas in the box
 - calculate angle between wings and the Y axis + other useful juding info
 - some of the tests are failing for box definition(I think code is right, tests wrong)
+
+
+# Dependencies:
+python (3.6+?)
+numpy
+pandas
+flightdata
+geometry
+scipy?

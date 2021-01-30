@@ -19,24 +19,16 @@ requirements:
     - python
     - numpy
     - pandas
-    - inav_log_reader
-    - ardupilot_log_reader
     - flightdata
     - geometry
-    - pint
-    - scipy
   run:
     - future
     - lxml
     - python
     - numpy
     - pandas
-    - inav_log_reader
-    - ardupilot_log_reader
     - flightdata
     - geometry
-    - pint
-    - scipy
 test:
   imports:
     - flightanalysis
