@@ -1,5 +1,6 @@
 from flightdata import Flight, Fields
-from geometry import Point, Quaternion, Coord, Transformation, transformation, Points, Quaternions
+from geometry import Point, Quaternion, Coord, Transformation, transformation, Points, Quaternions, cross_product
+from numpy.testing._private.utils import assert_equal
 from .flightline import FlightLine, Box
 from .state import State
 import numpy as np
@@ -104,57 +105,18 @@ class Section(State):
             return NotImplemented
 
     @staticmethod
-    def generate(
-            initial: State,
-            func: Callable[[float], Tuple[float]],
-            cols: List[str],
-            t1: float,
-            npoints: int):
-        """Generate a Section by calling the supplied function at npoint intervals between 0 and t1.
-        Any column not returned by func will be copied down from the initial state
-        Args:
-            initial (State): the initial state
-            func (Callable): function returns the value of one of the columns in State for 
-                            the ratio between 0 and t1 
-            cols (list[str]): list of column names returned by func
-            t1 (float): The last time value
-            npoints (int): number of points to generate
-
-        Returns:
-            [Section]: The generated section
-        """
-        df = pd.DataFrame(initial.data).transpose().reindex(
-            np.linspace(0, t1, npoints)
-        )
-
-        data = pd.DataFrame(
-            np.array(np.vectorize(
-                lambda ti: tuple([ti]) + tuple(func(ti / t1))
-            )(df.index)).T,
-            columns=['t'] + cols
-        ).set_index('t')
-
-        df[data.columns] = data
-        return Section(df.ffill())
-
-    @staticmethod
     def from_line(initial: State, t: np.array):
-        """generate a section representing a line. 
+        """generate a section representing a line. Provide an initial rotation rate to represent a roll. 
 
         Args:
             initial (State): The initial state, the line will be drawn in the direction
                             of the initial velocity vector. 
-            length (float): length of the line
-            npoints (int): number of points to generate
-
+            t (np.array): the timesteps to create states for
         Returns:
-            Section: Section class representing the line
+            Section: Section class representing the line or roll.
         """
-        ipos = Point(*initial.pos)
-        iatt = Quaternion(*initial.att)
-        ibvel = Point(*initial.bvel)
-        ibrvel = Point(*initial.brvel)
 
+        ipos, iatt, ibvel, ibrvel = initial.handles()
         ivel = initial.transform.rotate(ibvel)
 
         pos = Points(
@@ -172,60 +134,36 @@ class Section(State):
 
         bvel = att.transform_point(ivel)
 
-        return Section.from_constructs(
-            t,
-            pos,
-            att,
-            bvel,
-            Points.from_point(ibrvel, len(t))
-        )
+        return Section.from_constructs(t, pos, att, bvel, Points.from_point(ibrvel, len(t)))
 
     @staticmethod
-    def from_radius(initial: State, radius: float, angle: float, npoints: int):
-        """Generate a section representing a radius. 
-            TODO if angle were 2D this method could represent KE radii
+    def from_radius(initial: State, t: np.array):
+        """Generate a section representing a radius. Provide an initial pitch or yaw rate 
+        to describe the radius. time array, pitch rates and so on need to be pre-calculated
+        for the desired radius and segment
+
+        Assumes there is no aoa or sideslip.
+
+
         Args:
-            initial (State): The initial State, aircraft heading must align with velocity
-                             vector, this is not checked internally
-            radius (float): The radius in meters
-            angle (float): The amount of rotation in radians. About body frame so positive values 
-                            are pulled (up elevator), negative values are pushed (down elevator)
-            npoints (int): number of points to generate
+            initial (State): The initial State
+            t (np.array): the timesteps to create states for
 
         Returns:
             Section: Section class representing the radius.
         """
+        ipos, iatt, ibvel, ibrvel = initial.handles()
+        ivel = initial.transform.rotate(ibvel)
 
-        vel = Point(*initial.vel)
-        pos = Point(*initial.pos)
+        arclength = ibvel.x
+        
+        
+        lpath = ivel.x / t[-1]
+        
+        
+        
 
-        centre = initial.body_to_world(Point(0, 0, - radius * np.sign(angle)))
-        # Easiest to think about circles in 2D, so generate a transform to and from a
-        # coordinate frame, centre on the centre of the arc, x axis pointing to the aircraft,
-        # Y axis body forward
-        transform = Transformation(
-            Coord.from_nothing(),
-            Coord.from_xy(
-                centre,
-                pos - centre,
-                initial.body_to_world(Point(1, 0, 0))
-            ))
 
-        # generate the roll as an euler angle in the body frame,
-        # then rotate it by the initial attitude
-        # TODO it would be nice to remove the stuff that is the same as from_line
-        return Section.generate(
-            initial,
-            lambda ratio: tuple(
-                transformation.point(
-                    radius * (np.cos(ratio / angle) - np.sin(ratio / angle)))
-            ) + tuple(
-
-            ),
-            State.construct_names('pos', 'att', 'vel', 'rvel', 'acc'),
-            angle * radius / abs(vel),
-            npoints
-        )
 
     @ staticmethod
     def from_element(element: Element, initial, space):

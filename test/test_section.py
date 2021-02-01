@@ -82,11 +82,16 @@ class TestSection(unittest.TestCase):
         )
 
     def test_from_radius(self):
+        """do the outside loop at the start of the P sequence"""
         initial = State.from_posattvel(
             Point(0, 170, 150),
-            Quaternion.from_euler(Point(0, 0, np.pi)),
-            Point(-30, 0, 0)
+            Quaternion.from_euler(Point(np.pi, 0, np.pi)),
+            Point(10 * np.pi, 0, 0)
         )
+
+        initial.data[State.vars.brvel] = [0, -np.pi / 10, 0]
+
+        radius = Section.from_radius(initial, np.linspace(0, 20, 10))
 
     def test_body_to_world(self):
 

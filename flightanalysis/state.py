@@ -25,6 +25,9 @@ class SVars(object):
     def __getitem__(self, indices):
         return self.columns[indices]
 
+    
+
+
 
 class State():
     """Describes the position and orientation of a body in 3D space.
@@ -88,3 +91,7 @@ class State():
     @property
     def transform_to(self):
         return Transformation(-Point(*self.pos), Quaternion(*self.att).inverse())
+
+    def handles(self):
+        return Point(*self.pos), Quaternion(*self.att), Point(*self.bvel), Point(*self.brvel)
+        
