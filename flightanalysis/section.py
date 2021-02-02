@@ -8,6 +8,7 @@ import pandas as pd
 from .schedule import Element
 from typing import Callable, Tuple, List, Union
 from numbers import Number
+from .schedule import Schedule, Manoeuvre, Element
 
 
 class Section():
@@ -185,8 +186,8 @@ class Section():
             Points.from_point(initial.brvel, len(t))
         )
 
-    @ staticmethod
-    def from_element(element: Element, initial, space):
+    @staticmethod
+    def from_element(initial: State, element: Element):
         """This function will generate a template set of data for a specified element
         and initial condition. The element will be as big as it can be within the supplied
         space.
@@ -197,3 +198,16 @@ class Section():
             space (?Point?): TBC Limits of an available space, in A/C body frame (Xfwd, Yright, Zdwn)
         """
         pass
+
+    @staticmethod
+    def from_manoeuvre(initial: State, Manoeuvre: Manoeuvre):
+        pass
+
+    @staticmethod
+    def from_schedule(initial: State, schedule: Schedule):
+        last_state = initial
+        elms = []
+        for manoeuvre in schedule.manoeuvres:
+            for element in manoeuvre.elements:
+                elms.append(Section.from_element(element, last_state))
+        return Section.stack(elms)
