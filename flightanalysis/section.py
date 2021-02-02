@@ -13,7 +13,7 @@ from numbers import Number
 class Section():
     def __init__(self, data: pd.DataFrame):
         self.data = data
-        
+
     def __getattr__(self, name):
         if name in State.vars:
             return self.data[name]
@@ -144,12 +144,12 @@ class Section():
         Returns:
             Section: Section class representing the radius.
         """
-        
+
         radius = initial.bvel.x / initial.brvel.y
         radcoord = Coord.from_xy(
-            initial.transform.point(Point(0, 0, radius)),
-            initial.transform.rotate(Point(0,0,-1)), 
-            initial.transform.rotate(Point(1,0,0))
+            initial.transform.point(Point(0, 0, -radius)),
+            initial.transform.rotate(Point(0, 0, 1)),
+            initial.transform.rotate(Point(1, 0, 0))
         )
         angles = Points.from_point(initial.brvel, len(t)) * t
 
@@ -165,11 +165,13 @@ class Section():
 
         return Section.from_constructs(
             t,
-            Transformation.from_coords(Coord.from_nothing(), radcoord).point(radcoordpoints),
-            Quaternions.from_quaternion(initial.att, len(t)).body_rotate(angles),
+            Transformation.from_coords(
+                Coord.from_nothing(), radcoord).point(radcoordpoints),
+            Quaternions.from_quaternion(
+                initial.att, len(t)).body_rotate(angles),
             Points.from_point(initial.bvel, len(t)),
-            Points.from_point(initial.brvel, len(t)) 
-            )
+            Points.from_point(initial.brvel, len(t))
+        )
 
     @ staticmethod
     def from_element(element: Element, initial, space):
