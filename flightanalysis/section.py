@@ -10,10 +10,10 @@ from typing import Callable, Tuple, List, Union
 from numbers import Number
 
 
-class Section(State):
+class Section():
     def __init__(self, data: pd.DataFrame):
-        super().__init__(data)
-
+        self.data = data
+        
     def __getattr__(self, name):
         if name in State.vars:
             return self.data[name]
@@ -81,7 +81,7 @@ class Section(State):
         ).to_pandas().set_index(self.data.index)
 
     def get_state_from_index(self, index):
-        return State(self.data.iloc[index])
+        return State.from_series(self.data.iloc[index])
 
     def get_state_from_time(self, time):
         return self.get_state_from_index(
@@ -116,34 +116,26 @@ class Section(State):
             Section: Section class representing the line or roll.
         """
 
-        ipos, iatt, ibvel, ibrvel = initial.handles()
-        ivel = initial.transform.rotate(ibvel)
-
         pos = Points(
             np.array(np.vectorize(
-                lambda elapsed: tuple(ipos + elapsed * ivel)
+                lambda elapsed: tuple(initial.pos + elapsed * initial.vel)
             )(t)).T
         )
 
-        if abs(ibrvel) == 0:
-            att = Quaternions.from_quaternion(iatt, len(t))
+        if abs(initial.brvel) == 0:
+            att = Quaternions.from_quaternion(initial.att, len(t))
         else:
-            angles = Points.from_point(ibrvel, len(t)) * t
+            angles = Points.from_point(initial.brvel, len(t)) * t
             att = Quaternions.from_quaternion(
-                iatt, len(t)).body_rotate(angles)
+                initial.att, len(t)).body_rotate(angles)
 
-        bvel = att.transform_point(ivel)
+        bvel = att.transform_point(initial.vel)
 
-        return Section.from_constructs(t, pos, att, bvel, Points.from_point(ibrvel, len(t)))
+        return Section.from_constructs(t, pos, att, bvel, Points.from_point(initial.brvel, len(t)))
 
     @staticmethod
     def from_radius(initial: State, t: np.array):
-        """Generate a section representing a radius. Provide an initial pitch or yaw rate 
-        to describe the radius. time array, pitch rates and so on need to be pre-calculated
-        for the desired radius and segment
-
-        Assumes there is no aoa or sideslip.
-
+        """Generate a section representing a radius. 
 
         Args:
             initial (State): The initial State
@@ -152,18 +144,32 @@ class Section(State):
         Returns:
             Section: Section class representing the radius.
         """
-        ipos, iatt, ibvel, ibrvel = initial.handles()
-        ivel = initial.transform.rotate(ibvel)
+        
+        radius = initial.bvel.x / initial.brvel.y
+        radcoord = Coord.from_xy(
+            initial.transform.point(Point(0, 0, radius)),
+            initial.transform.rotate(Point(0,0,-1)), 
+            initial.transform.rotate(Point(1,0,0))
+        )
+        angles = Points.from_point(initial.brvel, len(t)) * t
 
-        arclength = ibvel.x
-        
-        
-        lpath = ivel.x / t[-1]
-        
-        
-        
+        radcoordpoints = Points(
+            np.array(np.vectorize(
+                lambda angle: tuple(Point(
+                    radius * np.cos(angle),
+                    radius * np.sin(angle),
+                    0
+                ))
+            )(angles[:,1]))
+        )
 
-
+        return Section.from_constructs(
+            t,
+            Transformation.from_coords(radcoord, Coord.from_nothing()).point(radcoordpoints),
+            Quaternions.from_quaternion(initial.att, len(t)).body_rotate(angles),
+            Points.from_point(initial.bvel, len(t)),
+            Points.from_point(initial.brvel, len(t)) 
+            )
 
     @ staticmethod
     def from_element(element: Element, initial, space):

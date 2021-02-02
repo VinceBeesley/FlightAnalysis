@@ -2,7 +2,7 @@ from flightanalysis.section import Section
 from flightanalysis.state import State
 from flightanalysis.flightline import Box, FlightLine
 import unittest
-from geometry import Point, Quaternion, Points
+from geometry import Point, Quaternion, Points, Quaternions
 from flightdata import Flight, Fields
 import numpy as np
 import pandas as pd
@@ -29,13 +29,12 @@ class TestSection(unittest.TestCase):
         seq = Section.from_flight(
             flight, FlightLine.from_initial_position(flight))
         state = seq.get_state_from_index(20)
-        self.assertIsInstance(state.x, float)
-        self.assertIsInstance(state.pos, tuple)
+        self.assertIsInstance(state.pos, Point)
 
     def test_from_line(self):
         """from inverted at 30 m/s, fly in a stright line for 1 second
         """
-        initial = State.from_posattvel(
+        initial = State(
             Point(60, 170, 150),
             Quaternion.from_euler(Point(np.pi, 0, np.pi)),
             Point(30, 0, 0)
@@ -60,13 +59,12 @@ class TestSection(unittest.TestCase):
     def test_from_roll(self):
         """From inverted at 30 m/s perform 1/2 a roll at 180 degrees / second
         """
-        initial = State.from_posattvel(
+        initial = State(
             Point(30, 170, 150),
             Quaternion.from_euler(Point(np.pi, 0, np.pi)),
-            Point(30, 0, 0)
+            Point(30, 0, 0),
+            Point(np.pi, 0, 0)
         )
-
-        initial.data[State.vars.brvel] = [np.pi, 0, 0]
 
         line = Section.from_line(initial, np.linspace(0, 1, 5))
 
@@ -77,8 +75,8 @@ class TestSection(unittest.TestCase):
             line.bvel, np.tile(np.array([30, 0, 0]), (5, 1))
         )
         np.testing.assert_array_almost_equal(
-            line.att.iloc[-1],
-            list(Quaternion.from_euler(Point(0, 0, np.pi)))
+            list(Point(0,0,1)),
+            Quaternions(line.att.to_numpy()).transform_point(Point(0,0,1)).data[-1]
         )
 
     def test_from_radius(self):
@@ -88,8 +86,6 @@ class TestSection(unittest.TestCase):
             Quaternion.from_euler(Point(np.pi, 0, np.pi)),
             Point(10 * np.pi, 0, 0)
         )
-
-        initial.data[State.vars.brvel] = [0, -np.pi / 10, 0]
 
         radius = Section.from_radius(initial, np.linspace(0, 20, 10))
 

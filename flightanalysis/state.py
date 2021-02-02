@@ -25,9 +25,6 @@ class SVars(object):
     def __getitem__(self, indices):
         return self.columns[indices]
 
-    
-
-
 
 class State():
     """Describes the position and orientation of a body in 3D space.
@@ -35,32 +32,22 @@ class State():
     """
     vars = SVars()
 
-    def __init__(self, data: pd.Series):
-        self.data = data
-
-    def __getattr__(self, name):
-        if name in State.vars:
-            return self.data[name]
-        elif name in State.vars.constructs:
-            return tuple(self.data[State.vars.constructs[name]])
-        else:
-            raise AttributeError
+    def __init__(self, pos: Point, att: Quaternion, bvel: Point, brvel: Quaternion=Point(0.0,0.0,0.0)):
+        self.pos = pos
+        self.att = att
+        self.bvel = bvel
+        self.brvel = brvel
+        self.transform = Transformation(self.pos, self.att)
+        self.back_transform = Transformation(-self.pos, self.att.inverse())
 
     @staticmethod
-    def from_posattvel(pos: Point, att: Quaternion, bvel: Point):
-        """Generate a State
-
-        Args:
-            pos (Point): [description]
-            att (Quaternion): [description]
-            vel (Point): [description]
-        """
-        dat = pd.Series(index=State.vars.columns)
-        dat[State.vars.constructs['pos']] = list(pos)
-        dat[State.vars.constructs['att']] = list(att)
-        dat[State.vars.constructs['bvel']] = list(bvel)
-        dat[State.vars.constructs['brvel']] = np.zeros(3)
-        return State(dat.fillna(0))
+    def from_series(data: pd.Series):
+        return State(
+            Point(*data[State.vars.constructs['pos']]),
+            Quaternion(*data[State.vars.constructs['att']]),
+            Point(*data[State.vars.constructs['bvel']]),
+            Point(*data[State.vars.constructs['brvel']])
+        )
 
     def body_to_world(self, pin: Union[Point, Points]) -> Point:
         """Rotate a point in the body frame to a point in the data frame
@@ -71,27 +58,8 @@ class State():
         Returns:
             Point: Point in the world
         """
-        if isinstance(pin, Point):
-            return Point(*self.pos) + Quaternion(*self.att).transform_point(pin)
-        elif isinstance(pin, Points):
-            return Points.from_point(*self.pos, pin.count) + \
-                Quaternions.from_quaternion(
-                    *self.att, pin.count).transform_point(pin)
-        else:
-            return NotImplemented
-
-    @staticmethod
-    def construct_names(*args):
-        return np.ndarray([State.constructs[name] for name in args]).flatten()
+        return self.transform.point(pin)
 
     @property
-    def transform(self):
-        return Transformation(Point(*self.pos), Quaternion(*self.att))
-
-    @property
-    def transform_to(self):
-        return Transformation(-Point(*self.pos), Quaternion(*self.att).inverse())
-
-    def handles(self):
-        return Point(*self.pos), Quaternion(*self.att), Point(*self.bvel), Point(*self.brvel)
-        
+    def vel(self):
+        return self.transform.rotate(self.bvel)

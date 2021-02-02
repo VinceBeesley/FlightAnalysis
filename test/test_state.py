@@ -22,13 +22,10 @@ class TestSvars(unittest.TestCase):
 
 
 class TestState(unittest.TestCase):
-    def test_classmethods(self):
-        st = State(pd.Series({col: 0 for col in State.vars}))
-        self.assertEqual(st.x, 0)
 
     def test_from_posattvel(self):
         # TODO this method needs to be reconsidered with the new columns.
-        seq = State.from_posattvel(
+        seq = State(
             Point(50, 170, 150),
             Quaternion.from_euler(Point(0, 0, np.pi)),
             Point(30, 0, 0)
@@ -39,7 +36,7 @@ class TestState(unittest.TestCase):
         np.testing.assert_array_equal(list(seq.brvel), [0, 0, 0])
 
     def test_body_to_world(self):
-        st = State.from_posattvel(
+        st = State(
             Point(50, 170, 150),
             Quaternion.from_euler(Point(0, 0, np.pi)),
             Point(-30, 0, 0)
