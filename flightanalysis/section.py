@@ -160,12 +160,12 @@ class Section():
                     radius * np.sin(angle),
                     0
                 ))
-            )(angles[:,1]))
+            )(angles.y)).T
         )
 
         return Section.from_constructs(
             t,
-            Transformation.from_coords(radcoord, Coord.from_nothing()).point(radcoordpoints),
+            Transformation.from_coords(Coord.from_nothing(), radcoord).point(radcoordpoints),
             Quaternions.from_quaternion(initial.att, len(t)).body_rotate(angles),
             Points.from_point(initial.bvel, len(t)),
             Points.from_point(initial.brvel, len(t)) 

@@ -81,13 +81,19 @@ class TestSection(unittest.TestCase):
 
     def test_from_radius(self):
         """do the outside loop at the start of the P sequence"""
-        initial = State.from_posattvel(
+        initial = State(
             Point(0, 170, 150),
             Quaternion.from_euler(Point(np.pi, 0, np.pi)),
-            Point(10 * np.pi, 0, 0)
+            Point(10 * np.pi, 0, 0), # 620 m in 10 seconds
+            Point(0, np.pi / 5, 0) # 
         )
 
-        radius = Section.from_radius(initial, np.linspace(0, 20, 10))
+        radius = Section.from_radius(initial, np.linspace(0, 10, 10))
+        np.testing.assert_array_almost_equal(
+            list(radius.get_state_from_index(-1).pos),
+            list(Point(0, 170, 150))
+        )
+        
 
     def test_body_to_world(self):
 
