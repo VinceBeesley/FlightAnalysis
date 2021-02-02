@@ -75,8 +75,9 @@ class TestSection(unittest.TestCase):
             line.bvel, np.tile(np.array([30, 0, 0]), (5, 1))
         )
         np.testing.assert_array_almost_equal(
-            list(Point(0,0,1)),
-            Quaternions(line.att.to_numpy()).transform_point(Point(0,0,1)).data[-1]
+            list(Point(0, 0, 1)),
+            Quaternions(line.att.to_numpy()).transform_point(
+                Point(0, 0, 1)).data[-1]
         )
 
     def test_from_radius(self):
@@ -84,8 +85,8 @@ class TestSection(unittest.TestCase):
         initial = State(
             Point(0, 170, 150),
             Quaternion.from_euler(Point(np.pi, 0, np.pi)),
-            Point(10 * np.pi, 0, 0), # 620 m in 10 seconds
-            Point(0, np.pi / 5, 0) # 
+            Point(10 * np.pi, 0, 0),  # 620 m in 10 seconds
+            Point(0, np.pi / 5, 0)
         )
 
         radius = Section.from_radius(initial, np.linspace(0, 10, 10))
@@ -93,7 +94,6 @@ class TestSection(unittest.TestCase):
             list(radius.get_state_from_index(-1).pos),
             list(Point(0, 170, 150))
         )
-        
 
     def test_body_to_world(self):
 
@@ -124,3 +124,25 @@ class TestSection(unittest.TestCase):
             flight, FlightLine.from_initial_position(flight))
         st = seq.get_state_from_time(100)
         self.assertIsInstance(st, State)
+
+    def test_stack(self):
+        initial = State(
+            Point(10 * np.pi, 170, 150),
+            Quaternion.from_euler(Point(np.pi, 0, np.pi)),
+            Point(10 * np.pi, 0, 0),
+            Point(np.pi, 0, 0)
+        )
+
+        line = Section.from_line(initial, np.linspace(0, 1, 5))
+
+        last_state = line.get_state_from_index(-1)
+        last_state.brvel = Point(0, np.pi / 5, 0)
+
+        radius = Section.from_radius(last_state, np.linspace(0, 10, 10))
+
+        combo = Section.stack([line, radius])
+
+        self.assertEqual(len(combo.data), 14)
+        self.assertEqual(combo.data.index[-1], 11)
+
+        self.assertIsInstance(combo.get_state_from_time(10), State)

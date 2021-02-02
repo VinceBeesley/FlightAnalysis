@@ -33,6 +33,18 @@ class Section():
             return Section(self.data[start:end])
 
     @staticmethod
+    def stack(sections):
+        offsets = [0] + [sec.data.index[-1] for sec in sections[:-1]]
+
+        dfs = [section.data.iloc[:-1] for section in sections[:-1]] + \
+            [sections[-1].data.copy()]
+
+        for df, offset in zip(dfs, np.cumsum(offsets)):
+            df.index = np.array(df.index) + offset
+
+        return Section(pd.concat(dfs))
+
+    @staticmethod
     def from_constructs(t, pos, att, bvel, brvel):
 
         df = pd.DataFrame(index=t, columns=list(State.vars))
