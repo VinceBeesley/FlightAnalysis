@@ -200,14 +200,17 @@ class Section():
         pass
 
     @staticmethod
-    def from_manoeuvre(initial: State, Manoeuvre: Manoeuvre):
-        pass
+    def from_manoeuvre(last_state: State, manoeuvre: Manoeuvre):
+        elms = []
+        for element in manoeuvre.elements:
+            elms.append(Section.from_element(element, last_state))
+            last_state = elms[-1].get_state_from_index(-1)
+        return elms
 
     @staticmethod
-    def from_schedule(initial: State, schedule: Schedule):
-        last_state = initial
+    def from_schedule(last_state: State, schedule: Schedule):
         elms = []
         for manoeuvre in schedule.manoeuvres:
-            for element in manoeuvre.elements:
-                elms.append(Section.from_element(element, last_state))
+            elms += Section.from_manoeuvre(last_state, manoeuvre)
+            last_state = elms[-1].get_state_from_index(-1)
         return Section.stack(elms)
