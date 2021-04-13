@@ -76,7 +76,7 @@ class Section():
 
         dt = np.gradient(t)
 
-        bvel = att.transform_point(pos.diff(dt))
+        bvel = att.inverse().transform_point(pos.diff(dt))
         brvel = att.body_diff(dt)
 
         return Section.from_constructs(t, pos, att, bvel, brvel)
