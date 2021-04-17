@@ -46,7 +46,7 @@ class Section():
         return Section(pd.concat(dfs))
 
     @staticmethod
-    def from_constructs(t, pos, att, bvel, brvel):
+    def from_constructs(t, pos, att, bvel, brvel, bacc):
 
         df = pd.DataFrame(index=t, columns=list(State.vars))
 
@@ -57,6 +57,7 @@ class Section():
         savevars(State.vars.att, att)
         savevars(State.vars.bvel, bvel)
         savevars(State.vars.brvel, brvel)
+        savevars(State.vars.bacc, bacc)
 
         return Section(df)
 
@@ -76,22 +77,15 @@ class Section():
 
         dt = np.gradient(t)
 
-        bvel = att.transform_point(pos.diff(dt))
-        brvel = att.body_diff(dt)
+        #bvel = att.transform_point(pos.diff(dt))
+        vel = flightline.transform_to.rotate(Points.from_pandas(flight.data.loc[:, ["velocity_x", "velocity_y", "velocity_z"]]))
+        bvel = att.inverse().transform_point(vel)
 
-        return Section.from_constructs(t, pos, att, bvel, brvel)
+        bacc = Points.from_pandas(flight.data.loc[:,["acceleration_x", "acceleration_y", "acceleration_z"]])
 
-    def acceleration(self, velconst: str):
-        """Generate an acceleration dataframe for the requested velocity data
+        brvel = Points.from_pandas(flight.data.loc[:,["axis_rate_roll", "axis_rate_pitch", "axis_rate_yaw"]])
 
-        Args:
-            velocity (pd.DataFrame): 3 columns of the velocity date, index is time
-        """
-        return Points.from_pandas(
-            self.__getattr__(velconst)
-        ).diff(
-            np.gradient(self.data.index)
-        ).to_pandas().set_index(self.data.index)
+        return Section.from_constructs(t, pos, att, bvel, brvel, bacc)
 
     def get_state_from_index(self, index):
         return State.from_series(self.data.iloc[index])

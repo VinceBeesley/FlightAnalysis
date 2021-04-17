@@ -32,11 +32,12 @@ class State():
     """
     vars = SVars()
 
-    def __init__(self, pos: Point, att: Quaternion, bvel: Point, brvel: Quaternion=Point(0.0,0.0,0.0)):
+    def __init__(self, pos: Point, att: Quaternion, bvel: Point, brvel: Point=Point(0.0,0.0,0.0), bacc: Point=Point(0.0,0.0,0.0)):
         self.pos = pos
         self.att = att
         self.bvel = bvel
         self.brvel = brvel
+        self.bacc = bacc
         self.transform = Transformation(self.pos, self.att)
         self.back_transform = Transformation(-self.pos, self.att.inverse())
 
@@ -46,7 +47,8 @@ class State():
             Point(*data[State.vars.constructs['pos']]),
             Quaternion(*data[State.vars.constructs['att']]),
             Point(*data[State.vars.constructs['bvel']]),
-            Point(*data[State.vars.constructs['brvel']])
+            Point(*data[State.vars.constructs['brvel']]),
+            Point(*data[State.vars.constructs['bacc']])
         )
 
     def body_to_world(self, pin: Union[Point, Points]) -> Point:

@@ -14,6 +14,7 @@ svars = {
     "att": ["rw", "rx", "ry", "rz"],
     "bvel": ["bvx", "bvy", "bvz"],
     "brvel": ["brvr", "brvp", "brvy"],
+    "bacc": ["bax", "bay", "baz"],
     "wp": ["x", "y", "z", "rw", "rx", "ry", "rz"],
     "bv": ["bvx", "bvy", "bvz", "brvr", "brvp", "brvy"]
 }
