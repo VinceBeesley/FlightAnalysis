@@ -77,14 +77,9 @@ class Section():
 
         dt = np.gradient(t)
 
-<<<<<<< HEAD
         #bvel = att.transform_point(pos.diff(dt))
         vel = flightline.transform_to.rotate(Points.from_pandas(flight.data.loc[:, ["velocity_x", "velocity_y", "velocity_z"]]))
         bvel = att.inverse().transform_point(vel)
-=======
-        bvel = att.inverse().transform_point(pos.diff(dt))
-        brvel = att.body_diff(dt)
->>>>>>> 4d7e1ba7d301d9a568b33ea2a1de1906e0a89afb
 
         bacc = Points.from_pandas(flight.data.loc[:,["acceleration_x", "acceleration_y", "acceleration_z"]])
 
