@@ -15,6 +15,7 @@ from typing import Union
 from flightdata import Flight, Fields
 from math import atan2, sin, cos
 import numpy as np
+from math import atan2, pi
 
 
 class Box(object):
@@ -28,11 +29,12 @@ class Box(object):
         self._x_direction = None
         self.z_direction = Point(0, 0, 1)
 
+
     @staticmethod
     def from_f3a_zone_file(file_path: str):
         with open(file_path, "r") as f:
             lines = f.read().splitlines()
-        return Box(
+        return Box.from_points(
             lines[1],
             GPSPosition(float(lines[2]), float(lines[3])),
             GPSPosition(float(lines[4]), float(lines[5]))
@@ -81,6 +83,14 @@ class Box(object):
             ),
             atan2(heading.y, heading.x)
         )
+
+    @staticmethod
+    def from_points(name, pilot: GPSPosition, centre: GPSPosition):
+        direction = centre - pilot
+        return Box(
+            name, 
+            pilot,
+            atan2(direction.x, direction.y) + pi/2)
 
 
 class FlightLine(object):
