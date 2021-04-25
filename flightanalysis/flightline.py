@@ -16,7 +16,7 @@ from flightdata import Flight, Fields
 from math import atan2, sin, cos
 import numpy as np
 from math import atan2, pi
-
+from json import load, dump
 
 class Box(object):
     '''Class to define an aerobatic box in the world'''
@@ -39,6 +39,23 @@ class Box(object):
             GPSPosition(float(lines[2]), float(lines[3])),
             GPSPosition(float(lines[4]), float(lines[5]))
         )
+
+    def to_dict(self):
+        return dict(
+            name = self.name,
+            pilot_position = self.pilot_position.to_dict(),
+            heading = self.heading,
+        )
+
+    @staticmethod
+    def from_json(file):
+        with open(file, 'r') as f:
+            read_box = Box(**load(f))
+        return read_box
+
+    def to_json(self, file):
+        with open(file, 'w') as f:
+            dump(self.to_dict(), f)
 
     def __str__(self):
         return self.name + '\n' + str(self.pilot_position) + '\n' + str(self.heading)
@@ -83,6 +100,8 @@ class Box(object):
             ),
             atan2(heading.y, heading.x)
         )
+
+
 
     @staticmethod
     def from_points(name, pilot: GPSPosition, centre: GPSPosition):
