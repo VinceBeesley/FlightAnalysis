@@ -8,7 +8,7 @@ import pandas as pd
 from .schedule import Element
 from typing import Callable, Tuple, List, Union
 from numbers import Number
-from .schedule import Schedule, Manoeuvre, Element
+from .schedule import Schedule, Manoeuvre, Element, Elements
 
 
 class Section():
@@ -78,10 +78,12 @@ class Section():
         dt = np.gradient(t)
 
         brvel = att.body_diff(dt)
-        vel = flightline.transform_to.rotate(Points.from_pandas(flight.data.loc[:, ["velocity_x", "velocity_y", "velocity_z"]]))
+        vel = flightline.transform_to.rotate(Points.from_pandas(
+            flight.data.loc[:, ["velocity_x", "velocity_y", "velocity_z"]]))
         bvel = att.inverse().transform_point(vel)
 
-        bacc = Points.from_pandas(flight.data.loc[:,["acceleration_x", "acceleration_y", "acceleration_z"]])
+        bacc = Points.from_pandas(
+            flight.data.loc[:, ["acceleration_x", "acceleration_y", "acceleration_z"]])
 
         #brvel = Points.from_pandas(flight.data.loc[:,["axis_rate_roll", "axis_rate_pitch", "axis_rate_yaw"]])
 
@@ -138,7 +140,14 @@ class Section():
 
         bvel = att.transform_point(initial.vel)
 
-        return Section.from_constructs(t, pos, att, bvel, Points.from_point(initial.brvel, len(t)))
+        return Section.from_constructs(
+            t,
+            pos,
+            att,
+            bvel,
+            Points.from_point(initial.brvel, len(t)),
+            Points.from_point(Point(0.0, 0.0, 0.0), len(t))
+        )
 
     @staticmethod
     def from_radius(initial: State, t: np.array):
@@ -177,7 +186,23 @@ class Section():
             Quaternions.from_quaternion(
                 initial.att, len(t)).body_rotate(angles),
             Points.from_point(initial.bvel, len(t)),
-            Points.from_point(initial.brvel, len(t))
+            Points.from_point(initial.brvel, len(t)),
+            Points.from_point(cross_product(
+                initial.brvel * initial.brvel, initial.bvel), len(t))
+        )
+
+    @staticmethod
+    def from_loop(initial: State, proportion: float, r: float):
+        t = 2 * np.pi * r * proportion / initial.bvel.x
+        return Section.from_radius(
+            State(
+                initial.pos,
+                initial.att,
+                initial.bvel,
+                Point(0.0, proportion * 2 * np.pi / t, 0.0),
+                Point(0.0, 1.0, 0.0)
+            ),
+            np.linspace(0, t, 50)
         )
 
     @staticmethod
@@ -191,7 +216,12 @@ class Section():
             initial (Sequence): The previous sequence, last value will be taken as the starting point
             space (?Point?): TBC Limits of an available space, in A/C body frame (Xfwd, Yright, Zdwn)
         """
-        pass
+        if element.classification == Elements.LOOP:
+            return Section.from_loop(initial, 50.0)
+        elif element.classification == Elements.LINE:
+            pass
+        elif element.classification == Elements.ROLL:
+            pass
 
     @staticmethod
     def from_manoeuvre(last_state: State, manoeuvre: Manoeuvre):

@@ -1,4 +1,4 @@
-from geometry import Point, Quaternion, Points, Quaternions, Transformation
+from geometry import Point, Quaternion, Points, Quaternions, Transformation, cross_product
 from geometry.point import cross_product
 import numpy as np
 import pandas as pd

@@ -8,6 +8,10 @@
       "k": 3,
       "elements": [
         {
+          "classification": "line",
+          "proportion": 0.25
+        },
+        {
           "classification": "roll",
           "proportion": 0.5
         },
