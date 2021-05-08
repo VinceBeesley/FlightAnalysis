@@ -21,6 +21,8 @@ from json import load, dump
 class Box(object):
     '''Class to define an aerobatic box in the world'''
 
+    # x/y/z_direction are ENU unit vectors defining the Box reference frame
+    # heading is ENU Pilot North in radians
     def __init__(self, name, pilot_position: GPSPosition, heading: float):
         self.name = name
         self.pilot_position = pilot_position
@@ -60,6 +62,7 @@ class Box(object):
     def __str__(self):
         return self.name + '\n' + str(self.pilot_position) + '\n' + str(self.heading)
 
+    # decorator providing getter and setter methods
     @property
     def x_direction(self) -> Point:
         if not self._x_direction:
@@ -107,7 +110,7 @@ class Box(object):
     def from_points(name, pilot: GPSPosition, centre: GPSPosition):
         direction = centre - pilot
         return Box(
-            name, 
+            name,
             pilot,
             atan2(direction.x, direction.y) + pi/2)
 
@@ -116,7 +119,10 @@ class FlightLine(object):
     '''class to define where the flight line is in relation to the raw input data'''
 
     def __init__(self, world: Coord, contest: Coord):
+
+        # the ArduPilot world frame is NED
         self.world = world
+        # the contest reference frame is ENU rotated such that "pilot north" is North
         self.contest = contest
         self.transform_to = Transformation.from_coords(self.contest, self.world)
         self.transform_from = Transformation.from_coords(self.world, self.contest)
@@ -139,7 +145,7 @@ class FlightLine(object):
 
     @staticmethod
     def from_heading(flight: Flight, heading: float):
-        """generate a flightlint based on the turn on gps position and a heading
+        """generate a flightline based on the turn on gps position and a heading
 
         Args:
             flight (Flight): the flight to take the initial gps position from.
@@ -161,6 +167,6 @@ class FlightLine(object):
         """generate a flightline from a flight based on the covariance matrix
 
         Args:
-            flight (Flight): 
+            flight (Flight):
         """
         return FlightLine.from_box(Box.from_covariance(flight))
