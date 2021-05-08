@@ -744,25 +744,37 @@
       "elements": [
         {
           "classification": "LINE",
-          "size": 0.12,
+          "size": 0.35,
           "roll": 0.0,
           "loop": 0.0
         },
         {
           "classification": "LOOP",
-          "size": 0.5,
+          "size": 0.3,
           "roll": 0.0,
           "loop": -0.375
         },
         {
           "classification": "LINE",
-          "size": 0.207106781,
+          "size": 0.15,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.4,
           "roll": 1.0,
           "loop": 0.0
         },
         {
+          "classification": "LINE",
+          "size": 0.15,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
           "classification": "LOOP",
-          "size": 0.5,
+          "size": 0.3,
           "roll": 0.0,
           "loop": 0.375
         }
