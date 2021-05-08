@@ -8,10 +8,12 @@ import pandas as pd
 from .schedule import Element
 from typing import Callable, Tuple, List, Union
 from numbers import Number
-from .schedule import Schedule, Manoeuvre, Element, Elements
+from .schedule import Schedule, Manoeuvre, Element, ElClass
 
 
 class Section():
+    _construct_freq = 20
+
     def __init__(self, data: pd.DataFrame):
         self.data = data
 
@@ -85,12 +87,12 @@ class Section():
         bacc = Points.from_pandas(
             flight.data.loc[:, ["acceleration_x", "acceleration_y", "acceleration_z"]])
 
-        #brvel = Points.from_pandas(flight.data.loc[:,["axis_rate_roll", "axis_rate_pitch", "axis_rate_yaw"]])
+        # brvel = Points.from_pandas(flight.data.loc[:,["axis_rate_roll", "axis_rate_pitch", "axis_rate_yaw"]])
 
         return Section.from_constructs(t, pos, att, bvel, brvel, bacc)
 
     def get_state_from_index(self, index):
-        return State.from_series(self.data.iloc[index])
+        return State.from_series(self.data.iloc[index].copy())
 
     def get_state_from_time(self, time):
         return self.get_state_from_index(
@@ -98,7 +100,7 @@ class Section():
         )
 
     def body_to_world(self, pin: Union[Point, Points]) -> pd.DataFrame:
-        """generate world frame trace of a body frame point 
+        """generate world frame trace of a body frame point
 
         Args:
             pin (Point): point in the body frame
@@ -114,99 +116,170 @@ class Section():
             return NotImplemented
 
     @staticmethod
-    def from_line(initial: State, t: np.array):
-        """generate a section representing a line. Provide an initial rotation rate to represent a roll. 
+    def from_line(itransform: Transformation, speed: float, length: float):
+        """generate a section representing a line. Provide an initial rotation rate to represent a roll.
 
         Args:
             initial (State): The initial state, the line will be drawn in the direction
-                            of the initial velocity vector. 
+                            of the initial velocity vector.
             t (np.array): the timesteps to create states for
         Returns:
             Section: Section class representing the line or roll.
         """
+        duration = length / speed
+        t = np.linspace(0, duration, int(duration * Section._construct_freq))
+        ibvel = Point(speed, 0.0, 0.0)
+        bvel = Points.from_point(ibvel, len(t))
 
-        pos = Points(
-            np.array(np.vectorize(
-                lambda elapsed: tuple(initial.pos + elapsed * initial.vel)
-            )(t)).T
-        )
+        pos = Points.from_point(itransform.translation,
+                                len(t)) + itransform.rotate(bvel) * t
 
-        if abs(initial.brvel) == 0:
-            att = Quaternions.from_quaternion(initial.att, len(t))
-        else:
-            angles = Points.from_point(initial.brvel, len(t)) * t
-            att = Quaternions.from_quaternion(
-                initial.att, len(t)).body_rotate(angles)
-
-        bvel = att.transform_point(initial.vel)
+        att = Quaternions.from_quaternion(itransform.rotation, len(t))
 
         return Section.from_constructs(
             t,
             pos,
             att,
             bvel,
-            Points.from_point(initial.brvel, len(t)),
-            Points.from_point(Point(0.0, 0.0, 0.0), len(t))
+            Points(np.zeros((len(t), 3))),
+            Points(np.zeros((len(t), 3)))
         )
 
     @staticmethod
-    def from_radius(initial: State, t: np.array):
-        """Generate a section representing a radius. 
+    def from_loop(itransform: Transformation, speed: float, proportion: float, radius: float, ke: bool = False):
+        """generate a loop, based on intitial position, speed, amount of loop, radius. 
 
         Args:
-            initial (State): The initial State
-            t (np.array): the timesteps to create states for
+            itransform (Transformation): initial position
+            speed (float): forward speed
+            proportion (float): amount of loop. +ve offsets centre of loop in +ve body y or z
+            r (float): radius of the loop (must be +ve)
+            ke (bool, optional): [description]. Defaults to False. whether its a KE loop or normal
 
         Returns:
-            Section: Section class representing the radius.
+            [type]: [description]
         """
+        duration = 2 * np.pi * radius * abs(proportion) / speed
+        axis_rate = -proportion * 2 * np.pi / duration
+        t = np.linspace(0, duration, int(duration * Section._construct_freq))
 
-        radius = initial.bvel.x / initial.brvel.y
-        radcoord = Coord.from_xy(
-            initial.transform.point(Point(0, 0, -radius)),
-            initial.transform.rotate(Point(0, 0, 1)),
-            initial.transform.rotate(Point(1, 0, 0))
-        )
-        angles = Points.from_point(initial.brvel, len(t)) * t
-
-        radcoordpoints = Points(
-            np.array(np.vectorize(
-                lambda angle: tuple(Point(
-                    radius * np.cos(angle),
-                    radius * np.sin(angle),
-                    0
-                ))
-            )(angles.y)).T
-        )
+        # TODO There must be a more elegant way to do this. lots of random signs to make things give the right result
+        # not backed by actual maths but it seems to work.
+        if axis_rate == 0:
+            raise NotImplementedError()
+        radius = speed / axis_rate
+        if not ke:
+            radcoord = Coord.from_xy(
+                itransform.point(Point(0, 0, -radius)),
+                itransform.rotate(Point(0, 0, 1)),
+                itransform.rotate(Point(1, 0, 0))
+            )
+            angles = Points.from_point(Point(0, axis_rate, 0), len(t)) * t
+            radcoordpoints = Points(
+                np.array(np.vectorize(
+                    lambda angle: tuple(Point(
+                        radius * np.cos(angle),
+                        radius * np.sin(angle),
+                        0
+                    ))
+                )(angles.y)).T
+            )
+            axisrates = Points.from_point(Point(0, axis_rate, 0), len(t))
+            acceleration = -Points.from_point(cross_product(
+                Point(0, axis_rate, 0) * Point(0, axis_rate, 0), Point(speed, 0, 0)), len(t))
+        else:
+            radcoord = Coord.from_xy(
+                itransform.point(Point(0, -radius, 0)),
+                itransform.rotate(Point(0, 1, 0)),
+                itransform.rotate(Point(1, 0, 0))
+            )
+            angles = Points.from_point(Point(0, 0, -axis_rate), len(t)) * t
+            radcoordpoints = Points(
+                np.array(np.vectorize(
+                    lambda angle: tuple(Point(
+                        radius * np.cos(-angle),
+                        radius * np.sin(-angle),
+                        0
+                    ))
+                )(angles.z)).T
+            )
+            axisrates = Points.from_point(Point(0, 0, -axis_rate), len(t))
+            acceleration = Points.from_point(cross_product(
+                Point(0, 0, axis_rate) * Point(0, 0, axis_rate), Point(speed, 0, 0)), len(t))
 
         return Section.from_constructs(
             t,
             Transformation.from_coords(
                 Coord.from_nothing(), radcoord).point(radcoordpoints),
             Quaternions.from_quaternion(
-                initial.att, len(t)).body_rotate(angles),
-            Points.from_point(initial.bvel, len(t)),
-            Points.from_point(initial.brvel, len(t)),
-            Points.from_point(cross_product(
-                initial.brvel * initial.brvel, initial.bvel), len(t))
+                itransform.rotation, len(t)).body_rotate(angles),
+            Points.from_point(Point(speed, 0, 0), len(t)),
+            axisrates,
+            acceleration
+        )
+    @staticmethod
+    def from_spin(itransform: Transformation, height: float, turns: float):
+        inverted = itransform.rotate(Point(0, 0, 1)).z > 0
+        
+        nose_drop = Section.from_loop(itransform, 5.0, -0.25 * inverted, 2.0, False)
+
+        rotation = Section.from_line(
+            nose_drop.get_state_from_index(-1).transform,
+            5.0,
+            height-2.5
+            ).superimpose_roll(turns)
+
+        return Section.stack([nose_drop, rotation])
+
+    def superimpose_roll(self, proportion: float):
+        """Generate a new section, identical to self, but with a continous roll integrated
+
+        Args:
+            proportion (float): the amount of roll to integrate
+        """
+        t = np.array(self.data.index) - self.data.index[0]
+
+        # roll rate to add:
+        roll_rate = 2 * np.pi * proportion / t[-1]
+        superimposed_roll = t * roll_rate
+
+        # attitude
+        angles = Points.from_point(
+            Point(1.0, 0.0, 0.0), len(t)) * superimposed_roll
+
+        new_att = Quaternions.from_pandas(self.att.copy()).body_rotate(
+            angles)
+
+        # axis rates:
+        axisrates = Points.from_pandas(self.brvel.copy())
+        new_rates = Points(np.array([
+            np.full(len(t), roll_rate),
+            axisrates.y * np.cos(superimposed_roll) +
+            axisrates.z * np.sin(superimposed_roll),
+            -axisrates.y * np.sin(superimposed_roll) +
+            axisrates.z * np.cos(superimposed_roll)
+        ]).T)
+
+        acc = Points.from_pandas(self.bacc.copy())
+        new_acc = Points(np.array([
+            np.zeros(len(t)),
+            acc.y * np.cos(superimposed_roll) + acc.z *
+            np.sin(superimposed_roll),
+            -acc.y * np.sin(superimposed_roll) + acc.z *
+            np.cos(superimposed_roll)
+        ]).T)
+
+        return Section.from_constructs(
+            t,
+            Points.from_pandas(self.pos.copy()),
+            new_att,
+            Points.from_pandas(self.bvel.copy()),
+            new_rates,
+            new_acc
         )
 
-    @staticmethod
-    def from_loop(initial: State, proportion: float, r: float):
-        t = 2 * np.pi * r * proportion / initial.bvel.x
-        return Section.from_radius(
-            State(
-                initial.pos,
-                initial.att,
-                initial.bvel,
-                Point(0.0, proportion * 2 * np.pi / t, 0.0),
-                Point(0.0, 1.0, 0.0)
-            ),
-            np.linspace(0, t, 50)
-        )
-
-    @staticmethod
-    def from_element(initial: State, element: Element):
+    @ staticmethod
+    def from_element(transform: Transformation, element: Element, speed: float = 30.0, scale: float = 200.0):
         """This function will generate a template set of data for a specified element
         and initial condition. The element will be as big as it can be within the supplied
         space.
@@ -216,25 +289,56 @@ class Section():
             initial (Sequence): The previous sequence, last value will be taken as the starting point
             space (?Point?): TBC Limits of an available space, in A/C body frame (Xfwd, Yright, Zdwn)
         """
-        if element.classification == Elements.LOOP:
-            return Section.from_loop(initial, 50.0)
-        elif element.classification == Elements.LINE:
+        if element.classification == ElClass.LOOP:
+            el = Section.from_loop(
+                transform, speed, element.loop, 0.5 * scale * element.size, False)
+        elif element.classification == ElClass.KELOOP:
+            el = Section.from_loop(
+                transform, speed, element.proportion, 0.5* scale * element.size, True)
+        elif element.classification == ElClass.LINE:
+            el = Section.from_line(transform, speed, scale * element.size)
+        elif element.classification == ElClass.SPIN:
+            return Section.from_spin(transform, scale * element.size, element.roll)
+        elif element.classification == ElClass.SNAP:
             pass
-        elif element.classification == Elements.ROLL:
-            pass
+        elif element.classification == ElClass.STALLTURN:
+            el = Section.from_loop(transform, 0.5, 0.5, 2.0, True)
 
-    @staticmethod
-    def from_manoeuvre(last_state: State, manoeuvre: Manoeuvre):
+        if not element.roll == 0:
+            el = el.superimpose_roll(element.roll)
+        return el
+
+    @ staticmethod
+    def from_manoeuvre(transform: Transformation, manoeuvre: Manoeuvre, scale:float=200.0):
         elms = []
+        itrans = transform
         for element in manoeuvre.elements:
-            elms.append(Section.from_element(element, last_state))
-            last_state = elms[-1].get_state_from_index(-1)
+            elms.append(Section.from_element(itrans, element, 30.0, scale))
+            itrans = elms[-1].get_state_from_index(-1).transform
         return elms
 
-    @staticmethod
-    def from_schedule(last_state: State, schedule: Schedule):
+    @ staticmethod
+    def from_schedule(schedule: Schedule, distance: float = 170.0, direction: str = "right"):
+        box_scale = np.tan(np.radians(60)) * distance
+
+        dmul = -1.0 if direction == "right" else 1.0
+        ipos = Point(
+            dmul * box_scale * schedule.entry_x_offset,
+            distance,
+            box_scale * schedule.entry_z_offset
+        )
+
+        iatt = Quaternion.from_euler(Point(np.pi, 0, 0))
+
+        if schedule.entry == "inverted":
+            iatt = Quaternion.from_euler(Point(0, np.pi, 0)) * iatt
+        if direction == "left":
+            iatt = Quaternion.from_euler(Point(0, 0, np.pi)) * iatt
+
+        itrans = Transformation(ipos, iatt)
+
         elms = []
         for manoeuvre in schedule.manoeuvres:
-            elms += Section.from_manoeuvre(last_state, manoeuvre)
-            last_state = elms[-1].get_state_from_index(-1)
+            elms += Section.from_manoeuvre(itrans, manoeuvre, scale=box_scale)
+            itrans = elms[-1].get_state_from_index(-1).transform
         return Section.stack(elms)

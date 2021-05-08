@@ -1,29 +1,21 @@
 
 from typing import Dict
+from enum import Enum
 
-
-class Elements():
-    LOOP = 0
-    LINE = 1
-    ROLL = 2
-    SPIN = 3
-    STALLTURN = 4
-    SNAP = 5
-
-    lookup = {
-        "loop": LOOP,
-        "line": LINE,
-        "roll": ROLL,
-        "spin": SPIN,
-        "stallturn": STALLTURN,
-        "snap": SNAP
-    }
-
-
+class ElClass(Enum):
+    LINE = 0
+    LOOP = 1
+    KELOOP = 2
+    SPIN = 4
+    STALLTURN = 5
+    SNAP = 6
+    
 class Element():
-    def __init__(self, classification: int, proportion: float):
+    def __init__(self, classification: ElClass, size: float, roll: float, loop: float):
         self.classification = classification
-        self.proportion = proportion
+        self.size = size
+        self.roll = roll
+        self.loop = loop
 
     def from_dict(val):
-        return Element(Elements.lookup[val["classification"]], val["proportion"])
+        return Element(ElClass[val["classification"]], val["size"], val["roll"], val["loop"])

@@ -15,10 +15,12 @@ class Categories():
 
 
 class Schedule():
-    def __init__(self, name: str, category: int, entry: str, manoeuvres: List[Manoeuvre]):
+    def __init__(self, name: str, category: int, entry: str, entry_x_offset:float, entry_z_offset: float, manoeuvres: List[Manoeuvre]):
         self.name = name
         self.category = category
         self.entry = entry
+        self.entry_x_offset = entry_x_offset
+        self.entry_z_offset = entry_z_offset
         self.manoeuvres = manoeuvres
 
     @staticmethod
@@ -27,5 +29,7 @@ class Schedule():
             val['name'],
             Categories.lookup[val['category']],
             val['entry'],
+            val['entry_x_offset'],
+            val['entry_z_offset'],
             [Manoeuvre.from_dict(manoeuvre) for manoeuvre in val['manoeuvres']]
         )

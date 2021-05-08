@@ -2,34 +2,42 @@
   "name": "P21",
   "category": "F3A",
   "entry": "inverted",
-  "manoeuvres":[
+  "entry_x_offset": -0.4,
+  "entry_z_offset": 0.5,
+  "manoeuvres": [
     {
       "name": "vertical 8",
       "k": 3,
       "elements": [
         {
-          "classification": "line",
-          "proportion": 0.25
+          "classification": "LINE",
+          "size": 0.2,
+          "roll": 0.0,
+          "loop": 0.0
         },
         {
-          "classification": "roll",
-          "proportion": 0.5
+          "classification": "LINE",
+          "size": 0.2,
+          "roll": 0.5,
+          "loop": 0.0
         },
         {
-          "classification": "loop",
-          "proportion": -1
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": 1.0
         },
         {
-          "classification": "loop",
-          "proportion": 1
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": -1.0
         },
         {
-          "classification": "roll",
-          "proportion": 0.5
-        },
-        {
-          "classification": "line",
-          "proportion": 0.25
+          "classification": "LINE",
+          "size": 0.2,
+          "roll": 0.5,
+          "loop": 0.0
         }
       ]
     },
@@ -38,44 +46,727 @@
       "k": 3,
       "elements": [
         {
-          "classification": "line",
-          "proportion": 0.25
+          "classification": "LINE",
+          "size": 0.55,
+          "roll": 0.0,
+          "loop": 0.0
         },
         {
-          "classification": "loop",
-          "proportion": -0.25
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": 0.25
         },
         {
-          "classification": "line",
-          "proportion": 1
+          "classification": "LINE",
+          "size": 0.25,
+          "roll": 0.0,
+          "loop": 0.0
         },
         {
-          "classification": "stallturn",
-          "proportion": 1
+          "classification": "STALLTURN",
+          "size": 0.05,
+          "roll": 0.0,
+          "loop": 0.0
         },
         {
-          "classification": "line",
-          "proportion": 0.5
+          "classification": "LINE",
+          "size": 0.225,
+          "roll": 0.0,
+          "loop": 0.0
         },
         {
-          "classification": "roll",
-          "proportion": 0.5,
-          "points": 0.25
+          "classification": "LINE",
+          "size": 0.1,
+          "roll": 0.25,
+          "loop": 0.0
         },
         {
-          "classification": "line",
-          "proportion": 0.5
+          "classification": "LINE",
+          "size": 0.1,
+          "roll": 0.0,
+          "loop": 0.0
         },
         {
-          "classification": "loop",
-          "proportion": 0.25
+          "classification": "LINE",
+          "size": 0.1,
+          "roll": 0.25,
+          "loop": 0.0
         },
         {
-          "classification": "line",
-          "proportion": 0.25
+          "classification": "LINE",
+          "proportion": 1.0,
+          "size": 0.225,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": -0.25
         }
       ]
-
+    },
+    {
+      "name": "square on corner",
+      "k": 4,
+      "elements": [
+        {
+          "classification": "LINE",
+          "size": 0.75,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": -0.125
+        },
+        {
+          "classification": "LINE",
+          "size": 0.05,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.2,
+          "roll": 0.5,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.05,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": 0.25
+        },
+        {
+          "classification": "LINE",
+          "size": 0.05,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.2,
+          "roll": 0.5,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.05,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": -0.25
+        },
+        {
+          "classification": "LINE",
+          "size": 0.05,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.2,
+          "roll": 0.5,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.05,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": 0.25
+        },
+        {
+          "classification": "LINE",
+          "size": 0.05,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.2,
+          "roll": 0.5,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.05,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": -0.125
+        }
+      ]
+    },
+    {
+      "name": "figure 9",
+      "k": 3,
+      "elements": [
+        {
+          "classification": "LINE",
+          "size": 0.25,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": -0.25
+        },
+        {
+          "classification": "LINE",
+          "size": 0.125,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.125,
+          "roll": 0.5,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.125,
+          "roll": -0.5,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.125,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": 0.75
+        }
+      ]
+    },
+    {
+      "name": "Knife Edge",
+      "k": 5,
+      "elements": [
+        {
+          "classification": "LINE",
+          "size": 0.15,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.1,
+          "roll": 0.25,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.2,
+          "roll": -0.5,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.6,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.2,
+          "roll": -0.5,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.1,
+          "roll": 0.25,
+          "loop": 0.0
+        }
+      ]
+    },
+    {
+      "name": "Split S",
+      "k": 2,
+      "elements": [
+        {
+          "classification": "LINE",
+          "size": 0.15,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": 0.5
+        },
+        {
+          "classification": "LINE",
+          "size": 0.2,
+          "roll": 0.5,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.1,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.2,
+          "roll": 0.5,
+          "loop": 0.0
+        }
+      ]
+    },
+    {
+      "name": "golfball",
+      "k": 5,
+      "elements": [
+        {
+          "classification": "LINE",
+          "size": 0.1,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": 0.125
+        },
+        {
+          "classification": "LINE",
+          "size": 0.2121320344,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": 0.125
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.5,
+          "loop": 0.5
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": -0.125
+        },
+        {
+          "classification": "LINE",
+          "size": 0.2121320344,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": -0.125
+        }
+      ]
+    },
+    {
+      "name": "shark",
+      "k": 3,
+      "elements": [
+        {
+          "classification": "LINE",
+          "size": 0.7,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.3,
+          "roll": 0.0,
+          "loop": -0.25
+        },
+        {
+          "classification": "LINE",
+          "size": 0.2474873734,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.3,
+          "roll": 0.0,
+          "loop": -0.375
+        },
+        {
+          "classification": "LINE",
+          "size": 0.2,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.1,
+          "roll": 0.25,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.05,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.1,
+          "roll": 0.25,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.2,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.3,
+          "roll": 0.0,
+          "loop": -0.125
+        }
+      ]
+    },
+    {
+      "name": "double immelman",
+      "k": 5,
+      "elements": [
+        {
+          "classification": "LINE",
+          "size": 0.2428932188,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.2,
+          "roll": 0.5,
+          "loop": 0.0
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": 0.5
+        },
+        {
+          "classification": "LINE",
+          "size": 0.05,
+          "roll": 0.125,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.05,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.05,
+          "roll": 0.125,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.05,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.05,
+          "roll": 0.125,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.05,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.05,
+          "roll": 0.125,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.2,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": -0.5
+        },
+        {
+          "classification": "LINE",
+          "size": 0.2,
+          "roll": 0.5,
+          "loop": 0.0
+        }
+      ]
+    },
+    {
+      "name": "Humpty",
+      "k": 3,
+      "elements": [
+        {
+          "classification": "LINE",
+          "size": 0.35,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": 0.25
+        },
+        {
+          "classification": "LINE",
+          "size": 0.15,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.2,
+          "roll": 0.5,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.15,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": 0.5
+        },
+        {
+          "classification": "LINE",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": 0.25
+        }
+      ]
+    },
+    {
+      "name": "Roll Combo",
+      "k": 3,
+      "elements": [
+        {
+          "classification": "LINE",
+          "size": 0.275,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.2,
+          "roll": 0.5,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.1,
+          "roll": -0.25,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.05,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.1,
+          "roll": -0.25,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.05,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.1,
+          "roll": -0.25,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.05,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.1,
+          "roll": -0.25,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.2,
+          "roll": 0.5,
+          "loop": 0.0
+        }
+      ]
+    },
+    {
+      "name": "Roll Combo",
+      "k": 3,
+      "elements": [
+        {
+          "classification": "LINE",
+          "size": 0.275,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": 0.25
+        },
+        {
+          "classification": "LINE",
+          "size": 0.15,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.2,
+          "roll": 0.5,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.15,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": -0.25
+        },
+        {
+          "classification": "LINE",
+          "size": 0.25,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "SPIN",
+          "size": 0.25,
+          "roll": 2.5,
+          "loop": 0.0
+        },
+        {
+          "classification": "LINE",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": -0.25
+        }
+      ]
+    },
+    {
+      "name": "Figure Z",
+      "k": 3,
+      "elements": [
+        {
+          "classification": "LINE",
+          "size": 0.12,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": -0.375
+        },
+        {
+          "classification": "LINE",
+          "size": 0.207106781,
+          "roll": 1.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.5,
+          "roll": 0.0,
+          "loop": 0.375
+        }
+      ]
     }
   ]
 }
