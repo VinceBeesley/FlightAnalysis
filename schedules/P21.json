@@ -3,7 +3,7 @@
   "category": "F3A",
   "entry": "inverted",
   "entry_x_offset": -0.4,
-  "entry_z_offset": 0.5,
+  "entry_z_offset": 0.55,
   "manoeuvres": [
     {
       "name": "vertical 8",
@@ -23,13 +23,13 @@
         },
         {
           "classification": "LOOP",
-          "size": 0.5,
+          "size": 0.45,
           "roll": 0.0,
           "loop": 1.0
         },
         {
           "classification": "LOOP",
-          "size": 0.5,
+          "size": 0.45,
           "roll": 0.0,
           "loop": -1.0
         },
@@ -47,13 +47,13 @@
       "elements": [
         {
           "classification": "LINE",
-          "size": 0.55,
+          "size": 0.375,
           "roll": 0.0,
           "loop": 0.0
         },
         {
           "classification": "LOOP",
-          "size": 0.5,
+          "size": 0.3,
           "roll": 0.0,
           "loop": 0.25
         },
@@ -71,7 +71,7 @@
         },
         {
           "classification": "LINE",
-          "size": 0.225,
+          "size": 0.2,
           "roll": 0.0,
           "loop": 0.0
         },
@@ -95,14 +95,13 @@
         },
         {
           "classification": "LINE",
-          "proportion": 1.0,
-          "size": 0.225,
+          "size": 0.2,
           "roll": 0.0,
           "loop": 0.0
         },
         {
           "classification": "LOOP",
-          "size": 0.5,
+          "size": 0.3,
           "roll": 0.0,
           "loop": -0.25
         }
@@ -114,61 +113,25 @@
       "elements": [
         {
           "classification": "LINE",
-          "size": 0.75,
+          "size": 0.55,
           "roll": 0.0,
           "loop": 0.0
         },
         {
           "classification": "LOOP",
-          "size": 0.5,
+          "size": 0.4,
           "roll": 0.0,
           "loop": -0.125
         },
         {
           "classification": "LINE",
-          "size": 0.05,
-          "roll": 0.0,
-          "loop": 0.0
-        },
-        {
-          "classification": "LINE",
-          "size": 0.2,
-          "roll": 0.5,
-          "loop": 0.0
-        },
-        {
-          "classification": "LINE",
-          "size": 0.05,
+          "size": 0.3,
           "roll": 0.0,
           "loop": 0.0
         },
         {
           "classification": "LOOP",
-          "size": 0.5,
-          "roll": 0.0,
-          "loop": 0.25
-        },
-        {
-          "classification": "LINE",
-          "size": 0.05,
-          "roll": 0.0,
-          "loop": 0.0
-        },
-        {
-          "classification": "LINE",
-          "size": 0.2,
-          "roll": 0.5,
-          "loop": 0.0
-        },
-        {
-          "classification": "LINE",
-          "size": 0.05,
-          "roll": 0.0,
-          "loop": 0.0
-        },
-        {
-          "classification": "LOOP",
-          "size": 0.5,
+          "size": 0.4,
           "roll": 0.0,
           "loop": -0.25
         },
@@ -192,7 +155,19 @@
         },
         {
           "classification": "LOOP",
-          "size": 0.5,
+          "size": 0.4,
+          "roll": 0.0,
+          "loop": 0.25
+        },
+        {
+          "classification": "LINE",
+          "size": 0.3,
+          "roll": 0.0,
+          "loop": 0.0
+        },
+        {
+          "classification": "LOOP",
+          "size": 0.4,
           "roll": 0.0,
           "loop": 0.25
         },
@@ -216,7 +191,7 @@
         },
         {
           "classification": "LOOP",
-          "size": 0.5,
+          "size": 0.4,
           "roll": 0.0,
           "loop": -0.125
         }
@@ -234,7 +209,7 @@
         },
         {
           "classification": "LOOP",
-          "size": 0.5,
+          "size": 0.4,
           "roll": 0.0,
           "loop": -0.25
         },
@@ -264,7 +239,7 @@
         },
         {
           "classification": "LOOP",
-          "size": 0.5,
+          "size": 0.4,
           "roll": 0.0,
           "loop": 0.75
         }
@@ -294,7 +269,7 @@
         },
         {
           "classification": "LINE",
-          "size": 0.6,
+          "size": 0.4,
           "roll": 0.0,
           "loop": 0.0
         },
@@ -318,7 +293,7 @@
       "elements": [
         {
           "classification": "LINE",
-          "size": 0.15,
+          "size": 0.25,
           "roll": 0.0,
           "loop": 0.0
         },
@@ -330,19 +305,19 @@
         },
         {
           "classification": "LINE",
-          "size": 0.2,
+          "size": 0.15,
           "roll": 0.5,
           "loop": 0.0
         },
         {
           "classification": "LINE",
-          "size": 0.1,
+          "size": 0.05,
           "roll": 0.0,
           "loop": 0.0
         },
         {
           "classification": "LINE",
-          "size": 0.2,
+          "size": 0.15,
           "roll": 0.5,
           "loop": 0.0
         }
@@ -354,49 +329,49 @@
       "elements": [
         {
           "classification": "LINE",
-          "size": 0.1,
+          "size": 0.12,
           "roll": 0.0,
           "loop": 0.0
         },
         {
           "classification": "LOOP",
-          "size": 0.5,
+          "size": 0.45,
           "roll": 0.0,
           "loop": 0.125
         },
         {
           "classification": "LINE",
-          "size": 0.2121320344,
+          "size": 0.4,
           "roll": 0.0,
           "loop": 0.0
         },
         {
           "classification": "LOOP",
-          "size": 0.5,
+          "size": 0.45,
           "roll": 0.0,
           "loop": 0.125
         },
         {
           "classification": "LOOP",
-          "size": 0.5,
+          "size": 0.45,
           "roll": 0.5,
           "loop": 0.5
         },
         {
           "classification": "LOOP",
-          "size": 0.5,
+          "size": 0.45,
           "roll": 0.0,
           "loop": -0.125
         },
         {
           "classification": "LINE",
-          "size": 0.2121320344,
+          "size": 0.4,
           "roll": 0.0,
           "loop": 0.0
         },
         {
           "classification": "LOOP",
-          "size": 0.5,
+          "size": 0.45,
           "roll": 0.0,
           "loop": -0.125
         }
@@ -408,7 +383,7 @@
       "elements": [
         {
           "classification": "LINE",
-          "size": 0.7,
+          "size": 0.55,
           "roll": 0.0,
           "loop": 0.0
         },
@@ -558,13 +533,13 @@
       "elements": [
         {
           "classification": "LINE",
-          "size": 0.35,
+          "size": 0.5,
           "roll": 0.0,
           "loop": 0.0
         },
         {
           "classification": "LOOP",
-          "size": 0.5,
+          "size": 0.3,
           "roll": 0.0,
           "loop": 0.25
         },
@@ -588,7 +563,7 @@
         },
         {
           "classification": "LOOP",
-          "size": 0.5,
+          "size": 0.3,
           "roll": 0.0,
           "loop": 0.5
         },
@@ -600,7 +575,7 @@
         },
         {
           "classification": "LOOP",
-          "size": 0.5,
+          "size": 0.3,
           "roll": 0.0,
           "loop": 0.25
         }
@@ -612,7 +587,7 @@
       "elements": [
         {
           "classification": "LINE",
-          "size": 0.275,
+          "size": 0.355,
           "roll": 0.0,
           "loop": 0.0
         },
@@ -624,44 +599,8 @@
         },
         {
           "classification": "LINE",
-          "size": 0.1,
-          "roll": -0.25,
-          "loop": 0.0
-        },
-        {
-          "classification": "LINE",
-          "size": 0.05,
-          "roll": 0.0,
-          "loop": 0.0
-        },
-        {
-          "classification": "LINE",
-          "size": 0.1,
-          "roll": -0.25,
-          "loop": 0.0
-        },
-        {
-          "classification": "LINE",
-          "size": 0.05,
-          "roll": 0.0,
-          "loop": 0.0
-        },
-        {
-          "classification": "LINE",
-          "size": 0.1,
-          "roll": -0.25,
-          "loop": 0.0
-        },
-        {
-          "classification": "LINE",
-          "size": 0.05,
-          "roll": 0.0,
-          "loop": 0.0
-        },
-        {
-          "classification": "LINE",
-          "size": 0.1,
-          "roll": -0.25,
+          "size": 0.4,
+          "roll": -1.0,
           "loop": 0.0
         },
         {
@@ -678,13 +617,13 @@
       "elements": [
         {
           "classification": "LINE",
-          "size": 0.275,
+          "size": 0.395,
           "roll": 0.0,
           "loop": 0.0
         },
         {
           "classification": "LOOP",
-          "size": 0.5,
+          "size": 0.3,
           "roll": 0.0,
           "loop": 0.25
         },
@@ -708,31 +647,31 @@
         },
         {
           "classification": "LOOP",
-          "size": 0.5,
+          "size": 0.3,
           "roll": 0.0,
           "loop": -0.25
         },
         {
           "classification": "LINE",
-          "size": 0.25,
+          "size": 0.325,
           "roll": 0.0,
           "loop": 0.0
         },
         {
           "classification": "SPIN",
-          "size": 0.25,
+          "size": 0.05,
           "roll": 2.5,
           "loop": 0.0
         },
         {
           "classification": "LINE",
-          "size": 0.5,
+          "size": 0.4,
           "roll": 0.0,
           "loop": 0.0
         },
         {
           "classification": "LOOP",
-          "size": 0.5,
+          "size": 0.3,
           "roll": 0.0,
           "loop": -0.25
         }
@@ -744,7 +683,7 @@
       "elements": [
         {
           "classification": "LINE",
-          "size": 0.3,
+          "size": 0.38,
           "roll": 0.0,
           "loop": 0.0
         },
@@ -762,7 +701,7 @@
         },
         {
           "classification": "LINE",
-          "size": 0.4,
+          "size": 0.3,
           "roll": 1.0,
           "loop": 0.0
         },
@@ -786,7 +725,7 @@
       "elements": [
         {
           "classification": "LINE",
-          "size": 0.3,
+          "size": 0.325,
           "roll": 0.0,
           "loop": 0.0
         },
@@ -798,7 +737,7 @@
         },
         {
           "classification": "LINE",
-          "size": 0.2,
+          "size": 0.15,
           "roll": 0.0,
           "loop": 0.0
         },
@@ -816,7 +755,7 @@
         },
         {
           "classification": "LINE",
-          "size": 0.2,
+          "size": 0.15,
           "roll": 0.0,
           "loop": 0.0
         },
@@ -828,7 +767,7 @@
         },
         {
           "classification": "LINE",
-          "size": 0.2,
+          "size": 0.15,
           "roll": 0.0,
           "loop": 0.0
         },
@@ -840,7 +779,7 @@
         },
         {
           "classification": "LINE",
-          "size": 0.2,
+          "size": 0.15,
           "roll": 0.0,
           "loop": 0.0
         },
@@ -858,13 +797,13 @@
       "elements": [
         {
           "classification": "LINE",
-          "size": 0.05,
+          "size": 0.07,
           "roll": 0.0,
           "loop": 0.0
         },
         {
           "classification": "LINE",
-          "size": 0.1,
+          "size": 0.07,
           "roll": 0.25,
           "loop": 0.0
         },
@@ -876,7 +815,7 @@
         },
         {
           "classification": "LINE",
-          "size": 0.1,
+          "size": 0.07,
           "roll": 0.25,
           "loop": 0.0
         },
@@ -888,7 +827,7 @@
         },
         {
           "classification": "LINE",
-          "size": 0.1,
+          "size": 0.07,
           "roll": 0.25,
           "loop": 0.0
         },
@@ -900,7 +839,7 @@
         },
         {
           "classification": "LINE",
-          "size": 0.1,
+          "size": 0.07,
           "roll": 0.25,
           "loop": 0.0
         }
@@ -924,7 +863,7 @@
         },
         {
           "classification": "LINE",
-          "size": 0.14,
+          "size": 0.07,
           "roll": 0.0,
           "loop": 0.0
         },
@@ -936,7 +875,7 @@
         },
         {
           "classification": "LINE",
-          "size": 0.14,
+          "size": 0.07,
           "roll": 0.0,
           "loop": 0.0
         },
@@ -948,19 +887,19 @@
         },
         {
           "classification": "LINE",
-          "size": 0.14,
+          "size": 0.07,
           "roll": 0.0,
           "loop": 0.0
         },
         {
           "classification": "LINE",
           "size": 0.1,
-          "roll": 0.25,
+          "roll": -0.25,
           "loop": 0.0
         },
         {
           "classification": "LINE",
-          "size": 0.14,
+          "size": 0.07,
           "roll": 0.0,
           "loop": 0.0
         },
@@ -968,7 +907,7 @@
           "classification": "LOOP",
           "size": 0.3,
           "roll": 0.0,
-          "loop": 0.125
+          "loop": -0.125
         }
       ]
     },
@@ -978,7 +917,7 @@
       "elements": [
         {
           "classification": "LINE",
-          "size": 0.6,
+          "size": 0.435,
           "roll": 0.0,
           "loop": 0.0
         },
@@ -986,7 +925,7 @@
           "classification": "LOOP",
           "size": 0.7,
           "roll": 0.0,
-          "loop": 0.5
+          "loop": -0.5
         },
         {
           "classification": "SNAP",
@@ -998,7 +937,7 @@
           "classification": "LOOP",
           "size": 0.7,
           "roll": 0.0,
-          "loop": 0.5
+          "loop": -0.5
         }
       ]
     }

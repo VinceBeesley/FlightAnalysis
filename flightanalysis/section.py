@@ -93,6 +93,18 @@ class Section():
 
         return Section.from_constructs(t, pos, att, bvel, brvel, bacc)
 
+
+    def to_csv(self, filename):
+        self.data.to_csv(filename)
+    
+    @staticmethod
+    def from_csv(filename):
+        data = pd.read_csv(filename)
+        data.index = data["time_flight"].copy()
+        data.index.name = 'time_flight'
+
+        return Section(data)
+
     def get_state_from_index(self, index):
         return State.from_series(self.data.iloc[index].copy())
 
@@ -306,7 +318,7 @@ class Section():
         elif element.classification == ElClass.SNAP:
             el = Section.from_line(transform, speed, scale * element.size)
         elif element.classification == ElClass.STALLTURN:
-            el = Section.from_loop(transform, 3.0, 0.5, 2.0, True)
+            return Section.from_loop(transform, 3.0, 0.5, 2.0, True)
 
         if not element.roll == 0:
             el = el.superimpose_roll(element.roll)
