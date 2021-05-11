@@ -394,6 +394,8 @@ class Section():
             radius=1,
             dist=euclidean
         )
+        # TODO this join is not correct as length of flown template increases. 
+        # TODO write some tests!
         return distance, Section(
             flown.data.reset_index().join(
                 pd.DataFrame(path,columns=["template", "flight"]).set_index("flight").join(
