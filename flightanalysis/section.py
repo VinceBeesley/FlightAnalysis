@@ -336,7 +336,7 @@ class Section():
             itrans = elms[-1].get_state_from_index(-1).transform
         return elms
 
-    def get_manoeuvre(self, manoeuvre: Manoeuvre):
+    def get_manoeuvre(self, manoeuvre: str):
         return Section(self.data[self.data.manoeuvre == manoeuvre])
 
     def split_manoeuvres(self):
@@ -386,6 +386,8 @@ class Section():
         fl.brvy = abs(fl.brvy)
 
         tp = template.brvel.copy()
+
+        
         tp.brvr = abs(tp.brvr)
         tp.brvy = abs(tp.brvy)
         distance, path = fastdtw(

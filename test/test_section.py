@@ -1,6 +1,7 @@
 from flightanalysis.section import Section
 from flightanalysis.state import State
 from flightanalysis.flightline import Box, FlightLine
+from flightanalysis.schedule import Schedule
 import unittest
 from geometry import Point, Quaternion, Points, Quaternions
 from flightdata import Flight, Fields
@@ -147,3 +148,17 @@ class TestSection(unittest.TestCase):
         self.assertEqual(combo.data.iloc[-1].bvx, 30)
 
         self.assertIsInstance(combo.get_state_from_time(10), State)
+
+
+    def test_align(self):
+        sched = Schedule.from_json("schedules/P21.json")
+        p21 = Section.from_schedule(Schedule.from_json("schedules/P21.json"))
+
+        v8_1 = p21.get_manoeuvre(sched.manoeuvres[0].name)
+        v8_2 = Section(v8_1.data.copy())
+
+        v8_2.data.index = np.array(v8_2.data.index) + 20.0
+
+        aligned = Section.align(v8_1, v8_2)
+
+        self.assertEqual(len(aligned.data, len(v8_1.data)))
