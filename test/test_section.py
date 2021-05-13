@@ -147,3 +147,22 @@ class TestSection(unittest.TestCase):
         self.assertEqual(combo.data.iloc[-1].bvx, 30)
 
         self.assertIsInstance(combo.get_state_from_time(10), State)
+
+
+
+    def test_evaluate_radius(self):
+        initial = State(
+            Point(0, 170, 150),
+            Quaternion.from_euler(Point(np.pi, 0, np.pi)),
+            Point(10 * np.pi, 0, 0),  # 620 m in 10 seconds
+            Point(0, np.pi / 5, 0)
+        )
+
+        sec = Section.from_loop(initial.transform, 10*np.pi, 1, 50)
+
+        centre, radii, radius = sec.evaluate_radius("y")
+
+        self.assertAlmostEqual(radius, 50)
+        self.assertAlmostEqual(centre, Point(0, 170, 100), 5)
+
+        np.testing.assert_array_almost_equal(radii, np.full(radii.shape, 50.0))
