@@ -1,6 +1,6 @@
 from . import Element
 from typing import List
-
+from uuid import uuid4
 
 class Manoeuvre():
     def __init__(self, name: str, k: float, elements: List[Element]):

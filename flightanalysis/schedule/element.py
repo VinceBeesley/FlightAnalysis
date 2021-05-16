@@ -1,6 +1,7 @@
 
 from typing import Dict
 from enum import Enum
+from uuid import uuid4
 
 class ElClass(Enum):
     LINE = 0
@@ -16,6 +17,7 @@ class Element():
         self.size = size
         self.roll = roll
         self.loop = loop
+
 
     def from_dict(val):
         return Element(ElClass[val["classification"]], val["size"], val["roll"], val["loop"])

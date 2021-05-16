@@ -124,8 +124,8 @@ class FlightLine(object):
         self.world = world
         # the contest reference frame is ENU rotated such that "pilot north" is North
         self.contest = contest
-        self.transform_to = Transformation.from_coords(self.contest, self.world)
-        self.transform_from = Transformation.from_coords(self.world, self.contest)
+        self.transform_to = Transformation.from_coords(contest, world)
+        self.transform_from = Transformation.from_coords(world, contest)
 
     @staticmethod
     def from_box(box):

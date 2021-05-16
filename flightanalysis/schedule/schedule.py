@@ -1,6 +1,7 @@
 from . import Manoeuvre
 from typing import List
-
+from io import open
+from json import load
 
 class Categories():
     F3A = 0
@@ -23,6 +24,12 @@ class Schedule():
         self.entry_z_offset = entry_z_offset
         self.manoeuvres = manoeuvres
 
+    def manoeuvre(self, name):
+        for manoeuvre in self.manoeuvres:
+            if manoeuvre.name == name:
+                return manoeuvre
+        raise KeyError()
+
     @staticmethod
     def from_dict(val):
         return Schedule(
@@ -33,3 +40,10 @@ class Schedule():
             val['entry_z_offset'],
             [Manoeuvre.from_dict(manoeuvre) for manoeuvre in val['manoeuvres']]
         )
+
+    @staticmethod
+    def from_json(file: str):
+        with open(file, "r") as f:
+            return Schedule.from_dict(load(f))
+
+    

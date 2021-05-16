@@ -9,6 +9,9 @@ from .schedule import Element
 from typing import Callable, Tuple, List, Union
 from numbers import Number
 from .schedule import Schedule, Manoeuvre, Element, ElClass
+from fastdtw import fastdtw
+from scipy.spatial.distance import euclidean
+from scipy import optimize
 
 
 class Section():
@@ -18,7 +21,7 @@ class Section():
         self.data = data
 
     def __getattr__(self, name):
-        if name in State.vars:
+        if name in self.data.columns:
             return self.data[name]
         elif name in State.vars.constructs:
             return self.data[State.vars.constructs[name]]
@@ -91,6 +94,18 @@ class Section():
 
         return Section.from_constructs(t, pos, att, bvel, brvel, bacc)
 
+
+    def to_csv(self, filename):
+        self.data.to_csv(filename)
+    
+    @staticmethod
+    def from_csv(filename):
+        data = pd.read_csv(filename)
+        data.index = data["time_flight"].copy()
+        data.index.name = 'time_flight'
+
+        return Section(data)
+
     def get_state_from_index(self, index):
         return State.from_series(self.data.iloc[index].copy())
 
@@ -144,6 +159,43 @@ class Section():
             Points(np.zeros((len(t), 3))),
             Points(np.zeros((len(t), 3)))
         )
+
+    def evaluate_radius(self, plane: str) -> Tuple[Point, np.ndarray, float]:
+        """Calculate the radius, in the plane normal to the passed direction
+
+        Args:
+            normal (str): letter defining the normal direction of the desired radius plane in world frame
+
+        Returns:
+            Point: the centre of the radius in the world frame
+            np.ndarray: the radius at each time index
+            float: the mean radius
+        """
+        if plane == "x":
+            x, y = self.y, self.z
+        elif plane == "y":
+            x, y = self.z, self.x
+        elif plane == "z":
+            x, y = self.x, self.y
+
+        calc_R = lambda xc, yc : np.sqrt((x-xc)**2 + (y-yc)**2)
+
+        def f_2(c):
+            Ri = calc_R(*c)
+            return Ri - Ri.mean()
+
+        center_2, ier = optimize.leastsq(f_2, (0.0, 0.0))  # better to take the mean position or something
+        Ri_2 = calc_R(*center_2)
+
+        if plane == "x":
+            centre = Point(self.x[0], center_2[0], center_2[1])
+        elif plane == "y":
+            centre = Point(center_2[1], self.y[0], center_2[0])
+        elif plane == "z":
+            centre = Point(self.x[0], center_2[1], self.z[0])
+
+        return centre, Ri_2, Ri_2.mean()
+
 
     @staticmethod
     def from_loop(itransform: Transformation, speed: float, proportion: float, radius: float, ke: bool = False):
@@ -217,17 +269,19 @@ class Section():
             axisrates,
             acceleration
         )
+
     @staticmethod
     def from_spin(itransform: Transformation, height: float, turns: float):
         inverted = itransform.rotate(Point(0, 0, 1)).z > 0
-        
-        nose_drop = Section.from_loop(itransform, 5.0, -0.25 * inverted, 2.0, False)
+
+        nose_drop = Section.from_loop(
+            itransform, 5.0, -0.25 * inverted, 2.0, False)
 
         rotation = Section.from_line(
             nose_drop.get_state_from_index(-1).transform,
             5.0,
             height-2.5
-            ).superimpose_roll(turns)
+        ).superimpose_roll(turns)
 
         return Section.stack([nose_drop, rotation])
 
@@ -294,28 +348,43 @@ class Section():
                 transform, speed, element.loop, 0.5 * scale * element.size, False)
         elif element.classification == ElClass.KELOOP:
             el = Section.from_loop(
-                transform, speed, element.proportion, 0.5* scale * element.size, True)
+                transform, speed, element.loop, 0.5 * scale * element.size, True)
         elif element.classification == ElClass.LINE:
             el = Section.from_line(transform, speed, scale * element.size)
         elif element.classification == ElClass.SPIN:
             return Section.from_spin(transform, scale * element.size, element.roll)
         elif element.classification == ElClass.SNAP:
-            pass
+            el = Section.from_line(transform, speed, scale * element.size)
         elif element.classification == ElClass.STALLTURN:
-            el = Section.from_loop(transform, 0.5, 0.5, 2.0, True)
+            return Section.from_loop(transform, 3.0, 0.5, 2.0, True)
 
         if not element.roll == 0:
             el = el.superimpose_roll(element.roll)
         return el
 
     @ staticmethod
-    def from_manoeuvre(transform: Transformation, manoeuvre: Manoeuvre, scale:float=200.0):
+    def from_manoeuvre(transform: Transformation, manoeuvre: Manoeuvre, scale: float = 200.0):
         elms = []
         itrans = transform
-        for element in manoeuvre.elements:
+        for i, element in enumerate(manoeuvre.elements):
             elms.append(Section.from_element(itrans, element, 30.0, scale))
+            elms[-1].data["element"] = "{}_{}".format(
+                i, element.classification.name)
+            elms[-1].data["manoeuvre"] = manoeuvre.name
             itrans = elms[-1].get_state_from_index(-1).transform
         return elms
+
+    def get_manoeuvre(self, manoeuvre: str):
+        return Section(self.data[self.data.manoeuvre == manoeuvre])
+
+    def split_manoeuvres(self):
+        return {
+            man: Section(self.data[self.data.manoeuvre == man]) for man in self.data["manoeuvre"].unique()
+        }
+
+    def split_elements(self):
+        return {elm: Section(self.data[self.data.element == elm])
+                for elm in self.data["element"].unique()}
 
     @ staticmethod
     def from_schedule(schedule: Schedule, distance: float = 170.0, direction: str = "right"):
@@ -341,4 +410,36 @@ class Section():
         for manoeuvre in schedule.manoeuvres:
             elms += Section.from_manoeuvre(itrans, manoeuvre, scale=box_scale)
             itrans = elms[-1].get_state_from_index(-1).transform
+
+        #add an exit line
+        elms.append(Section.from_element(itrans, Element(ElClass.LINE, 0.25, 0.0, 0.0), 30.0, box_scale))
+        elms[-1].data["manoeuvre"] = "exit_line"
+        elms[-1].data["element"] = "0_LINE"
         return Section.stack(elms)
+
+    @staticmethod
+    def align(flown, template):
+        fl = flown.brvel.copy()
+        fl.brvr = abs(fl.brvr)
+        fl.brvy = abs(fl.brvy)
+
+        tp = template.brvel.copy()
+
+        
+        tp.brvr = abs(tp.brvr)
+        tp.brvy = abs(tp.brvy)
+        distance, path = fastdtw(
+            tp.to_numpy(), 
+            fl.to_numpy(), 
+            radius=1,
+            dist=euclidean
+        )
+        # TODO this join is not correct as length of flown template increases. 
+        # TODO write some tests!
+        return distance, Section(
+            flown.data.reset_index().join(
+                pd.DataFrame(path,columns=["template", "flight"]).set_index("flight").join(
+                    template.data.reset_index().loc[:, ["manoeuvre", "element"]],
+                    on="template"
+                )
+            ).set_index("time_index"))
