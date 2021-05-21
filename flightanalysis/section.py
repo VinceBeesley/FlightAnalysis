@@ -272,7 +272,7 @@ class Section():
 
     @staticmethod
     def from_spin(itransform: Transformation, height: float, turns: float):
-        inverted = itransform.rotate(Point(0, 0, 1)).z > 0
+        inverted = np.sign(itransform.rotate(Point(0, 0, 1)).z)
 
         nose_drop = Section.from_loop(
             itransform, 5.0, -0.25 * inverted, 2.0, False)
@@ -366,12 +366,16 @@ class Section():
     def from_manoeuvre(transform: Transformation, manoeuvre: Manoeuvre, scale: float = 200.0):
         elms = []
         itrans = transform
+        print("Manoeuvre : {}".format(manoeuvre.name))
         for i, element in enumerate(manoeuvre.elements):
             elms.append(Section.from_element(itrans, element, 30.0, scale))
             elms[-1].data["element"] = "{}_{}".format(
                 i, element.classification.name)
             elms[-1].data["manoeuvre"] = manoeuvre.name
             itrans = elms[-1].get_state_from_index(-1).transform
+            print("element {0}, {1}".format(element.classification, (itrans.translation / scale).to_list()))
+            
+
         return elms
 
     def get_manoeuvre(self, manoeuvre: str):
