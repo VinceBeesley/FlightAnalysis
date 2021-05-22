@@ -144,6 +144,8 @@ class FlightLine(object):
                 # -box.x_direction,
                 # box.y_direction,
                 # -box.z_direction
+                
+                # rotate to from NED to ENU
                 box.y_direction,
                 box.x_direction,
                 -box.z_direction
