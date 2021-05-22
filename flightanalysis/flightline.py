@@ -122,7 +122,7 @@ class FlightLine(object):
 
         # the ArduPilot world frame is NED
         self.world = world
-        # the contest reference frame is ENU rotated such that "pilot north" is North
+        # the contest reference frame is ENU??? rotated such that "pilot north" is North
         self.contest = contest
         self.transform_to = Transformation.from_coords(contest, world)
         self.transform_from = Transformation.from_coords(world, contest)
@@ -130,14 +130,45 @@ class FlightLine(object):
     @staticmethod
     def from_box(box):
         return FlightLine(
+            # this just sets x,y,z origin to zero and unit vectors = [1 0 0] [0 1 0] [0 0 1]
             Coord.from_zx(Point(0, 0, 0), Point(0, 0, 1), Point(1, 0, 0)),
             Coord(
+                # translation is zero: where is the pilot box offset?
+                # would need to calculate the x,y difference between world and contest origin
+                #
                 Point(0, 0, 0),
-                -box.x_direction,
+                # what does this do? NED to ENU is x,y,z -> y,x,-z
+                # apparently: this is NED to SEU ... unexpected choice of frame
+                # if it were the inverse: ENU to WND or (-E)ND... doesn't match ArduPilot
+                # but would correctly map SEU to (-S)ED == NED
+                # -box.x_direction,
+                # box.y_direction,
+                # -box.z_direction
                 box.y_direction,
+                box.x_direction,
                 -box.z_direction
             )
         )
+
+    # @staticmethod
+    # def from_heading(pilot_north, pilot_position):
+    #     return FlightLine(
+    #         # we want this to be a transform from ArduPilot NED to ENU
+    #         # followed by rotation of pilot_north to North and translation
+    #         # of the origin to pilot_position
+    #         # this just sets x,y,z origin to zero and unit vectors = [1 0 0] [0 1 0] [0 0 1]
+    #         Coord.from_zx(Point(0, 0, 0), Point(0, 0, 1), Point(1, 0, 0)),
+    #         Coord(
+    #             # translation is zero: where is the pilot box offset?
+    #             Point(0, 0, 0),
+    #             # what does this do? NED to ENU is x,y,z -> y,x,-z
+    #             # apparently: this is NED to -NEU... unexpected choice of frame
+    #             # or it could be the inverse: ENU to -END... still surprising
+    #             -box.x_direction,
+    #             box.y_direction,
+    #             -box.z_direction
+    #         )
+    #     )
 
     @staticmethod
     def from_initial_position(flight: Flight):
