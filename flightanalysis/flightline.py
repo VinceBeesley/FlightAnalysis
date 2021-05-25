@@ -47,8 +47,11 @@ class Box(object):
 
     @staticmethod
     def from_json(file):
-        with open(file, 'r') as f:
-            data = load(f)
+        if hasattr(file, 'read'):
+            data = load(file)
+        else:
+            with open(file, 'r') as f:
+                data = load(f)
         read_box = Box(data['name'], GPSPosition(**data['pilot_position']), data['heading'])
         return read_box
 
