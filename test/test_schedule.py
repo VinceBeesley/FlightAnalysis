@@ -38,3 +38,8 @@ class TestSchedule(unittest.TestCase):
         self.assertEqual(p21.name, "P21")
         self.assertEqual(p21.category, Categories.F3A)
         self.assertEqual(p21.manoeuvres[0].name, "vertical 8")
+
+
+
+if __name__ == '__main__':
+    unittest.main()

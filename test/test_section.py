@@ -155,3 +155,7 @@ class TestSection(unittest.TestCase):
         self.assertAlmostEqual(centre, Point(0, 170, 100), 5)
 
         np.testing.assert_array_almost_equal(radii, np.full(radii.shape, 50.0))
+
+
+if __name__ == '__main__':
+    unittest.main()
