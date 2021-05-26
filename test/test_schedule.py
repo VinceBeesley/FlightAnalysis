@@ -18,7 +18,7 @@ class TestElement(unittest.TestCase):
 
         self.assertEqual(
             half_roll.size,
-            0.25
+            0.2
         )
 
 
