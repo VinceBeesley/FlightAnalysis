@@ -149,12 +149,14 @@ class FlightLine(object):
         return FlightLine(
 
 
-            # this just sets x,y,z origin to zero and unit vectors = [1 0 0] [0 1 0] [0 0 1]
-            Coord.from_zx(Point(0, 0, 0), Point(0, 0, 1), Point(1, 0, 0)),
+            # ArduPilot world frame is NED: x:[0 1 0] y:[1 0 0] z:[0 0 -1] when represented in ENU frame
+            Coord.from_zx(Point(0, 0, 0), Point(0, 0, -1), Point(0, 1, 0)),
+            # contest frame is ENU with North rotated to "pilot north": y:[cos(hdg) sin(hdg), 0], z:[0 0 1] 
+            # which is y:[0 1 0], z:[0 0 1] with hdg of pi/2 radians (North in Cartesian coords) 
             Coord.from_yz(
                 box.pilot_position - world_home,
                 Point(cos(box.heading), sin(box.heading), 0),
-                Point(0.0, 0.0, -1.0)
+                Point(0.0, 0.0, 1.0)
             )
         )
 

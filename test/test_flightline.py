@@ -37,6 +37,39 @@ class TestFlightLine(unittest.TestCase):
         )   # Translation should be small, because I turn on close to the pilot position.
 
 
+    def test_from_box_true_north(self):
+        home = GPSPosition(39, -105)
+
+        # Box heading specified in radians from East in ENU frame (anticlockwise)
+        # Note that compass headings are specified in degrees from North (clockwise)
+        box = Box('north', home, pi/2)
+
+        fl = FlightLine.from_box(box, home)
+
+        oneMeterNorth_NED = Point(1, 0, 0)
+        oneMeterNorth_ENU = Point(0, 1, 0)
+
+        np.testing.assert_array_almost_equal(
+            fl.transform_from.rotate(oneMeterNorth_NED).to_list(),
+            oneMeterNorth_ENU.to_list()
+        )   # Box faces due North, so NED (1,0,0) should be (0,1,0) in ENU world frame
+
+        np.testing.assert_array_almost_equal(
+            fl.transform_to.rotate(oneMeterNorth_ENU).to_list(),
+            oneMeterNorth_NED.to_list()
+        )   # Box faces due North, so NED (1,0,0) should be (0,1,0) in ENU world frame
+
+        # lat/lon to x/y is problematic over large distances; need to work with x/y displacements
+        # relative to home to avoid issues with accuracy
+        # 0.001 degree of latitude at 39N is 111.12 meters: http://www.csgnetwork.com/gpsdistcalc.html
+        north_of_home = GPSPosition(39.001, -105)
+        deltaPos = home.__sub__(north_of_home)
+        np.testing.assert_array_almost_equal(
+            deltaPos.to_list(),
+            [111.12, 0, 0],
+            0
+        )
+
 
     def test_initial(self):
         flightline = FlightLine.from_initial_position(p21)
@@ -49,6 +82,12 @@ class TestFlightLine(unittest.TestCase):
 
 
     def test_transform_to(self):
+        flightline = FlightLine.from_initial_position(p21)
+
+        npoint = flightline.transform_to.point(Point(1, 0, 0))
+        self.assertAlmostEqual(npoint.x, flightline.contest.x_axis.x, 4)
+
+    def test_transform_from(self):
         flightline = FlightLine.from_initial_position(p21)
 
         npoint = flightline.transform_to.point(Point(1, 0, 0))
