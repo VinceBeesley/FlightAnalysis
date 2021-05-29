@@ -96,5 +96,20 @@ class TestFlightLine(unittest.TestCase):
 
 
 
+    def test_transfrom_from_to(self):
+        fl = FlightLine.from_covariance(p21)
+        ned = Points.from_pandas(p21.read_fields(Fields.POSITION))
+        np.testing.assert_array_almost_equal(
+            ned.data,
+            fl.transform_from.point(fl.transform_to.point(ned)).data
+        )
+        
+        rned = Quaternions.from_euler(Points.from_pandas(p21.read_fields(Fields.ATTITUDE)))
+        np.testing.assert_array_almost_equal(
+            rned.data,
+            fl.transform_from.quat(fl.transform_from.quat(rned)).data
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
