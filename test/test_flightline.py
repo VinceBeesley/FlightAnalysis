@@ -1,8 +1,8 @@
 import unittest
 
-from flightdata.data import Flight
+from flightdata.data import Flight, Fields
 from flightanalysis.flightline import FlightLine, Box
-from geometry import GPSPosition, Point
+from geometry import GPSPosition, Point, Points, Quaternions
 from math import pi, cos, sin
 import numpy as np
 
@@ -97,3 +97,36 @@ class TestFlightLine(unittest.TestCase):
         flightline = FlightLine.from_covariance(p21)
         self.assertAlmostEqual(flightline.contest.y_axis.y,
                                cos((144.8 * pi / 180) - pi / 2), 1)
+
+
+    def test_flightline_headings(self):
+        home = GPSPosition(**p21.origin())
+        
+        ned = Points.from_pandas(p21.read_fields(Fields.POSITION))
+        rned = Quaternions.from_euler(Points.from_pandas(p21.read_fields(Fields.ATTITUDE)))
+
+        #North Facing
+        enu_flightline =FlightLine.from_box(Box('test',home,0.0),home)
+        enu = enu_flightline.transform_to.point(ned)
+        renu = enu_flightline.transform_to.quat(rned)  # TODO think of a test for this
+        np.testing.assert_array_almost_equal(ned.x, enu.y)
+        np.testing.assert_array_almost_equal(ned.y, enu.x)
+        np.testing.assert_array_almost_equal(ned.z, -enu.z)
+
+
+        #South Facing
+        wsu_flightline =FlightLine.from_box(Box('test',home,np.pi),home)
+        wsu = wsu_flightline.transform_to.point(ned)
+        rwsu = wsu_flightline.transform_to.quat(rned)  # TODO think of a test for this
+        np.testing.assert_array_almost_equal(ned.x, -wsu.y)
+        np.testing.assert_array_almost_equal(ned.y, -wsu.x)
+        np.testing.assert_array_almost_equal(ned.z, -wsu.z)
+
+        #West Facing
+        nwu_flightline =FlightLine.from_box(Box('test',home,-np.pi/2),home)
+        nwu = nwu_flightline.transform_to.point(ned)
+        rnwu = nwu_flightline.transform_to.quat(rned)  # TODO think of a test for this
+        np.testing.assert_array_almost_equal(ned.x, nwu.x)
+        np.testing.assert_array_almost_equal(ned.y, -nwu.y)
+        np.testing.assert_array_almost_equal(ned.z, -nwu.z)
+
