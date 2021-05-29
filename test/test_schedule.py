@@ -18,7 +18,7 @@ class TestElement(unittest.TestCase):
 
         self.assertEqual(
             half_roll.size,
-            0.25
+            0.2
         )
 
 
@@ -38,3 +38,8 @@ class TestSchedule(unittest.TestCase):
         self.assertEqual(p21.name, "P21")
         self.assertEqual(p21.category, Categories.F3A)
         self.assertEqual(p21.manoeuvres[0].name, "vertical 8")
+
+
+
+if __name__ == '__main__':
+    unittest.main()

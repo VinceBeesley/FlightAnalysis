@@ -58,30 +58,6 @@ class TestSection(unittest.TestCase):
                 (len(line.data.index), 1))
         )
 
-    @unittest.skip
-    def test_from_roll(self):
-        """From inverted at 30 m/s perform 1/2 a roll at 180 degrees / second
-        """
-        initial = State(
-            Point(30, 170, 150),
-            Quaternion.from_euler(Point(np.pi, 0, np.pi)),
-            Point(30, 0, 0),
-            Point(np.pi, 0, 0)
-        )
-
-        line = Section.from_line(initial, np.linspace(0, 1, 5))
-
-        np.testing.assert_array_almost_equal(
-            line.pos.iloc[-1], [0, 170, 150]
-        )
-        np.testing.assert_array_almost_equal(
-            line.bvel, np.tile(np.array([30, 0, 0]), (5, 1))
-        )
-        np.testing.assert_array_almost_equal(
-            list(Point(0, 0, 1)),
-            Quaternions(line.att.to_numpy()).transform_point(
-                Point(0, 0, 1)).data[-1]
-        )
 
     def test_from_loop(self):
         """do the outside loop at the start of the P sequence"""
@@ -179,3 +155,7 @@ class TestSection(unittest.TestCase):
         self.assertAlmostEqual(centre, Point(0, 170, 100), 5)
 
         np.testing.assert_array_almost_equal(radii, np.full(radii.shape, 50.0))
+
+
+if __name__ == '__main__':
+    unittest.main()

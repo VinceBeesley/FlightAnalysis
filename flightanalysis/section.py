@@ -83,6 +83,7 @@ class Section():
         dt = np.gradient(t)
 
         brvel = att.body_diff(dt)
+        # this is EKF velocity estimate in NED frame transformed to contest frame
         vel = flightline.transform_to.rotate(Points.from_pandas(
             flight.data.loc[:, ["velocity_x", "velocity_y", "velocity_z"]]))
         bvel = att.inverse().transform_point(vel)
@@ -93,7 +94,6 @@ class Section():
         # brvel = Points.from_pandas(flight.data.loc[:,["axis_rate_roll", "axis_rate_pitch", "axis_rate_yaw"]])
 
         return Section.from_constructs(t, pos, att, bvel, brvel, bacc)
-
 
     def to_csv(self, filename):
         self.data.to_csv(filename)
