@@ -2,8 +2,9 @@ from flightanalysis.section import Section
 from flightanalysis.state import State
 from flightanalysis.flightline import Box, FlightLine
 from flightanalysis.schedule import Schedule
+import flightanalysis.schedule.p21 as sched
 import unittest
-from geometry import Point, Quaternion, Points, Quaternions
+from geometry import Point, Quaternion, Points, Quaternions, GPSPosition
 from flightdata import Flight, Fields
 import numpy as np
 import pandas as pd
@@ -127,17 +128,16 @@ class TestSection(unittest.TestCase):
 
 
     def test_align(self):
-        sched = Schedule.from_json("schedules/P21.json")
-        p21 = Section.from_schedule(Schedule.from_json("schedules/P21.json"))
 
-        v8_1 = p21.get_manoeuvre(sched.manoeuvres[0].name)
-        v8_2 = Section(v8_1.data.copy())
+        flight = Flight.from_csv("test/nice_p.csv")
+        flown = Section.from_flight(flight, FlightLine.from_box(Box.from_json("test/gordano_box.json"), GPSPosition(**flight.origin()))).subset(100, 493)
 
-        v8_2.data.index = np.array(v8_2.data.index) + 20.0
+        template = Section.from_schedule(sched.p21)
 
-        aligned = Section.align(v8_1, v8_2)
+        
+        aligned = Section.align(flown, template)
 
-        self.assertEqual(len(aligned.data, len(v8_1.data)))
+        self.assertEqual(len(aligned[1].data), len(flown.data))
 
     def test_evaluate_radius(self):
         initial = State(

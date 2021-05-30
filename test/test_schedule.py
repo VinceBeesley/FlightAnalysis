@@ -2,10 +2,9 @@ from flightanalysis.schedule import Schedule, Manoeuvre, Element, Categories
 from flightanalysis.schedule.element import ElClass
 import unittest
 from json import load
+from flightanalysis.schedule.p21 import p21
 
-
-with open("schedules/P21.json", 'r') as seqfile:
-    schedule = load(seqfile)
+schedule = p21
 
 
 class TestElement(unittest.TestCase):
