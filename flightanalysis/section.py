@@ -368,7 +368,7 @@ class Section():
         itrans = transform
         #print("Manoeuvre : {}".format(manoeuvre.name))
         for i, element in enumerate(manoeuvre.elements):
-            elms.append(Section.from_element(itrans, element, 30.0, scale))
+            elms.append(Section.from_element(itrans, element, 50.0, scale))
             elms[-1].data["element"] = "{}_{}".format(
                 i, element.classification.name)
             elms[-1].data["manoeuvre"] = manoeuvre.name
@@ -437,14 +437,13 @@ class Section():
             radius=1,
             dist=euclidean
         )
-        # TODO this join is not correct as length of flown template increases.
-        # TODO write some tests!
+
 
         mans = pd.DataFrame(path, columns=["template", "flight"]).set_index("template").join(
             template.data.reset_index().loc[:, ["manoeuvre", "element"]]
-        ).groupby(['flight']).first().reset_index().set_index("flight")
+        ).groupby(['flight']).last().reset_index().set_index("flight")
 
-        return distance, Section(flown.data.reset_index().join(mans))
+        return distance, Section(flown.data.reset_index().join(mans).set_index("time_index"))
 #        return distance, Section(
 #            flown.data.reset_index().join(
 #                pd.DataFrame(path, columns=["template", "flight"]).set_index("flight").join(
