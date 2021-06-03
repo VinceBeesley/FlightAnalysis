@@ -1,8 +1,8 @@
 import unittest
 
-from flightdata.data import Flight
+from flightdata.data import Flight, Fields
 from flightanalysis.flightline import FlightLine, Box
-from geometry import GPSPosition, Point
+from geometry import GPSPosition, Point, Points, Quaternions
 from math import pi, cos, sin
 import numpy as np
 
@@ -37,6 +37,57 @@ class TestFlightLine(unittest.TestCase):
         )   # Translation should be small, because I turn on close to the pilot position.
 
 
+    @unittest.skip # see test_flightline_headings
+    def test_from_box_true_north(self):
+        home = GPSPosition(39, -105)
+
+        # Box heading specified in radians from East in ENU frame (anticlockwise)
+        # Note that compass headings are specified in degrees from North (clockwise)
+        box = Box('north', home, pi/2)
+
+        fl = FlightLine.from_box(box, home)
+
+        oneMeterNorth_NED = Point(1, 0, 0)
+        oneMeterNorth_ENU = Point(0, 1, 0)
+
+        np.testing.assert_array_almost_equal(
+            fl.transform_from.rotate(oneMeterNorth_NED).to_list(),
+            oneMeterNorth_ENU.to_list()
+        )   # Box faces due North, so NED (1,0,0) should be (0,1,0) in ENU world frame
+
+        np.testing.assert_array_almost_equal(
+            fl.transform_to.rotate(oneMeterNorth_ENU).to_list(),
+            oneMeterNorth_NED.to_list()
+        )   # Box faces due North, so NED (1,0,0) should be (0,1,0) in ENU world frame
+
+        # lat/lon to x/y is problematic over large distances; need to work with x/y displacements
+        # relative to home to avoid issues with accuracy
+        # 0.001 degree of latitude at 39N is 111.12 meters: http://www.csgnetwork.com/gpsdistcalc.html
+        north_of_home = GPSPosition(39.001, -105)
+        deltaPos = home.__sub__(north_of_home)
+        np.testing.assert_array_almost_equal(
+            deltaPos.to_list(),
+            [111.12, 0, 0],
+            0
+        )
+
+
+    def test_from_box(self):
+        box = Box.from_json('./test/gordano_box.json')
+
+        fl = FlightLine.from_box(box, GPSPosition(**p21.origin()))
+
+        np.testing.assert_array_almost_equal(
+            fl.transform_to.rotate(Point(1.0, 0.0, 0.0)).to_list(),
+            Point(-0.514746, -0.857342, 0.0).to_list()
+        )   # My box faces south east ish, so world north should be -x and -y in contest frame
+
+        np.testing.assert_array_almost_equal(
+            fl.transform_to.translation.to_list(),
+            Point(3.922876, -3.664429,  0.).to_list()
+        )   # Translation should be small, because I turn on close to the pilot position.
+
+
 
     def test_initial(self):
         flightline = FlightLine.from_initial_position(p21)
@@ -54,7 +105,65 @@ class TestFlightLine(unittest.TestCase):
         npoint = flightline.transform_to.point(Point(1, 0, 0))
         self.assertAlmostEqual(npoint.x, flightline.contest.x_axis.x, 4)
 
+    def test_transform_from(self):
+        flightline = FlightLine.from_initial_position(p21)
+
+        npoint = flightline.transform_to.point(Point(1, 0, 0))
+        self.assertAlmostEqual(npoint.x, flightline.contest.x_axis.x, 4)
+
     def test_from_covariance(self):
         flightline = FlightLine.from_covariance(p21)
         self.assertAlmostEqual(flightline.contest.y_axis.y,
                                cos((144.8 * pi / 180) - pi / 2), 1)
+
+
+    def test_flightline_headings(self):
+        home = GPSPosition(**p21.origin())
+        
+        ned = Points.from_pandas(p21.read_fields(Fields.POSITION))
+        rned = Quaternions.from_euler(Points.from_pandas(p21.read_fields(Fields.ATTITUDE)))
+
+        #North Facing
+        enu_flightline =FlightLine.from_box(Box('test',home,0.0),home)
+        enu = enu_flightline.transform_to.point(ned)
+        renu = enu_flightline.transform_to.quat(rned)  # TODO think of a test for this
+        np.testing.assert_array_almost_equal(ned.x, enu.y)
+        np.testing.assert_array_almost_equal(ned.y, enu.x)
+        np.testing.assert_array_almost_equal(ned.z, -enu.z)
+
+
+        #South Facing
+        wsu_flightline =FlightLine.from_box(Box('test',home,np.pi),home)
+        wsu = wsu_flightline.transform_to.point(ned)
+        rwsu = wsu_flightline.transform_to.quat(rned)  # TODO think of a test for this
+        np.testing.assert_array_almost_equal(ned.x, -wsu.y)
+        np.testing.assert_array_almost_equal(ned.y, -wsu.x)
+        np.testing.assert_array_almost_equal(ned.z, -wsu.z)
+
+        #West Facing
+        nwu_flightline =FlightLine.from_box(Box('test',home,-np.pi/2),home)
+        nwu = nwu_flightline.transform_to.point(ned)
+        rnwu = nwu_flightline.transform_to.quat(rned)  # TODO think of a test for this
+        np.testing.assert_array_almost_equal(ned.x, nwu.x)
+        np.testing.assert_array_almost_equal(ned.y, -nwu.y)
+        np.testing.assert_array_almost_equal(ned.z, -nwu.z)
+
+
+
+    def test_transfrom_from_to(self):
+        fl = FlightLine.from_covariance(p21)
+        ned = Points.from_pandas(p21.read_fields(Fields.POSITION))
+        np.testing.assert_array_almost_equal(
+            ned.data,
+            fl.transform_from.point(fl.transform_to.point(ned)).data
+        )
+        
+        rned = Quaternions.from_euler(Points.from_pandas(p21.read_fields(Fields.ATTITUDE)))
+        np.testing.assert_array_almost_equal(
+            rned.data,
+            fl.transform_from.quat(fl.transform_from.quat(rned)).data
+        )
+
+
+if __name__ == "__main__":
+    unittest.main()

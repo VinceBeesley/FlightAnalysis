@@ -97,7 +97,7 @@ class Section():
 
     def to_csv(self, filename):
         self.data.to_csv(filename)
-    
+
     @staticmethod
     def from_csv(filename):
         data = pd.read_csv(filename)
@@ -178,13 +178,14 @@ class Section():
         elif plane == "z":
             x, y = self.x, self.y
 
-        calc_R = lambda xc, yc : np.sqrt((x-xc)**2 + (y-yc)**2)
+        def calc_R(xc, yc): return np.sqrt((x-xc)**2 + (y-yc)**2)
 
         def f_2(c):
             Ri = calc_R(*c)
             return Ri - Ri.mean()
 
-        center_2, ier = optimize.leastsq(f_2, (0.0, 0.0))  # better to take the mean position or something
+        # better to take the mean position or something
+        center_2, ier = optimize.leastsq(f_2, (0.0, 0.0))
         Ri_2 = calc_R(*center_2)
 
         if plane == "x":
@@ -195,7 +196,6 @@ class Section():
             centre = Point(self.x[0], center_2[1], self.z[0])
 
         return centre, Ri_2, Ri_2.mean()
-
 
     @staticmethod
     def from_loop(itransform: Transformation, speed: float, proportion: float, radius: float, ke: bool = False):
@@ -272,7 +272,7 @@ class Section():
 
     @staticmethod
     def from_spin(itransform: Transformation, height: float, turns: float):
-        inverted = itransform.rotate(Point(0, 0, 1)).z > 0
+        inverted = np.sign(itransform.rotate(Point(0, 0, 1)).z)
 
         nose_drop = Section.from_loop(
             itransform, 5.0, -0.25 * inverted, 2.0, False)
@@ -366,12 +366,15 @@ class Section():
     def from_manoeuvre(transform: Transformation, manoeuvre: Manoeuvre, scale: float = 200.0):
         elms = []
         itrans = transform
+        #print("Manoeuvre : {}".format(manoeuvre.name))
         for i, element in enumerate(manoeuvre.elements):
-            elms.append(Section.from_element(itrans, element, 30.0, scale))
+            elms.append(Section.from_element(itrans, element, 50.0, scale))
             elms[-1].data["element"] = "{}_{}".format(
                 i, element.classification.name)
             elms[-1].data["manoeuvre"] = manoeuvre.name
             itrans = elms[-1].get_state_from_index(-1).transform
+            #print("element {0}, {1}".format(element.classification, (itrans.translation / scale).to_list()))
+
         return elms
 
     def get_manoeuvre(self, manoeuvre: str):
@@ -411,8 +414,9 @@ class Section():
             elms += Section.from_manoeuvre(itrans, manoeuvre, scale=box_scale)
             itrans = elms[-1].get_state_from_index(-1).transform
 
-        #add an exit line
-        elms.append(Section.from_element(itrans, Element(ElClass.LINE, 0.25, 0.0, 0.0), 30.0, box_scale))
+        # add an exit line
+        elms.append(Section.from_element(itrans, Element(
+            ElClass.LINE, 0.25, 0.0, 0.0), 30.0, box_scale))
         elms[-1].data["manoeuvre"] = "exit_line"
         elms[-1].data["element"] = "0_LINE"
         return Section.stack(elms)
@@ -425,21 +429,26 @@ class Section():
 
         tp = template.brvel.copy()
 
-        
         tp.brvr = abs(tp.brvr)
         tp.brvy = abs(tp.brvy)
         distance, path = fastdtw(
-            tp.to_numpy(), 
-            fl.to_numpy(), 
+            tp.to_numpy(),
+            fl.to_numpy(),
             radius=1,
             dist=euclidean
         )
-        # TODO this join is not correct as length of flown template increases. 
-        # TODO write some tests!
-        return distance, Section(
-            flown.data.reset_index().join(
-                pd.DataFrame(path,columns=["template", "flight"]).set_index("flight").join(
-                    template.data.reset_index().loc[:, ["manoeuvre", "element"]],
-                    on="template"
-                )
-            ).set_index("time_index"))
+
+
+        mans = pd.DataFrame(path, columns=["template", "flight"]).set_index("template").join(
+            template.data.reset_index().loc[:, ["manoeuvre", "element"]]
+        ).groupby(['flight']).last().reset_index().set_index("flight")
+
+        return distance, Section(flown.data.reset_index().join(mans).set_index("time_index"))
+#        return distance, Section(
+#            flown.data.reset_index().join(
+#                pd.DataFrame(path, columns=["template", "flight"]).set_index("flight").join(
+#                    template.data.reset_index(
+#                    ).loc[:, ["manoeuvre", "element"]],
+#                    on="template"
+#                )
+#            ).set_index("time_index"))

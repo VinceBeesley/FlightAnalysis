@@ -46,4 +46,4 @@ class Schedule():
         with open(file, "r") as f:
             return Schedule.from_dict(load(f))
 
-    
+
