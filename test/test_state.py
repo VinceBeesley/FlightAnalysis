@@ -13,7 +13,7 @@ flight = Flight.from_csv('test/P21.csv')
 class TestSvars(unittest.TestCase):
     def test_columns(self):
         vars = SVars()
-        self.assertEqual(len(vars.columns), 19)
+        self.assertEqual(len(vars.columns), 16)
         self.assertEqual(vars.pos, ['x', 'y', 'z'])
         self.assertEqual(vars[0], 'x')
         self.assertEqual(tuple(vars[:3]), tuple(list('xyz')))
@@ -46,3 +46,7 @@ class TestState(unittest.TestCase):
         self.assertEqual(pt.x, 50)
         self.assertEqual(pt.y, 169)
         self.assertEqual(pt.z, 150)
+
+
+if __name__ == '__main__':
+    unittest.main()

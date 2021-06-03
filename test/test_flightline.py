@@ -37,6 +37,7 @@ class TestFlightLine(unittest.TestCase):
         )   # Translation should be small, because I turn on close to the pilot position.
 
 
+    @unittest.skip # see test_flightline_headings
     def test_from_box_true_north(self):
         home = GPSPosition(39, -105)
 
@@ -69,6 +70,23 @@ class TestFlightLine(unittest.TestCase):
             [111.12, 0, 0],
             0
         )
+
+
+    def test_from_box(self):
+        box = Box.from_json('./test/gordano_box.json')
+
+        fl = FlightLine.from_box(box, GPSPosition(**p21.origin()))
+
+        np.testing.assert_array_almost_equal(
+            fl.transform_to.rotate(Point(1.0, 0.0, 0.0)).to_list(),
+            Point(-0.514746, -0.857342, 0.0).to_list()
+        )   # My box faces south east ish, so world north should be -x and -y in contest frame
+
+        np.testing.assert_array_almost_equal(
+            fl.transform_to.translation.to_list(),
+            Point(3.922876, -3.664429,  0.).to_list()
+        )   # Translation should be small, because I turn on close to the pilot position.
+
 
 
     def test_initial(self):
@@ -130,3 +148,22 @@ class TestFlightLine(unittest.TestCase):
         np.testing.assert_array_almost_equal(ned.y, -nwu.y)
         np.testing.assert_array_almost_equal(ned.z, -nwu.z)
 
+
+
+    def test_transfrom_from_to(self):
+        fl = FlightLine.from_covariance(p21)
+        ned = Points.from_pandas(p21.read_fields(Fields.POSITION))
+        np.testing.assert_array_almost_equal(
+            ned.data,
+            fl.transform_from.point(fl.transform_to.point(ned)).data
+        )
+        
+        rned = Quaternions.from_euler(Points.from_pandas(p21.read_fields(Fields.ATTITUDE)))
+        np.testing.assert_array_almost_equal(
+            rned.data,
+            fl.transform_from.quat(fl.transform_from.quat(rned)).data
+        )
+
+
+if __name__ == "__main__":
+    unittest.main()
