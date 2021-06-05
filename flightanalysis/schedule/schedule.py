@@ -15,6 +15,12 @@ class Categories():
     }
 
 
+class StartingPosition():
+    def __init__(self, x_offset:float, z_offset:float, orientation: str):
+        self.x_offset = x_offset
+        self.z_offset = z_offset
+        self.orientation = orientation
+
 class Schedule():
     def __init__(self, name: str, category: int, entry: str, entry_x_offset:float, entry_z_offset: float, manoeuvres: List[Manoeuvre]):
         self.name = name

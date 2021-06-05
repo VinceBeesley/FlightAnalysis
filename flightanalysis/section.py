@@ -40,6 +40,8 @@ class Section():
 
     @staticmethod
     def stack(sections):
+        # TODO the stacked DF wants to point to elements in the input sections,
+        # rather than copy. needs more thought
         offsets = [0] + [sec.data.index[-1] for sec in sections[:-1]]
 
         dfs = [section.data.iloc[:-1] for section in sections[:-1]] + \
@@ -452,3 +454,68 @@ class Section():
 #                    on="template"
 #                )
 #            ).set_index("time_index"))
+
+
+
+class LabelledSection:
+    def __init__(self, section: Section, labels: list):
+        self.section = section
+        self.labels = labels
+        
+    def __getitem__(self, i):
+        return self.labels[i]
+
+    @staticmethod
+    def from_schedule(schedule: Schedule, enter_from: str, distance):
+        box_scale = np.tan(np.radians(60)) * distance
+
+        dmul = -1.0 if enter_from == "right" else 1.0
+        ipos = Point(
+            dmul * box_scale * schedule.entry_x_offset,
+            distance,
+            box_scale * schedule.entry_z_offset
+        )
+
+        iatt = Quaternion.from_euler(Point(np.pi, 0, 0))
+
+        if schedule.entry == "inverted":
+            iatt = Quaternion.from_euler(Point(0, np.pi, 0)) * iatt
+        if enter_from == "left":
+            iatt = Quaternion.from_euler(Point(0, 0, np.pi)) * iatt
+
+        itrans = Transformation(ipos, iatt)
+
+        mans = []
+        for manoeuvre in schedule.manoeuvres:
+            man = LabelledSection.from_manoeuvre(itrans, manoeuvre, box_scale)
+            itrans = man.section.get_state_from_index(-1).transform
+            mans.append(man)
+
+#        TODO make Takeoff and landing manoeuvre
+#        mans.append(MatchedSection.from_element(
+#            itrans,
+#            Element(ElClass.LINE, 0.25, 0.0, 0.0), 30.0, box_scale)
+#        )  # add an exit line
+
+        return LabelledSection(
+            Section.stack([man.section for man in mans]),
+            mans            
+        )
+
+    @staticmethod
+    def from_manoeuvre(transform: Transformation, manoeuvre: Manoeuvre, scale: float = 200.0):
+        elms = []
+        itrans = transform
+        #print("Manoeuvre : {}".format(manoeuvre.name))
+        for i, element in enumerate(manoeuvre.elements):
+            
+            elm = Section.from_element(itrans, element, 50.0, scale)
+
+            elms.append(elm)
+            itrans = elm.get_state_from_index(-1).transform
+            #print("element {0}, {1}".format(element.classification, (itrans.translation / scale).to_list()))
+
+        return LabelledSection(
+            Section.stack(elms),
+            elms
+        )
