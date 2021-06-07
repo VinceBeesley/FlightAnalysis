@@ -37,7 +37,6 @@ class TestFlightLine(unittest.TestCase):
         )   # Translation should be small, because I turn on close to the pilot position.
 
 
-    @unittest.skip # see test_flightline_headings
     def test_from_box_true_north(self):
         home = GPSPosition(39, -105)
 
