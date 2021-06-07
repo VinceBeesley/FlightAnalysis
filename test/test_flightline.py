@@ -37,13 +37,11 @@ class TestFlightLine(unittest.TestCase):
         )   # Translation should be small, because I turn on close to the pilot position.
 
 
-    @unittest.skip # see test_flightline_headings
     def test_from_box_true_north(self):
         home = GPSPosition(39, -105)
 
-        # Box heading specified in radians from East in ENU frame (anticlockwise)
-        # Note that compass headings are specified in degrees from North (clockwise)
-        box = Box('north', home, pi/2)
+        # Box heading specified in radians from North (clockwise)
+        box = Box('north', home, 0)
 
         fl = FlightLine.from_box(box, home)
 
@@ -118,6 +116,7 @@ class TestFlightLine(unittest.TestCase):
 
 
     def test_flightline_headings(self):
+        pilotNorth_ENU = Point(0, 1, 1)
         home = GPSPosition(**p21.origin())
         
         ned = Points.from_pandas(p21.read_fields(Fields.POSITION))
@@ -131,6 +130,9 @@ class TestFlightLine(unittest.TestCase):
         np.testing.assert_array_almost_equal(ned.y, enu.x)
         np.testing.assert_array_almost_equal(ned.z, -enu.z)
 
+        pilotNorth_NED = Point(1, 0, -1)
+        boxNorth = enu_flightline.transform_to.point(pilotNorth_NED)
+        np.testing.assert_array_almost_equal(pilotNorth_ENU.to_tuple(), boxNorth.to_tuple())
 
         #South Facing
         wsu_flightline =FlightLine.from_box(Box('test',home,np.pi),home)
@@ -140,6 +142,10 @@ class TestFlightLine(unittest.TestCase):
         np.testing.assert_array_almost_equal(ned.y, -wsu.x)
         np.testing.assert_array_almost_equal(ned.z, -wsu.z)
 
+        pilotNorth_NED = Point(-1, 0, -1)
+        boxNorth = wsu_flightline.transform_to.point(pilotNorth_NED)
+        np.testing.assert_array_almost_equal(pilotNorth_ENU.to_tuple(), boxNorth.to_tuple())
+
         #West Facing
         nwu_flightline =FlightLine.from_box(Box('test',home,-np.pi/2),home)
         nwu = nwu_flightline.transform_to.point(ned)
@@ -148,20 +154,23 @@ class TestFlightLine(unittest.TestCase):
         np.testing.assert_array_almost_equal(ned.y, -nwu.y)
         np.testing.assert_array_almost_equal(ned.z, -nwu.z)
 
+        pilotNorth_NED = Point(0, -1, -1)
+        boxNorth = nwu_flightline.transform_to.point(pilotNorth_NED)
+        np.testing.assert_array_almost_equal(pilotNorth_ENU.to_tuple(), boxNorth.to_tuple())
 
 
-    def test_transfrom_from_to(self):
+
+    def test_transform_from_to(self):
         fl = FlightLine.from_covariance(p21)
         ned = Points.from_pandas(p21.read_fields(Fields.POSITION))
         np.testing.assert_array_almost_equal(
             ned.data,
             fl.transform_from.point(fl.transform_to.point(ned)).data
         )
-        
         rned = Quaternions.from_euler(Points.from_pandas(p21.read_fields(Fields.ATTITUDE)))
         np.testing.assert_array_almost_equal(
             rned.data,
-            fl.transform_from.quat(fl.transform_from.quat(rned)).data
+            fl.transform_from.quat(fl.transform_to.quat(rned)).data
         )
 
 
