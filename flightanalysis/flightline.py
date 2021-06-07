@@ -134,7 +134,8 @@ class FlightLine(object):
         self.world = world
         self.contest = contest
         self.transform_to = Transformation.from_coords(contest, world)
-        self.transform_from = Transformation.from_coords(world, contest)
+        self.transform_from = Transformation(-self.transform_to.translation,
+                                             self.transform_to.rotation.conjugate())
 
     @staticmethod
     def from_box(box: Box, world_home: GPSPosition):
