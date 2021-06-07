@@ -11,12 +11,12 @@ import pandas as pd
 
 
 flight = Flight.from_csv('test/P21.csv')
-
+box = Box.from_json('./test/gordano_box.json')
 
 class TestSection(unittest.TestCase):
     def test_from_flight(self):
         seq = Section.from_flight(
-            flight, FlightLine.from_initial_position(flight))
+            flight, FlightLine.from_box(box, GPSPosition(**flight.origin())))
         self.assertIsInstance(seq.x, pd.Series)
         self.assertIsInstance(seq.y, pd.Series)
         self.assertIsInstance(seq.z, pd.Series)
@@ -26,6 +26,8 @@ class TestSection(unittest.TestCase):
         self.assertIsInstance(seq.rz, pd.Series)
 
         self.assertGreater(seq.z.mean(), 0)
+        np.testing.assert_array_less(np.abs(seq.pos.to_numpy()[0]), 50.0 )
+        
 
     def test_generate_state(self):
         seq = Section.from_flight(
@@ -130,7 +132,7 @@ class TestSection(unittest.TestCase):
     def test_align(self):
 
         flight = Flight.from_csv("test/nice_p.csv")
-        flown = Section.from_flight(flight, FlightLine.from_box(Box.from_json("test/gordano_box.json"), GPSPosition(**flight.origin()))).subset(100, 493)
+        flown = Section.from_flight(flight, FlightLine.from_box(box, GPSPosition(**flight.origin()))).subset(100, 493)
 
         template = Section.from_schedule(sched.p21)
 
@@ -138,6 +140,8 @@ class TestSection(unittest.TestCase):
         aligned = Section.align(flown, template)
 
         self.assertEqual(len(aligned[1].data), len(flown.data))
+        np.testing.assert_array_less(np.abs(aligned[1].pos.to_numpy()[0]), 200.0 )
+        
 
     def test_evaluate_radius(self):
         initial = State(
