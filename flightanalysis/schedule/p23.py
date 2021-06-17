@@ -94,7 +94,7 @@ p23 = Schedule("P23", Categories.F3A, "left", 0.6, 0.1, [
         Element(ElClass.LOOP,  0.3, 0.0, 0.25),  # 0.8
     ]),
     Manoeuvre("Figure Et", 4, [
-        Element(ElClass.LINE,  0.2765534, 0.0, 0.0),  # 0.5
+        Element(ElClass.LINE,  0.3428932188134527, 0.0, 0.0),  # 0.5
         Element(ElClass.LOOP,  0.5, 0.0, 0.125),  # 0.65
     ] + reboundrollmaker([0.5, -0.5], 0.5, "Centre") + [
         Element(ElClass.LOOP,  0.5, 0.0, -7/8),  # 0.95
@@ -102,7 +102,7 @@ p23 = Schedule("P23", Categories.F3A, "left", 0.6, 0.1, [
         Element(ElClass.LOOP,  0.5, 0.0, 0.25),  # -0.18366018118654734, 0.9
     ]),
     Manoeuvre("Half Sq 2", 2, [
-        Element(ElClass.LINE,  0.4163398188134526, 0.0, 0.0),  # 0.6
+        Element(ElClass.LINE,  0.35, 0.0, 0.0),  # 0.6
         Element(ElClass.LOOP,  0.3, 0.0, 0.25),  # 0.65, 0.85
     ] + rollmaker(1, "/", 2, 0.5, "Centre") + [  # 0.25
         Element(ElClass.LOOP,  0.3, 0.0, -0.25),  # 0.6 , 0.1

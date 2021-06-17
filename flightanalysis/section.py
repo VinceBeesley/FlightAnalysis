@@ -1,12 +1,11 @@
 from flightdata import Flight, Fields
-from geometry import Point, Quaternion, Coord, Transformation, transformation, Points, Quaternions, cross_product
-from numpy.testing._private.utils import assert_equal
+from geometry import Point, Quaternion, Coord, Transformation, Points, Quaternions, cross_product
 from .flightline import FlightLine, Box
 from .state import State
 import numpy as np
 import pandas as pd
 from .schedule import Element
-from typing import Callable, Tuple, List, Union
+from typing import Tuple, Union
 from numbers import Number
 from .schedule import Schedule, Manoeuvre, Element, ElClass
 from fastdtw import fastdtw
@@ -363,22 +362,28 @@ class Section():
         return el
 
     @ staticmethod
-    def from_manoeuvre(transform: Transformation, manoeuvre: Manoeuvre, scale: float = 200.0):
+    def from_manoeuvre(transform: Transformation, manoeuvre: Manoeuvre, scale: float = 200.0, pr=False):
         elms = []
         itrans = transform
-        #print("Manoeuvre : {}".format(manoeuvre.name))
+        if pr:
+            print("Manoeuvre : {}".format(manoeuvre.name))
         for i, element in enumerate(manoeuvre.elements):
             elms.append(Section.from_element(itrans, element, 50.0, scale))
             elms[-1].data["element"] = "{}_{}".format(
                 i, element.classification.name)
             elms[-1].data["manoeuvre"] = manoeuvre.name
             itrans = elms[-1].get_state_from_index(-1).transform
-            #print("element {0}, {1}".format(element.classification, (itrans.translation / scale).to_list()))
+            if pr:
+                print("element {0}, {1}".format(element.classification, (itrans.translation / scale).to_list()))
 
         return elms
 
-    def get_manoeuvre(self, manoeuvre: str):
-        return Section(self.data[self.data.manoeuvre == manoeuvre])
+    def get_manoeuvre(self, manoeuvre: Union[str, list]):
+        if isinstance(manoeuvre, str):
+            return Section(self.data[self.data.manoeuvre == manoeuvre])
+        elif isinstance(manoeuvre, list):
+            return Section(self.data[self.data["manoeuvre"].isin(manoeuvre)])
+
 
     def split_manoeuvres(self):
         return {
@@ -411,7 +416,7 @@ class Section():
 
         elms = []
         for manoeuvre in schedule.manoeuvres:
-            elms += Section.from_manoeuvre(itrans, manoeuvre, scale=box_scale)
+            elms += Section.from_manoeuvre(itrans, manoeuvre, scale=box_scale, pr=False)
             itrans = elms[-1].get_state_from_index(-1).transform
 
         # add an exit line
