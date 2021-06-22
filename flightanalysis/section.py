@@ -14,7 +14,7 @@ from scipy import optimize
 
 
 class Section():
-    _construct_freq = 20
+    _construct_freq = 30
 
     def __init__(self, data: pd.DataFrame):
         self.data = data
@@ -104,6 +104,10 @@ class Section():
         data.index.name = 'time_flight'
 
         return Section(data)
+
+    @property
+    def duration(self):
+        return self.data.index[-1] - self.data.index[0]
 
     def get_state_from_index(self, index):
         return State.from_series(self.data.iloc[index].copy())
@@ -270,7 +274,7 @@ class Section():
         )
 
     @staticmethod
-    def from_spin(itransform: Transformation, height: float, turns: float):
+    def from_spin(itransform: Transformation, height: float, turns: float, opp_turns: float = 0.0):
         inverted = np.sign(itransform.rotate(Point(0, 0, 1)).z)
 
         nose_drop = Section.from_loop(
@@ -282,7 +286,17 @@ class Section():
             height-2.5
         ).superimpose_roll(turns)
 
-        return Section.stack([nose_drop, rotation])
+
+        if opp_turns == 0.0:
+            return Section.stack([nose_drop, rotation])
+        else:
+            rotation2 = Section.from_line(
+                rotation.get_state_from_index(-1).transform,
+                5.0,
+                height-2.5
+            ).superimpose_roll(opp_turns)
+
+            return Section.stack([nose_drop, rotation, rotation2])
 
     def superimpose_roll(self, proportion: float):
         """Generate a new section, identical to self, but with a continous roll integrated
@@ -351,11 +365,12 @@ class Section():
         elif element.classification == ElClass.LINE:
             el = Section.from_line(transform, speed, scale * element.size)
         elif element.classification == ElClass.SPIN:
-            return Section.from_spin(transform, scale * element.size, element.roll)
+            return Section.from_spin(transform, scale * element.size, element.roll, element.loop)
         elif element.classification == ElClass.SNAP:
             el = Section.from_line(transform, speed, scale * element.size)
         elif element.classification == ElClass.STALLTURN:
-            return Section.from_loop(transform, 3.0, 0.5, 2.0, True)
+            _dir = 1 if element.loop >= 0.0 else -1
+            return Section.from_loop(transform, 3.0, 0.5 * _dir, 2.0, True)
 
         if not element.roll == 0:
             el = el.superimpose_roll(element.roll)
@@ -368,13 +383,14 @@ class Section():
         if pr:
             print("Manoeuvre : {}".format(manoeuvre.name))
         for i, element in enumerate(manoeuvre.elements):
-            elms.append(Section.from_element(itrans, element, 50.0, scale))
+            elms.append(Section.from_element(itrans, element, 20.0, scale))
             elms[-1].data["element"] = "{}_{}".format(
                 i, element.classification.name)
             elms[-1].data["manoeuvre"] = manoeuvre.name
             itrans = elms[-1].get_state_from_index(-1).transform
             if pr:
-                print("element {0}, {1}".format(element.classification, (itrans.translation / scale).to_list()))
+                print("element {0}, {1}".format(
+                    element.classification, (itrans.translation / scale).to_list()))
 
         return elms
 
@@ -383,7 +399,6 @@ class Section():
             return Section(self.data[self.data.manoeuvre == manoeuvre])
         elif isinstance(manoeuvre, list):
             return Section(self.data[self.data["manoeuvre"].isin(manoeuvre)])
-
 
     def split_manoeuvres(self):
         return {
@@ -397,6 +412,8 @@ class Section():
     @ staticmethod
     def from_schedule(schedule: Schedule, distance: float = 170.0, direction: str = "right"):
         box_scale = np.tan(np.radians(60)) * distance
+
+        # TODO make ipos always be end of box
 
         dmul = -1.0 if direction == "right" else 1.0
         ipos = Point(
@@ -415,14 +432,21 @@ class Section():
         itrans = Transformation(ipos, iatt)
 
         elms = []
+
+        # elms.append(Section.from_element(itrans, Element(
+        #    ElClass.LINE, 1.0, 0.0, 0.0), 30.0, box_scale))
+        #elms[-1].data["manoeuvre"] = "takeoff"
+        #elms[-1].data["element"] = "0_LINE"
+        #itrans = elms[-1].get_state_from_index(-1).transform
         for manoeuvre in schedule.manoeuvres:
-            elms += Section.from_manoeuvre(itrans, manoeuvre, scale=box_scale, pr=False)
+            elms += Section.from_manoeuvre(itrans,
+                                           manoeuvre, scale=box_scale, pr=False)
             itrans = elms[-1].get_state_from_index(-1).transform
 
         # add an exit line
         elms.append(Section.from_element(itrans, Element(
-            ElClass.LINE, 0.25, 0.0, 0.0), 30.0, box_scale))
-        elms[-1].data["manoeuvre"] = "exit_line"
+            ElClass.LINE, 1.0, 0.0, 0.0), 30.0, box_scale))
+        elms[-1].data["manoeuvre"] = "landing"
         elms[-1].data["element"] = "0_LINE"
         return Section.stack(elms)
 
@@ -442,7 +466,6 @@ class Section():
             radius=1,
             dist=euclidean
         )
-
 
         mans = pd.DataFrame(path, columns=["template", "flight"]).set_index("template").join(
             template.data.reset_index().loc[:, ["manoeuvre", "element"]]
