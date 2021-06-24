@@ -71,13 +71,13 @@ f23 = Schedule("F21", Categories.F3A, "upright", 1.0, 0.15, [
     Manoeuvre("Et", 3, [
         Element(ElClass.LINE, 0.4, 0.0, 0.0),
         Element(ElClass.LOOP, d1, 0.0, -1/4),
-    ] + rollmaker(1, "/", 1, 0.4, "Centre") + [
+    ] + rollmaker(1, "/", 1, 0.5, "Centre") + [
         Element(ElClass.LOOP, d1, 0.0, -5/8),
-    ] + rollmaker(2, "X", 4, (0.4 - d1*c45) / c45, "Centre") + [
+    ] + rollmaker(2, "X", 4, (0.5 - d1*c45) / c45, "Centre") + [
         Element(ElClass.LOOP, d1, 0.0, -3/8),
     ]),
     Manoeuvre("u45", 6, [
-        Element(ElClass.LINE, 0.125 + 0.034045455704949726, 0.0, 0.0),
+        Element(ElClass.LINE, 0.125 + 0.13404545570494988, 0.0, 0.0),
         Element(ElClass.LINE, 0.1, 1/4, 0.0),
         Element(ElClass.KELOOP, d3, 0.0, -1/8),
     ] + reboundrollmaker([1.0, -1.0], 0.9, "Centre", rlength=0.05, snap=True) + [
@@ -87,11 +87,11 @@ f23 = Schedule("F21", Categories.F3A, "upright", 1.0, 0.15, [
     Manoeuvre("rshark", 3, [
         Element(ElClass.LINE, 0.2, 0.0, 0.0),
         Element(ElClass.LOOP, d1, 0.0, -1/4),
-    ] + reboundrollmaker([1/2, -1/2], 0.9094112549695433 - 0.15 - d1, "Centre", rlength=0.4, snap=False) + [
+    ] + reboundrollmaker([1/2, -1/2], 0.9094112549695433 - 0.15 - d1, "Centre", rlength=0.25, snap=False) + [
         Element(ElClass.LOOP, d1, 0.0, -1/4),
-    ] + rollmaker(2, "X", 4, 0.25, "Centre") + [
+    ] + rollmaker(2, "X", 4, 0.25, "Centre", rlength=0.25) + [
         Element(ElClass.LOOP, d1, 0.0, 3/8),
-    ] + rollmaker(1, "/", 1, 0.36, "Centre") + [
+    ] + rollmaker(1, "/", 1, 0.36, "Centre", rlength=0.25) + [
         Element(ElClass.LOOP, d1, 0.0, -3/8),
     ]),
     Manoeuvre("ft", 6, [
@@ -140,7 +140,7 @@ f23 = Schedule("F21", Categories.F3A, "upright", 1.0, 0.15, [
         Element(ElClass.LOOP, d1, 0.0, -1/4),
     ]),
     Manoeuvre("av", 5, [
-        Element(ElClass.LINE, 0.403, 0.0, 0.0),
+        Element(ElClass.LINE, 0.4 + 0.025, 0.0, 0.0),
         Element(ElClass.LOOP, 0.7, 0.5, -1/4),
         Element(ElClass.LOOP, 0.7, 0.0, 1/4),
         Element(ElClass.SNAP, 0.05, 1.0, 0.0),

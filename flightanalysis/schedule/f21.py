@@ -44,7 +44,7 @@ f21 = Schedule("F21", Categories.F3A, "upright", 1.0, 0.15, [
         Element(ElClass.LOOP, d1, 0.0, -0.25),
         Element(ElClass.LINE, 0.1, 0.0, 0.0),
         Element(ElClass.LOOP, d1, 0.0, -0.25),
-    ] + reboundrollmaker([3/4], 0.5, "Centre", snap=True) + [
+    ] + reboundrollmaker([3/4], 0.5, "Centre",rlength=0.05, snap=True) + [
         Element(ElClass.LOOP, d1, 0.0, -0.25),
     ]),
     Manoeuvre("hB", 5, [
@@ -125,13 +125,11 @@ f21 = Schedule("F21", Categories.F3A, "upright", 1.0, 0.15, [
         Element(ElClass.LINE, 0.5745408015016459, 0.0, 1/2),
         Element(ElClass.LOOP, d1, 0.0, -0.25),
     ]),
-    Manoeuvre(
-        "rollC",
-        3,
-        reboundrollmaker([0.5,-0.25, -0.25, -0.25, -0.25, 0.5], 0.8067923561081121 + 0.45, "End", rlength=0.3)
+    Manoeuvre("rollC", 3,
+        reboundrollmaker([0.5,-0.25, -0.25, -0.25, -0.25, 0.5], 1.1885847122162254, "End", rlength=0.3)
     ),
     Manoeuvre("fTurn", 4, [
-        Element(ElClass.LINE, 0.05, 0.0, 0.0),
+        Element(ElClass.LINE, 0.1, 0.0, 0.0),
         Element(ElClass.LOOP, d1, 0.0, -1/8),
         ] + rollmaker(3, "/", 4, 0.4, "Centre", right=False, rlength=0.3) + [
         Element(ElClass.LOOP, d1, 0.0, 0.5),
@@ -139,7 +137,7 @@ f21 = Schedule("F21", Categories.F3A, "upright", 1.0, 0.15, [
         Element(ElClass.LOOP, d1, 0.0, -1/8),
     ]),
     Manoeuvre("square", 4, [
-        Element(ElClass.LINE, 0.45, 0.0, 0.0),
+        Element(ElClass.LINE, 0.475 - 0.05, 0.0, 0.0),
         Element(ElClass.LINE, 0.1, -0.25, 0.0),
         Element(ElClass.LINE, 0.15, 0.0, 0.0),
         Element(ElClass.LOOP, d1, 0.0, 1/4),

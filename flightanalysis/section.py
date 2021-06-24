@@ -14,7 +14,7 @@ from scipy import optimize
 
 
 class Section():
-    _construct_freq = 30
+    _construct_freq = 20
 
     def __init__(self, data: pd.DataFrame):
         self.data = data
@@ -410,7 +410,7 @@ class Section():
                 for elm in self.data["element"].unique()}
 
     @ staticmethod
-    def from_schedule(schedule: Schedule, distance: float = 170.0, direction: str = "right"):
+    def from_schedule(schedule: Schedule, distance: float = 170.0, direction: str = "right", pr=False):
         box_scale = np.tan(np.radians(60)) * distance
 
         # TODO make ipos always be end of box
@@ -440,7 +440,7 @@ class Section():
         #itrans = elms[-1].get_state_from_index(-1).transform
         for manoeuvre in schedule.manoeuvres:
             elms += Section.from_manoeuvre(itrans,
-                                           manoeuvre, scale=box_scale, pr=False)
+                                           manoeuvre, scale=box_scale, pr=pr)
             itrans = elms[-1].get_state_from_index(-1).transform
 
         # add an exit line
