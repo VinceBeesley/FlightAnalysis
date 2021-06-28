@@ -2,7 +2,7 @@ from flightanalysis.section import Section
 from flightanalysis.state import State
 from flightanalysis.flightline import Box, FlightLine
 from flightanalysis.schedule import Schedule
-import flightanalysis.schedule.p21 as sched
+from flightanalysis.schedule import p21 as sched
 import unittest
 from geometry import Point, Quaternion, Points, Quaternions, GPSPosition
 from flightdata import Flight, Fields

@@ -349,6 +349,7 @@ class Section():
 
     @staticmethod
     def align(flown, template):
+        # TODO labelling is now on the schedule rather than the section so this needs to be re-written
         fl = flown.brvel.copy()
         fl.brvr = abs(fl.brvr)
         fl.brvy = abs(fl.brvy)
@@ -363,7 +364,7 @@ class Section():
             radius=1,
             dist=euclidean
         )
-
+        
         mans = pd.DataFrame(path, columns=["template", "flight"]).set_index("template").join(
             template.data.reset_index().loc[:, ["manoeuvre", "element"]]
         ).groupby(['flight']).last().reset_index().set_index("flight")
