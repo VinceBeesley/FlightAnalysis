@@ -18,12 +18,12 @@ class Manoeuvre():
             [Element.from_dict(element) for element in val['elements']]
         )
 
-    def create_template(self, transform: Transformation, scale: float = 200.0 ): 
+    def create_template(self, transform: Transformation, scale: float ): 
         itrans = transform
         #print("Manoeuvre : {}".format(manoeuvre.name))
         
         for i, element in enumerate(self.elements):
-            itrans = element.create_template(itrans, element, 50.0, scale)
+            itrans = element.create_template(itrans, 30.0, scale)
             #print("element {0}, {1}".format(element.classification, (itrans.translation / scale).to_list()))
 
         self.template = Section.stack([elm.template for elm in self.elements])

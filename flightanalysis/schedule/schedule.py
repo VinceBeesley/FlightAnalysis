@@ -65,6 +65,19 @@ class Schedule():
             return Schedule.from_dict(load(f))
 
     def create_template(self, enter_from: str, distance: float):
+        """tags a section containing the template data onto the instance
+        and returns a transformation to the final position of the 
+        aircraft. 
+
+        TODO this is not very immutable
+
+        Args:
+            enter_from (str): [description]
+            distance (float): [description]
+
+        Returns:
+            [type]: [description]
+        """
         box_scale = np.tan(np.radians(60)) * distance
 
         dmul = -1.0 if enter_from == "right" else 1.0
