@@ -1,6 +1,8 @@
 from . import Element
 from typing import List
 from uuid import uuid4
+from geometry import Transformation
+from flightanalysis import Section
 
 class Manoeuvre():
     def __init__(self, name: str, k: float, elements: List[Element]):
@@ -16,19 +18,14 @@ class Manoeuvre():
             [Element.from_dict(element) for element in val['elements']]
         )
 
+    def create_template(self, transform: Transformation, scale: float = 200.0 ): 
+        itrans = transform
+        #print("Manoeuvre : {}".format(manoeuvre.name))
+        
+        for i, element in enumerate(self.elements):
+            itrans = element.create_template(itrans, element, 50.0, scale)
+            #print("element {0}, {1}".format(element.classification, (itrans.translation / scale).to_list()))
 
+        self.template = Section.stack([elm.template for elm in self.elements])
+        return itrans
 
-def element_maker(elements, x, z, direction, position="Centred"):
-    """Take a simplified element definition and generate a scaled, positioned set of elements.
-    
-    Args:
-        elements ([type]): [description]
-        x ([type]): [description]
-        y ([type]): [description]
-        direction ([type]): [description]
-        position (str, optional): [description]. Defaults to "Centred".
-    """
-    radius = 0.45
-    rolllength = 0.4
-    
-    

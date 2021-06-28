@@ -3,6 +3,8 @@ from typing import Dict
 from enum import Enum
 from uuid import uuid4
 import numpy as np
+from geometry import Transformation
+from flightanalysis import Section
 
 class ElClass(Enum):
     LINE = 0
@@ -23,6 +25,38 @@ class Element():
     def from_dict(val):
         return Element(ElClass[val["classification"]], val["size"], val["roll"], val["loop"])
 
+
+    def create_template(self, transform: Transformation, speed: float, scale: float):
+        """This tags a template set of data onto the instance, returns a Transformation to the final position
+
+        Args:
+            transform (Transformation): initial position and orientation
+            speed (float): [description]
+            scale (float): [description]
+
+        Returns:
+            [type]: [description]
+        """
+        if self.classification == ElClass.LOOP:
+            el = Section.from_loop(
+                transform, speed, self.loop, 0.5 * scale * self.size, False)
+        elif self.classification == ElClass.KELOOP:
+            el = Section.from_loop(
+                transform, speed, self.loop, 0.5 * scale * self.size, True)
+        elif self.classification == ElClass.LINE:
+            el = Section.from_line(transform, speed, scale * self.size)
+        elif self.classification == ElClass.SPIN:
+            return Section.from_spin(transform, scale * self.size, self.roll, self.loop)
+        elif self.classification == ElClass.SNAP:
+            el = Section.from_line(transform, speed, scale * self.size)
+        elif self.classification == ElClass.STALLTURN:
+            _dir = 1 if self.loop >= 0.0 else -1
+            return Section.from_loop(transform, 3.0, 0.5 * _dir, 2.0, True)
+
+        if not self.roll == 0:
+            el = el.superimpose_roll(self.roll)
+        self.template = el
+        return self.template.get_state_from_index(-1).transform
 
 
 def rollmaker(num: int, arg: str, denom: float, length: float=0.5, position="Centre", right=False, rlength=0.3):

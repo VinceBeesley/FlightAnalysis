@@ -4,10 +4,8 @@ from .flightline import FlightLine, Box
 from .state import State
 import numpy as np
 import pandas as pd
-from .schedule import Element
 from typing import Tuple, Union
 from numbers import Number
-from .schedule import Schedule, Manoeuvre, Element, ElClass
 from fastdtw import fastdtw
 from scipy.spatial.distance import euclidean
 from scipy import optimize
@@ -347,110 +345,7 @@ class Section():
             new_acc
         )
 
-    @ staticmethod
-    def from_element(transform: Transformation, element: Element, speed: float = 30.0, scale: float = 200.0):
-        """This function will generate a template set of data for a specified element
-        and initial condition. The element will be as big as it can be within the supplied
-        space.
 
-        Args:
-            element (Element): The element to generate, from the schedule description
-            initial (Sequence): The previous sequence, last value will be taken as the starting point
-            space (?Point?): TBC Limits of an available space, in A/C body frame (Xfwd, Yright, Zdwn)
-        """
-        if element.classification == ElClass.LOOP:
-            el = Section.from_loop(
-                transform, speed, element.loop, 0.5 * scale * element.size, False)
-        elif element.classification == ElClass.KELOOP:
-            el = Section.from_loop(
-                transform, speed, element.loop, 0.5 * scale * element.size, True)
-        elif element.classification == ElClass.LINE:
-            el = Section.from_line(transform, speed, scale * element.size)
-        elif element.classification == ElClass.SPIN:
-            return Section.from_spin(transform, scale * element.size, element.roll, element.loop)
-        elif element.classification == ElClass.SNAP:
-            el = Section.from_line(transform, speed, scale * element.size)
-        elif element.classification == ElClass.STALLTURN:
-            _dir = 1 if element.loop >= 0.0 else -1
-            return Section.from_loop(transform, 3.0, 0.5 * _dir, 2.0, True)
-
-        if not element.roll == 0:
-            el = el.superimpose_roll(element.roll)
-        return el
-
-    @ staticmethod
-    def from_manoeuvre(transform: Transformation, manoeuvre: Manoeuvre, scale: float = 200.0, pr=False):
-        elms = []
-        itrans = transform
-        if pr:
-            print("Manoeuvre : {}".format(manoeuvre.name))
-        for i, element in enumerate(manoeuvre.elements):
-            elms.append(Section.from_element(itrans, element, 20.0, scale))
-            elms[-1].data["element"] = "{}_{}".format(
-                i, element.classification.name)
-            elms[-1].data["manoeuvre"] = manoeuvre.name
-            itrans = elms[-1].get_state_from_index(-1).transform
-            if pr:
-                print("element {0}, {1}".format(
-                    element.classification, (itrans.translation / scale).to_list()))
-
-        return elms
-
-    def get_manoeuvre(self, manoeuvre: Union[str, list]):
-        if isinstance(manoeuvre, str):
-            return Section(self.data[self.data.manoeuvre == manoeuvre])
-        elif isinstance(manoeuvre, list):
-            return Section(self.data[self.data["manoeuvre"].isin(manoeuvre)])
-
-    def split_manoeuvres(self):
-        return {
-            man: Section(self.data[self.data.manoeuvre == man]) for man in self.data["manoeuvre"].unique()
-        }
-
-    def split_elements(self):
-        return {elm: Section(self.data[self.data.element == elm])
-                for elm in self.data["element"].unique()}
-
-    @ staticmethod
-    def from_schedule(schedule: Schedule, distance: float = 170.0, direction: str = "right", pr=False):
-        box_scale = np.tan(np.radians(60)) * distance
-
-        # TODO make ipos always be end of box
-
-        dmul = -1.0 if direction == "right" else 1.0
-        ipos = Point(
-            dmul * box_scale * schedule.entry_x_offset,
-            distance,
-            box_scale * schedule.entry_z_offset
-        )
-
-        iatt = Quaternion.from_euler(Point(np.pi, 0, 0))
-
-        if schedule.entry == "inverted":
-            iatt = Quaternion.from_euler(Point(0, np.pi, 0)) * iatt
-        if direction == "left":
-            iatt = Quaternion.from_euler(Point(0, 0, np.pi)) * iatt
-
-        itrans = Transformation(ipos, iatt)
-
-        elms = []
-
-        # elms.append(Section.from_element(itrans, Element(
-        #    ElClass.LINE, 1.0, 0.0, 0.0), 30.0, box_scale))
-        #elms[-1].data["manoeuvre"] = "takeoff"
-        #elms[-1].data["element"] = "0_LINE"
-        #itrans = elms[-1].get_state_from_index(-1).transform
-        for manoeuvre in schedule.manoeuvres:
-            elms += Section.from_manoeuvre(itrans,
-                                           manoeuvre, scale=box_scale, pr=pr)
-            itrans = elms[-1].get_state_from_index(-1).transform
-
-        # add an exit line
-        elms.append(Section.from_element(itrans, Element(
-            ElClass.LINE, 1.0, 0.0, 0.0), 30.0, box_scale))
-        elms[-1].data["manoeuvre"] = "landing"
-        elms[-1].data["element"] = "0_LINE"
-        return Section.stack(elms)
 
     @staticmethod
     def align(flown, template):
@@ -474,76 +369,3 @@ class Section():
         ).groupby(['flight']).last().reset_index().set_index("flight")
 
         return distance, Section(flown.data.reset_index().join(mans).set_index("time_index"))
-#        return distance, Section(
-#            flown.data.reset_index().join(
-#                pd.DataFrame(path, columns=["template", "flight"]).set_index("flight").join(
-#                    template.data.reset_index(
-#                    ).loc[:, ["manoeuvre", "element"]],
-#                    on="template"
-#                )
-#            ).set_index("time_index"))
-
-
-
-class LabelledSection:
-    def __init__(self, section: Section, labels: list):
-        self.section = section
-        self.labels = labels
-        
-    def __getitem__(self, i):
-        return self.labels[i]
-
-    @staticmethod
-    def from_schedule(schedule: Schedule, enter_from: str, distance):
-        box_scale = np.tan(np.radians(60)) * distance
-
-        dmul = -1.0 if enter_from == "right" else 1.0
-        ipos = Point(
-            dmul * box_scale * schedule.entry_x_offset,
-            distance,
-            box_scale * schedule.entry_z_offset
-        )
-
-        iatt = Quaternion.from_euler(Point(np.pi, 0, 0))
-
-        if schedule.entry == "inverted":
-            iatt = Quaternion.from_euler(Point(0, np.pi, 0)) * iatt
-        if enter_from == "left":
-            iatt = Quaternion.from_euler(Point(0, 0, np.pi)) * iatt
-
-        itrans = Transformation(ipos, iatt)
-
-        mans = []
-        for manoeuvre in schedule.manoeuvres:
-            man = LabelledSection.from_manoeuvre(itrans, manoeuvre, box_scale)
-            itrans = man.section.get_state_from_index(-1).transform
-            mans.append(man)
-
-#        TODO make Takeoff and landing manoeuvre
-#        mans.append(MatchedSection.from_element(
-#            itrans,
-#            Element(ElClass.LINE, 0.25, 0.0, 0.0), 30.0, box_scale)
-#        )  # add an exit line
-
-        return LabelledSection(
-            Section.stack([man.section for man in mans]),
-            mans            
-        )
-
-    @staticmethod
-    def from_manoeuvre(transform: Transformation, manoeuvre: Manoeuvre, scale: float = 200.0):
-        elms = []
-        itrans = transform
-        #print("Manoeuvre : {}".format(manoeuvre.name))
-        for i, element in enumerate(manoeuvre.elements):
-            
-            elm = Section.from_element(itrans, element, 50.0, scale)
-
-            elms.append(elm)
-            itrans = elm.get_state_from_index(-1).transform
-            #print("element {0}, {1}".format(element.classification, (itrans.translation / scale).to_list()))
-
-        return LabelledSection(
-            Section.stack(elms),
-            elms
-        )
