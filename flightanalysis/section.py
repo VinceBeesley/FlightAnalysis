@@ -12,7 +12,7 @@ from scipy import optimize
 
 
 class Section():
-    _construct_freq = 20
+    _construct_freq = 10
 
     def __init__(self, data: pd.DataFrame):
         self.data = data
