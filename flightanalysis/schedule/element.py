@@ -20,7 +20,7 @@ class Element():
         self.size = size
         self.roll = roll
         self.loop = loop
-        self.uid = uuid4()
+        self.uid = str(uuid4())
 
     def create_template(self, transform: Transformation, speed: float, scale: float) -> Section:
         """This creates a Section, with an additional element column tagged with the instances uid

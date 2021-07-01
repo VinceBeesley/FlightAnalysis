@@ -4,5 +4,7 @@ from examples.model import obj
 
 
 
+temp = p21.create_template("left", 170)
+plotsec(temp, obj, 10, 10).show()
 
-plotsec(p21.create_template("left", 170), obj, 10, 10).show()
+plotsec(p21.manoeuvres[4].get_data(temp), obj, 10, 10).show()
