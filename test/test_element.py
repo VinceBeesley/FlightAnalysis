@@ -12,13 +12,13 @@ class TestElement(unittest.TestCase):
             0.5
         )
 
-        end_pos = elm.create_template(
+        new_elm = elm.create_template(
             Transformation(Point(0.0, 0.0, 0.0), Quaternion.from_euler(Point(0.0, 0.0, 0.0))),
             30.0,
             100.0
         )
 
         np.testing.assert_array_almost_equal(
-            end_pos.translation.to_list(),
+            new_elm.get_state_from_index(-1).pos.to_list(),
             [0.0, 0.0, 100.0]
         )

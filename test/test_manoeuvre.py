@@ -14,22 +14,13 @@ class TestManoeuvre(unittest.TestCase):
         ])
 
     def test_create_template(self):
-        endpos = self.v8.create_template(
+        v8_template = self.v8.create_template(
             Transformation.from_coords(Coord.from_nothing(), Coord.from_nothing()),
             100.0
         )
 
         np.testing.assert_array_almost_equal(
-            endpos.translation.to_list(),
+            v8_template.get_state_from_index(-1).pos.to_list(),
             [120, 0.0, 0.0]
         )
-
-        np.testing.assert_array_almost_equal(
-            self.v8.elements[0].template.get_state_from_index(-1).transform.translation.to_list(),
-            [80.0, 0.0, 0.0]
-        )
-
-        self.assertAlmostEqual(
-            self.v8.elements[-1].template.data.index[-1],
-            self.v8.template.data.index[-1]
-        )
+        

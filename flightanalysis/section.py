@@ -36,17 +36,30 @@ class Section():
             return Section(self.data[start:end])
 
     @staticmethod
-    def stack(sections):
-        # TODO the stacked DF wants to point to elements in the input sections,
-        # rather than copy. needs more thought
-        offsets = [0] + [sec.data.index[-1] for sec in sections[:-1]]
+    def stack(sections: list):
+        """stack a list of sections on top of each other. last row of each is replaced with first row of the next, 
+           indexes are offset so they are sequential
 
+        Args:
+            sections (List[Section]): list of sections to stacked
+
+        Returns:
+            Section: the resulting Section
+        """
+        #first build list of index offsets, to be added to each dataframe
+        #TODO this assumes the first index of each is 0. should use sec.duration
+        offsets = [0] + [sec.duration for sec in sections[:-1]]
+        offsets = np.cumsum(offsets)
+
+        # The sections to be stacked need their last row removed, 
+        # as this is replaced with the first row of the next, data is copied at this point
         dfs = [section.data.iloc[:-1] for section in sections[:-1]] + \
             [sections[-1].data.copy()]
 
-        for df, offset in zip(dfs, np.cumsum(offsets)):
-            df.index = np.array(df.index) + offset
-
+        # offset the df indexes
+        for df, offset in zip(dfs, offsets):
+            df.index = np.array(df.index) - df.index[0] + offset
+        
         return Section(pd.concat(dfs))
 
     @staticmethod
@@ -349,7 +362,7 @@ class Section():
 
     @staticmethod
     def align(flown, template):
-        # TODO labelling is now on the schedule rather than the section so this needs to be re-written
+        3
         fl = flown.brvel.copy()
         fl.brvr = abs(fl.brvr)
         fl.brvy = abs(fl.brvy)

@@ -2,7 +2,7 @@ from flightanalysis.section import Section
 from flightanalysis.state import State
 from flightanalysis.flightline import Box, FlightLine
 from flightanalysis.schedule import Schedule
-from flightanalysis.schedule import p21 as sched
+from flightanalysis.schedule import p21
 import unittest
 from geometry import Point, Quaternion, Points, Quaternions, GPSPosition
 from flightdata import Flight, Fields
@@ -133,18 +133,18 @@ class TestSection(unittest.TestCase):
         #its arguments, rather than copies. Alternatively it could return two arguments,
         # a compiled section and a list of subsections that point to slices of the compiled section
         self.assertEqual(
-            radius.data.index[-1],
+            radius.data.index[-1] + line.data.index[-1],
             combo.data.index[-1]
         ) 
 
 
-    def test_align(self):
 
+    def test_align(self):
         flight = Flight.from_csv("test/nice_p.csv")
+
         flown = Section.from_flight(flight, FlightLine.from_box(box, GPSPosition(**flight.origin()))).subset(100, 493)
 
-        template = Section.from_schedule(sched.p21)
-
+        template = p21.create_template("left", 170)
         
         aligned = Section.align(flown, template)
 

@@ -48,28 +48,12 @@ class Schedule():
                 return manoeuvre
         raise KeyError()
 
-    @staticmethod
-    def from_dict(val):
-        return Schedule(
-            val['name'],
-            Categories.lookup[val['category']],
-            val['entry'],
-            val['entry_x_offset'],
-            val['entry_z_offset'],
-            [Manoeuvre.from_dict(manoeuvre) for manoeuvre in val['manoeuvres']]
-        )
-
-    @staticmethod
-    def from_json(file: str):
-        with open(file, "r") as f:
-            return Schedule.from_dict(load(f))
-
     def create_template(self, enter_from: str, distance: float):
         """tags a section containing the template data onto the instance
         and returns a transformation to the final position of the 
         aircraft. 
 
-        TODO this is not very immutable
+        TODO this is not immutable, which is sad
 
         Args:
             enter_from (str): [description]
@@ -96,10 +80,11 @@ class Schedule():
 
         itrans = Transformation(ipos, iatt)
 
-        mans = []
+        templates = []
         #TODO add exit line on construction
         for manoeuvre in self.manoeuvres:
-            itrans = manoeuvre.create_template(itrans, box_scale)
-            
-        self.template = Section.stack([man.section for man in mans])
-        return itrans
+            templates.append(manoeuvre.create_template(itrans, box_scale))
+            itrans = templates[-1].get_state_from_index(-1).transform
+
+        return Section.stack(templates)
+

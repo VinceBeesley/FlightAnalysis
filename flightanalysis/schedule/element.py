@@ -5,7 +5,7 @@ from uuid import uuid4
 import numpy as np
 from geometry import Transformation
 from flightanalysis import Section
-
+from uuid import uuid4
 class ElClass(Enum):
     LINE = 0
     LOOP = 1
@@ -20,14 +20,10 @@ class Element():
         self.size = size
         self.roll = roll
         self.loop = loop
+        self.uid = uuid4()
 
-
-    def from_dict(val):
-        return Element(ElClass[val["classification"]], val["size"], val["roll"], val["loop"])
-
-
-    def create_template(self, transform: Transformation, speed: float, scale: float):
-        """This tags a template set of data onto the instance, returns a Transformation to the final position
+    def create_template(self, transform: Transformation, speed: float, scale: float) -> Section:
+        """This creates a Section, with an additional element column tagged with the instances uid
 
         Args:
             transform (Transformation): initial position and orientation
@@ -55,8 +51,14 @@ class Element():
 
         if not self.roll == 0:
             el = el.superimpose_roll(self.roll)
-        self.template = el
-        return self.template.get_state_from_index(-1).transform
+        
+        el.data["element"] = self.uid
+
+        return el
+
+    def get_data(self, sec: Section):
+        return Section(sec.data.loc[sec.data.element==self.uid])
+
 
 
 def rollmaker(num: int, arg: str, denom: float, length: float=0.5, position="Centre", right=False, rlength=0.3):
