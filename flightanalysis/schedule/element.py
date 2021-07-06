@@ -3,71 +3,10 @@ from typing import Dict
 from enum import Enum
 from uuid import uuid4
 import numpy as np
-from geometry import Transformation
+from geometry import Transformation, Point, scalar_projection, Points
 from flightanalysis import Section
 from uuid import uuid4
-
-
-class ElClass(Enum):
-    LINE = 0
-    LOOP = 1
-    KELOOP = 2
-    SPIN = 4
-    STALLTURN = 5
-    SNAP = 6
-
-
-class Element():
-    def __init__(
-        self,
-        classification: ElClass,
-        size: float,
-        roll: float,
-        loop: float
-    ):
-        self.classification = classification
-        self.size = size
-        self.roll = roll
-        self.loop = loop
-        self.uid = str(uuid4())
-
-    def create_template(self, transform: Transformation, speed: float, scale: float) -> Section:
-        """This creates a Section, with an additional element column tagged with the instances uid
-
-        Args:
-            transform (Transformation): initial position and orientation
-            speed (float): [description]
-            scale (float): [description]
-
-        Returns:
-            [type]: [description]
-        """
-        if self.classification == ElClass.LOOP:
-            el = Section.from_loop(
-                transform, speed, self.loop, 0.5 * scale * self.size, False)
-        elif self.classification == ElClass.KELOOP:
-            el = Section.from_loop(
-                transform, speed, self.loop, 0.5 * scale * self.size, True)
-        elif self.classification == ElClass.LINE:
-            el = Section.from_line(transform, speed, scale * self.size)
-        elif self.classification == ElClass.SPIN:
-            return Section.from_spin(transform, scale * self.size, self.roll, self.loop)
-        elif self.classification == ElClass.SNAP:
-            el = Section.from_line(transform, speed, scale * self.size)
-        elif self.classification == ElClass.STALLTURN:
-            _dir = 1 if self.loop >= 0.0 else -1
-            return Section.from_loop(transform, 3.0, 0.5 * _dir, 2.0, True)
-
-        if not self.roll == 0:
-            el = el.superimpose_roll(self.roll)
-
-        el.data["element"] = self.uid
-
-        return el
-
-    def get_data(self, sec: Section):
-        return Section(sec.data.loc[sec.data.element == self.uid])
-
+from scipy import optimize
 
 class El:
     def __init__(self):
@@ -76,9 +15,9 @@ class El:
     def get_data(self, sec: Section):
         return Section(sec.data.loc[sec.data.element == self.uid])
 
-    def _add_rolls(self, sec: Section, rolls: float) -> Section:
+    def _add_rolls(self, el: Section, rolls: float) -> Section:
         if not rolls == 0:
-            el = sec.superimpose_roll(rolls)
+            el = el.superimpose_roll(rolls)
         el.data["element"] = self.uid
         return el 
 
@@ -90,29 +29,55 @@ class LineEl(El):
 
     def create_template(self, transform: Transformation, speed: float, scale: float):
         el = Section.from_line(transform, speed, scale * self.length)
-        return self._add_rolls(self, el, self.rolls)
+        return self._add_rolls(el, self.rolls)
 
+    def resize(self, sec: Section, transform: Transformation):
+        return LineEl(
+            scalar_projection(
+                sec.get_state_from_index(-1).pos - sec.get_state_from_index(0).pos,
+                transform.rotate(Point.X())
+            ),
+            self.rolls
+        )
 class LoopEl(El):
-    def __init__(self, radius, ke:bool=False, rolls=0):
+    def __init__(self, diameter: float, loops:float, rolls=0.0, ke:bool=False):
         super().__init__()
-        self.radius = radius
+        self.loops = loops
+        self.diameter = diameter
         self.rolls = rolls
         self.ke=ke
 
     def create_template(self, transform: Transformation, speed: float, scale: float):
-        el = Section.from_loop(transform, speed, self.loop, 0.5 * scale * self.size, self.ke)
-        return self._add_rolls(self, el, self.rolls)
+        el = Section.from_loop(transform, speed, self.loops, 0.5 * scale * self.diameter, self.ke)
+        return self._add_rolls(el, self.rolls)
+
+    def resize(self, sec: Section, transform: Transformation): 
+        pos = transform.rotate(Points.from_pandas(sec.pos))
+
+        _x = pos.x
+        _y = pos.y if self.ke else pos.z
+
+        def calc_R(xc, yc): return np.sqrt((_x-xc)**2 + (_y-yc)**2)
+
+        def f_2(c):
+            Ri = calc_R(*c)
+            return Ri - Ri.mean()
+        
+        center_2, ier = optimize.leastsq(f_2, (_x.mean(), _y.mean()))
+        Ri_2 = calc_R(*center_2)
+
+        return LoopEl(2 * Ri_2.mean(),self.loops, self.rolls, self.ke)
 
 class SpinEl(El):
-    def __init__(self, size: float, turns:float, opp_turns: float=0.0):
+    def __init__(self, length: float, turns:float, opp_turns: float=0.0):
         super().__init__()
-        self.size = size
+        self.length = length
         self.turns = turns
         self.opp_turns = opp_turns
     
     def create_template(self, transform: Transformation, speed: float, scale: float):
-        el = Section.from_spin(transform, scale * self.size, self.turns, self.opp_turns)
-        return self._add_rolls(self, el, 0.0)
+        el = Section.from_spin(transform, scale * self.length, self.turns, self.opp_turns)
+        return self._add_rolls(el, 0.0)
 
 class SnapEl(El):
     def __init__(self, length: float, rolls: float):
@@ -122,17 +87,17 @@ class SnapEl(El):
     
     def create_template(self, transform: Transformation, speed: float, scale: float):
         el = Section.from_line(transform, speed, scale * self.length)
-        return self._add_rolls(self, el, self.rolls)
+        return self._add_rolls(el, self.rolls)
 
 class StallTurnEl(El):
-    def __init__(self, direction: int, rate: float):
+    def __init__(self, direction: int=1, duration: float=1.0):
         super().__init__()
         self.direction = direction
-        self.rate = rate
+        self.duration = duration
 
     def create_template(self, transform: Transformation, speed: float, scale: float):
         el= Section.from_loop(transform, 3.0, 0.5 * self.direction, 2.0, True)
-        return self._add_rolls(self, el, 0.0)
+        return self._add_rolls(el, 0.0)
 
 
 
@@ -150,16 +115,14 @@ def rollmaker(num: int, arg: str, denom: float, length: float = 0.5, position="C
     direction = -1 if right else 1
     if arg == "/":
         lsum += rlength * num / denom
-        elms = [Element(ElClass.LINE, rlength * num / denom,
-                        direction * num / denom, 0.0)]
+        elms = [LineEl(rlength * num / denom, direction * num / denom)]
     elif arg == "X":
         elms = []
         for i in range(num):
             lsum += rlength / denom
-            elms.append(Element(ElClass.LINE, rlength /
-                                denom, direction / denom, 0.0))
+            elms.append(LineEl(rlength /denom, direction / denom))
             if i < num - 1:
-                elms.append(Element(ElClass.LINE, 0.05, 0.0, 0.0))
+                elms.append(LineEl(0.05, 0.0))
                 lsum += 0.05
     else:
         raise KeyError
@@ -172,11 +135,13 @@ def reboundrollmaker(rolls: list, length: float = 0.5, position="Centre", rlengt
     last_dir = -np.sign(rolls[0])
     for roll in rolls:
         if last_dir == np.sign(roll):
-            elms.append(Element(ElClass.LINE, 0.05, 0.0, 0.0))
+            elms.append(LineEl(0.05, 0.0))
             lsum += 0.05
         last_dir = np.sign(roll)
-        elms.append(Element(ElClass.SNAP if snap else ElClass.LINE,
-                            rlength * abs(roll), roll, 0.0))
+        if snap:
+            elms.append(SnapEl(rlength * abs(roll), roll))
+        else:
+            elms.append(LineEl(rlength * abs(roll), roll))
         lsum += rlength * abs(roll)
     return paddinglines(position, length, lsum, elms)
 
@@ -188,16 +153,14 @@ def rollsnapcombomaker(rolls: list, length: float, position="Centre", rlength=0.
     for roll in rolls:
         # add pause if roll in opposite direction
         if last_dir == np.sign(roll[1]):
-            elms.append(Element(ElClass.LINE, 0.05, 0.0, 0.0))
+            elms.append(LineEl(0.05, 0.0))
             lsum += 0.05
         last_dir = np.sign(roll[1])
         if roll[0] == "snap":
-            elms.append(Element(ElClass.SNAP, 0.05 *
-                                abs(roll[1]), roll[1], 0.0))
+            elms.append(SnapEl(0.05 * abs(roll[1]), roll[1]))
             lsum += 0.05 * abs(roll[1])
         if roll[0] == "roll":
-            elms.append(Element(ElClass.LINE, rlength *
-                                abs(roll[1]), roll[1], 0.0))
+            elms.append(LineEl(rlength *abs(roll[1]), roll[1]))
             lsum += rlength * abs(roll[1])
     return paddinglines(position, length, lsum, elms)
 
@@ -206,11 +169,11 @@ def paddinglines(position, length, lsum, elms):
     lleft = length - lsum
     if position.lower() == "centre":
         return [
-            Element(ElClass.LINE, lleft / 2, 0.0, 0.0)
+            LineEl(lleft / 2, 0.0)
         ] + elms + [
-            Element(ElClass.LINE, lleft / 2, 0.0, 0.0)
+            LineEl(lleft / 2, 0.0)
         ]
     elif position.lower() == "start":
-        return elms + [Element(ElClass.LINE, lleft, 0.0, 0.0)]
+        return elms + [LineEl(lleft, 0.0)]
     elif position.lower() == "end":
-        return [Element(ElClass.LINE, lleft, 0.0, 0.0)] + elms
+        return [LineEl(lleft, 0.0)] + elms

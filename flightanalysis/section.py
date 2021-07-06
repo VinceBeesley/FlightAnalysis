@@ -176,43 +176,6 @@ class Section():
             Points(np.zeros((len(t), 3)))
         )
 
-    def evaluate_radius(self, plane: str) -> Tuple[Point, np.ndarray, float]:
-        """Calculate the radius, in the plane normal to the passed direction
-
-        Args:
-            normal (str): letter defining the normal direction of the desired radius plane in world frame
-
-        Returns:
-            Point: the centre of the radius in the world frame
-            np.ndarray: the radius at each time index
-            float: the mean radius
-        """
-        if plane == "x":
-            x, y = self.y, self.z
-        elif plane == "y":
-            x, y = self.z, self.x
-        elif plane == "z":
-            x, y = self.x, self.y
-
-        def calc_R(xc, yc): return np.sqrt((x-xc)**2 + (y-yc)**2)
-
-        def f_2(c):
-            Ri = calc_R(*c)
-            return Ri - Ri.mean()
-
-        # better to take the mean position or something
-        center_2, ier = optimize.leastsq(f_2, (0.0, 0.0))
-        Ri_2 = calc_R(*center_2)
-
-        if plane == "x":
-            centre = Point(self.x[0], center_2[0], center_2[1])
-        elif plane == "y":
-            centre = Point(center_2[1], self.y[0], center_2[0])
-        elif plane == "z":
-            centre = Point(self.x[0], center_2[1], self.z[0])
-
-        return centre, Ri_2, Ri_2.mean()
-
     @staticmethod
     def from_loop(itransform: Transformation, speed: float, proportion: float, radius: float, ke: bool = False):
         """generate a loop, based on intitial position, speed, amount of loop, radius. 

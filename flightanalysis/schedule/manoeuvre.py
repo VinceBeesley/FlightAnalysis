@@ -1,12 +1,10 @@
-from . import Element
-from typing import List
 from uuid import uuid4
 from geometry import Transformation
 from flightanalysis import Section
 from uuid import uuid4
 
 class Manoeuvre():
-    def __init__(self, name: str, k: float, elements: List[Element]):
+    def __init__(self, name: str, k: float, elements: list):
         self.name = name
         self.elements = elements
         self.k = k
