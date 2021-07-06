@@ -41,6 +41,7 @@ class LineEl(El):
         )
 
     def match_roll_rate(self, roll_rate: float, speed: float):
+        # TODO not so simple, scale needs to be considered
         #roll rate in radians per second, speed in m / s
         if not self.rolls == 0.0:
             return LineEl(2 * np.pi * self.rolls * speed / roll_rate, self.rolls)
@@ -77,8 +78,8 @@ class LoopEl(El):
         return LoopEl(2 * Ri_2.mean(),self.loops, self.rolls, self.ke)
 
     def match_pitch_rate(self, pitch_rate: float, speed: float):
-        pass
-    
+        # TODO not so simple, scale needs to be considered
+        pass 
 class SpinEl(El):
     def __init__(self, length: float, turns:float, opp_turns: float=0.0):
         super().__init__()
