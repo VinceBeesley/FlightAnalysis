@@ -293,12 +293,15 @@ class Section():
         nose_drop = Section.from_loop(
             itransform, 5.0, -0.25 * inverted, 2.0, False)
 
+        nose_drop.data["sub_element"] = "nose_drop"
+
         rotation = Section.from_line(
             nose_drop.get_state_from_index(-1).transform,
             5.0,
             height-2.5
         ).superimpose_roll(turns)
 
+        rotation.data["sub_element"] = "rotation"
 
         if opp_turns == 0.0:
             return Section.stack([nose_drop, rotation])
@@ -308,6 +311,8 @@ class Section():
                 5.0,
                 height-2.5
             ).superimpose_roll(opp_turns)
+
+            rotation2.data["sub_element"] = "opp_rotation"
 
             return Section.stack([nose_drop, rotation, rotation2])
 
