@@ -23,8 +23,10 @@ class Box(object):
     '''This class defines an aerobatic box in the world, it uses the pilot position and the direction 
     in which the pilot is facing (normal to the main aerobatic manoeuvering plane)'''
 
-    def __init__(self, name, pilot_position: GPSPosition, heading: float):
+    def __init__(self, name, pilot_position: GPSPosition, heading: float, club:str=None, country:str=None):
         self.name = name
+        self.club=club
+        self.country=country
         self.pilot_position = pilot_position
         self.heading = heading
 
@@ -43,6 +45,8 @@ class Box(object):
             name=self.name,
             pilot_position=self.pilot_position.to_dict(),
             heading=self.heading,
+            club=self.club,
+            country=self.country
         )
 
     @staticmethod
@@ -52,7 +56,12 @@ class Box(object):
         else:
             with open(file, 'r') as f:
                 data = load(f)
-        read_box = Box(data['name'], GPSPosition(**data['pilot_position']), data['heading'])
+        read_box = Box(
+            data['name'], 
+            GPSPosition(**data['pilot_position']), 
+            data['heading'],
+            data['club'],
+            data['country'])
         return read_box
 
     def to_json(self, file):
@@ -60,7 +69,7 @@ class Box(object):
             dump(self.to_dict(), f)
 
     def __str__(self):
-        return self.name + '\n' + str(self.pilot_position) + '\n' + str(self.heading)
+        return "Box:{}".format(self.to_dict())
 
     @staticmethod
     def from_initial(flight: Flight):
@@ -78,7 +87,7 @@ class Box(object):
                   first.attitude_yaw).to_rotation_matrix()
         )
 
-        return Box('origin', home, atan2(heading.y, heading.x))
+        return Box('origin', home, atan2(heading.y, heading.x), "unknown", "unknown")
 
     @staticmethod
     def from_covariance(flight: Flight):
