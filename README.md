@@ -12,13 +12,11 @@ The general Idea
 # TODO:
 - detect areas in the box
 - calculate angle between wings and the Y axis + other useful juding info
-- some of the tests are failing for box definition(I think code is right, tests wrong)
 - scale templates based on axis rates
 - scale templates based on flight data and criteria
 - seperate default template scalings from the definition
 - connect to arusti output
 - redo f_21, p_23 and f_23 templates to match new definition
-
 
 
 # Dependencies:
