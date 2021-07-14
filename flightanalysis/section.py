@@ -87,10 +87,17 @@ class Section():
                 flight.read_numpy(Fields.POSITION).T
             ))
 
-        att = flightline.transform_from.quat(
-            Quaternions.from_euler(Points(
-                flight.read_numpy(Fields.ATTITUDE).T
-            )))
+
+        qs = flight.read_fields(Fields.QUATERNION)
+        if qs[pd.isna(qs)==False].empty: # for back compatibility with old csv files
+            att = flightline.transform_from.quat(
+                Quaternions.from_pandas(flight.read_fields(Fields.QUATERNION))
+            )
+        else:
+            att = flightline.transform_from.quat(
+                Quaternions.from_euler(Points(
+                    flight.read_numpy(Fields.ATTITUDE).T
+                )))
 
         dt = np.gradient(t)
 

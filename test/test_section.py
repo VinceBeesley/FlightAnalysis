@@ -10,7 +10,8 @@ import numpy as np
 import pandas as pd
 
 
-flight = Flight.from_csv('test/P21.csv')
+flight = Flight.from_csv('test/P21_new.csv')
+
 box = Box.from_json('./test/gordano_box.json')
 
 class TestSection(unittest.TestCase):
@@ -91,9 +92,9 @@ class TestSection(unittest.TestCase):
             flight, FlightLine.from_initial_position(flight))
 
         self.assertIsInstance(seq.subset(100, 200), Section)
-        self.assertAlmostEqual(seq.subset(100, 200).data.index[-1], 200, 2)
+        self.assertAlmostEqual(seq.subset(100, 200).data.index[-1], 200, 0)
 
-        self.assertAlmostEqual(seq.subset(-1, 200).data.index[-1], 200, 2)
+        self.assertAlmostEqual(seq.subset(-1, 200).data.index[-1], 200, 0)
 
         self.assertAlmostEqual(
             seq.subset(-1, -1).data.index[-1],
