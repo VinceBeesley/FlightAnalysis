@@ -1,5 +1,5 @@
 from flightdata import Flight, Fields
-from geometry import Point, Quaternion, Coord, Transformation, Points, Quaternions, cross_product
+from geometry import Point, Quaternion, Coord, Transformation, Points, Quaternions, cross_product, GPSPosition
 from .flightline import FlightLine, Box
 from .state import State
 import numpy as np
@@ -9,6 +9,7 @@ from numbers import Number
 from fastdtw import fastdtw
 from scipy.spatial.distance import euclidean
 from scipy import optimize
+from pathlib import Path
 
 
 class Section():
@@ -46,12 +47,12 @@ class Section():
         Returns:
             Section: the resulting Section
         """
-        #first build list of index offsets, to be added to each dataframe
-        #TODO this assumes the first index of each is 0. should use sec.duration
+        # first build list of index offsets, to be added to each dataframe
+        # TODO this assumes the first index of each is 0. should use sec.duration
         offsets = [0] + [sec.duration for sec in sections[:-1]]
         offsets = np.cumsum(offsets)
 
-        # The sections to be stacked need their last row removed, 
+        # The sections to be stacked need their last row removed,
         # as this is replaced with the first row of the next, data is copied at this point
         dfs = [section.data.iloc[:-1] for section in sections[:-1]] + \
             [sections[-1].data.copy()]
@@ -59,7 +60,7 @@ class Section():
         # offset the df indexes
         for df, offset in zip(dfs, offsets):
             df.index = np.array(df.index) - df.index[0] + offset
-        
+
         return Section(pd.concat(dfs))
 
     @staticmethod
@@ -79,7 +80,24 @@ class Section():
         return Section(df)
 
     @staticmethod
-    def from_flight(flight: Flight, flightline: FlightLine):
+    def from_flight(flight: Union[Flight, str], box=Union[FlightLine, Box, str]):
+        if isinstance(flight, str):
+            flight = {
+                ".csv": Flight.from_csv,
+                ".BIN": Flight.from_log
+            }[Path(flight).suffix](flight)
+
+        if isinstance(box, FlightLine):
+            return Section._from_flight(flight, box)
+        if isinstance(box, Box):
+            return Section._from_flight(flight, FlightLine.from_box(box, GPSPosition(**flight.origin())))
+        if isinstance(box, str):
+            box = Box.from_json(box)
+            return Section._from_flight(flight, FlightLine.from_box(box, GPSPosition(**flight.origin())))
+        raise NotImplementedError()
+
+    @staticmethod
+    def _from_flight(flight: Flight, flightline: FlightLine):
         # read position and attitude directly from the log(after transforming to flightline)
         t = flight.data.index
         pos = flightline.transform_from.point(
@@ -87,9 +105,8 @@ class Section():
                 flight.read_numpy(Fields.POSITION).T
             ))
 
-
         qs = flight.read_fields(Fields.QUATERNION)
-        if qs[pd.isna(qs)==False].empty: # for back compatibility with old csv files
+        if qs[pd.isna(qs) == False].empty:  # for back compatibility with old csv files
             att = flightline.transform_from.quat(
                 Quaternions.from_pandas(flight.read_fields(Fields.QUATERNION))
             )
@@ -201,8 +218,7 @@ class Section():
         axis_rate = -proportion * 2 * np.pi / duration
         t = np.linspace(0, duration, int(duration * Section._construct_freq))
 
-        # TODO There must be a more elegant way to do this. lots of random signs to make things give the right result
-        # not backed by actual maths but it seems to work.
+        # TODO There must be a more elegant way to do this.
         if axis_rate == 0:
             raise NotImplementedError()
         radius = speed / axis_rate
@@ -333,8 +349,6 @@ class Section():
             new_acc
         )
 
-
-
     @staticmethod
     def align(flown, template):
         3
@@ -352,7 +366,7 @@ class Section():
             radius=1,
             dist=euclidean
         )
-        
+
         mans = pd.DataFrame(path, columns=["template", "flight"]).set_index("template").join(
             template.data.reset_index().loc[:, ["manoeuvre", "element"]]
         ).groupby(['flight']).last().reset_index().set_index("flight")
