@@ -1,10 +1,9 @@
 from . import Manoeuvre
 from typing import List
-from io import open
-from json import load
-from geometry import Point, Quaternion, Transformation
-import numpy as np
+from geometry import Point, Quaternion, Transformation, Points
 from flightanalysis.section import Section
+import numpy as np 
+
 
 class Categories():
     F3A = 0
@@ -59,11 +58,7 @@ class Schedule():
         )
 
     def create_template(self, enter_from: str, distance: float):
-        """tags a section containing the template data onto the instance
-        and returns a transformation to the final position of the 
-        aircraft. 
-
-        TODO this is not immutable, which is sad
+        """returns a section containing labelled template data 
 
         Args:
             enter_from (str): [description]
@@ -98,3 +93,18 @@ class Schedule():
 
         return Section.stack(templates)
 
+    def create_rate_matched_template(self, flown: Section):
+        brvels = Points.from_pandas(flown.brvel)
+        vels = Points.from_pandas(flown.bvel)
+        pos = Points.from_pandas(flown.pos)
+        
+        #TODO percentiles are probably too dependent on the sequence and pilot
+        snap_rate = np.percentile(abs(brvels.x), 99.9)
+        roll_rate = np.percentile(abs(brvels.x), 99)
+        loop_rate = np.percentile(abs(brvels.y), 90)
+        stall_turn_rate = np.percentile(abs(brvels.z), 99.9)
+        spin_rate = snap_rate / 2
+        speed = vels.x.mean()
+        distance = pos.y.mean()
+
+        

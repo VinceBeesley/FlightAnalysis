@@ -76,10 +76,8 @@ class LoopEl(El):
         Ri_2 = calc_R(*center_2)
 
         return LoopEl(2 * Ri_2.mean(),self.loops, self.rolls, self.ke)
-
-    def match_pitch_rate(self, pitch_rate: float, speed: float):
-        # TODO not so simple, scale needs to be considered
-        pass 
+    
+    
 class SpinEl(El):
     def __init__(self, length: float, turns:float, opp_turns: float=0.0):
         super().__init__()
