@@ -2,6 +2,7 @@ from . import Manoeuvre
 from typing import List
 from geometry import Point, Quaternion, Transformation, Points
 from flightanalysis.section import Section
+from flightanalysis.schedule.element import LoopEl, LineEl, SnapEl, SpinEl, StallTurnEl
 import numpy as np 
 
 
@@ -52,12 +53,15 @@ class Schedule():
             self.name,
             self.category,
             self.entry,
-            self.entry_x_offset,
-            self.entry_z_offset,
+            self.entry_x_offset * box_scale,
+            self.entry_z_offset * box_scale,
             [manoeuvre.scale(box_scale) for manoeuvre in self.manoeuvres]
         )
 
-    def create_template(self, enter_from: str, distance: float):
+    def scale_distance(self, distance):
+        return self.scale(np.tan(np.radians(60)) * distance)
+    
+    def create_template(self, enter_from: str, speed:float, distance:float):
         """returns a section containing labelled template data 
 
         Args:
@@ -67,13 +71,11 @@ class Schedule():
         Returns:
             [type]: [description]
         """
-        box_scale = np.tan(np.radians(60)) * distance
-
         dmul = -1.0 if enter_from == "right" else 1.0
         ipos = Point(
-            dmul * box_scale * self.entry_x_offset,
+            dmul * self.entry_x_offset,
             distance,
-            box_scale * self.entry_z_offset
+            self.entry_z_offset
         )
 
         iatt = Quaternion.from_euler(Point(np.pi, 0, 0))
@@ -88,23 +90,43 @@ class Schedule():
         templates = []
         #TODO add exit line on construction
         for manoeuvre in self.manoeuvres:
-            templates.append(manoeuvre.create_template(itrans, box_scale))
+            templates.append(manoeuvre.create_template(itrans, speed))
             itrans = templates[-1].get_state_from_index(-1).transform
 
         return Section.stack(templates)
 
-    def create_rate_matched_template(self, flown: Section):
+
+    def match_rates(self, flown: Section) -> Section:
         brvels = Points.from_pandas(flown.brvel)
         vels = Points.from_pandas(flown.bvel)
         pos = Points.from_pandas(flown.pos)
-        
+
         #TODO percentiles are probably too dependent on the sequence and pilot
-        snap_rate = np.percentile(abs(brvels.x), 99.9)
-        roll_rate = np.percentile(abs(brvels.x), 99)
-        loop_rate = np.percentile(abs(brvels.y), 90)
-        stall_turn_rate = np.percentile(abs(brvels.z), 99.9)
-        spin_rate = snap_rate / 2
+        rates = {
+            LoopEl: np.percentile(abs(brvels.y), 90),
+            LineEl: np.percentile(abs(brvels.x), 99),
+            SnapEl: np.percentile(abs(brvels.x), 99.9),
+            StallTurnEl: np.percentile(abs(brvels.z), 99.9),
+            SpinEl: np.percentile(abs(brvels.x), 99.5)
+        }
+
         speed = vels.x.mean()
         distance = pos.y.mean()
-
         
+        _mans = []
+        for manoeuvre in self.manoeuvres:
+            _elms = []
+            for element in manoeuvre.elements:
+                _elms.append(element.match_axis_rate(rates[element.__class__], speed))
+            _mans.append(Manoeuvre(
+                manoeuvre.name, manoeuvre.k, _elms
+            ))
+            _mans[-1].uid = manoeuvre.uid
+        return Schedule(
+            self.name,
+            self.category,
+            self.entry,
+            self.entry_x_offset,
+            self.entry_z_offset,
+            _mans
+        ).create_template("left", speed, distance)

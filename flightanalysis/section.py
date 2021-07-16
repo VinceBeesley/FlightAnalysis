@@ -13,7 +13,7 @@ from pathlib import Path
 
 
 class Section():
-    _construct_freq = 10
+    _construct_freq = 30
 
     def __init__(self, data: pd.DataFrame):
         self.data = data

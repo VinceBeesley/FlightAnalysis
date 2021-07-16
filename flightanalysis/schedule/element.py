@@ -27,8 +27,13 @@ class LineEl(El):
         self.length = length
         self.rolls = rolls
 
-    def create_template(self, transform: Transformation, speed: float, scale: float):
-        el = Section.from_line(transform, speed, scale * self.length)
+    def scale(self, factor):
+        el = LineEl(self.length*factor, self.rolls)
+        el.uid = self.uid
+        return el
+
+    def create_template(self, transform: Transformation, speed: float):
+        el = Section.from_line(transform, speed, self.length)
         return self._add_rolls(el, self.rolls)
 
     def resize(self, sec: Section, transform: Transformation):
@@ -40,13 +45,14 @@ class LineEl(El):
             self.rolls
         )
 
-    def match_roll_rate(self, roll_rate: float, speed: float):
-        # TODO not so simple, scale needs to be considered
+    def match_axis_rate(self, roll_rate: float, speed: float):
         #roll rate in radians per second, speed in m / s
         if not self.rolls == 0.0:
-            return LineEl(2 * np.pi * self.rolls * speed / roll_rate, self.rolls)
+            el= LineEl(2 * np.pi * self.rolls * speed / roll_rate, self.rolls)
         else:
-            return LineEl(self.length, self.rolls)        
+            el= LineEl(self.length, self.rolls)        
+        el.uid = self.uid
+        return el
     
 class LoopEl(El):
     def __init__(self, diameter: float, loops:float, rolls=0.0, ke:bool=False):
@@ -56,9 +62,24 @@ class LoopEl(El):
         self.rolls = rolls
         self.ke=ke
 
-    def create_template(self, transform: Transformation, speed: float, scale: float):
-        el = Section.from_loop(transform, speed, self.loops, 0.5 * scale * self.diameter, self.ke)
+    def scale(self, factor):
+        el = LoopEl(self.diameter*factor, self.loops, self.rolls, self.ke)
+        el.uid = self.uid
+        return el
+
+    def create_template(self, transform: Transformation, speed: float):
+        el = Section.from_loop(transform, speed, self.loops, 0.5 * self.diameter, self.ke)
         return self._add_rolls(el, self.rolls)
+
+    def match_axis_rate(self, pitch_rate:float, speed:float):
+        el = LoopEl(
+            2 * speed / pitch_rate,
+            self.loops,
+            self.rolls, 
+            self.ke
+        )
+        el.uid = self.uid
+        return el
 
     def resize(self, sec: Section, transform: Transformation): 
         pos = transform.rotate(Points.from_pandas(sec.pos))
@@ -77,39 +98,111 @@ class LoopEl(El):
 
         return LoopEl(2 * Ri_2.mean(),self.loops, self.rolls, self.ke)
     
+
     
 class SpinEl(El):
+    _speed_factor = 1 / 10
     def __init__(self, length: float, turns:float, opp_turns: float=0.0):
         super().__init__()
         self.length = length
         self.turns = turns
         self.opp_turns = opp_turns
-    
-    def create_template(self, transform: Transformation, speed: float, scale: float):
-        el = Section.from_spin(transform, scale * self.length, self.turns, self.opp_turns)
+
+    def scale(self, factor):
+        el= SpinEl(self.length*factor, self.turns, self.opp_turns)
+        el.uid = self.uid
+        return el
+
+    def _create_template(self, transform: Transformation, speed: float):
+        el = Section.from_spin(transform, self.length, self.turns, self.opp_turns)
         return self._add_rolls(el, 0.0)
+
+    def create_template(self,transform: Transformation, speed: float):
+        _inverted = np.sign(transform.rotate(Point(0, 0, 1)).z)
+        
+        nose_drop = Section.from_loop(
+            transform, 5.0, -0.25 * _inverted, 2.0, False)
+        nose_drop.data["sub_element"] = "nose_drop"
+
+        rotation = Section.from_line(
+            nose_drop.get_state_from_index(-1).transform,
+            speed * self._speed_factor,
+            self.length * self.turns / (self.turns + self.opp_turns)
+        ).superimpose_roll(self.turns)
+        rotation.data["sub_element"] = "rotation"
+
+        if self.opp_turns == 0.0:
+            sec = Section.stack([nose_drop, rotation])
+        else:
+            rotation2 = Section.from_line(
+                rotation.get_state_from_index(-1).transform,
+                speed * self._speed_factor,
+                self.length * self.opp_turns / (self.turns + self.opp_turns)
+            ).superimpose_roll(self.opp_turns)
+
+            rotation2.data["sub_element"] = "opp_rotation"
+
+            sec = Section.stack([nose_drop, rotation, rotation2])
+        return self._add_rolls(sec, 0.0)
+
+
+    def match_axis_rate(self, spin_rate, speed: float):
+        #LineEl(2 * np.pi * self.rolls * speed / roll_rate, self.rolls)
+        return SpinEl(
+            2 * np.pi * (self.turns + self.opp_turns) * speed * SpinEl._speed_factor / spin_rate,
+            self.turns,
+            self.opp_turns
+        )
 
 class SnapEl(El):
     def __init__(self, length: float, rolls: float):
         super().__init__()
         self.length = length
         self.rolls = rolls
-    
-    def create_template(self, transform: Transformation, speed: float, scale: float):
-        el = Section.from_line(transform, speed, scale * self.length)
+
+    def scale(self, factor):
+        el = SnapEl(self.length*factor, self.rolls)
+        el.uid = self.uid
+        return el
+
+    def create_template(self, transform: Transformation, speed: float):
+        el = Section.from_line(transform, speed, self.length)
         return self._add_rolls(el, self.rolls)
 
+    def match_axis_rate(self, snap_rate: float, speed: float):
+        el = SnapEl(2 * np.pi * self.rolls * speed / snap_rate, self.rolls)
+        el.uid = self.uid
+        return el
+
 class StallTurnEl(El):
-    def __init__(self, direction: int=1, duration: float=1.0):
+    _speed_scale = 1/20
+    def __init__(self, direction: int=1, width:float=1.0):
         super().__init__()
         self.direction = direction
-        self.duration = duration
+        self.width = width
 
-    def create_template(self, transform: Transformation, speed: float, scale: float):
-        el= Section.from_loop(transform, 3.0, 0.5 * self.direction, 2.0, True)
+    def scale(self, factor):
+        #TODO dont scale this element? good idea?
+        el = StallTurnEl(self.direction, self.width)
+        el.uid = self.uid
+        return el
+
+    def create_template(self, transform: Transformation, speed: float):
+        el= Section.from_loop(
+            transform, 
+            StallTurnEl._speed_scale * speed, 
+            0.5 * self.direction, 
+            self.width / 2, 
+            True)
         return self._add_rolls(el, 0.0)
 
-
+    def match_axis_rate(self, yaw_rate: float, speed: float):
+        el = StallTurnEl(
+            self.direction,
+            2 * StallTurnEl._speed_scale * speed / yaw_rate
+        )
+        el.uid = self.uid
+        return el
 
 def rollmaker(num: int, arg: str, denom: float, length: float = 0.5, position="Centre", right=False, rlength=0.3):
     """generate a list of elements representing a roll or point roll

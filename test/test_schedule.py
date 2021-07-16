@@ -5,7 +5,8 @@ from flightanalysis import Section
 
 class TestSchedule(unittest.TestCase):
     def test_create_template(self):
-        out = p21.create_template("left", 170.0)
+        sched = p21.scale_distance(170.0)
+        out = sched.create_template("left", 30.0, 170.0)
 
         self.assertIsInstance(out, Section)
 
