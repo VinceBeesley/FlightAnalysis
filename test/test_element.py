@@ -1,16 +1,11 @@
 import numpy as np
 import unittest
-from flightanalysis.schedule.element import Element, ElClass
+from flightanalysis.schedule.element import LoopEl, LineEl, SnapEl, SpinEl, StallTurnEl
 from geometry import Transformation, Point, Quaternion
 
 class TestElement(unittest.TestCase):
     def test_create_template(self):
-        elm = Element(
-            ElClass.LOOP,  
-            1.0,
-            0.0,
-            0.5
-        )
+        elm = LoopEl( 1.0,0.0,0.5)
 
         new_elm = elm.create_template(
             Transformation(Point(0.0, 0.0, 0.0), Quaternion.from_euler(Point(0.0, 0.0, 0.0))),

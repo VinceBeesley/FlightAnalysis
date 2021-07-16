@@ -48,6 +48,16 @@ class Schedule():
                 return manoeuvre
         raise KeyError()
 
+    def scale(self, box_scale):
+        return Schedule(
+            self.name,
+            self.category,
+            self.entry,
+            self.entry_x_offset,
+            self.entry_z_offset,
+            [manoeuvre.scale(box_scale) for manoeuvre in self.manoeuvres]
+        )
+
     def create_template(self, enter_from: str, distance: float):
         """tags a section containing the template data onto the instance
         and returns a transformation to the final position of the 

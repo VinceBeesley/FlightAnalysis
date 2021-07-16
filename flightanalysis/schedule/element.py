@@ -47,7 +47,7 @@ class LineEl(El):
             return LineEl(2 * np.pi * self.rolls * speed / roll_rate, self.rolls)
         else:
             return LineEl(self.length, self.rolls)        
-
+    
 class LoopEl(El):
     def __init__(self, diameter: float, loops:float, rolls=0.0, ke:bool=False):
         super().__init__()

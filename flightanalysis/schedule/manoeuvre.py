@@ -9,7 +9,7 @@ class Manoeuvre():
         self.elements = elements
         self.k = k
         self.uid = str(uuid4())
-
+    
     def create_template(self, transform: Transformation, scale: float ) -> Section: 
         itrans = transform
         #print("Manoeuvre : {}".format(manoeuvre.name))
