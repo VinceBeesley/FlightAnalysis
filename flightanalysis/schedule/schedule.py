@@ -2,7 +2,7 @@ from . import Manoeuvre
 from typing import List
 from geometry import Point, Quaternion, Transformation, Points
 from flightanalysis.section import Section
-from flightanalysis.schedule.element import LoopEl, LineEl, SnapEl, SpinEl, StallTurnEl
+from flightanalysis.schedule.element import LoopEl, LineEl, SnapEl, SpinEl, StallTurnEl, get_rates
 import numpy as np 
 
 
@@ -96,37 +96,24 @@ class Schedule():
         return Section.stack(templates)
 
 
-    def match_rates(self, flown: Section) -> Section:
-        brvels = Points.from_pandas(flown.brvel)
-        vels = Points.from_pandas(flown.bvel)
-        pos = Points.from_pandas(flown.pos)
+    def match_rates(self, rates: dict):
 
-        #TODO percentiles are probably too dependent on the sequence and pilot
-        rates = {
-            LoopEl: np.percentile(abs(brvels.y), 90),
-            LineEl: np.percentile(abs(brvels.x), 99),
-            SnapEl: np.percentile(abs(brvels.x), 99.9),
-            StallTurnEl: np.percentile(abs(brvels.z), 99.9),
-            SpinEl: np.percentile(abs(brvels.x), 99.5)
-        }
-
-        speed = vels.x.mean()
-        distance = pos.y.mean()
+        sec = self.scale_distance(rates["distance"])
         
         _mans = []
-        for manoeuvre in self.manoeuvres:
+        for manoeuvre in sec.manoeuvres:
             _elms = []
             for element in manoeuvre.elements:
-                _elms.append(element.match_axis_rate(rates[element.__class__], speed))
+                _elms.append(element.match_axis_rate(rates[element.__class__], rates["speed"]))
             _mans.append(Manoeuvre(
                 manoeuvre.name, manoeuvre.k, _elms
             ))
             _mans[-1].uid = manoeuvre.uid
         return Schedule(
-            self.name,
-            self.category,
-            self.entry,
-            self.entry_x_offset,
-            self.entry_z_offset,
+            sec.name,
+            sec.category,
+            sec.entry,
+            sec.entry_x_offset,
+            sec.entry_z_offset,
             _mans
-        ).create_template("left", speed, distance)
+        )

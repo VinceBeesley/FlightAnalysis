@@ -16,12 +16,21 @@ class TestLoopEl(unittest.TestCase):
         )
 
     def test_match_axis_rate(self):
-        elm = LoopEl(0.5, 0.5, 0.0, False).scale(100.0)
-        new_elm = elm.match_axis_rate(1.0, 30.0)
-        template = new_elm.create_template(Transformation(), 30.0)
+        elm = LoopEl(0.5, 0.5, 0.0, False).scale(
+            100.0
+        ).match_axis_rate(
+            1.0, 30.0
+        ).create_template(Transformation(), 30.0)
         self.assertAlmostEqual(
-            abs(Points.from_pandas(template.brvel).y.mean()), 1.0)
+            abs(Points.from_pandas(elm.brvel).y.mean()), 1.0)
 
+        elm = LoopEl(0.5, -0.5, 0.0, False).scale(
+            100.0
+        ).match_axis_rate(
+            1.0, 30.0
+        ).create_template(Transformation(), 30.0)
+        self.assertAlmostEqual(
+            abs(Points.from_pandas(elm.brvel).y.mean()), 1.0)
 
 class TestLineEl(unittest.TestCase):
     def test_create_template(self):
@@ -34,6 +43,10 @@ class TestLineEl(unittest.TestCase):
 
     def test_match_axis_rate(self):
         elm = LineEl(0.5, 0.5).scale(100.0).match_axis_rate(
+            1.0, 30.0).create_template(Transformation(), 30.0)
+        self.assertAlmostEqual(elm.data.brvr.mean(), 1.0)
+
+        elm = LineEl(0.5, -0.5).scale(100.0).match_axis_rate(
             1.0, 30.0).create_template(Transformation(), 30.0)
         self.assertAlmostEqual(elm.data.brvr.mean(), 1.0)
 
@@ -96,4 +109,3 @@ class TestSpinEl(unittest.TestCase):
             10.0, 30.0
         ).create_template(Transformation(), 30.0)
         self.assertAlmostEqual(template.data.iloc[-1].brvr, 10.0)
-
