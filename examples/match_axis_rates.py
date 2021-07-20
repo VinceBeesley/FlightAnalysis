@@ -9,7 +9,7 @@ from geometry import Points
 sec = Section.from_flight("test/P21_new.csv", "test/gordano_box.json").subset(110, 505)
 
 plotsec(sec, obj, 5, 5, color="blue").show()
-basic = p21.scale_distance(170).create_template("left", 50.0, 170.0)
+basic = p21.scale_distance(170).create_template("left", 30.0, 170.0)
 
 rates = get_rates(sec)
 rate_matched = p21.match_rates(rates).create_template(
