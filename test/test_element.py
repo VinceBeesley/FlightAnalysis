@@ -1,7 +1,7 @@
 import numpy as np
 import unittest
 from flightanalysis.schedule.element import LoopEl, LineEl, SnapEl, SpinEl, StallTurnEl
-from geometry import Transformation, Points
+from geometry import Transformation, Points, Point, Quaternion
 
 
 class TestLoopEl(unittest.TestCase):
@@ -32,6 +32,7 @@ class TestLoopEl(unittest.TestCase):
         self.assertAlmostEqual(
             abs(Points.from_pandas(elm.brvel).y.mean()), 1.0)
 
+
 class TestLineEl(unittest.TestCase):
     def test_create_template(self):
         elm = LineEl(0.5, 0.5).scale(100.0)
@@ -48,7 +49,30 @@ class TestLineEl(unittest.TestCase):
 
         elm = LineEl(0.5, -0.5).scale(100.0).match_axis_rate(
             1.0, 30.0).create_template(Transformation(), 30.0)
-        self.assertAlmostEqual(elm.data.brvr.mean(), 1.0)
+        self.assertAlmostEqual(abs(elm.data.brvr.mean()), 1.0)
+
+    def test_match_intention(self):
+        # fly a line 20 degrees off the X axis for 100m, with 1 roll
+        flown = LineEl(1.0, -1.0).scale(
+            100.0).create_template(Transformation(
+                Point(1.0, 0.0, 0.0),
+                Quaternion.from_euler(Point(0.0, np.radians(20.0), 0.0))
+            ), 30.0)
+
+        # but it was meant to be along the X axis.
+        new_el = LineEl(1.0, 1.0).match_intention(
+            Transformation(),
+            flown
+        )
+
+        # only amount of length in the intended direction is counted
+        self.assertAlmostEqual(new_el.length, 100 * np.cos(np.radians(20.0)))
+
+        # roll direction should match
+        self.assertEqual(
+            np.sign(new_el.rolls), 
+            np.sign(np.mean(Points.from_pandas(flown.brvel).x))
+        )
 
 
 class TestSnapEl(unittest.TestCase):

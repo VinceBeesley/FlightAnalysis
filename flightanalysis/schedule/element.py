@@ -3,7 +3,7 @@ from typing import Dict
 from enum import Enum
 from uuid import uuid4
 import numpy as np
-from geometry import Transformation, Point, scalar_projection, Points
+from geometry import Transformation, Point, scalar_projection, Points, scalar_projection
 from flightanalysis import Section
 from uuid import uuid4
 from scipy import optimize
@@ -51,11 +51,25 @@ class LineEl(El):
     def match_axis_rate(self, roll_rate: float, speed: float):
         # roll rate in radians per second, speed in m / s
         if not self.rolls == 0.0:
-            el = LineEl(2 * np.pi * abs(self.rolls) * speed / roll_rate, self.rolls)
+            el = LineEl(2 * np.pi * abs(self.rolls) *
+                        speed / roll_rate, self.rolls)
         else:
             el = LineEl(self.length, self.rolls)
         el.uid = self.uid
         return el
+
+    def match_intention(self, transform: Transformation, flown: Section):
+        #TODO this is just an idea, better to somehow specify externally the higher
+        #level parameters that should be met
+        new_transform = Transformation(
+            flown.get_state_from_index(0).pos,
+            transform.rotation
+        )
+        length = scalar_projection(
+            flown.get_state_from_index(-1).pos - new_transform.translation,
+            new_transform.rotate(Point(1, 0, 0))
+        )
+        return LineEl(length, np.sign(np.mean(Points.from_pandas(flown.brvel).x)) * abs(self.rolls))
 
 
 class LoopEl(El):
@@ -102,6 +116,14 @@ class LoopEl(El):
         Ri_2 = calc_R(*center_2)
 
         return LoopEl(2 * Ri_2.mean(), self.loops, self.rolls, self.ke)
+
+    def match_intention(self, transform: Transformation, flown: Section):
+        new_transform = Transformation(
+            flown.get_state_from_index(0).pos,
+            transform.rotation
+        )
+        #TODO match average radius and starting point, fix errors
+
 
 
 class SpinEl(El):
@@ -177,7 +199,8 @@ class SnapEl(El):
         return self._add_rolls(el, self.rolls)
 
     def match_axis_rate(self, snap_rate: float, speed: float):
-        el = SnapEl(2 * np.pi * abs(self.rolls) * speed / snap_rate, self.rolls)
+        el = SnapEl(2 * np.pi * abs(self.rolls) *
+                    speed / snap_rate, self.rolls)
         el.uid = self.uid
         return el
 

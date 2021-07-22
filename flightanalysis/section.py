@@ -10,7 +10,7 @@ from fastdtw import fastdtw
 from scipy.spatial.distance import euclidean
 from scipy import optimize
 from pathlib import Path
-
+from trajalign.traj import Traj
 
 class Section():
     _construct_freq = 30
@@ -106,7 +106,8 @@ class Section():
             ))
 
         qs = flight.read_fields(Fields.QUATERNION)
-        if qs[pd.isna(qs) == False].empty:  # for back compatibility with old csv files
+        
+        if not qs[pd.isna(qs) == False].empty:  # for back compatibility with old csv files
             att = flightline.transform_from.quat(
                 Quaternions.from_pandas(flight.read_fields(Fields.QUATERNION))
             )

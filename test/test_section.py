@@ -145,13 +145,13 @@ class TestSection(unittest.TestCase):
 
         flown = Section.from_flight(flight, FlightLine.from_box(box, GPSPosition(**flight.origin()))).subset(100, 493)
 
-        template = p21.create_template("left", 170)
+        template = p21.scale_distance(170.0).create_template("left", 30, 170)
         
         aligned = Section.align(flown, template)
 
         self.assertEqual(len(aligned[1].data), len(flown.data))
         np.testing.assert_array_less(np.abs(aligned[1].pos.to_numpy()[0]), 200.0 )
-        
+
 
     def test_evaluate_radius(self):
         initial = State(
