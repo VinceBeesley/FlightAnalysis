@@ -32,3 +32,5 @@ class TestManoeuvre(unittest.TestCase):
             len(self.v8.elements[1].get_data(v8_template).data), 
             1
         )
+
+        self.assertEqual(v8_template.get_state_from_time(0.0).pos, v8_template.get_state_from_index(0).pos)

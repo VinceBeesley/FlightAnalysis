@@ -32,6 +32,23 @@ class TestLoopEl(unittest.TestCase):
         self.assertAlmostEqual(
             abs(Points.from_pandas(elm.brvel).y.mean()), 1.0)
 
+    def test_match_intention(self):
+        elm = LoopEl(1.0, 0.5, 0.5, False)
+
+        #simulate an uncorrected 5 degree roll error
+        flown = elm.scale(100.0).create_template(Transformation(
+            Point(1.0, 0.0, 0.0),
+            Quaternion.from_euler(Point(np.radians(5.0), 0.0, 0.0))
+        ),30.0)
+
+        intention, template = elm.match_intention(
+            Transformation(), flown, 30.0
+        )
+
+        self.assertLess(intention.diameter, 100.0)
+        self.assertAlmostEqual(np.sum(np.abs(Points.from_pandas(template.pos).y)), 0.0)
+
+
 
 class TestLineEl(unittest.TestCase):
     def test_create_template(self):
@@ -96,6 +113,7 @@ class TestSnapEl(unittest.TestCase):
             [9.424778, 0, 0]
         )
 
+    
 
 class TestStallTurnEl(unittest.TestCase):
     def test_create_template(self):

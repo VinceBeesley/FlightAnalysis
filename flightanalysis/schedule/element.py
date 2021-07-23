@@ -10,8 +10,11 @@ from scipy import optimize
 
 
 class El:
-    def __init__(self):
-        self.uid = str(uuid4())
+    def __init__(self, uid:str = None):
+        if not uid:
+            self.uid = str(uuid4())
+        else:
+            self.uid = uid
 
     def get_data(self, sec: Section):
         return Section(sec.data.loc[sec.data.element == self.uid])
@@ -24,121 +27,106 @@ class El:
 
 
 class LineEl(El):
-    def __init__(self, length, rolls=0):
-        super().__init__()
+    def __init__(self, length, rolls=0, uid:str=None):
+        super().__init__(uid)
         self.length = length
         self.rolls = rolls
 
     def scale(self, factor):
-        el = LineEl(self.length * factor, self.rolls)
-        el.uid = self.uid
-        return el
-
+        return LineEl(self.length * factor, self.rolls, self.uid)
+        
     def create_template(self, transform: Transformation, speed: float):
         el = Section.from_line(transform, speed, self.length)
         return self._add_rolls(el, self.rolls)
 
-    def resize(self, sec: Section, transform: Transformation):
-        return LineEl(
-            scalar_projection(
-                sec.get_state_from_index(-1).pos -
-                sec.get_state_from_index(0).pos,
-                transform.rotate(Point.X())
-            ),
-            self.rolls
-        )
-
     def match_axis_rate(self, roll_rate: float, speed: float):
         # roll rate in radians per second, speed in m / s
         if not self.rolls == 0.0:
-            el = LineEl(2 * np.pi * abs(self.rolls) *
-                        speed / roll_rate, self.rolls)
+            return LineEl(2 * np.pi * abs(self.rolls) *
+                        speed / roll_rate, self.rolls, self.uid)
         else:
-            el = LineEl(self.length, self.rolls)
-        el.uid = self.uid
-        return el
+            return LineEl(self.length, self.rolls, self.uid)
 
-    def match_intention(self, transform: Transformation, flown: Section):
-        #TODO this is just an idea, better to somehow specify externally the higher
-        #level parameters that should be met
-        new_transform = Transformation(
-            flown.get_state_from_index(0).pos,
-            transform.rotation
+    def match_intention(self, transform: Transformation, flown: Section, speed):
+        # TODO this is just an idea, better to somehow specify externally the higher
+        # level parameters that should be met
+        
+        length = abs(scalar_projection(
+            flown.get_state_from_index(-1).pos - flown.get_state_from_index(0).pos,
+            transform.rotate(Point(1, 0, 0))
+        ))
+        el= LineEl(
+            length,
+            np.sign(np.mean(Points.from_pandas(flown.brvel).x)) * abs(self.rolls),
+            self.uid
         )
-        length = scalar_projection(
-            flown.get_state_from_index(-1).pos - new_transform.translation,
-            new_transform.rotate(Point(1, 0, 0))
-        )
-        return LineEl(length, np.sign(np.mean(Points.from_pandas(flown.brvel).x)) * abs(self.rolls))
+        return el, el.create_template(transform, speed)
 
 
 class LoopEl(El):
-    def __init__(self, diameter: float, loops: float, rolls=0.0, ke: bool = False):
-        super().__init__()
+    def __init__(self, diameter: float, loops: float, rolls=0.0, ke: bool = False, uid:str = None):
+        super().__init__(uid)
         self.loops = loops
         self.diameter = diameter
         self.rolls = rolls
         self.ke = ke
 
     def scale(self, factor):
-        el = LoopEl(self.diameter * factor, self.loops, self.rolls, self.ke)
-        el.uid = self.uid
-        return el
-
+        return LoopEl(self.diameter * factor, self.loops, self.rolls, self.ke, self.uid)
+        
     def create_template(self, transform: Transformation, speed: float):
         el = Section.from_loop(transform, speed, self.loops,
                                0.5 * self.diameter, self.ke)
         return self._add_rolls(el, self.rolls)
 
     def match_axis_rate(self, pitch_rate: float, speed: float):
-        el = LoopEl(
+        return LoopEl(
             2 * speed / pitch_rate,
             self.loops,
             self.rolls,
-            self.ke
+            self.ke,
+            self.uid
         )
-        el.uid = self.uid
-        return el
 
-    def resize(self, sec: Section, transform: Transformation):
-        pos = transform.rotate(Points.from_pandas(sec.pos))
+    def match_intention(self, transform: Transformation, flown: Section, speed: float):
+        # https://scipy-cookbook.readthedocs.io/items/Least_Squares_Circle.html
+        pos = transform.point(Points.from_pandas(flown.pos))
 
-        _x = pos.x
-        _y = pos.y if self.ke else pos.z
+        if self.ke:
+            x, y = pos.x, pos.y
+        else:
+            x, y = pos.x, pos.z
 
-        def calc_R(xc, yc): return np.sqrt((_x - xc)**2 + (_y - yc)**2)
+        # TODO this does not constrain the starting point
+        calc_R = lambda xc, yc: np.sqrt((x-xc)**2 + (y-yc)**2)
 
         def f_2(c):
             Ri = calc_R(*c)
             return Ri - Ri.mean()
 
-        center_2, ier = optimize.leastsq(f_2, (_x.mean(), _y.mean()))
-        Ri_2 = calc_R(*center_2)
+        center, ier = optimize.leastsq(f_2, (np.mean(x), np.mean(y)))
 
-        return LoopEl(2 * Ri_2.mean(), self.loops, self.rolls, self.ke)
-
-    def match_intention(self, transform: Transformation, flown: Section):
-        new_transform = Transformation(
-            flown.get_state_from_index(0).pos,
-            transform.rotation
+        el= LoopEl(
+            2 * calc_R(*center).mean(), 
+            self.loops, 
+            np.sign(np.mean(Points.from_pandas(flown.brvel).x)) * abs(self.rolls), 
+            self.ke,
+            self.uid
         )
-        #TODO match average radius and starting point, fix errors
-
+        return el, el.create_template(transform, speed)
 
 
 class SpinEl(El):
     _speed_factor = 1 / 10
 
-    def __init__(self, length: float, turns: float, opp_turns: float = 0.0):
-        super().__init__()
+    def __init__(self, length: float, turns: float, opp_turns: float = 0.0, uid:str = None):
+        super().__init__(uid)
         self.length = length
         self.turns = turns
         self.opp_turns = opp_turns
 
     def scale(self, factor):
-        el = SpinEl(self.length * factor, self.turns, self.opp_turns)
-        el.uid = self.uid
-        return el
+        return SpinEl(self.length * factor, self.turns, self.opp_turns, self.uid)
 
     def _create_template(self, transform: Transformation, speed: float):
         el = Section.from_spin(transform, self.length,
@@ -179,45 +167,63 @@ class SpinEl(El):
             2 * np.pi * (abs(self.turns) + abs(self.opp_turns)) * speed *
             SpinEl._speed_factor / spin_rate,
             self.turns,
-            self.opp_turns
+            self.opp_turns,
+            self.uid
         )
+    
+    def match_intention(self, transform: Transformation, flown: Section, speed: float):
+        # TODO doesnt cover opposite turns
+        length = abs(flown.get_state_from_index(-1).pos.z - flown.get_state_from_index(0).pos.z)
 
+        el = SpinEl(
+            length,
+            np.sign(np.mean(Points.from_pandas(flown.brvel).x)) * abs(self.turns),
+            0.0,
+            self.uid
+        )
+        return el, el.create_template(transform, speed)
 
 class SnapEl(El):
-    def __init__(self, length: float, rolls: float):
-        super().__init__()
+    def __init__(self, length: float, rolls: float, uid:str = None):
+        super().__init__(uid)
         self.length = length
         self.rolls = rolls
 
     def scale(self, factor):
-        el = SnapEl(self.length * factor, self.rolls)
-        el.uid = self.uid
-        return el
+        return SnapEl(self.length * factor, self.rolls, self.uid)
 
     def create_template(self, transform: Transformation, speed: float):
         el = Section.from_line(transform, speed, self.length)
         return self._add_rolls(el, self.rolls)
 
     def match_axis_rate(self, snap_rate: float, speed: float):
-        el = SnapEl(2 * np.pi * abs(self.rolls) *
-                    speed / snap_rate, self.rolls)
-        el.uid = self.uid
-        return el
+        return SnapEl(2 * np.pi * abs(self.rolls) *
+                    speed / snap_rate, self.rolls, self.uid)
+
+    def match_intention(self, transform: Transformation, flown: Section, speed: float):
+        length = abs(scalar_projection(
+            flown.get_state_from_index(-1).pos - flown.get_state_from_index(0).pos,
+            transform.rotate(Point(1, 0, 0))
+        ))
+        el = SnapEl(
+            length,
+            np.sign(np.mean(Points.from_pandas(flown.brvel).x)) * abs(self.rolls),
+            self.uid
+        )
+        return el, el.create_template(transform, speed)
 
 
 class StallTurnEl(El):
     _speed_scale = 1 / 20
 
-    def __init__(self, direction: int = 1, width: float = 1.0):
-        super().__init__()
+    def __init__(self, direction: int = 1, width: float = 1.0, uid:str = None):
+        super().__init__(uid)
         self.direction = direction
         self.width = width
 
     def scale(self, factor):
         # TODO dont scale this element? good idea?
-        el = StallTurnEl(self.direction, self.width)
-        el.uid = self.uid
-        return el
+        return StallTurnEl(self.direction, self.width, self.uid)
 
     def create_template(self, transform: Transformation, speed: float):
         el = Section.from_loop(
@@ -229,13 +235,19 @@ class StallTurnEl(El):
         return self._add_rolls(el, 0.0)
 
     def match_axis_rate(self, yaw_rate: float, speed: float):
-        el = StallTurnEl(
+        return StallTurnEl(
             self.direction,
-            2 * StallTurnEl._speed_scale * speed / yaw_rate
+            2 * StallTurnEl._speed_scale * speed / yaw_rate,
+            self.uid
         )
-        el.uid = self.uid
-        return el
 
+    def match_intention(self, transform: Transformation, flown: Section, speed: float):
+        el = StallTurnEl(
+            np.sign(np.mean(Points.from_pandas(flown.brvel).z)),
+            0.5,
+            self.uid
+        )
+        return el, el.create_template(transform, speed)
 
 def get_rates(flown: Section):
     brvels = Points.from_pandas(flown.brvel)

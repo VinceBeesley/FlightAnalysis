@@ -138,6 +138,7 @@ class TestSection(unittest.TestCase):
             combo.data.index[-1]
         ) 
 
+        self.assertEqual(combo.get_state_from_time(0.0).pos, combo.get_state_from_index(0).pos)
 
 
     def test_align(self):

@@ -61,17 +61,8 @@ class Schedule():
     def scale_distance(self, distance):
         return self.scale(np.tan(np.radians(60)) * distance)
     
-    def create_template(self, enter_from: str, speed:float, distance:float):
-        """returns a section containing labelled template data 
-
-        Args:
-            enter_from (str): [description]
-            distance (float): [description]
-
-        Returns:
-            [type]: [description]
-        """
-        dmul = -1.0 if enter_from == "right" else 1.0
+    def create_itransform(self, dmul, distance):
+        
         ipos = Point(
             dmul * self.entry_x_offset,
             distance,
@@ -82,10 +73,28 @@ class Schedule():
 
         if self.entry == "inverted":
             iatt = Quaternion.from_euler(Point(0, np.pi, 0)) * iatt
-        if enter_from == "left":
+        if dmul == 1:
             iatt = Quaternion.from_euler(Point(0, 0, np.pi)) * iatt
 
-        itrans = Transformation(ipos, iatt)
+        return Transformation(ipos, iatt)
+
+
+
+    def create_template(self, enter_from: str, speed:float, distance:float):
+        """returns a section containing labelled template data 
+
+        Args:
+            enter_from (str): [description]
+            distance (float): [description]
+
+        Returns:
+            [type]: [description]
+        """
+
+        itrans = self.create_itransform(
+            -1.0 if enter_from == "right" else 1.0,
+            distance
+        )
 
         templates = []
         #TODO add exit line on construction
@@ -117,3 +126,29 @@ class Schedule():
             sec.entry_z_offset,
             _mans
         )
+
+    def match_intention(self, flown: Section):
+        rates = get_rates(flown)
+
+        itrans = self.create_itransform(
+            -np.sign(flown.get_state_from_index(0).transform.point(Point(1,0,0)).x),
+            rates["distance"]
+        )
+        
+        _mans = []
+        _templates = []
+        for man in self.manoeuvres:
+            man, template = man.match_intention(itrans, man.get_data(flown), rates["speed"])
+            _mans.append(man)
+            _templates.append(template)
+            itrans = template.get_state_from_index(-1).transform
+            
+
+        return Schedule(
+            self.name,
+            self.category,
+            self.entry,
+            self.entry_x_offset,
+            self.entry_z_offset,
+            _mans
+        ), Section.stack(_templates)

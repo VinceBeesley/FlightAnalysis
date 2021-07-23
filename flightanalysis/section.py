@@ -183,7 +183,7 @@ class Section():
             Section: Section class representing the line or roll.
         """
         duration = length / speed
-        t = np.linspace(0, duration, int(duration * Section._construct_freq))
+        t = np.linspace(0, duration, max(int(duration * Section._construct_freq), 3))
         ibvel = Point(speed, 0.0, 0.0)
         bvel = Points.from_point(ibvel, len(t))
 
@@ -217,7 +217,7 @@ class Section():
         """
         duration = 2 * np.pi * radius * abs(proportion) / speed
         axis_rate = -proportion * 2 * np.pi / duration
-        t = np.linspace(0, duration, int(duration * Section._construct_freq))
+        t = np.linspace(0, duration, max(int(duration * Section._construct_freq), 3))
 
         # TODO There must be a more elegant way to do this.
         if axis_rate == 0:

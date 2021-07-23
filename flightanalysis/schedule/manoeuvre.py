@@ -4,20 +4,22 @@ from flightanalysis import Section
 from uuid import uuid4
 
 class Manoeuvre():
-    def __init__(self, name: str, k: float, elements: list):
+    def __init__(self, name: str, k: float, elements: list, uid: str = None):
         self.name = name
         self.k = k
         self.elements = elements
-        self.uid = str(uuid4())
-    
+        if not uid:
+            self.uid = str(uuid4())
+        else:
+            self.uid = uid
+
     def scale(self, factor: float):
-        man = Manoeuvre(
+        return Manoeuvre(
             self.name, 
             self.k,
-            [elm.scale(factor) for elm in self.elements]
+            [elm.scale(factor) for elm in self.elements],
+            self.uid
         )
-        man.uid = self.uid
-        return man
 
 
     def create_template(self, transform: Transformation, speed: float ) -> Section: 
@@ -31,9 +33,29 @@ class Manoeuvre():
 
         template =  Section.stack(templates)
         template.data["manoeuvre"] = self.uid
-        
         return template
 
     def get_data(self, sec: Section):
         return Section(sec.data.loc[sec.data.manoeuvre==self.uid])
-        
+    
+    def match_intention(self, transform: Transformation, flown: Section, speed: float):
+
+        elms = []
+        templates = []
+        for elm in self.elements:
+            
+            flown_elm = elm.get_data(flown)
+            itrans = Transformation(flown_elm.get_state_from_index(0).pos, transform.rotation)
+            elm, template = elm.match_intention(itrans, flown_elm, speed)
+            elms.append(elm)
+            template.data["element"] = elm.uid
+            templates.append(template)
+            transform = templates[-1].get_state_from_index(-1).transform
+        template = Section.stack(templates)
+        template.data["manoeuvre"] = self.uid
+        return Manoeuvre(
+            self.name,
+            self.k, 
+            elms,
+            self.uid
+        ), template
