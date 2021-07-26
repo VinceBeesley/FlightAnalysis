@@ -172,7 +172,7 @@ class Section():
             return NotImplemented
 
     @staticmethod
-    def from_line(itransform: Transformation, speed: float, length: float):
+    def from_line(itransform: Transformation, speed: float, length: float, freq: float = None):
         """generate a section representing a line. Provide an initial rotation rate to represent a roll.
 
         Args:
@@ -182,8 +182,10 @@ class Section():
         Returns:
             Section: Section class representing the line or roll.
         """
+        if freq==None:
+            freq = Section._construct_freq
         duration = length / speed
-        t = np.linspace(0, duration, max(int(duration * Section._construct_freq), 3))
+        t = np.linspace(0, duration, max(int(duration * freq), 3))
         ibvel = Point(speed, 0.0, 0.0)
         bvel = Points.from_point(ibvel, len(t))
 
@@ -202,7 +204,7 @@ class Section():
         )
 
     @staticmethod
-    def from_loop(itransform: Transformation, speed: float, proportion: float, radius: float, ke: bool = False):
+    def from_loop(itransform: Transformation, speed: float, proportion: float, radius: float, ke: bool = False, freq: float = _construct_freq):
         """generate a loop, based on intitial position, speed, amount of loop, radius. 
 
         Args:
@@ -217,7 +219,9 @@ class Section():
         """
         duration = 2 * np.pi * radius * abs(proportion) / speed
         axis_rate = -proportion * 2 * np.pi / duration
-        t = np.linspace(0, duration, max(int(duration * Section._construct_freq), 3))
+        if freq==None:
+            freq = Section._construct_freq
+        t = np.linspace(0, duration, max(int(duration * freq), 3))
 
         # TODO There must be a more elegant way to do this.
         if axis_rate == 0:
@@ -274,7 +278,7 @@ class Section():
         )
 
     @staticmethod
-    def from_spin(itransform: Transformation, height: float, turns: float, opp_turns: float = 0.0):
+    def from_spin(itransform: Transformation, height: float, turns: float, opp_turns: float = 0.0, freq: float = _construct_freq):
         inverted = np.sign(itransform.rotate(Point(0, 0, 1)).z)
 
         nose_drop = Section.from_loop(
@@ -285,7 +289,8 @@ class Section():
         rotation = Section.from_line(
             nose_drop.get_state_from_index(-1).transform,
             5.0,
-            height-2.5
+            height-2.5,
+            freq
         ).superimpose_roll(turns)
 
         rotation.data["sub_element"] = "rotation"

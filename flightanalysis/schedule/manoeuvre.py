@@ -39,23 +39,16 @@ class Manoeuvre():
         return Section(sec.data.loc[sec.data.manoeuvre==self.uid])
     
     def match_intention(self, transform: Transformation, flown: Section, speed: float):
-
         elms = []
-        templates = []
-        for elm in self.elements:
-            
+
+        for elm in self.elements:           
             flown_elm = elm.get_data(flown)
-            itrans = Transformation(flown_elm.get_state_from_index(0).pos, transform.rotation)
-            elm, template = elm.match_intention(itrans, flown_elm, speed)
+            elm, transform = elm.match_intention(transform, flown_elm, speed)
             elms.append(elm)
-            template.data["element"] = elm.uid
-            templates.append(template)
-            transform = templates[-1].get_state_from_index(-1).transform
-        template = Section.stack(templates)
-        template.data["manoeuvre"] = self.uid
+            
         return Manoeuvre(
             self.name,
             self.k, 
             elms,
             self.uid
-        ), template
+        ), transform

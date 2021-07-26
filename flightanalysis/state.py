@@ -65,3 +65,10 @@ class State():
     @property
     def vel(self):
         return self.transform.rotate(self.bvel)
+
+    @property
+    def direction(self):
+        if self.body_to_world(Point(1, 0, 0)).x > 0:
+            return "right"
+        else:
+            return "left"

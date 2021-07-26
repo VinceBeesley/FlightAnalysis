@@ -35,8 +35,8 @@ class LineEl(El):
     def scale(self, factor):
         return LineEl(self.length * factor, self.rolls, self.uid)
         
-    def create_template(self, transform: Transformation, speed: float):
-        el = Section.from_line(transform, speed, self.length)
+    def create_template(self, transform: Transformation, speed: float, simple: bool = False):
+        el = Section.from_line(transform, speed, self.length, freq = 1.0 if simple else None)
         return self._add_rolls(el, self.rolls)
 
     def match_axis_rate(self, roll_rate: float, speed: float):
@@ -60,7 +60,7 @@ class LineEl(El):
             np.sign(np.mean(Points.from_pandas(flown.brvel).x)) * abs(self.rolls),
             self.uid
         )
-        return el, el.create_template(transform, speed)
+        return el, el.create_template(transform, speed, True).get_state_from_index(-1).transform
 
 
 class LoopEl(El):
@@ -74,9 +74,10 @@ class LoopEl(El):
     def scale(self, factor):
         return LoopEl(self.diameter * factor, self.loops, self.rolls, self.ke, self.uid)
         
-    def create_template(self, transform: Transformation, speed: float):
+    def create_template(self, transform: Transformation, speed: float, simple=False):
+        
         el = Section.from_loop(transform, speed, self.loops,
-                               0.5 * self.diameter, self.ke)
+                               0.5 * self.diameter, self.ke, freq = 1.0 if simple else None)
         return self._add_rolls(el, self.rolls)
 
     def match_axis_rate(self, pitch_rate: float, speed: float):
@@ -113,7 +114,7 @@ class LoopEl(El):
             self.ke,
             self.uid
         )
-        return el, el.create_template(transform, speed)
+        return el, el.create_template(transform, speed, True).get_state_from_index(-1).transform
 
 
 class SpinEl(El):
@@ -128,22 +129,19 @@ class SpinEl(El):
     def scale(self, factor):
         return SpinEl(self.length * factor, self.turns, self.opp_turns, self.uid)
 
-    def _create_template(self, transform: Transformation, speed: float):
-        el = Section.from_spin(transform, self.length,
-                               self.turns, self.opp_turns)
-        return self._add_rolls(el, 0.0)
 
-    def create_template(self, transform: Transformation, speed: float):
+    def create_template(self, transform: Transformation, speed: float, simple: bool = False):
         _inverted = np.sign(transform.rotate(Point(0, 0, 1)).z)
 
         nose_drop = Section.from_loop(
-            transform, 5.0, -0.25 * _inverted, 2.0, False)
+            transform, 5.0, -0.25 * _inverted, 2.0, False, freq = 1.0 if simple else None)
         nose_drop.data["sub_element"] = "nose_drop"
 
         rotation = Section.from_line(
             nose_drop.get_state_from_index(-1).transform,
             speed * self._speed_factor,
-            self.length * self.turns / (self.turns + self.opp_turns)
+            self.length * self.turns / (self.turns + self.opp_turns),
+            freq = 1000 if simple else None
         ).superimpose_roll(self.turns)
         rotation.data["sub_element"] = "rotation"
 
@@ -153,7 +151,8 @@ class SpinEl(El):
             rotation2 = Section.from_line(
                 rotation.get_state_from_index(-1).transform,
                 speed * self._speed_factor,
-                self.length * self.opp_turns / (self.turns + self.opp_turns)
+                self.length * self.opp_turns / (self.turns + self.opp_turns),
+                freq = 1000 if simple else None
             ).superimpose_roll(self.opp_turns)
 
             rotation2.data["sub_element"] = "opp_rotation"
@@ -181,7 +180,7 @@ class SpinEl(El):
             0.0,
             self.uid
         )
-        return el, el.create_template(transform, speed)
+        return el, el.create_template(transform, speed, simple=True).get_state_from_index(-1).transform
 
 class SnapEl(El):
     def __init__(self, length: float, rolls: float, uid:str = None):
@@ -192,8 +191,8 @@ class SnapEl(El):
     def scale(self, factor):
         return SnapEl(self.length * factor, self.rolls, self.uid)
 
-    def create_template(self, transform: Transformation, speed: float):
-        el = Section.from_line(transform, speed, self.length)
+    def create_template(self, transform: Transformation, speed: float, simple: bool = False):
+        el = Section.from_line(transform, speed, self.length, freq = 1.0 if simple else None)
         return self._add_rolls(el, self.rolls)
 
     def match_axis_rate(self, snap_rate: float, speed: float):
@@ -210,7 +209,7 @@ class SnapEl(El):
             np.sign(np.mean(Points.from_pandas(flown.brvel).x)) * abs(self.rolls),
             self.uid
         )
-        return el, el.create_template(transform, speed)
+        return el, el.create_template(transform, speed, True).get_state_from_index(-1).transform
 
 
 class StallTurnEl(El):
@@ -225,13 +224,14 @@ class StallTurnEl(El):
         # TODO dont scale this element? good idea?
         return StallTurnEl(self.direction, self.width, self.uid)
 
-    def create_template(self, transform: Transformation, speed: float):
+    def create_template(self, transform: Transformation, speed: float, simple: bool = False):
         el = Section.from_loop(
             transform,
             StallTurnEl._speed_scale * speed,
             0.5 * self.direction,
             self.width / 2,
-            True)
+            True,
+            freq = 1.0 if simple else None)
         return self._add_rolls(el, 0.0)
 
     def match_axis_rate(self, yaw_rate: float, speed: float):
@@ -247,7 +247,7 @@ class StallTurnEl(El):
             0.5,
             self.uid
         )
-        return el, el.create_template(transform, speed)
+        return el, el.create_template(transform, speed, True).get_state_from_index(-1).transform
 
 def get_rates(flown: Section):
     brvels = Points.from_pandas(flown.brvel)

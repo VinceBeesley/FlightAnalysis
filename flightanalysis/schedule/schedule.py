@@ -61,22 +61,23 @@ class Schedule():
     def scale_distance(self, distance):
         return self.scale(np.tan(np.radians(60)) * distance)
 
-    def create_itransform(self, dmul, distance):
-
-        ipos = Point(
-            dmul * self.entry_x_offset,
-            distance,
-            self.entry_z_offset
-        )
-
+    def create_iatt(self, direction):
         iatt = Quaternion.from_euler(Point(np.pi, 0, 0))
-
         if self.entry == "inverted":
-            iatt = Quaternion.from_euler(Point(0, np.pi, 0)) * iatt
-        if dmul == 1:
-            iatt = Quaternion.from_euler(Point(0, 0, np.pi)) * iatt
+            return Quaternion.from_euler(Point(0, np.pi, 0)) * iatt
+        if direction == "right":
+            return Quaternion.from_euler(Point(0, 0, np.pi)) * iatt
 
-        return Transformation(ipos, iatt)
+    def create_itransform(self, direction, distance):
+        dmul = 1 if direction == "right" else -1
+        return Transformation(
+            Point(
+                self.entry_x_offset * dmul,
+                distance,
+                self.entry_z_offset
+            ),
+            self.create_iatt(direction)
+        )
 
     def create_template(self, itrans: Transformation, speed: float):
         templates = []
@@ -129,22 +130,19 @@ class Schedule():
             _mans
         )
 
-    def match_intention(self, flown: Section):
-        rates = get_rates(flown)
+    def match_intention(self, alinged: Section):
+        rates = get_rates(alinged)
 
-        itrans = self.create_itransform(
-            -np.sign(flown.get_state_from_index(0).transform.point(Point(1, 0, 0)).x),
+        transform = self.create_itransform(
+            -np.sign(alinged.get_state_from_index(0).transform.point(Point(1, 0, 0)).x),
             rates["distance"]
         )
 
         _mans = []
-        _templates = []
         for man in self.manoeuvres:
-            man, template = man.match_intention(
-                itrans, man.get_data(flown), rates["speed"])
+            man, transform = man.match_intention(
+                transform, man.get_data(alinged), rates["speed"])
             _mans.append(man)
-            _templates.append(template)
-            itrans = template.get_state_from_index(-1).transform
 
         return Schedule(
             self.name,
@@ -153,4 +151,21 @@ class Schedule():
             self.entry_x_offset,
             self.entry_z_offset,
             _mans
-        ), Section.stack(_templates)
+        )
+
+    def create_matched_template(self, alinged: Section):
+        rates = get_rates(alinged)
+    
+        iatt = self.create_iatt(alinged.get_state_from_index(0).direction)
+
+        templates = []
+        for manoeuvre in self.manoeuvres:
+            transform = Transformation(
+                manoeuvre.get_data(alinged).get_state_from_index(0).pos,
+                iatt
+            )
+            templates.append(manoeuvre.create_template(transform, rates["speed"]))
+            iatt = templates[-1].get_state_from_index(-1).att
+            
+
+        return Section.stack(templates)
