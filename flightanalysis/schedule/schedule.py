@@ -3,7 +3,7 @@ from typing import List
 from geometry import Point, Quaternion, Transformation, Points
 from flightanalysis.section import Section
 from flightanalysis.schedule.element import LoopEl, LineEl, SnapEl, SpinEl, StallTurnEl, get_rates
-import numpy as np 
+import numpy as np
 
 
 class Categories():
@@ -60,9 +60,9 @@ class Schedule():
 
     def scale_distance(self, distance):
         return self.scale(np.tan(np.radians(60)) * distance)
-    
+
     def create_itransform(self, dmul, distance):
-        
+
         ipos = Point(
             dmul * self.entry_x_offset,
             distance,
@@ -78,9 +78,16 @@ class Schedule():
 
         return Transformation(ipos, iatt)
 
+    def create_template(self, itrans: Transformation, speed: float):
+        templates = []
+        # TODO add exit line on construction
+        for manoeuvre in self.manoeuvres:
+            templates.append(manoeuvre.create_template(itrans, speed))
+            itrans = templates[-1].get_state_from_index(-1).transform
 
+        return Section.stack(templates)
 
-    def create_template(self, enter_from: str, speed:float, distance:float):
+    def create_raw_template(self, enter_from: str, speed: float, distance: float):
         """returns a section containing labelled template data 
 
         Args:
@@ -91,29 +98,24 @@ class Schedule():
             [type]: [description]
         """
 
-        itrans = self.create_itransform(
-            -1.0 if enter_from == "right" else 1.0,
-            distance
+        return self.create_template(
+            self.create_itransform(
+                -1.0 if enter_from == "right" else 1.0,
+                distance
+            ),
+            speed
         )
-
-        templates = []
-        #TODO add exit line on construction
-        for manoeuvre in self.manoeuvres:
-            templates.append(manoeuvre.create_template(itrans, speed))
-            itrans = templates[-1].get_state_from_index(-1).transform
-
-        return Section.stack(templates)
-
 
     def match_rates(self, rates: dict):
 
         sec = self.scale_distance(rates["distance"])
-        
+
         _mans = []
         for manoeuvre in sec.manoeuvres:
             _elms = []
             for element in manoeuvre.elements:
-                _elms.append(element.match_axis_rate(rates[element.__class__], rates["speed"]))
+                _elms.append(element.match_axis_rate(
+                    rates[element.__class__], rates["speed"]))
             _mans.append(Manoeuvre(
                 manoeuvre.name, manoeuvre.k, _elms
             ))
@@ -131,18 +133,18 @@ class Schedule():
         rates = get_rates(flown)
 
         itrans = self.create_itransform(
-            -np.sign(flown.get_state_from_index(0).transform.point(Point(1,0,0)).x),
+            -np.sign(flown.get_state_from_index(0).transform.point(Point(1, 0, 0)).x),
             rates["distance"]
         )
-        
+
         _mans = []
         _templates = []
         for man in self.manoeuvres:
-            man, template = man.match_intention(itrans, man.get_data(flown), rates["speed"])
+            man, template = man.match_intention(
+                itrans, man.get_data(flown), rates["speed"])
             _mans.append(man)
             _templates.append(template)
             itrans = template.get_state_from_index(-1).transform
-            
 
         return Schedule(
             self.name,
