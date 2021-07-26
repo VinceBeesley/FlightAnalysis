@@ -13,7 +13,7 @@ from pathlib import Path
 from trajalign.traj import Traj
 
 class Section():
-    _construct_freq = 30
+    _construct_freq = 20
 
     def __init__(self, data: pd.DataFrame):
         self.data = data
@@ -356,7 +356,7 @@ class Section():
         )
 
     @staticmethod
-    def align(flown, template):
+    def align(flown, template, radius=1):
         3
         fl = flown.brvel.copy()
         fl.brvr = abs(fl.brvr)
@@ -369,7 +369,7 @@ class Section():
         distance, path = fastdtw(
             tp.to_numpy(),
             fl.to_numpy(),
-            radius=1,
+            radius=radius,
             dist=euclidean
         )
 

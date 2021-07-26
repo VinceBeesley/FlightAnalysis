@@ -29,30 +29,39 @@ for tr in axis_rate_trace(rate_matched, True):
     fig.add_trace(tr, row=3, col=1)
 fig.show()
 
-fit_qual_b, aligned_b = Section.align(sec, basic)
-fit_qual_m, aligned_m = Section.align(sec, rate_matched)
+fit_qual_b, aligned_b = Section.align(sec, basic, 1)
+fit_qual_m, aligned_m = Section.align(sec, rate_matched, 1)
 
 
 print("fit distance basic: {}, matched: {}".format(fit_qual_b, fit_qual_m))
 
 
+def plot_dtw(fig, col:int, elms: list, sec: Section, temp:Section):
+    fig.add_traces(
+        dtwtrace(man.get_data(sec), elms, showlegend=False),
+        rows=list(np.full(len(elms)+2, 1)),
+        cols=list(np.full(len(elms)+2, col))
+    )
+    for tr in axis_rate_trace(man.get_data(sec), True):
+        fig.add_trace(tr, row=2, col=col)
+    for tr in axis_rate_trace(man.get_data(temp), True):
+        fig.add_trace(tr, row=3, col=col)
+
 
 for man in p21.manoeuvres:
     print(man.name)
     fig = make_subplots(
-        1, 
+        3, 
         2,
-        specs=[[{'type': 'scene'}, {'type': 'scene'}]])
-    fig.update_layout(template="flight3d")
-    fig.add_traces(
-        dtwtrace(man.get_data(aligned_b), man.elements),
-        rows=list(np.full(len(man.elements)+2, 1)),
-        cols=list(np.full(len(man.elements)+2, 1))
-    )
-    fig.add_traces(
-        dtwtrace(man.get_data(aligned_m), man.elements, False),
-        rows=list(np.full(len(man.elements)+2, 1)),
-        cols=list(np.full(len(man.elements)+2, 2))
-    )
+        specs=[
+            [{'type': 'scene'}, {'type': 'scene'}],
+            [{'type': 'xy'}, {'type': 'xy'}],
+            [{'type': 'xy'}, {'type': 'xy'}]
+            ])
+    fig.update_layout(template="flight3d", showlegend=False)
+    
+    plot_dtw(fig, 1, man.elements, aligned_b, basic)
+    plot_dtw(fig, 2, man.elements, aligned_m, rate_matched)
+
     fig.show()
 

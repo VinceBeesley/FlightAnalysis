@@ -22,7 +22,7 @@ class Manoeuvre():
         )
 
 
-    def create_template(self, transform: Transformation, speed: float ) -> Section: 
+    def create_template(self, transform: Transformation, speed: float) -> Section: 
         itrans = transform
         #print("Manoeuvre : {}".format(manoeuvre.name))
         templates = []
