@@ -146,30 +146,13 @@ class TestSection(unittest.TestCase):
 
         flown = Section.from_flight(flight, FlightLine.from_box(box, GPSPosition(**flight.origin()))).subset(100, 493)
 
-        template = p21.scale_distance(170.0).create_template("left", 30, 170)
+        template = p21.scale_distance(170.0).create_raw_template("left", 30, 170)
         
         aligned = Section.align(flown, template)
 
         self.assertEqual(len(aligned[1].data), len(flown.data))
         np.testing.assert_array_less(np.abs(aligned[1].pos.to_numpy()[0]), 200.0 )
 
-
-    def test_evaluate_radius(self):
-        initial = State(
-            Point(0, 170, 150),
-            Quaternion.from_euler(Point(np.pi, 0, np.pi)),
-            Point(10 * np.pi, 0, 0),  # 620 m in 10 seconds
-            Point(0, np.pi / 5, 0)
-        )
-
-        sec = Section.from_loop(initial.transform, 10*np.pi, 1, 50)
-
-        centre, radii, radius = sec.evaluate_radius("y")
-
-        self.assertAlmostEqual(radius, 50)
-        self.assertAlmostEqual(centre, Point(0, 170, 100), 5)
-
-        np.testing.assert_array_almost_equal(radii, np.full(radii.shape, 50.0))
 
 
 if __name__ == '__main__':

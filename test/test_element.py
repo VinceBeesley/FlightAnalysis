@@ -41,12 +41,10 @@ class TestLoopEl(unittest.TestCase):
             Quaternion.from_euler(Point(np.radians(5.0), 0.0, 0.0))
         ),30.0)
 
-        intention, template = elm.match_intention(
-            Transformation(), flown, 30.0
-        )
+        intention = elm.match_intention(Transformation(), flown)
 
         self.assertLess(intention.diameter, 100.0)
-        self.assertAlmostEqual(np.sum(np.abs(Points.from_pandas(template.pos).y)), 0.0)
+        
 
 
 
@@ -79,8 +77,7 @@ class TestLineEl(unittest.TestCase):
         # but it was meant to be along the X axis.
         new_el = LineEl(1.0, 1.0).match_intention(
             Transformation(),
-            flown
-        )
+            flown)
 
         # only amount of length in the intended direction is counted
         self.assertAlmostEqual(new_el.length, 100 * np.cos(np.radians(20.0)))
