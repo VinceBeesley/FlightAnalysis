@@ -6,25 +6,6 @@ from flightanalysis.schedule.element import LoopEl, LineEl, SnapEl, SpinEl, Stal
 import numpy as np
 
 
-class Categories():
-    F3A = 0
-    IMAC = 1
-    IAC = 2
-
-    lookup = {
-        "F3A": F3A,
-        "IMAC": IMAC,
-        "IAC": IAC
-    }
-
-
-class StartingPosition():
-    def __init__(self, x_offset: float, z_offset: float, orientation: str):
-        self.x_offset = x_offset
-        self.z_offset = z_offset
-        self.orientation = orientation
-
-
 class Schedule():
     def __init__(
         self,
@@ -117,18 +98,8 @@ class Schedule():
             for element in manoeuvre.elements:
                 _elms.append(element.match_axis_rate(
                     rates[element.__class__], rates["speed"]))
-            _mans.append(Manoeuvre(
-                manoeuvre.name, manoeuvre.k, _elms
-            ))
-            _mans[-1].uid = manoeuvre.uid
-        return Schedule(
-            sec.name,
-            sec.category,
-            sec.entry,
-            sec.entry_x_offset,
-            sec.entry_z_offset,
-            _mans
-        )
+            _mans.append(manoeuvre.replace_elms(_elms))
+        return Schedule(sec.name, sec.category, sec.entry, sec.entry_x_offset, sec.entry_z_offset, _mans)
 
     def match_intention(self, alinged: Section):
         rates = get_rates(alinged)
@@ -144,18 +115,19 @@ class Schedule():
                 transform, man.get_data(alinged), rates["speed"])
             _mans.append(man)
 
-        return Schedule(
-            self.name,
-            self.category,
-            self.entry,
-            self.entry_x_offset,
-            self.entry_z_offset,
-            _mans
-        )
+        return Schedule(self.name, self.category, self.entry, self.entry_x_offset, self.entry_z_offset, _mans)
+
+    def correct_intention(self):
+        _mans = []
+        for man in self.manoeuvres:
+            #TODO add some checking logic here
+            _mans.append(man.fix_loop_diameters().correct_line_lengths())
+        return Schedule(self.name, self.category, self.entry, self.entry_x_offset, self.entry_z_offset, _mans)
+
 
     def create_matched_template(self, alinged: Section):
         rates = get_rates(alinged)
-    
+
         iatt = self.create_iatt(alinged.get_state_from_index(0).direction)
 
         templates = []
@@ -164,8 +136,8 @@ class Schedule():
                 manoeuvre.get_data(alinged).get_state_from_index(0).pos,
                 iatt
             )
-            templates.append(manoeuvre.create_template(transform, rates["speed"]))
+            templates.append(manoeuvre.create_template(
+                transform, rates["speed"]))
             iatt = templates[-1].get_state_from_index(-1).att
-            
 
         return Section.stack(templates)

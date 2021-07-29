@@ -17,7 +17,7 @@ distance, aligned = Section.align(flown, template)
 
 plotdtw(p21.manoeuvres[0].get_data(aligned), p21.manoeuvres[0].elements).show()
 
-intended = p21.match_intention(aligned)
+intended = p21.match_intention(aligned).correct_intention()
 
 
 scaled_template =  intended.create_matched_template(aligned)

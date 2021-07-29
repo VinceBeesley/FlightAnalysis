@@ -1,6 +1,6 @@
 from .element import rollmaker, reboundrollmaker, rollsnapcombomaker
 from .manoeuvre import Manoeuvre
-from .schedule import Schedule, Categories
+from .schedule import Schedule
 
 
 from .p_21 import p21
