@@ -45,9 +45,10 @@ class Schedule():
     def create_iatt(self, direction):
         iatt = Quaternion.from_euler(Point(np.pi, 0, 0))
         if self.entry == "inverted":
-            return Quaternion.from_euler(Point(0, np.pi, 0)) * iatt
+            iatt = Quaternion.from_euler(Point(0, np.pi, 0)) * iatt
         if direction == "right":
-            return Quaternion.from_euler(Point(0, 0, np.pi)) * iatt
+            iatt= Quaternion.from_euler(Point(0, 0, np.pi)) * iatt
+        return iatt
 
     def create_itransform(self, direction, distance):
         dmul = 1 if direction == "right" else -1
@@ -64,6 +65,7 @@ class Schedule():
         templates = []
         # TODO add exit line on construction
         for manoeuvre in self.manoeuvres:
+            print(manoeuvre.name)
             templates.append(manoeuvre.create_template(itrans, speed))
             itrans = templates[-1].get_state_from_index(-1).transform
 
@@ -81,10 +83,7 @@ class Schedule():
         """
 
         return self.create_template(
-            self.create_itransform(
-                -1.0 if enter_from == "right" else 1.0,
-                distance
-            ),
+            self.create_itransform(-1.0 if enter_from == "right" else 1.0,distance),
             speed
         )
 

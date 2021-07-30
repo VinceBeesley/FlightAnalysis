@@ -19,16 +19,6 @@ rates = get_rates(sec)
 rate_matched = p21.match_rates(rates).create_raw_template(
     "left", rates["speed"], rates["distance"])
 
-
-fig = make_subplots(rows=3, cols=1)
-for tr in axis_rate_trace(sec, True):
-    fig.add_trace(tr, row=1, col=1)
-for tr in axis_rate_trace(basic, True):
-    fig.add_trace(tr, row=2, col=1)
-for tr in axis_rate_trace(rate_matched, True):
-    fig.add_trace(tr, row=3, col=1)
-fig.show()
-
 fit_qual_b, aligned_b = Section.align(sec, basic, 1)
 fit_qual_m, aligned_m = Section.align(sec, rate_matched, 1)
 
