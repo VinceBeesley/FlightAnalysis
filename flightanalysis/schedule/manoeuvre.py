@@ -96,7 +96,7 @@ class Manoeuvre():
     def fix_loop_diameters(self):
         loops = self.get_elm_by_type(LoopEl)
         if len(loops) > 0:
-            diameter = loops[0].diameter
+            diameter = np.mean([loop.diameter for loop in loops])  # Factor by the amount of loop flown
             return self.replace_elms(
                 [loop.set_parameter(diameter=diameter)
                  for loop in self.get_elm_by_type(LoopEl)]

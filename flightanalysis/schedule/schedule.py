@@ -127,7 +127,7 @@ class Schedule():
 
     def create_matched_template(self, alinged: Section):
         rates = get_rates(alinged)
-
+    
         iatt = self.create_iatt(alinged.get_state_from_index(0).direction)
 
         templates = []
