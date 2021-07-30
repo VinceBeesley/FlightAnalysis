@@ -119,7 +119,7 @@ class Section():
 
         dt = np.gradient(t)
 
-        brvel = att.body_diff(dt)
+        brvel = att.body_diff(dt)  # TODO this does not work
         # this is EKF velocity estimate in NED frame transformed to contest frame
         vel = flightline.transform_to.rotate(Points.from_pandas(
             flight.data.loc[:, ["velocity_x", "velocity_y", "velocity_z"]]))

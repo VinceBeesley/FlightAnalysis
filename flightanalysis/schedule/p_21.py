@@ -28,9 +28,9 @@ p21 = Schedule("P21", Categories.F3A, "inverted", -1.0, 0.55, [
     Manoeuvre("stall", 3, [
         LineEl(0.3, 0.0),
         LoopEl(0.3, 0.25),
-        LineEl(0.25, 0.0),
+        LineEl(0.25, 0.0, False),
         StallTurnEl()
-    ] + rollmaker(2, "X", 4, 0.7, "Centre") + [
+    ] + rollmaker(2, "X", 4, 0.7, "Centre", False) + [
         LoopEl(0.3, -0.25)
     ], F3AEnd),
     Manoeuvre("sqL", 4, [
@@ -85,11 +85,9 @@ p21 = Schedule("P21", Categories.F3A, "inverted", -1.0, 0.55, [
     Manoeuvre("sFin", 3, [
         LineEl(0.57, 0.0),
         LoopEl(d1, -0.25),
-        LineEl(0.25, 0.0),
+        LineEl(0.25, 0.0, False),
         LoopEl(d1, -0.375)
-    ] + rollmaker(2, "X", 4,
-                  (0.25 + 2 * r1 * c45) / c45,
-                  "Centre") + [
+    ] + rollmaker(2, "X", 4, (0.25 + 2 * r1 * c45) / c45, "Centre", False) + [
         LoopEl(0.3, -0.125)  # 1 - r1 - l1 - 2rc45
     ], F3AEnd
     ),
@@ -105,9 +103,9 @@ p21 = Schedule("P21", Categories.F3A, "inverted", -1.0, 0.55, [
     Manoeuvre("hB", 3, [
         LineEl(0.55,  0.0),  # 0.45
         LoopEl(0.3,  0.25),  # 0.6
-    ] + rollmaker(1, "/", 2, 0.5, "Centre") + [
+    ] + rollmaker(1, "/", 2, 0.5, "Centre", False) + [
         LoopEl(0.3,  0.5),  # 0.9
-        LineEl(0.5,  0.0),
+        LineEl(0.5,  0.0, False),
         LoopEl(0.3,  0.25)  # 0.75
     ], F3AEnd
     ),
@@ -121,11 +119,11 @@ p21 = Schedule("P21", Categories.F3A, "inverted", -1.0, 0.55, [
     Manoeuvre("tHat", 3, [
         LineEl(0.395,  0.0),  # 0.795
         LoopEl(0.3,  0.25),
-    ] + rollmaker(1, "/", 2, 0.5, "Centre") + [
+    ] + rollmaker(1, "/", 2, 0.5, "Centre", False) + [
         LoopEl(0.3,  -0.25),
-        LineEl(0.3182076438918871,  0.0),  # 0.46320764389188707
+        LineEl(0.3182076438918871,  0.0, False),  # 0.46320764389188707
         SpinEl(0.05,  2.5),  # [0.47, 0.5637655569733979, 0.8516980890270289]
-        LineEl(0.601698089027029,  0.0),
+        LineEl(0.601698089027029,  0.0, False),
         LoopEl(0.3,  -0.25)  # 0.27
     ], F3AEnd
     ),

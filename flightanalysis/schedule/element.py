@@ -27,15 +27,17 @@ class El:
 
 
 class LineEl(El):
-    def __init__(self, length, rolls=0, uid: str = None):
+    def __init__(self, length, rolls=0, l_tag=True, uid: str = None):
         super().__init__(uid)
         self.length = length
         self.rolls = rolls
+        self.l_tag = l_tag
 
-    def set_parameter(self, length=None, rolls=None):
+    def set_parameter(self, length=None, rolls=None, l_tag=None):
         return LineEl(
             length if length is not None else self.length,
             rolls if rolls is not None else self.rolls,
+            l_tag if l_tag is not None else self.l_tag,
             self.uid
         )
 
@@ -56,9 +58,6 @@ class LineEl(El):
             return self.set_parameter()
 
     def match_intention(self, transform: Transformation, flown: Section):
-        # TODO this is just an idea, better to somehow specify externally the higher
-        # level parameters that should be met
-
         length = abs(scalar_projection(
             flown.get_state_from_index(-1).pos -
             flown.get_state_from_index(0).pos,
@@ -75,16 +74,18 @@ class LineEl(El):
             "type": "LineEl",
             "length": self.length,
             "rolls": self.rolls,
+            "r_tag": self.l_tag,
             "uid": self.uid
         }
 
 class LoopEl(El):
-    def __init__(self, diameter: float, loops: float, rolls=0.0, ke: bool = False, uid: str = None):
+    def __init__(self, diameter: float, loops: float, rolls=0.0, ke: bool = False, r_tag=True, uid: str = None):
         super().__init__(uid)
         self.loops = loops
         self.diameter = diameter
         self.rolls = rolls
         self.ke = ke
+        self.r_tag = r_tag
 
     def scale(self, factor):
         return self.set_parameter(diameter=self.diameter * factor)
@@ -120,12 +121,13 @@ class LoopEl(El):
             rolls=np.sign(np.mean(Points.from_pandas(flown.brvel).x)) * abs(self.rolls)
         )
         
-    def set_parameter(self, diameter=None, loops=None, rolls=None, ke=None):
+    def set_parameter(self, diameter=None, loops=None, rolls=None, ke=None, r_tag=None):
         return LoopEl(
             diameter if not diameter is None else self.diameter,
             loops if not loops is None else self.loops,
             rolls if not rolls is None else self.rolls,
             ke if not ke is None else self.ke,
+            r_tag if not r_tag is None else self.r_tag,
             self.uid
         )
 
@@ -136,6 +138,7 @@ class LoopEl(El):
             "diameter": self.diameter,
             "rolls": self.rolls,
             "ke": self.ke,
+            "r_tag": self.r_tag,
             "uid": self.uid
         }
 
@@ -217,15 +220,17 @@ class SpinEl(El):
         }
 
 class SnapEl(El):
-    def __init__(self, length: float, rolls: float, uid: str = None):
+    def __init__(self, length: float, rolls: float, l_tag=True, uid: str = None):
         super().__init__(uid)
         self.length = length
         self.rolls = rolls
+        self.l_tag = l_tag
 
-    def set_parameter(self, length=None, rolls=None):
+    def set_parameter(self, length=None, rolls=None, l_tag=None):
         return SnapEl(
             length if length is not None else self.length,
             rolls if rolls is not None else self.rolls,
+            l_tag if l_tag is not None else self.l_tag,
             self.uid
         )
 
@@ -257,6 +262,7 @@ class SnapEl(El):
             "type": "SnapEl",
             "length": self.length,
             "rolls": self.rolls,
+            "l_tag": self.l_tag,
             "uid": self.uid
         }
 
@@ -321,7 +327,7 @@ def get_rates(flown: Section):
     }
 
 
-def rollmaker(num: int, arg: str, denom: float, length: float = 0.5, position="Centre", right=False, rlength=0.3):
+def rollmaker(num: int, arg: str, denom: float, length: float = 0.5, position="Centre", right=False, rlength=0.3, l_tag=True):
     """generate a list of elements representing a roll or point roll
     examples:
     2 points of a 4 point roll: rollmaker(2, "X", 4)
@@ -335,63 +341,63 @@ def rollmaker(num: int, arg: str, denom: float, length: float = 0.5, position="C
     direction = -1 if right else 1
     if arg == "/":
         lsum += rlength * num / denom
-        elms = [LineEl(rlength * num / denom, direction * num / denom)]
+        elms = [LineEl(rlength * num / denom, direction * num / denom, l_tag)]
     elif arg == "X":
         elms = []
         for i in range(num):
             lsum += rlength / denom
-            elms.append(LineEl(rlength / denom, direction / denom))
+            elms.append(LineEl(rlength / denom, direction / denom, l_tag))
             if i < num - 1:
                 elms.append(LineEl(0.05, 0.0))
                 lsum += 0.05
     else:
         raise KeyError
-    return paddinglines(position, length, lsum, elms)
+    return paddinglines(position, length, lsum, elms, l_tag)
 
 
-def reboundrollmaker(rolls: list, length: float = 0.5, position="Centre", rlength=0.3, snap=False):
+def reboundrollmaker(rolls: list, length: float = 0.5, position="Centre", rlength=0.3, snap=False, l_tag=True):
     lsum = 0.0
     elms = []
     last_dir = -np.sign(rolls[0])
     for roll in rolls:
         if last_dir == np.sign(roll):
-            elms.append(LineEl(0.05, 0.0))
+            elms.append(LineEl(0.05, 0.0, l_tag))
             lsum += 0.05
         last_dir = np.sign(roll)
         if snap:
-            elms.append(SnapEl(rlength * abs(roll), roll))
+            elms.append(SnapEl(rlength * abs(roll), roll, l_tag))
         else:
-            elms.append(LineEl(rlength * abs(roll), roll))
+            elms.append(LineEl(rlength * abs(roll), roll, l_tag))
         lsum += rlength * abs(roll)
-    return paddinglines(position, length, lsum, elms)
+    return paddinglines(position, length, lsum, elms, l_tag)
 
 
-def rollsnapcombomaker(rolls: list, length: float, position="Centre", rlength=0.3):
+def rollsnapcombomaker(rolls: list, length: float, position="Centre", rlength=0.3, l_tag=True):
     lsum = 0.0
     elms = []
     last_dir = -np.sign(rolls[0][1])
     for roll in rolls:
         # add pause if roll in opposite direction
         if last_dir == np.sign(roll[1]):
-            elms.append(LineEl(0.05, 0.0))
+            elms.append(LineEl(0.05, 0.0, l_tag))
             lsum += 0.05
         last_dir = np.sign(roll[1])
         if roll[0] == "snap":
-            elms.append(SnapEl(0.05 * abs(roll[1]), roll[1]))
+            elms.append(SnapEl(0.05 * abs(roll[1]), roll[1], l_tag))
             lsum += 0.05 * abs(roll[1])
         if roll[0] == "roll":
-            elms.append(LineEl(rlength * abs(roll[1]), roll[1]))
+            elms.append(LineEl(rlength * abs(roll[1]), roll[1], l_tag))
             lsum += rlength * abs(roll[1])
-    return paddinglines(position, length, lsum, elms)
+    return paddinglines(position, length, lsum, elms, l_tag)
 
 
-def paddinglines(position, length, lsum, elms):
+def paddinglines(position, length, lsum, elms, l_tag=True):
     lleft = length - lsum
     if position.lower() == "centre":
         return [
-            LineEl(lleft / 2, 0.0)
+            LineEl(lleft / 2, 0.0, l_tag)
         ] + elms + [
-            LineEl(lleft / 2, 0.0)
+            LineEl(lleft / 2, 0.0, l_tag)
         ]
     elif position.lower() == "start":
         return elms + [LineEl(lleft, 0.0)]

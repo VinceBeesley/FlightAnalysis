@@ -121,7 +121,7 @@ class Schedule():
         _mans = []
         for man in self.manoeuvres:
             #TODO add some checking logic here
-            _mans.append(man.fix_loop_diameters().correct_line_lengths())
+            _mans.append(man.fix_intention())
         return Schedule(self.name, self.category, self.entry, self.entry_x_offset, self.entry_z_offset, _mans)
 
 

@@ -65,7 +65,7 @@ class TestManoeuvre(unittest.TestCase):
         new_v8 = self.v8.replace_elms(
             [self.v8.elements[3].set_parameter(diameter=10.0)])
         fixed_v8 = new_v8.fix_loop_diameters()
-        self.assertEqual(fixed_v8.elements[3].diameter, 0.45)
+        self.assertEqual(fixed_v8.elements[3].diameter, np.mean([0.45, 10]))
 
     def test_get_bounded_lines(self):
         self.assertEqual(self.v8.get_bounded_lines(), [])
@@ -89,10 +89,12 @@ class TestManoeuvre(unittest.TestCase):
         self.assertIsInstance(Manoeuvre.create_elm_df(self.v8.elements), pd.DataFrame)
     
     def test_set_bounded_line_length(self):
-        self.assertEqual(self.v8.get_bounded_lines(), [])
-        sql_lines = self.sql.get_bounded_lines()
         
-        new_lines = [Manoeuvre.set_bounded_line_length(bline, 100.0) for bline in sql_lines]
+        bline = [LineEl(50.0, 0.0, True), LineEl(10.0, 1.0, True), LineEl(100.0, 0.0, True)]
 
-        for i in range(4):
-            self.assertEqual(sum([line.length for line in new_lines[i]]), 100.0)
+        nbline = Manoeuvre.set_bounded_line_length(bline, 100.0)
+        self.assertEqual(Manoeuvre.calc_line_length(nbline), 100.0)
+
+    def test_filter_elms_by_attribute(self):
+        lmats = Manoeuvre.filter_elms_by_attribute(self.v8.elements, r_tag=True)
+        self.assertTrue(len(lmats), 2)

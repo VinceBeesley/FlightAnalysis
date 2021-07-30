@@ -48,7 +48,8 @@ def plot_dtw(fig, col:int, elms: list, sec: Section, temp:Section):
         fig.add_trace(tr, row=3, col=col)
 
 
-for man in p21.manoeuvres:
+
+def plot_man(man):
     print(man.name)
     fig = make_subplots(
         3, 
@@ -65,3 +66,6 @@ for man in p21.manoeuvres:
 
     fig.show()
 
+
+for man in p21.manoeuvres:
+    plot_man(man)
