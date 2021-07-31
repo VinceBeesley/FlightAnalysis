@@ -1,8 +1,8 @@
 from . import Manoeuvre
 from typing import List
-from geometry import Point, Quaternion, Transformation, Points
+from geometry import Point, Quaternion, Transformation
 from flightanalysis.section import Section
-from flightanalysis.schedule.element import LoopEl, LineEl, SnapEl, SpinEl, StallTurnEl, get_rates
+from flightanalysis.schedule.element import get_rates
 import numpy as np
 
 

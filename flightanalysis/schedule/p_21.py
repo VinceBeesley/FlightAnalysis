@@ -1,6 +1,5 @@
 
 
-from flightanalysis import schedule
 from flightanalysis.schedule import Schedule, Manoeuvre, rollmaker
 from flightanalysis.schedule.figure_rules import Categories
 from flightanalysis.schedule.element import LineEl, LoopEl, SnapEl, SpinEl, StallTurnEl
