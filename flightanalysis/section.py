@@ -10,7 +10,6 @@ from fastdtw import fastdtw
 from scipy.spatial.distance import euclidean
 from scipy import optimize
 from pathlib import Path
-from trajalign.traj import Traj
 
 class Section():
     _construct_freq = 20
