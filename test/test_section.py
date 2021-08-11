@@ -8,6 +8,8 @@ from geometry import Point, Quaternion, Points, Quaternions, GPSPosition
 from flightdata import Flight, Fields
 import numpy as np
 import pandas as pd
+from io import open
+from json import load
 
 
 flight = Flight.from_csv('test/P21_new.csv')
@@ -154,6 +156,11 @@ class TestSection(unittest.TestCase):
         np.testing.assert_array_less(np.abs(aligned[1].pos.to_numpy()[0]), 200.0 )
 
 
+    def test_from_fc_json(self):
+        with open('test/fc_json.json', 'r') as f:
+            js = load(f)
+        sec = Section.from_json(js)
+        self.assertEqual(sec.duration, )
 
 if __name__ == '__main__':
     unittest.main()

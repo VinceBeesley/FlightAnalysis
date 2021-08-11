@@ -19,7 +19,6 @@ plotdtw(p21.manoeuvres[-2].get_data(aligned), p21.manoeuvres[-2].elements).show(
 
 intended = p21.match_intention(aligned).correct_intention()
 
-
 scaled_template =  intended.create_matched_template(aligned)
 
 #plotsec(intended_template, obj, 5).show()

@@ -377,3 +377,5 @@ class Section():
         ).groupby(['flight']).last().reset_index().set_index("flight")
 
         return distance, Section(flown.data.reset_index().join(mans).set_index("time_index"))
+
+    
