@@ -1,7 +1,10 @@
 import unittest
-from flightanalysis.schedule import p21, Schedule
-from flightanalysis.schedule.element import get_rates, LineEl, LoopEl, SnapEl, SpinEl, StallTurnEl
+from flightanalysis.schedule import p21, Schedule, get_schedule, LineEl
+from flightanalysis.schedule.element import get_rates
 from flightanalysis import Section
+from json import load
+from flightanalysis.fc_json import FCJson
+from flightdata import Flight
 
 
 class TestSchedule(unittest.TestCase):
@@ -27,3 +30,18 @@ class TestSchedule(unittest.TestCase):
             for i, elm in enumerate(manoeuvre.elements):
                 if isinstance(elm, LineEl):
                     self.assertGreater(elm.length, 0.0, "manoeuvre {}, elm {}, length {}".format(manoeuvre.name, i, elm.length))
+
+    def test_from_splitter(self):
+        with open("test/fc_json.json", 'r') as f:
+            fcj = load(f)
+        box = FCJson.read_box(fcj["name"], fcj['parameters'])
+        flight = Flight.from_fc_json(fcj)
+        sec = Section.from_flight(flight, box)
+
+        sched = get_schedule(*fcj["parameters"]["schedule"])
+        labelled = sched.label_from_splitter(sec, fcj["mans"])
+        self.assertIsInstance(labelled, Section)
+        self.assertGreater(sec.duration, labelled.duration)
+        self.assertAlmostEqual(sec.duration /10 , labelled.duration / 10, 0)
+
+

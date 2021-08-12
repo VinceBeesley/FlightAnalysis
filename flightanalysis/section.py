@@ -106,7 +106,7 @@ class Section():
 
         qs = flight.read_fields(Fields.QUATERNION)
         
-        if not qs[pd.isna(qs) == False].empty:  # for back compatibility with old csv files
+        if not pd.isna(qs).all().all():  # for back compatibility with old csv files
             att = flightline.transform_from.quat(
                 Quaternions.from_pandas(flight.read_fields(Fields.QUATERNION))
             )

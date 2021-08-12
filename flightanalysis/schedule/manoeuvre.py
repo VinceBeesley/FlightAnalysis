@@ -32,9 +32,7 @@ class Manoeuvre():
             itrans = templates[-1].get_state_from_index(-1).transform
             #print("element {0}, {1}".format(element.classification, (itrans.translation / scale).to_list()))
 
-        template = Section.stack(templates)
-        template.data["manoeuvre"] = self.uid
-        return template
+        return self.label(Section.stack(templates))
 
     def get_data(self, sec: Section):
         return Section(sec.data.loc[sec.data.manoeuvre == self.uid])
@@ -218,3 +216,8 @@ class Manoeuvre():
     @staticmethod
     def create_elm_df(elm_list):
         return pd.DataFrame([elm.to_dict() for elm in elm_list])
+
+    def label(self, sec: Section):
+        new_data = sec.data.copy()
+        new_data.loc[:,"manoeuvre"] = self.uid
+        return Section(new_data)

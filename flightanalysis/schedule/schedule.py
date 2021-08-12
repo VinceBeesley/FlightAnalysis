@@ -29,6 +29,9 @@ class Schedule():
                 return manoeuvre
         raise KeyError()
 
+    def replace_manoeuvres(self, new_mans):
+        return Schedule(self.name, self.category, self.entry, self.entry_x_offset, self.entry_z_offset, new_mans)
+
     def scale(self, box_scale):
         return Schedule(
             self.name,
@@ -47,7 +50,7 @@ class Schedule():
         if self.entry == "inverted":
             iatt = Quaternion.from_euler(Point(0, np.pi, 0)) * iatt
         if direction == "right":
-            iatt= Quaternion.from_euler(Point(0, 0, np.pi)) * iatt
+            iatt = Quaternion.from_euler(Point(0, 0, np.pi)) * iatt
         return iatt
 
     def create_itransform(self, direction, distance):
@@ -83,7 +86,8 @@ class Schedule():
         """
 
         return self.create_template(
-            self.create_itransform(-1.0 if enter_from == "right" else 1.0,distance),
+            self.create_itransform(-1.0 if enter_from ==
+                                   "right" else 1.0, distance),
             speed
         )
 
@@ -98,7 +102,7 @@ class Schedule():
                 _elms.append(element.match_axis_rate(
                     rates[element.__class__], rates["speed"]))
             _mans.append(manoeuvre.replace_elms(_elms))
-        return Schedule(sec.name, sec.category, sec.entry, sec.entry_x_offset, sec.entry_z_offset, _mans)
+        return self.replace_manoeuvres(_mans)
 
     def match_intention(self, alinged: Section):
         rates = get_rates(alinged)
@@ -114,19 +118,17 @@ class Schedule():
                 transform, man.get_data(alinged), rates["speed"])
             _mans.append(man)
 
-        return Schedule(self.name, self.category, self.entry, self.entry_x_offset, self.entry_z_offset, _mans)
+        return self.replace_manoeuvres(_mans)
 
     def correct_intention(self):
         _mans = []
         for man in self.manoeuvres:
-            #TODO add some checking logic here
             _mans.append(man.fix_intention())
-        return Schedule(self.name, self.category, self.entry, self.entry_x_offset, self.entry_z_offset, _mans)
+        return self.replace_manoeuvres(_mans)
 
-
-    def create_matched_template(self, alinged: Section):
+    def create_matched_template(self, alinged: Section) -> Section:
         rates = get_rates(alinged)
-    
+
         iatt = self.create_iatt(alinged.get_state_from_index(0).direction)
 
         templates = []
@@ -140,3 +142,29 @@ class Schedule():
             iatt = templates[-1].get_state_from_index(-1).att
 
         return Section.stack(templates)
+
+    def label_from_splitter(self, flown: Section, splitter: list) -> Section:
+        """label the manoeuvres in a section based on the flight coach splitter information
+
+        Args:
+            flown (Section): Section read from the flight coach json
+            splitter (list): the mans field of a flight coach json
+
+        Returns:
+            Section: section with labelled manoeuvres
+        """
+        takeoff = flown.data.iloc[0:int(splitter[0]["stop"])+1]
+        takeoff.loc[:,"manoeuvre"] = "takeoff"
+        labelled = [Section(takeoff)]
+        for split_man, man in zip(splitter[1:], self.manoeuvres):
+            start, stop = int(split_man["start"]), int(split_man["stop"])
+            labelled.append(man.label(Section(flown.data.iloc[start:stop+1])))
+            
+        return Section.stack(labelled)
+
+    def get_manoeuvre_data(self, sec: Section, include_takeoff: bool = False) -> list:
+        tsecs = []
+        if include_takeoff:
+            tsecs.append(Section(sec.data.loc[sec.data.manoeuvre == "takeoff"]))        
+        tsecs += [tman.get_data(sec) for tman in self.manoeuvres]
+        return tsecs
