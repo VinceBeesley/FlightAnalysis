@@ -166,8 +166,11 @@ class Schedule():
         tsecs = []
         if include_takeoff:
             tsecs.append(Section(sec.data.loc[sec.data.manoeuvre == "takeoff"]))        
-        tsecs += [tman.get_data(sec) for tman in self.manoeuvres]
+        tsecs += self.get_data(sec, self.manoeuvres)
         return tsecs
+
+    def get_data(self, sec: Section, mans: List[Manoeuvre]) -> List[Section]:
+        return [man.get_data(sec) for man in mans]
 
     def share_seperators(self, undo=False):
         """share each manoeuvres entry line with the preceding manoeuvre"""

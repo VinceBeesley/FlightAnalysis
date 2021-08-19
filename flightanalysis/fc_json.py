@@ -39,8 +39,8 @@ class FCJson:
         schedule = get_schedule(*fc_json["parameters"]["schedule"]).share_seperators()
         labelled = schedule.label_from_splitter(sec, fc_json["mans"])
 
-        
-        #do alignment?
+
+        #scale schedule here?
 
         return FCJson(fc_json['name'], flight, box, labelled, schedule)
 
