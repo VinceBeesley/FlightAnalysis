@@ -131,10 +131,6 @@ class TestSection(unittest.TestCase):
 
         self.assertIsInstance(combo.get_state_from_time(10), State)
 
-        #TODO this is here to make the test fail for now
-        #Stack should return a section containing pointers to the data in 
-        #its arguments, rather than copies. Alternatively it could return two arguments,
-        # a compiled section and a list of subsections that point to slices of the compiled section
         self.assertEqual(
             radius.data.index[-1] + line.data.index[-1],
             combo.data.index[-1]
@@ -142,6 +138,7 @@ class TestSection(unittest.TestCase):
 
         self.assertEqual(combo.get_state_from_time(0.0).pos, combo.get_state_from_index(0).pos)
 
+        self.assertEqual(combo.data.index.name, "time_index")
 
     def test_align(self):
         flight = Flight.from_csv("test/nice_p.csv")

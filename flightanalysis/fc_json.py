@@ -38,11 +38,20 @@ class FCJson:
 
         schedule = get_schedule(*fc_json["parameters"]["schedule"]).share_seperators()
         labelled = schedule.label_from_splitter(sec, fc_json["mans"])
+        sched = schedule.match_manoeuvre_rates(labelled)
+        templates = sched.create_man_matched_template(labelled)
+        
+        secs = []
+        for man, templ in zip(sched.manoeuvres[1:], templates):
+            dist, nsec =Section.align(man.get_data(labelled).remove_labels(), templ)
+            print(dist)
+            secs.append(nsec)
 
+        aligned = Section.stack([sched.manoeuvres[0].get_data(labelled)] + secs)
 
-        #scale schedule here?
+        return FCJson(fc_json['name'], flight, box, aligned, sched)
 
-        return FCJson(fc_json['name'], flight, box, labelled, schedule)
+    
 
     @staticmethod
     def parse_fc_json(fc_json: Union[IO, str, dict]):

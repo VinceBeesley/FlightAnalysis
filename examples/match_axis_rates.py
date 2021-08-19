@@ -10,21 +10,6 @@ from flightanalysis.schedule.element import get_rates
 from geometry import Points
 from plotly.subplots import make_subplots
 
-sec = Section.from_flight(
-    "test/P21_new.csv", "test/gordano_box.json").subset(106, 505)
-
-basic = p21.scale_distance(170).create_raw_template("left", 50.0, 170.0)
-
-rates = get_rates(sec)
-rate_matched = p21.match_rates(rates).create_raw_template(
-    "left", rates["speed"], rates["distance"])
-
-fit_qual_b, aligned_b = Section.align(sec, basic, 1)
-fit_qual_m, aligned_m = Section.align(sec, rate_matched, 1)
-
-
-print("fit distance basic: {}, matched: {}".format(fit_qual_b, fit_qual_m))
-
 
 def plot_dtw(fig, col:int, elms: list, sec: Section, temp:Section):
     fig.add_traces(
@@ -39,7 +24,7 @@ def plot_dtw(fig, col:int, elms: list, sec: Section, temp:Section):
 
 
 
-def plot_man(man):
+def plot_man(man, aligned_b, aligned_m):
     print(man.name)
     fig = make_subplots(
         3, 
@@ -57,5 +42,24 @@ def plot_man(man):
     fig.show()
 
 
-for man in p21.manoeuvres:
-    plot_man(man)
+
+if __name__ == '__main__':
+    sec = Section.from_flight(
+        "test/P21_new.csv", "test/gordano_box.json").subset(106, 505)
+
+    basic = p21.scale_distance(170).create_raw_template("left", 50.0, 170.0)
+
+    rates = get_rates(sec)
+    rate_matched = p21.match_rates(rates).create_raw_template(
+        "left", rates["speed"], rates["distance"])
+
+    fit_qual_b, aligned_b = Section.align(sec, basic, 1)
+    fit_qual_m, aligned_m = Section.align(sec, rate_matched, 1)
+
+
+    print("fit distance basic: {}, matched: {}".format(fit_qual_b, fit_qual_m))
+
+
+
+    for man in p21.manoeuvres:
+        plot_man(man, aligned_b, aligned_m)

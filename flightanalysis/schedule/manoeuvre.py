@@ -1,7 +1,7 @@
 from uuid import uuid4
 from geometry import Transformation
 from flightanalysis import Section
-from flightanalysis.schedule.element import LoopEl, LineEl, StallTurnEl, SnapEl, SpinEl
+from flightanalysis.schedule.element import LoopEl, LineEl, StallTurnEl, SnapEl, SpinEl, get_rates
 from flightanalysis.schedule.figure_rules import F3AEnd, F3ACentre, F3AEndB, IMAC
 from uuid import uuid4
 import numpy as np
@@ -247,5 +247,8 @@ class Manoeuvre():
             return self.replace_elms([])
 
 
-    def match_rates(self, sec: Section):
-        pass
+    def match_rates(self, rates):
+        new_elms = [elm.match_axis_rate(rates[elm.__class__], rates["speed"]) for elm in self.elements]
+        return self.replace_elms(new_elms)
+
+    

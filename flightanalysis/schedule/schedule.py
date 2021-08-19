@@ -93,15 +93,15 @@ class Schedule():
 
     def match_rates(self, rates: dict):
         sec = self.scale_distance(rates["distance"])
+        return self.replace_manoeuvres([man.match_rates(rates) for man in sec.manoeuvres])
 
-        _mans = []
-        for manoeuvre in sec.manoeuvres:
-            _elms = []
-            for element in manoeuvre.elements:
-                _elms.append(element.match_axis_rate(
-                    rates[element.__class__], rates["speed"]))
-            _mans.append(manoeuvre.replace_elms(_elms))
-        return self.replace_manoeuvres(_mans)
+    def match_manoeuvre_rates(self, aligned: Section):
+        nmans = []
+        for man in self.manoeuvres:
+            rates = get_rates(man.get_data(aligned))
+            nmans.append(man.match_rates(rates))
+        return self.replace_manoeuvres(nmans)
+
 
     def match_intention(self, alinged: Section):
         rates = get_rates(alinged)
@@ -113,17 +113,13 @@ class Schedule():
 
         _mans = []
         for man in self.manoeuvres:
-            man, transform = man.match_intention(
-                transform, man.get_data(alinged), rates["speed"])
+            man, transform = man.match_intention(transform, man.get_data(alinged), rates["speed"])
             _mans.append(man)
 
         return self.replace_manoeuvres(_mans)
 
     def correct_intention(self):
-        _mans = []
-        for man in self.manoeuvres:
-            _mans.append(man.fix_intention())
-        return self.replace_manoeuvres(_mans)
+        return self.replace_manoeuvres([man.fix_intention() for man in self.manoeuvres])
 
     def create_matched_template(self, alinged: Section) -> Section:
         rates = get_rates(alinged)
@@ -141,6 +137,24 @@ class Schedule():
             iatt = templates[-1].get_state_from_index(-1).att
 
         return Section.stack(templates)
+
+    def create_man_matched_template(self, alinged: Section) -> Section:
+        
+        iatt = self.create_iatt(alinged.get_state_from_index(0).direction)
+        templates = []
+        for man in self.manoeuvres[1:]:
+            flown = man.get_data(alinged)
+            rates = get_rates(flown)
+            transform = Transformation(
+                flown.get_state_from_index(0).pos,
+                iatt
+            )
+            templates.append(man.create_template(transform, rates["speed"]))
+            iatt = templates[-1].get_state_from_index(-1).att
+        return templates
+
+
+
 
     def label_from_splitter(self, flown: Section, splitter: list) -> Section:
         """label the manoeuvres in a section based on the flight coach splitter information
