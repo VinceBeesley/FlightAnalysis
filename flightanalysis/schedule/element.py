@@ -25,6 +25,9 @@ class El:
         el.data["element"] = self.uid
         return el
 
+    def __eq__(self, other):
+        return self.uid == other.uid
+
 
 class LineEl(El):
     def __init__(self, length, rolls=0, l_tag=True, uid: str = None):

@@ -35,8 +35,12 @@ class FCJson:
         box = FCJson.read_box(fc_json["name"], fc_json['parameters'])
         flight = Flight.from_fc_json(fc_json)
         sec = Section.from_flight(flight, box)
-        schedule = get_schedule(*fc_json["parameters"]["schedule"])
+
+        schedule = get_schedule(*fc_json["parameters"]["schedule"]).share_seperators()
         labelled = schedule.label_from_splitter(sec, fc_json["mans"])
+
+        
+        #do alignment?
 
         return FCJson(fc_json['name'], flight, box, labelled, schedule)
 

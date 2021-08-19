@@ -92,7 +92,6 @@ class Schedule():
         )
 
     def match_rates(self, rates: dict):
-
         sec = self.scale_distance(rates["distance"])
 
         _mans = []
@@ -153,6 +152,7 @@ class Schedule():
         Returns:
             Section: section with labelled manoeuvres
         """
+
         takeoff = flown.data.iloc[0:int(splitter[0]["stop"])+1]
         takeoff.loc[:,"manoeuvre"] = "takeoff"
         labelled = [Section(takeoff)]
@@ -168,3 +168,16 @@ class Schedule():
             tsecs.append(Section(sec.data.loc[sec.data.manoeuvre == "takeoff"]))        
         tsecs += [tman.get_data(sec) for tman in self.manoeuvres]
         return tsecs
+
+    def share_seperators(self, undo=False):
+        """share each manoeuvres entry line with the preceding manoeuvre"""
+        if undo:
+            meth = "unshare_seperator"
+        else:
+            meth = "share_seperator"
+
+        consec_mans = zip(self.manoeuvres[:-1], self.manoeuvres[1:])
+        nmans = [getattr(man, meth)(nextman) for man, nextman in consec_mans]
+        nmans.append(self.manoeuvres[-1].replace_elms([]))
+        return self.replace_manoeuvres(nmans)
+
