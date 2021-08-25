@@ -68,7 +68,6 @@ class Schedule():
         templates = []
         # TODO add exit line on construction
         for manoeuvre in self.manoeuvres:
-            print(manoeuvre.name)
             templates.append(manoeuvre.create_template(itrans, speed))
             itrans = templates[-1].get_state_from_index(-1).transform
 
@@ -85,11 +84,7 @@ class Schedule():
             [type]: [description]
         """
 
-        return self.create_template(
-            self.create_itransform(-1.0 if enter_from ==
-                                   "right" else 1.0, distance),
-            speed
-        )
+        return self.create_template(self.create_itransform(enter_from, distance),speed)
 
     def match_rates(self, rates: dict):
         sec = self.scale_distance(rates["distance"])
@@ -107,7 +102,7 @@ class Schedule():
         rates = get_rates(alinged)
 
         transform = self.create_itransform(
-            -np.sign(alinged.get_state_from_index(0).transform.point(Point(1, 0, 0)).x),
+            alinged.get_state_from_index(0).direction,
             rates["distance"]
         )
 
