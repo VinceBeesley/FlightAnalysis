@@ -1,7 +1,7 @@
 from uuid import uuid4
 from geometry import Transformation
 from flightanalysis import Section
-from flightanalysis.schedule.element import LoopEl, LineEl, StallTurnEl, SnapEl, SpinEl
+from flightanalysis.schedule.element import LoopEl, LineEl, StallTurnEl, SnapEl, SpinEl, get_rates
 from flightanalysis.schedule.figure_rules import F3AEnd, F3ACentre, F3AEndB, IMAC
 from uuid import uuid4
 import numpy as np
@@ -71,6 +71,16 @@ class Manoeuvre():
             self.rule,
             self.uid
         )
+
+    def append_element(self, elm):
+        nman = self.replace_elms([])
+        nman.elements.append(elm)
+        return nman
+
+    def remove_element(self, elm):
+        nman = self.replace_elms([])
+        nman.elements.remove(elm)
+        return nman
 
     def replace_blines(self, blines):
         new_elms = []
@@ -221,3 +231,24 @@ class Manoeuvre():
         new_data = sec.data.copy()
         new_data.loc[:,"manoeuvre"] = self.uid
         return Section(new_data)
+
+    def share_seperator(self, next_man): 
+        """Take the following manoeuvre and share the entry line (first element)"""
+        if self.elements[-1] != next_man.elements[0]:
+            return self.append_element(next_man.elements[0].set_parameter())
+        else:
+            return self.replace_elms([])
+
+    def unshare_seperator(self, next_man): 
+        """remove the final element if it matches the first element of the next one"""
+        if self.elements[-1] == next_man.elements[0]:
+            return self.remove_element(self.elements[-1])
+        else:
+            return self.replace_elms([])
+
+
+    def match_rates(self, rates):
+        new_elms = [elm.match_axis_rate(rates[elm.__class__], rates["speed"]) for elm in self.elements]
+        return self.replace_elms(new_elms)
+
+    

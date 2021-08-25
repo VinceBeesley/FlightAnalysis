@@ -59,8 +59,9 @@ class Section():
         # offset the df indexes
         for df, offset in zip(dfs, offsets):
             df.index = np.array(df.index) - df.index[0] + offset
-
-        return Section(pd.concat(dfs))
+        combo = pd.concat(dfs)
+        combo.index.name = "time_index"
+        return Section(combo)
 
     @staticmethod
     def from_constructs(t, pos, att, bvel, brvel, bacc):
@@ -378,4 +379,5 @@ class Section():
 
         return distance, Section(flown.data.reset_index().join(mans).set_index("time_index"))
 
-    
+    def remove_labels(self):
+        return Section(self.data.drop(["manoeuvre", "element"], 1, errors="ignore"))

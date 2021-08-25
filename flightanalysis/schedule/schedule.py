@@ -68,7 +68,6 @@ class Schedule():
         templates = []
         # TODO add exit line on construction
         for manoeuvre in self.manoeuvres:
-            print(manoeuvre.name)
             templates.append(manoeuvre.create_template(itrans, speed))
             itrans = templates[-1].get_state_from_index(-1).transform
 
@@ -85,46 +84,37 @@ class Schedule():
             [type]: [description]
         """
 
-        return self.create_template(
-            self.create_itransform(-1.0 if enter_from ==
-                                   "right" else 1.0, distance),
-            speed
-        )
+        return self.create_template(self.create_itransform(enter_from, distance),speed)
 
     def match_rates(self, rates: dict):
-
         sec = self.scale_distance(rates["distance"])
+        return self.replace_manoeuvres([man.match_rates(rates) for man in sec.manoeuvres])
 
-        _mans = []
-        for manoeuvre in sec.manoeuvres:
-            _elms = []
-            for element in manoeuvre.elements:
-                _elms.append(element.match_axis_rate(
-                    rates[element.__class__], rates["speed"]))
-            _mans.append(manoeuvre.replace_elms(_elms))
-        return self.replace_manoeuvres(_mans)
+    def match_manoeuvre_rates(self, aligned: Section):
+        nmans = []
+        for man in self.manoeuvres:
+            rates = get_rates(man.get_data(aligned))
+            nmans.append(man.match_rates(rates))
+        return self.replace_manoeuvres(nmans)
+
 
     def match_intention(self, alinged: Section):
         rates = get_rates(alinged)
 
         transform = self.create_itransform(
-            -np.sign(alinged.get_state_from_index(0).transform.point(Point(1, 0, 0)).x),
+            alinged.get_state_from_index(0).direction,
             rates["distance"]
         )
 
         _mans = []
         for man in self.manoeuvres:
-            man, transform = man.match_intention(
-                transform, man.get_data(alinged), rates["speed"])
+            man, transform = man.match_intention(transform, man.get_data(alinged), rates["speed"])
             _mans.append(man)
 
         return self.replace_manoeuvres(_mans)
 
     def correct_intention(self):
-        _mans = []
-        for man in self.manoeuvres:
-            _mans.append(man.fix_intention())
-        return self.replace_manoeuvres(_mans)
+        return self.replace_manoeuvres([man.fix_intention() for man in self.manoeuvres])
 
     def create_matched_template(self, alinged: Section) -> Section:
         rates = get_rates(alinged)
@@ -143,6 +133,24 @@ class Schedule():
 
         return Section.stack(templates)
 
+    def create_man_matched_template(self, alinged: Section) -> Section:
+        
+        iatt = self.create_iatt(alinged.get_state_from_index(0).direction)
+        templates = []
+        for man in self.manoeuvres[1:]:
+            flown = man.get_data(alinged)
+            rates = get_rates(flown)
+            transform = Transformation(
+                flown.get_state_from_index(0).pos,
+                iatt
+            )
+            templates.append(man.create_template(transform, rates["speed"]))
+            iatt = templates[-1].get_state_from_index(-1).att
+        return templates
+
+
+
+
     def label_from_splitter(self, flown: Section, splitter: list) -> Section:
         """label the manoeuvres in a section based on the flight coach splitter information
 
@@ -153,6 +161,7 @@ class Schedule():
         Returns:
             Section: section with labelled manoeuvres
         """
+
         takeoff = flown.data.iloc[0:int(splitter[0]["stop"])+1]
         takeoff.loc[:,"manoeuvre"] = "takeoff"
         labelled = [Section(takeoff)]
@@ -166,5 +175,21 @@ class Schedule():
         tsecs = []
         if include_takeoff:
             tsecs.append(Section(sec.data.loc[sec.data.manoeuvre == "takeoff"]))        
-        tsecs += [tman.get_data(sec) for tman in self.manoeuvres]
+        tsecs += self.get_data(sec, self.manoeuvres)
         return tsecs
+
+    def get_data(self, sec: Section, mans: List[Manoeuvre]) -> List[Section]:
+        return [man.get_data(sec) for man in mans]
+
+    def share_seperators(self, undo=False):
+        """share each manoeuvres entry line with the preceding manoeuvre"""
+        if undo:
+            meth = "unshare_seperator"
+        else:
+            meth = "share_seperator"
+
+        consec_mans = zip(self.manoeuvres[:-1], self.manoeuvres[1:])
+        nmans = [getattr(man, meth)(nextman) for man, nextman in consec_mans]
+        nmans.append(self.manoeuvres[-1].replace_elms([]))
+        return self.replace_manoeuvres(nmans)
+
