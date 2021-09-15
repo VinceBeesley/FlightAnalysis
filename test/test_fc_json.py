@@ -16,6 +16,11 @@ class TestFCJson(unittest.TestCase):
         self.assertIsInstance(fcj.box, Box)
         self.assertIsInstance(fcj.sec, Section)
         self.assertIsInstance(fcj.schedule, Schedule)
+        self.assertIn("takeoff", fcj.sec.data.manoeuvre.unique())
+
+        for manoeuvre in fcj.schedule.manoeuvres:
+            self.assertIn(manoeuvre.uid, fcj.sec.data.manoeuvre.unique(), "{} data not found in section".format(manoeuvre.name))
+
 
     def test_create_json_mans(self):
         fcj = FCJson.parse_fc_json(self.json)

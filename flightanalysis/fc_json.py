@@ -42,12 +42,12 @@ class FCJson:
         templates = sched.create_man_matched_template(labelled)
         
         secs = []
-        for man, templ in zip(sched.manoeuvres[1:], templates):
+        for man, templ in zip(sched.manoeuvres[:-1], templates):
             dist, nsec =Section.align(man.get_data(labelled).remove_labels(), templ)
-            print(dist)
             secs.append(nsec)
 
-        aligned = Section.stack([sched.manoeuvres[0].get_data(labelled)] + secs)
+        #
+        aligned = Section.stack([Schedule.get_takeoff(labelled)] + secs)
 
         return FCJson(fc_json['name'], flight, box, aligned, sched)
 

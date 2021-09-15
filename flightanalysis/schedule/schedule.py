@@ -170,11 +170,15 @@ class Schedule():
             labelled.append(man.label(Section(flown.data.iloc[start:stop+1])))
             
         return Section.stack(labelled)
+    
+    @staticmethod
+    def get_takeoff(sec: Section):
+        return Section(sec.data.loc[sec.data.manoeuvre == "takeoff"])
 
     def get_manoeuvre_data(self, sec: Section, include_takeoff: bool = False) -> list:
         tsecs = []
         if include_takeoff:
-            tsecs.append(Section(sec.data.loc[sec.data.manoeuvre == "takeoff"]))        
+            tsecs.append(Schedule.get_takeoff(sec))
         tsecs += self.get_data(sec, self.manoeuvres)
         return tsecs
 
