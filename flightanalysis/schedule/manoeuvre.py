@@ -10,13 +10,15 @@ from enum import Enum
 
 
 class Manoeuvre():
-    def __init__(self, name: str, k: float, elements: list, rule=IMAC, uid: str = None):
+    _counter = 0
+    def __init__(self, name: str, k: float, elements: list, rule=IMAC, uid: int = None):
         self.name = name
         self.k = k
-        self.elements = elements   # TODO better to work with a custom element collection rather than a list
+        self.elements = elements  
         self.rule = rule
         if not uid:
-            self.uid = str(uuid4())
+            Manoeuvre._counter += 1
+            self.uid = Manoeuvre._counter
         else:
             self.uid = uid
 
@@ -92,7 +94,7 @@ class Manoeuvre():
     def fix_loop_diameters(self):
         loops = Manoeuvre.filter_elms_by_attribute(self.get_elm_by_type(LoopEl), r_tag=True)
         if len(loops) > 0:
-            diameter = np.mean([loop.diameter for loop in loops])  # Factor by the amount of loop flown
+            diameter = np.mean([loop.diameter for loop in loops])  # TODO Factor by the amount of loop flown
             return self.replace_elms(
                 [loop.set_parameter(diameter=diameter)
                  for loop in self.get_elm_by_type(LoopEl)]
@@ -108,10 +110,10 @@ class Manoeuvre():
         if len(blines) == 0:
             return self.replace_elms([])
         
-        blines=[bline for bline in blines if np.all([line.l_tag for line in bline])] # TODO only modifies lines where all constituents have l_tag=True. seems logical to do opposite of default
-
+        blines=[bline for bline in blines if np.all([line.l_tag for line in bline])]
+        
         lengths = [Manoeuvre.calc_line_length(line) for line in blines]
-        length = np.mean(lengths)  # TODO this is probably not the best choice
+        length = np.mean(lengths) 
         new_lines = [Manoeuvre.set_bounded_line_length(bline, length) for bline in blines ]
         
         return self.replace_blines(new_lines)

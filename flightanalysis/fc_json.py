@@ -39,10 +39,10 @@ class FCJson:
         schedule = get_schedule(*fc_json["parameters"]["schedule"]).share_seperators()
         labelled = schedule.label_from_splitter(sec, fc_json["mans"])
         sched = schedule.match_manoeuvre_rates(labelled)
-        templates = sched.create_man_matched_template(labelled)
+        templates = sched.create_man_matched_template(labelled) # this is not creating the v8
         
         secs = []
-        for man, templ in zip(sched.manoeuvres[:-1], templates):
+        for man, templ in zip(sched.manoeuvres, templates):
             dist, nsec =Section.align(man.get_data(labelled).remove_labels(), templ)
             secs.append(nsec)
 
