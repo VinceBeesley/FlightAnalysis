@@ -16,6 +16,14 @@ class TestFCJson(unittest.TestCase):
         self.assertIsInstance(fcj.box, Box)
         self.assertIsInstance(fcj.sec, Section)
         self.assertIsInstance(fcj.schedule, Schedule)
+        self.assertIn(0, fcj.sec.data.manoeuvre.unique())
+
+        for manoeuvre in fcj.schedule.manoeuvres:
+            self.assertIn(manoeuvre.uid, fcj.sec.data.manoeuvre.unique(), "{} data not found in section".format(manoeuvre.name))
+
+        data = pd.DataFrame.from_dict(self.json['data'])
+        self.assertEqual(len(data), len(fcj.sec.data))
+
 
     def test_create_json_mans(self):
         fcj = FCJson.parse_fc_json(self.json)

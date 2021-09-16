@@ -10,9 +10,11 @@ from scipy import optimize
 
 
 class El:
-    def __init__(self, uid: str = None):
+    _counter = 0
+    def __init__(self, uid: int = None):
         if not uid:
-            self.uid = str(uuid4())
+            El._counter += 1
+            self.uid = El._counter #str(uuid4())
         else:
             self.uid = uid
 

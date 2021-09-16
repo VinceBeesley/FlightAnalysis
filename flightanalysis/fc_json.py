@@ -35,19 +35,19 @@ class FCJson:
         box = FCJson.read_box(fc_json["name"], fc_json['parameters'])
         flight = Flight.from_fc_json(fc_json)
         sec = Section.from_flight(flight, box)
-
+        
         schedule = get_schedule(*fc_json["parameters"]["schedule"]).share_seperators()
         labelled = schedule.label_from_splitter(sec, fc_json["mans"])
         sched = schedule.match_manoeuvre_rates(labelled)
-        templates = sched.create_man_matched_template(labelled)
+        templates = sched.create_man_matched_template(labelled) # this is not creating the v8
         
         secs = []
-        for man, templ in zip(sched.manoeuvres[1:], templates):
+        for man, templ in zip(sched.manoeuvres, templates):
             dist, nsec =Section.align(man.get_data(labelled).remove_labels(), templ)
-            print(dist)
             secs.append(nsec)
 
-        aligned = Section.stack([sched.manoeuvres[0].get_data(labelled)] + secs)
+        #
+        aligned = Section.stack([Schedule.get_takeoff(labelled)] + secs)
 
         return FCJson(fc_json['name'], flight, box, aligned, sched)
 

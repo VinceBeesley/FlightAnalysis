@@ -29,23 +29,41 @@ class Schedule():
                 return manoeuvre
         raise KeyError()
 
-    def replace_manoeuvres(self, new_mans):
+    def replace_manoeuvres(self, new_mans: List[Manoeuvre]):
+        """Replace all the manoeuvres
+        """
         return Schedule(self.name, self.category, self.entry, self.entry_x_offset, self.entry_z_offset, new_mans)
 
-    def scale(self, box_scale):
+    def scale(self, factor: float):
+        """Scale the schedule by a factor
+
+        Args:
+            factor (float)
+
+        Returns:
+            Schedule: scaled schedule
+        """
         return Schedule(
             self.name,
             self.category,
             self.entry,
-            self.entry_x_offset * box_scale,
-            self.entry_z_offset * box_scale,
-            [manoeuvre.scale(box_scale) for manoeuvre in self.manoeuvres]
+            self.entry_x_offset * factor,
+            self.entry_z_offset * factor,
+            [manoeuvre.scale(factor) for manoeuvre in self.manoeuvres]
         )
 
     def scale_distance(self, distance):
         return self.scale(np.tan(np.radians(60)) * distance)
 
-    def create_iatt(self, direction):
+    def create_iatt(self, direction: str) -> Quaternion:
+        """Create the initial orientation for a template
+
+        Args:
+            direction (str): "left" or "right" direction in (x axis) of velocity vector, +ve for right
+
+        Returns:
+            Quaternion: rotation to initial attitude
+        """
         iatt = Quaternion.from_euler(Point(np.pi, 0, 0))
         if self.entry == "inverted":
             iatt = Quaternion.from_euler(Point(0, np.pi, 0)) * iatt
@@ -53,7 +71,16 @@ class Schedule():
             iatt = Quaternion.from_euler(Point(0, 0, np.pi)) * iatt
         return iatt
 
-    def create_itransform(self, direction, distance):
+    def create_itransform(self, direction: str, distance: float) -> Transformation:
+        """create the initial transformation for a template
+
+        Args:
+            direction (str): "left" or "right" direction in (x axis) of velocity vector, +ve for right
+            distance (float): distance from pilot position (y axis)
+
+        Returns:
+            Transformation: transformation to initial position and attitude
+        """
         dmul = 1 if direction == "right" else -1
         return Transformation(
             Point(
@@ -64,7 +91,16 @@ class Schedule():
             self.create_iatt(direction)
         )
 
-    def create_template(self, itrans: Transformation, speed: float):
+    def create_template(self, itrans: Transformation, speed: float) -> Section:
+        """Create labelled template flight data
+
+        Args:
+            itrans (Transformation): transformation to initial position and orientation 
+            speed (float): constant speed to use for the template flight, in m/s
+
+        Returns:
+            Section: labelled template flight data
+        """
         templates = []
         # TODO add exit line on construction
         for manoeuvre in self.manoeuvres:
@@ -87,10 +123,26 @@ class Schedule():
         return self.create_template(self.create_itransform(enter_from, distance),speed)
 
     def match_rates(self, rates: dict):
+        """Perform some measurements on a section and roughly scale the schedule to match
+
+        Args:
+            aligned (Section): flight data
+
+        Returns:
+            Schedule: scaled so that the axis rates roughly match the flight
+        """
         sec = self.scale_distance(rates["distance"])
         return self.replace_manoeuvres([man.match_rates(rates) for man in sec.manoeuvres])
 
     def match_manoeuvre_rates(self, aligned: Section):
+        """Perform some measurements on a section and roughly scale the schedule to match
+
+        Args:
+            aligned (Section): flight data with manoeuvre labels
+
+        Returns:
+            Schedule: scaled so that the axis rates roughly match the flight per manoeuvre
+        """
         nmans = []
         for man in self.manoeuvres:
             rates = get_rates(man.get_data(aligned))
@@ -99,6 +151,14 @@ class Schedule():
 
 
     def match_intention(self, alinged: Section):
+        """resize every element of the schedule to best fit the corresponding element in a labelled section
+
+        Args:
+            alinged (Section): labelled flight data
+
+        Returns:
+            Schedule: new schedule with all the elements resized
+        """
         rates = get_rates(alinged)
 
         transform = self.create_itransform(
@@ -137,7 +197,7 @@ class Schedule():
         
         iatt = self.create_iatt(alinged.get_state_from_index(0).direction)
         templates = []
-        for man in self.manoeuvres[1:]:
+        for man in self.manoeuvres:
             flown = man.get_data(alinged)
             rates = get_rates(flown)
             transform = Transformation(
@@ -147,9 +207,6 @@ class Schedule():
             templates.append(man.create_template(transform, rates["speed"]))
             iatt = templates[-1].get_state_from_index(-1).att
         return templates
-
-
-
 
     def label_from_splitter(self, flown: Section, splitter: list) -> Section:
         """label the manoeuvres in a section based on the flight coach splitter information
@@ -162,19 +219,23 @@ class Schedule():
             Section: section with labelled manoeuvres
         """
 
-        takeoff = flown.data.iloc[0:int(splitter[0]["stop"])+1]
-        takeoff.loc[:,"manoeuvre"] = "takeoff"
+        takeoff = flown.data.iloc[0:int(splitter[0]["stop"])+2]
+        takeoff.loc[:,"manoeuvre"] = 0
         labelled = [Section(takeoff)]
         for split_man, man in zip(splitter[1:], self.manoeuvres):
             start, stop = int(split_man["start"]), int(split_man["stop"])
-            labelled.append(man.label(Section(flown.data.iloc[start:stop+1])))
+            labelled.append(man.label(Section(flown.data.iloc[start:stop+2])))
             
         return Section.stack(labelled)
+    
+    @staticmethod
+    def get_takeoff(sec: Section):
+        return Section(sec.data.loc[sec.data.manoeuvre == 0])
 
     def get_manoeuvre_data(self, sec: Section, include_takeoff: bool = False) -> list:
         tsecs = []
         if include_takeoff:
-            tsecs.append(Section(sec.data.loc[sec.data.manoeuvre == "takeoff"]))        
+            tsecs.append(Schedule.get_takeoff(sec))
         tsecs += self.get_data(sec, self.manoeuvres)
         return tsecs
 

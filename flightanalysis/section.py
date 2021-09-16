@@ -10,11 +10,15 @@ from fastdtw import fastdtw
 from scipy.spatial.distance import euclidean
 from scipy import optimize
 from pathlib import Path
+import warnings
 
 class Section():
     _construct_freq = 20
 
     def __init__(self, data: pd.DataFrame):
+        if len(data) == 0:
+            raise Exception("Section created with empty dataframe")
+            #warnings.warn("Creating a Section with empty data is likely to cause downstream errors")
         self.data = data
 
     def __getattr__(self, name):
