@@ -41,7 +41,6 @@ class TestSchedule(unittest.TestCase):
         sched = get_schedule(*fcj["parameters"]["schedule"])
         labelled = sched.label_from_splitter(sec, fcj["mans"])
         self.assertIsInstance(labelled, Section)
-        self.assertGreater(sec.duration, labelled.duration)
-        self.assertAlmostEqual(sec.duration /10 , labelled.duration / 10, 0)
+        self.assertAlmostEqual(sec.duration /2 , labelled.duration/2 , 0)
 
 

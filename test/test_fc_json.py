@@ -5,7 +5,7 @@ from io import open
 from json import load
 import numpy as np
 import pandas as pd
-
+from flightdata import Flight, Fields
 class TestFCJson(unittest.TestCase):
     def setUp(self):
         with open("test/fc_json.json", 'r') as f:
@@ -13,6 +13,7 @@ class TestFCJson(unittest.TestCase):
     def test_parse_fc_json(self):
         fcj = FCJson.parse_fc_json(self.json)
 
+        self.assertIsInstance(fcj.flight, Flight)
         self.assertIsInstance(fcj.box, Box)
         self.assertIsInstance(fcj.sec, Section)
         self.assertIsInstance(fcj.schedule, Schedule)
@@ -23,6 +24,7 @@ class TestFCJson(unittest.TestCase):
 
         data = pd.DataFrame.from_dict(self.json['data'])
         self.assertEqual(len(data), len(fcj.sec.data))
+
 
     def test_create_json_mans(self):
         fcj = FCJson.parse_fc_json(self.json)

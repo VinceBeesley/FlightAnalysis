@@ -1,7 +1,7 @@
+from enum import Enum
 
 
-
-class Categories():
+class Categories(Enum):
     F3A = 0
     IMAC = 1
     IAC = 2
