@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 from io import open
 from json import load
-
+import os
 
 flight = Flight.from_csv('test/P21_new.csv')
 
@@ -18,8 +18,7 @@ box = Box.from_json('./test/gordano_box.json')
 
 class TestSection(unittest.TestCase):
     def test_from_flight(self):
-        seq = Section.from_flight(
-            flight, FlightLine.from_box(box, GPSPosition(**flight.origin())))
+        seq = Section.from_flight(flight, box)
         self.assertIsInstance(seq.x, pd.Series)
         self.assertIsInstance(seq.y, pd.Series)
         self.assertIsInstance(seq.z, pd.Series)
@@ -30,7 +29,13 @@ class TestSection(unittest.TestCase):
 
         self.assertGreater(seq.z.mean(), 0)
         np.testing.assert_array_less(np.abs(seq.pos.to_numpy()[0]), 50.0 )
-        
+    
+    def test_to_csv(self):
+        seq = Section.from_flight(flight, box)
+        csv_file = seq.to_csv('test.csv')
+        seq2 = Section.from_csv(csv_file)
+        self.assertEqual(seq.duration, seq2.duration)
+        os.remove(csv_file)
 
     def test_generate_state(self):
         seq = Section.from_flight(
