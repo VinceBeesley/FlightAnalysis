@@ -79,7 +79,7 @@ class LineEl(El):
             "type": "LineEl",
             "length": self.length,
             "rolls": self.rolls,
-            "r_tag": self.l_tag,
+            "l_tag": self.l_tag,
             "uid": self.uid
         }
 
