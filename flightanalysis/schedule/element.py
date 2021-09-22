@@ -1,20 +1,21 @@
 
-from typing import Dict
-from enum import Enum
-from uuid import uuid4
 import numpy as np
 from geometry import Transformation, Point, scalar_projection, Points, scalar_projection
 from flightanalysis import Section
-from uuid import uuid4
 from scipy import optimize
 
 
 class El:
     _counter = 0
+
+    @staticmethod
+    def reset_counter():
+        El._counter = 0
+
     def __init__(self, uid: int = None):
         if not uid:
             El._counter += 1
-            self.uid = El._counter #str(uuid4())
+            self.uid = El._counter  # str(uuid4())
         else:
             self.uid = uid
 
@@ -30,6 +31,8 @@ class El:
     def __eq__(self, other):
         return self.uid == other.uid
 
+    def to_dict(self):
+        return dict(type=self.__class__.__name__, **self.__dict__)
 
 class LineEl(El):
     def __init__(self, length, rolls=0, l_tag=True, uid: str = None):
@@ -74,14 +77,7 @@ class LineEl(El):
             abs(self.rolls)
         )
 
-    def to_dict(self):
-        return {
-            "type": "LineEl",
-            "length": self.length,
-            "rolls": self.rolls,
-            "l_tag": self.l_tag,
-            "uid": self.uid
-        }
+    
 
 class LoopEl(El):
     def __init__(self, diameter: float, loops: float, rolls=0.0, ke: bool = False, r_tag=True, uid: str = None):
@@ -125,9 +121,10 @@ class LoopEl(El):
 
         return self.set_parameter(
             diameter=2 * calc_R(*center).mean(),
-            rolls=np.sign(np.mean(Points.from_pandas(flown.brvel).x)) * abs(self.rolls)
+            rolls=np.sign(np.mean(Points.from_pandas(
+                flown.brvel).x)) * abs(self.rolls)
         )
-        
+
     def set_parameter(self, diameter=None, loops=None, rolls=None, ke=None, r_tag=None):
         return LoopEl(
             diameter if not diameter is None else self.diameter,
@@ -138,16 +135,6 @@ class LoopEl(El):
             self.uid
         )
 
-    def to_dict(self):
-        return {
-            "type": "LoopEl",
-            "loops": self.loops,
-            "diameter": self.diameter,
-            "rolls": self.rolls,
-            "ke": self.ke,
-            "r_tag": self.r_tag,
-            "uid": self.uid
-        }
 
 class SpinEl(El):
     _speed_factor = 1 / 10
@@ -200,7 +187,6 @@ class SpinEl(El):
         return self._add_rolls(sec, 0.0)
 
     def match_axis_rate(self, spin_rate, speed: float):
-        #LineEl(2 * np.pi * self.rolls * speed / roll_rate, self.rolls)
         return self.set_parameter(
             length=2 * np.pi * (abs(self.turns) + abs(self.opp_turns)) * speed *
             SpinEl._speed_factor / spin_rate
@@ -213,18 +199,10 @@ class SpinEl(El):
 
         return self.set_parameter(
             length=length,
-            turns=np.sign(np.mean(Points.from_pandas(flown.brvel).x)) * abs(self.turns),
-            opp_turns = 0.0
+            turns=np.sign(np.mean(Points.from_pandas(
+                flown.brvel).x)) * abs(self.turns),
+            opp_turns=0.0
         )
-    
-    def to_dict(self):
-        return {
-            "type": "SpinEl",
-            "length": self.length,
-            "turns": self.turns,
-            "opp_turns": self.opp_turns,
-            "uid": self.uid
-        }
 
 class SnapEl(El):
     def __init__(self, length: float, rolls: float, l_tag=True, uid: str = None):
@@ -264,14 +242,6 @@ class SnapEl(El):
                 np.mean(Points.from_pandas(flown.brvel).x)) * abs(self.rolls)
         )
 
-    def to_dict(self):
-        return {
-            "type": "SnapEl",
-            "length": self.length,
-            "rolls": self.rolls,
-            "l_tag": self.l_tag,
-            "uid": self.uid
-        }
 
 class StallTurnEl(El):
     _speed_scale = 1 / 20
@@ -310,13 +280,6 @@ class StallTurnEl(El):
             width=0.5
         )
 
-    def to_dict(self):
-        return {
-            "type": "StallTurnEl",
-            "direction": self.direction,
-            "width": self.width,
-            "uid": self.uid
-        }
 
 
 def get_rates(flown: Section):

@@ -28,11 +28,29 @@ class Schedule():
             manoeuvres (List[Manoeuvre]): [description]
         """
         self.name = name
-        self.category = category
+        
+        if isinstance(category, Categories):
+            self.category = category  
+        elif isinstance(category, str): 
+            self.category = Categories.lookup[category]
+
         self.entry = entry
         self.entry_x_offset = entry_x_offset
         self.entry_z_offset = entry_z_offset
-        self.manoeuvres = manoeuvres
+        if all(isinstance(x, Manoeuvre) for x in manoeuvres):
+            self.manoeuvres = manoeuvres
+        elif all(isinstance(x, dict) for x in manoeuvres):
+            self.manoeuvres = [Manoeuvre(**x) for x in manoeuvres]
+    
+    def to_dict(self):
+        return dict(
+            name=self.name,
+            category=str(self.category),
+            entry=self.entry,
+            entry_x_offset=self.entry_x_offset,
+            entry_z_offset=self.entry_z_offset, 
+            manoeuvres=[man.to_dict() for man in self.manoeuvres]
+        )
 
     def manoeuvre(self, name):
         for manoeuvre in self.manoeuvres:

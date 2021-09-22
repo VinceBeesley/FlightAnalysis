@@ -1,27 +1,51 @@
-from uuid import uuid4
 from geometry import Transformation
 from flightanalysis import Section
-from flightanalysis.schedule.element import LoopEl, LineEl, StallTurnEl, SnapEl, SpinEl, get_rates
-from flightanalysis.schedule.figure_rules import F3AEnd, F3ACentre, F3AEndB, IMAC
-from uuid import uuid4
+from flightanalysis.schedule.element import LoopEl, LineEl, StallTurnEl, SnapEl, SpinEl, get_rates, El
+from flightanalysis.schedule.figure_rules import IMAC, rules, Rules
 import numpy as np
 import pandas as pd
-from enum import Enum
+
+
+_els = {c.__name__: c for c in El.__subclasses__()}
 
 
 class Manoeuvre():
     _counter = 0
+
+    @staticmethod
+    def reset_counter():
+        Manoeuvre._counter = 0
+        El.reset_counter()
+
     def __init__(self, name: str, k: float, elements: list, rule=IMAC, uid: int = None):
         self.name = name
         self.k = k
-        self.elements = elements  
-        self.rule = rule
+
+        if all(isinstance(x, El) for x in elements):
+            self.elements = elements  
+        elif all(isinstance(x, dict) for x in elements):
+            self.elements = [_els[x["type"]](**x) for x in elements]
+
+        if isinstance(rule, Rules):
+            self.rule = rule
+        elif isinstance(rule,str):
+            self.rule = rules[rule]
+
         if not uid:
             Manoeuvre._counter += 1
             self.uid = Manoeuvre._counter
         else:
             self.uid = uid
 
+    def to_dict(self):
+        return dict(
+            name=self.name, 
+            k=self.k, 
+            elements=[elm.to_dict() for elm in self.elements],
+            rule=self.rule.__name,
+            uid=self.uid
+        )
+    
     def scale(self, factor: float):
         return self.replace_elms([elm.scale(factor) for elm in self.elements])
 
