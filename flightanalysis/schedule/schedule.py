@@ -4,18 +4,29 @@ from geometry import Point, Quaternion, Transformation
 from flightanalysis.section import Section
 from flightanalysis.schedule.element import get_rates
 import numpy as np
+from flightanalysis.schedule.figure_rules import Categories
 
 
 class Schedule():
     def __init__(
         self,
         name: str,
-        category: int,
+        category: Categories,
         entry: str,
         entry_x_offset: float,
         entry_z_offset: float,
         manoeuvres: List[Manoeuvre]
     ):
+        """
+        Args:
+            name (str): [description]
+            category (Categories): F3A, IMAC, IAC
+            entry (str): upright or inverted
+            entry_x_offset (float): x starting position, when flown left to right. 
+                                    will be reversed when creating right to left templates
+            entry_z_offset (float): z starting position
+            manoeuvres (List[Manoeuvre]): [description]
+        """
         self.name = name
         self.category = category
         self.entry = entry
@@ -66,8 +77,8 @@ class Schedule():
         """
         iatt = Quaternion.from_euler(Point(np.pi, 0, 0))
         if self.entry == "inverted":
-            iatt = Quaternion.from_euler(Point(0, np.pi, 0)) * iatt
-        if direction == "right":
+            iatt = Quaternion.from_euler(Point(np.pi, 0, 0)) * iatt
+        if direction == "left":
             iatt = Quaternion.from_euler(Point(0, 0, np.pi)) * iatt
         return iatt
 
@@ -120,7 +131,7 @@ class Schedule():
             [type]: [description]
         """
 
-        return self.create_template(self.create_itransform(enter_from, distance),speed)
+        return self.create_template(self.create_itransform(enter_from, distance), speed)
 
     def match_rates(self, rates: dict):
         """Perform some measurements on a section and roughly scale the schedule to match
@@ -149,7 +160,6 @@ class Schedule():
             nmans.append(man.match_rates(rates))
         return self.replace_manoeuvres(nmans)
 
-
     def match_intention(self, alinged: Section):
         """resize every element of the schedule to best fit the corresponding element in a labelled section
 
@@ -168,7 +178,8 @@ class Schedule():
 
         _mans = []
         for man in self.manoeuvres:
-            man, transform = man.match_intention(transform, man.get_data(alinged), rates["speed"])
+            man, transform = man.match_intention(
+                transform, man.get_data(alinged), rates["speed"])
             _mans.append(man)
 
         return self.replace_manoeuvres(_mans)
@@ -194,7 +205,7 @@ class Schedule():
         return Section.stack(templates)
 
     def create_man_matched_template(self, alinged: Section) -> Section:
-        
+
         iatt = self.create_iatt(alinged.get_state_from_index(0).direction)
         templates = []
         for man in self.manoeuvres:
@@ -220,14 +231,14 @@ class Schedule():
         """
 
         takeoff = flown.data.iloc[0:int(splitter[0]["stop"])+2]
-        takeoff.loc[:,"manoeuvre"] = 0
+        takeoff.loc[:, "manoeuvre"] = 0
         labelled = [Section(takeoff)]
         for split_man, man in zip(splitter[1:], self.manoeuvres):
             start, stop = int(split_man["start"]), int(split_man["stop"])
             labelled.append(man.label(Section(flown.data.iloc[start:stop+2])))
-            
+
         return Section.stack(labelled)
-    
+
     @staticmethod
     def get_takeoff(sec: Section):
         return Section(sec.data.loc[sec.data.manoeuvre == 0])
@@ -253,4 +264,3 @@ class Schedule():
         nmans = [getattr(man, meth)(nextman) for man, nextman in consec_mans]
         nmans.append(self.manoeuvres[-1].replace_elms([]))
         return self.replace_manoeuvres(nmans)
-

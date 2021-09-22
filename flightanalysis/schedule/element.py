@@ -86,6 +86,8 @@ class LineEl(El):
 class LoopEl(El):
     def __init__(self, diameter: float, loops: float, rolls=0.0, ke: bool = False, r_tag=True, uid: str = None):
         super().__init__(uid)
+        assert not diameter == 0 and not loops == 0
+
         self.loops = loops
         self.diameter = diameter
         self.rolls = rolls

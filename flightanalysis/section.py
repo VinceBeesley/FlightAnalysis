@@ -83,17 +83,6 @@ class Section():
 
         return Section(df)
 
-    def to_csv(self, filename):
-        self.data.to_csv(filename)
-        return filename
-
-    @staticmethod
-    def from_csv(filename):
-        data = pd.read_csv(filename)
-        data.index = data[Fields.TIME.names[0]].copy()
-        data.index.name = 'time_index'
-        return Section(data)
-
     @staticmethod
     def from_flight(flight: Union[Flight, str], box=Union[FlightLine, Box, str]):
         if isinstance(flight, str):
@@ -149,13 +138,12 @@ class Section():
 
     def to_csv(self, filename):
         self.data.to_csv(filename)
+        return filename
 
     @staticmethod
     def from_csv(filename):
         data = pd.read_csv(filename)
-        data.index = data["time_flight"].copy()
-        data.index.name = 'time_flight'
-
+        data.index = data["time_index"].copy()
         return Section(data)
 
     @property

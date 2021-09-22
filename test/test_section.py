@@ -26,14 +26,13 @@ class TestSection(unittest.TestCase):
         self.assertIsInstance(seq.rx, pd.Series)
         self.assertIsInstance(seq.ry, pd.Series)
         self.assertIsInstance(seq.rz, pd.Series)
-
         self.assertGreater(seq.z.mean(), 0)
         np.testing.assert_array_less(np.abs(seq.pos.to_numpy()[0]), 50.0 )
     
     def test_to_csv(self):
         seq = Section.from_flight(flight, box)
-        csv_file = seq.to_csv('test.csv')
-        seq2 = Section.from_csv(csv_file)
+        csv_file = seq.to_csv('test/test.csv')
+        seq2 = Section.from_csv(csv_file) 
         self.assertEqual(seq.duration, seq2.duration)
         os.remove(csv_file)
 
