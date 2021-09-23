@@ -26,7 +26,7 @@ class Manoeuvre():
         elif all(isinstance(x, dict) for x in elements):
             self.elements = [_els[x["type"]](**x) for x in elements]
 
-        if isinstance(rule, Rules):
+        if rule.__name__ in rules.keys():
             self.rule = rule
         elif isinstance(rule,str):
             self.rule = rules[rule]
@@ -38,13 +38,10 @@ class Manoeuvre():
             self.uid = uid
 
     def to_dict(self):
-        return dict(
-            name=self.name, 
-            k=self.k, 
-            elements=[elm.to_dict() for elm in self.elements],
-            rule=self.rule.__name,
-            uid=self.uid
-        )
+        data = self.__dict__.copy()
+        data["elements"] = [elm.to_dict() for elm in self.elements]
+        data["rule"] = self.rule.__name__
+        return data
     
     def scale(self, factor: float):
         return self.replace_elms([elm.scale(factor) for elm in self.elements])

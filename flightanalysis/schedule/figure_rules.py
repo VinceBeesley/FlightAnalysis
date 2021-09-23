@@ -43,9 +43,4 @@ class F3ACentre(Rules):
     roll_rate = True
     roll_centering = True
 
-rules = dict(
-    IMAC=IMAC,
-    F3AEnd=F3AEnd,
-    F3AEndB=F3AEndB,
-    F3ACentre=F3ACentre
-)
+rules = {c.__name__: c for c in Rules.__subclasses__()}
