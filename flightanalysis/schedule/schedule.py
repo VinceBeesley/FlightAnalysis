@@ -32,7 +32,7 @@ class Schedule():
         if isinstance(category, Categories):
             self.category = category  
         elif isinstance(category, str): 
-            self.category = Categories.lookup[category]
+            self.category = Categories[category]
 
         self.entry = entry
         self.entry_x_offset = entry_x_offset

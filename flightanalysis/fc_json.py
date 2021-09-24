@@ -18,6 +18,8 @@ class FCJson:
         self.sec = sec
         self.schedule = schedule
 
+    
+
     @staticmethod
     def read_box(name, parms):
         return Box.from_points(

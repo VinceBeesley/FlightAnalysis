@@ -13,6 +13,6 @@ known_schedules = {
 
 def get_schedule(discipline: Union[str, Categories], name: str):
     if isinstance(discipline, str):
-        discipline = Categories.lookup[discipline]
+        discipline = Categories[discipline]
     return known_schedules[discipline][name]
     

@@ -6,11 +6,6 @@ class Categories(Enum):
     IMAC = 1
     IAC = 2
 
-    lookup = {
-        "F3A": F3A,
-        "IMAC": IMAC,
-        "IAC": IAC
-    }
 
 class Rules:
     pass
