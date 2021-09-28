@@ -40,14 +40,10 @@ class Box(object):
             GPSPosition(float(lines[4]), float(lines[5]))
         )
 
-    def to_dict(self):
-        return dict(
-            name=self.name,
-            pilot_position=self.pilot_position.to_dict(),
-            heading=self.heading,
-            club=self.club,
-            country=self.country
-        )
+    def to_dict(self) -> dict:
+        temp = self.__dict__.copy()
+        temp["pilot_position"] = self.pilot_position.to_dict()
+        return temp
 
     @staticmethod
     def from_json(file):
@@ -173,7 +169,7 @@ class FlightLine(object):
 
     @staticmethod
     def from_initial_position(flight: Flight):
-        return FlightLine.from_box(Box.from_initial(flight), GPSPosition(**flight.origin()))
+        return FlightLine.from_box(Box.from_initial(flight), flight.origin)
 
     @staticmethod
     def from_heading(flight: Flight, heading: float):
@@ -201,4 +197,4 @@ class FlightLine(object):
         Args:
             flight (Flight):
         """
-        return FlightLine.from_box(Box.from_covariance(flight), GPSPosition(**flight.origin()))
+        return FlightLine.from_box(Box.from_covariance(flight), flight.origin)

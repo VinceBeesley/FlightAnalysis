@@ -19,12 +19,19 @@ class TestBox(unittest.TestCase):
         self.assertAlmostEqual(box.heading, 152.55998 * pi / 180, 3)
 
 
+    def test_to_dict(self):
+        box = Box.from_initial(p21)
+        di = box.to_dict()
+        self.assertEqual(di["name"], "origin")
+        self.assertEqual(di["pilot_position"]['latitude'], 51.4594152)
+
+
 class TestFlightLine(unittest.TestCase):
 
     def test_from_box(self):
         box = Box.from_json('./tests/gordano_box.json')
 
-        fl = FlightLine.from_box(box, GPSPosition(**p21.origin()))
+        fl = FlightLine.from_box(box, p21.origin)
 
         np.testing.assert_array_almost_equal(
             fl.transform_to.rotate(Point(1.0, 0.0, 0.0)).to_list(),
@@ -73,7 +80,7 @@ class TestFlightLine(unittest.TestCase):
     def test_from_box(self):
         box = Box.from_json('./tests/gordano_box.json')
 
-        fl = FlightLine.from_box(box, GPSPosition(**p21.origin()))
+        fl = FlightLine.from_box(box, p21.origin)
 
         np.testing.assert_array_almost_equal(
             fl.transform_to.rotate(Point(1.0, 0.0, 0.0)).to_list(),
@@ -118,7 +125,7 @@ class TestFlightLine(unittest.TestCase):
 
     def test_flightline_headings(self):
         pilotNorth_ENU = Point(0, 1, 1)
-        home = GPSPosition(**p21.origin())
+        home = p21.origin
         
         ned = Points.from_pandas(p21.read_fields(Fields.POSITION))
         rned = Quaternions.from_euler(Points.from_pandas(p21.read_fields(Fields.ATTITUDE)))

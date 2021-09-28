@@ -20,7 +20,7 @@ class TestSchedule(unittest.TestCase):
 
     def test_match_axis_rate(self):
         
-        sec = Section.from_flight("test/P21_new.csv","test/gordano_box.json").subset(110, 200)
+        sec = Section.from_csv("tests/test_inputs/test_log_00000052_section.csv").subset(110, 200)
 
         rates = get_rates(sec)
 
@@ -32,7 +32,7 @@ class TestSchedule(unittest.TestCase):
                     self.assertGreater(elm.length, 0.0, "manoeuvre {}, elm {}, length {}".format(manoeuvre.name, i, elm.length))
 
     def test_from_splitter(self):
-        with open("test/fc_json.json", 'r') as f:
+        with open("tests/test_inputs/manual_F3A_P21_21_09_24_00000052.json", 'r') as f:
             fcj = load(f)
         box = FCJson.read_box(fcj["name"], fcj['parameters'])
         flight = Flight.from_fc_json(fcj)

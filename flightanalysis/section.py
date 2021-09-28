@@ -94,10 +94,10 @@ class Section():
         if isinstance(box, FlightLine):
             return Section._from_flight(flight, box)
         if isinstance(box, Box):
-            return Section._from_flight(flight, FlightLine.from_box(box, GPSPosition(**flight.origin())))
+            return Section._from_flight(flight, FlightLine.from_box(box, flight.origin))
         if isinstance(box, str):
             box = Box.from_json(box)
-            return Section._from_flight(flight, FlightLine.from_box(box, GPSPosition(**flight.origin())))
+            return Section._from_flight(flight, FlightLine.from_box(box, flight.origin))
         raise NotImplementedError()
 
     @staticmethod

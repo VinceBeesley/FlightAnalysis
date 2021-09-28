@@ -147,7 +147,7 @@ class TestSection(unittest.TestCase):
     def test_align(self):
         flight = Flight.from_csv("tests/nice_p.csv")
 
-        flown = Section.from_flight(flight, FlightLine.from_box(box, GPSPosition(**flight.origin()))).subset(100, 493)
+        flown = Section.from_flight(flight, FlightLine.from_box(box, flight.origin)).subset(100, 493)
 
         template = p21.scale_distance(170.0).create_raw_template("left", 30, 170)
         

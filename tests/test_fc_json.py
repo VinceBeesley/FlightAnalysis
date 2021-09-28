@@ -65,5 +65,5 @@ class TestFCJson(unittest.TestCase):
 
         
         _fl = Flight.from_csv("tests/test_inputs/test_log_00000052_flight.csv")
-        
+         
         assert fcj1.flight.unique_identifier() == _fl.unique_identifier()
