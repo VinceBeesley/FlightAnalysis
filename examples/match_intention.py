@@ -24,8 +24,8 @@ scaled_template =  intended.create_matched_template(aligned)
 #plotsec(intended_template, obj, 5).show()
 
 for man in p21.manoeuvres[-3:]:
-    fig = plotsec(man.get_data(aligned), obj, 5, color="orange")
-    fig = plotsec(man.get_data(scaled_template), obj, 5, color="red", fig=fig)
+    fig = plotsec(man.get_data(aligned), 5, color="orange")
+    fig = plotsec(man.get_data(scaled_template), 5, color="red", fig=fig)
     fig.show()
 
 
