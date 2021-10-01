@@ -5,33 +5,41 @@ from flightanalysis.flightline import FlightLine, Box
 from geometry import GPSPosition, Point, Points, Quaternions
 from math import pi, cos, sin
 import numpy as np
+import pytest
 
-p21 = Flight.from_csv('./tests/P21.csv')
+
+@pytest.fixture(scope="class")
+def flight(request):
+    request.cls.flight = Flight.from_csv('tests/test_inputs/test_log_00000052_flight.csv')
 
 
+@pytest.mark.usefixtures("flight")
 class TestBox(unittest.TestCase):
 
     def test_from_initial(self):
-        box = Box.from_initial(p21)
-        self.assertAlmostEqual(box.pilot_position.latitude, 51.459964, 2)
-        self.assertAlmostEqual(box.pilot_position.longitude, -2.791504, 2)
+        box = Box.from_initial(self.flight)
+        self.assertAlmostEqual(box.pilot_position.latitude, 51.6418436, 2)
+        self.assertAlmostEqual(box.pilot_position.longitude, -2.5260131, 2)
 
         self.assertAlmostEqual(box.heading, 152.55998 * pi / 180, 3)
 
 
     def test_to_dict(self):
-        box = Box.from_initial(p21)
+        box = Box.from_initial(self.flight)
         di = box.to_dict()
         self.assertEqual(di["name"], "origin")
         self.assertEqual(di["pilot_position"]['latitude'], 51.4594152)
 
 
+@pytest.fixture(scope="session")
+def  box():
+    return Box.from_json('tests/test_inputs/test_log_box.json')
+
 class TestFlightLine(unittest.TestCase):
 
-    def test_from_box(self):
-        box = Box.from_json('./tests/gordano_box.json')
+    def test_from_box(self, flight, box):
 
-        fl = FlightLine.from_box(box, p21.origin)
+        fl = FlightLine.from_box(box, flight.origin)
 
         np.testing.assert_array_almost_equal(
             fl.transform_to.rotate(Point(1.0, 0.0, 0.0)).to_list(),
@@ -77,9 +85,8 @@ class TestFlightLine(unittest.TestCase):
         )
 
 
-    def test_from_box(self):
-        box = Box.from_json('./tests/gordano_box.json')
-
+    def test_from_box(self, box):
+        
         fl = FlightLine.from_box(box, p21.origin)
 
         np.testing.assert_array_almost_equal(
@@ -95,8 +102,8 @@ class TestFlightLine(unittest.TestCase):
     
 
 
-    def test_initial(self):
-        flightline = FlightLine.from_initial_position(p21)
+    def test_initial(self, flight):
+        flightline = FlightLine.from_initial_position(flight)
         self.assertAlmostEqual(flightline.world.origin.x, 0, 2)
         self.assertAlmostEqual(flightline.world.origin.y, 0, 2)
 
@@ -105,29 +112,29 @@ class TestFlightLine(unittest.TestCase):
 
 
 
-    def test_transform_to(self):
-        flightline = FlightLine.from_initial_position(p21)
+    def test_transform_to(self, flight):
+        flightline = FlightLine.from_initial_position(flight)
 
         npoint = flightline.transform_to.point(Point(1, 0, 0))
         self.assertAlmostEqual(npoint.x, flightline.contest.x_axis.x, 4)
 
-    def test_transform_from(self):
-        flightline = FlightLine.from_initial_position(p21)
+    def test_transform_from(self, flight):
+        flightline = FlightLine.from_initial_position(flight)
 
         npoint = flightline.transform_to.point(Point(1, 0, 0))
         self.assertAlmostEqual(npoint.x, flightline.contest.x_axis.x, 4)
 
-    def test_from_covariance(self):
-        flightline = FlightLine.from_covariance(p21)
+    def test_from_covariance(self, flight):
+        flightline = FlightLine.from_covariance(flight)
         self.assertAlmostEqual(flightline.contest.y_axis.y,
                                cos((144.8 * pi / 180) - pi / 2), 1)
 
 
-    def test_flightline_headings(self):
+    def test_flightline_headings(self, flight):
         pilotNorth_ENU = Point(0, 1, 1)
-        home = p21.origin
+        home = flight.origin
         
-        ned = Points.from_pandas(p21.read_fields(Fields.POSITION))
+        ned = Points.from_pandas(flight.read_fields(Fields.POSITION))
         rned = Quaternions.from_euler(Points.from_pandas(p21.read_fields(Fields.ATTITUDE)))
 
         #North Facing
@@ -168,14 +175,14 @@ class TestFlightLine(unittest.TestCase):
 
 
 
-    def test_transform_from_to(self):
-        fl = FlightLine.from_covariance(p21)
-        ned = Points.from_pandas(p21.read_fields(Fields.POSITION))
+    def test_transform_from_to(self, flight):
+        fl = FlightLine.from_covariance(flight)
+        ned = Points.from_pandas(flight.read_fields(Fields.POSITION))
         np.testing.assert_array_almost_equal(
             ned.data,
             fl.transform_from.point(fl.transform_to.point(ned)).data
         )
-        rned = Quaternions.from_euler(Points.from_pandas(p21.read_fields(Fields.ATTITUDE)))
+        rned = Quaternions.from_euler(Points.from_pandas(flight.read_fields(Fields.ATTITUDE)))
         np.testing.assert_array_almost_equal(
             rned.data,
             fl.transform_from.quat(fl.transform_to.quat(rned)).data

@@ -1,5 +1,5 @@
-from flightanalysis import Section, Box, Schedule
-from flightanalysis.schedule import p21, f21, get_schedule
+from flightanalysis import Section, Box, Schedule, get_schedule, Categories
+
 from flightdata import Flight
 from typing import Union, IO
 from json import loads, load

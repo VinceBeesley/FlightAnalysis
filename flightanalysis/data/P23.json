@@ -1,0 +1,1332 @@
+{
+  "name": "P23",
+  "category": "F3A",
+  "entry": "upright",
+  "entry_x_offset": -1.0,
+  "entry_z_offset": 0.1,
+  "manoeuvres": [
+    {
+      "name": "tophat",
+      "k": 4,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 1,
+          "length": 0.5,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 2,
+          "loops": -0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 6,
+          "length": 0.1,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 3,
+          "length": 0.075,
+          "rolls": 0.25,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 4,
+          "length": 0.05,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 5,
+          "length": 0.075,
+          "rolls": 0.25,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 7,
+          "length": 0.1,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 8,
+          "loops": -0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 10,
+          "length": 0.125,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 9,
+          "length": 0.15,
+          "rolls": 0.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 11,
+          "length": 0.125,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 12,
+          "loops": 0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 16,
+          "length": 0.1,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 13,
+          "length": 0.075,
+          "rolls": 0.25,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 14,
+          "length": 0.05,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 15,
+          "length": 0.075,
+          "rolls": 0.25,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 17,
+          "length": 0.1,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 18,
+          "loops": 0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        }
+      ],
+      "rule": "IMAC",
+      "uid": 1
+    },
+    {
+      "name": "hsq",
+      "k": 2,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 19,
+          "length": 0.2,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 20,
+          "loops": 0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 22,
+          "length": 0.22499999999999998,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 21,
+          "length": 0.15,
+          "rolls": 0.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 23,
+          "length": 0.22499999999999998,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 24,
+          "loops": -0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        }
+      ],
+      "rule": "IMAC",
+      "uid": 2
+    },
+    {
+      "name": "hump",
+      "k": 4,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 25,
+          "length": 0.7,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 26,
+          "loops": -0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 28,
+          "length": 0.15,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 27,
+          "length": 0.3,
+          "rolls": -1.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 29,
+          "length": 0.15,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 30,
+          "loops": -0.5,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 32,
+          "length": 0.22499999999999998,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 31,
+          "length": 0.15,
+          "rolls": 0.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 33,
+          "length": 0.22499999999999998,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 34,
+          "loops": 0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        }
+      ],
+      "rule": "IMAC",
+      "uid": 3
+    },
+    {
+      "name": "hsc",
+      "k": 3,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 35,
+          "length": 0.5,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 36,
+          "loops": 0.125,
+          "diameter": 0.4,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 38,
+          "length": 0.10177669529663687,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 37,
+          "length": 0.15,
+          "rolls": 0.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 39,
+          "length": 0.10177669529663687,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 40,
+          "loops": -0.25,
+          "diameter": 0.4,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 42,
+          "length": 0.10177669529663687,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 41,
+          "length": 0.15,
+          "rolls": 0.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 43,
+          "length": 0.10177669529663687,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 44,
+          "loops": 0.125,
+          "diameter": 0.4,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        }
+      ],
+      "rule": "IMAC",
+      "uid": 4
+    },
+    {
+      "name": "u45",
+      "k": 5,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 45,
+          "length": 0.10658639918226498,
+          "rolls": 0.0,
+          "l_tag": 0.0
+        },
+        {
+          "type": "LoopEl",
+          "uid": 46,
+          "loops": 0.125,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 47,
+          "length": 0.4,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "SnapEl",
+          "uid": 48,
+          "length": 0.05,
+          "rolls": 1.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 49,
+          "length": 0.4,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 50,
+          "loops": 0.125,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        }
+      ],
+      "rule": "IMAC",
+      "uid": 5
+    },
+    {
+      "name": "h8l",
+      "k": 3,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 51,
+          "length": 0.28024080245320504,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 52,
+          "loops": 0.125,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 53,
+          "length": 0.16,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 54,
+          "loops": 0.125,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 55,
+          "length": 0.16,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 56,
+          "loops": 0.125,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 57,
+          "length": 0.16,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 58,
+          "loops": 0.125,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        }
+      ],
+      "rule": "IMAC",
+      "uid": 6
+    },
+    {
+      "name": "rc",
+      "k": 4,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 59,
+          "length": 0.25,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 60,
+          "length": 0.2,
+          "rolls": 0.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 61,
+          "length": 0.05,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 62,
+          "length": 0.2,
+          "rolls": 0.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 63,
+          "length": 0.2,
+          "rolls": -0.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 64,
+          "length": 0.05,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 65,
+          "length": 0.2,
+          "rolls": -0.5,
+          "l_tag": 0.0
+        }
+      ],
+      "rule": "IMAC",
+      "uid": 7
+    },
+    {
+      "name": "imm",
+      "k": 2,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 66,
+          "length": 0.15,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 67,
+          "loops": 0.5,
+          "diameter": 0.697365440327093,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 68,
+          "length": 0.2,
+          "rolls": 0.5,
+          "l_tag": true
+        }
+      ],
+      "rule": "IMAC",
+      "uid": 8
+    },
+    {
+      "name": "spin",
+      "k": 4,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 69,
+          "length": 0.39320764389188684,
+          "rolls": 0.0,
+          "l_tag": 0.0
+        },
+        {
+          "type": "SpinEl",
+          "uid": 70,
+          "length": 0.05,
+          "turns": 2.5,
+          "opp_turns": 0.0
+        },
+        {
+          "type": "LineEl",
+          "uid": 71,
+          "length": 0.501698089027028,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 72,
+          "loops": -0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        }
+      ],
+      "rule": "IMAC",
+      "uid": 9
+    },
+    {
+      "name": "hB",
+      "k": 3,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 73,
+          "length": 0.35,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 74,
+          "loops": -0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 76,
+          "length": 0.175,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 75,
+          "length": 0.15,
+          "rolls": 0.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 77,
+          "length": 0.175,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 78,
+          "loops": -0.5,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 80,
+          "length": 0.175,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 79,
+          "length": 0.15,
+          "rolls": 0.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 81,
+          "length": 0.175,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 82,
+          "loops": 0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        }
+      ],
+      "rule": "IMAC",
+      "uid": 10
+    },
+    {
+      "name": "Et",
+      "k": 4,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 83,
+          "length": 0.3428932188134527,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 84,
+          "loops": 0.125,
+          "diameter": 0.5,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 87,
+          "length": 0.1,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 85,
+          "length": 0.15,
+          "rolls": 0.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 86,
+          "length": 0.15,
+          "rolls": -0.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 88,
+          "length": 0.1,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 89,
+          "loops": -0.875,
+          "diameter": 0.5,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 93,
+          "length": 0.04999999999999999,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 90,
+          "length": 0.075,
+          "rolls": 0.25,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 91,
+          "length": 0.05,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 92,
+          "length": 0.075,
+          "rolls": 0.25,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 94,
+          "length": 0.04999999999999999,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 95,
+          "loops": 0.25,
+          "diameter": 0.5,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        }
+      ],
+      "rule": "IMAC",
+      "uid": 11
+    },
+    {
+      "name": "hsq2",
+      "k": 2,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 96,
+          "length": 0.35,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 97,
+          "loops": 0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 99,
+          "length": 0.175,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 98,
+          "length": 0.15,
+          "rolls": 0.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 100,
+          "length": 0.175,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 101,
+          "loops": -0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        }
+      ],
+      "rule": "IMAC",
+      "uid": 12
+    },
+    {
+      "name": "figM",
+      "k": 5,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 102,
+          "length": 0.45,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 103,
+          "loops": -0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 105,
+          "length": 0.1375,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 104,
+          "length": 0.22499999999999998,
+          "rolls": -0.75,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 106,
+          "length": 0.1375,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        { "type": "StallTurnEl", "uid": 107, "direction": 1, "width": 1.0 },
+        {
+          "type": "LineEl",
+          "uid": 108,
+          "length": 0.5,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 109,
+          "loops": 0.5,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 110,
+          "length": 0.5,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        { "type": "StallTurnEl", "uid": 111, "direction": 1, "width": 1.0 },
+        {
+          "type": "LineEl",
+          "uid": 113,
+          "length": 0.1375,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 112,
+          "length": 0.22499999999999998,
+          "rolls": -0.75,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 114,
+          "length": 0.1375,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 115,
+          "loops": -0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        }
+      ],
+      "rule": "IMAC",
+      "uid": 13
+    },
+    {
+      "name": "fight",
+      "k": 2,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 116,
+          "length": 0.2,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 117,
+          "loops": -0.125,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 119,
+          "length": 0.1625,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 118,
+          "length": 0.075,
+          "rolls": -0.25,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 120,
+          "length": 0.1625,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 121,
+          "loops": 0.5,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 123,
+          "length": 0.1625,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 122,
+          "length": 0.075,
+          "rolls": 0.25,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 124,
+          "length": 0.1625,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 125,
+          "loops": -0.125,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        }
+      ],
+      "rule": "IMAC",
+      "uid": 14
+    },
+    {
+      "name": "tri",
+      "k": 2,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 126,
+          "length": 0.25,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 127,
+          "length": 0.2,
+          "rolls": 0.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 128,
+          "length": 0.3,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 129,
+          "loops": 0.375,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 133,
+          "length": 0.182842712474619,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 130,
+          "length": 0.075,
+          "rolls": 0.25,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 131,
+          "length": 0.05,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 132,
+          "length": 0.075,
+          "rolls": 0.25,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 134,
+          "length": 0.182842712474619,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 135,
+          "loops": -0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 139,
+          "length": 0.182842712474619,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 136,
+          "length": 0.075,
+          "rolls": 0.25,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 137,
+          "length": 0.05,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 138,
+          "length": 0.075,
+          "rolls": 0.25,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 140,
+          "length": 0.182842712474619,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 141,
+          "loops": 0.375,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 142,
+          "length": 0.3,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 143,
+          "length": 0.2,
+          "rolls": 0.5,
+          "l_tag": true
+        }
+      ],
+      "rule": "IMAC",
+      "uid": 15
+    },
+    {
+      "name": "shark",
+      "k": 2,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 144,
+          "length": 0.75,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 145,
+          "loops": -0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 147,
+          "length": 0.05,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 146,
+          "length": 0.15,
+          "rolls": 0.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 148,
+          "length": 0.05,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 149,
+          "loops": 0.375,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 153,
+          "length": 0.22677669529663688,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 150,
+          "length": 0.075,
+          "rolls": 0.25,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 151,
+          "length": 0.05,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 152,
+          "length": 0.075,
+          "rolls": 0.25,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 154,
+          "length": 0.22677669529663688,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 155,
+          "loops": 0.125,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        }
+      ],
+      "rule": "IMAC",
+      "uid": 16
+    },
+    {
+      "name": "loop",
+      "k": 2,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 156,
+          "length": 0.17573593128807238,
+          "rolls": 0.0,
+          "l_tag": 0.0
+        },
+        {
+          "type": "LoopEl",
+          "uid": 157,
+          "loops": 0.375,
+          "diameter": 0.7,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 158,
+          "loops": 0.25,
+          "diameter": 0.7,
+          "rolls": 0.5,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 159,
+          "loops": -0.375,
+          "diameter": 0.7,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        }
+      ],
+      "rule": "IMAC",
+      "uid": 17
+    }
+  ]
+}

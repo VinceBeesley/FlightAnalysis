@@ -24,13 +24,12 @@ class Manoeuvre():
         if all(isinstance(x, El) for x in elements):
             self.elements = elements  
         elif all(isinstance(x, dict) for x in elements):
-            self.elements = [_els[x["type"]](**x) for x in elements]
+            self.elements = [_els[x.pop("type")](**x) for x in elements]
 
-        if rule.__name__ in rules.keys():
-            self.rule = rule
-        elif isinstance(rule,str):
-            self.rule = rules[rule]
-
+        if isinstance(rule,str):
+            rule = rules[rule]
+        self.rule = rule
+        
         if not uid:
             Manoeuvre._counter += 1
             self.uid = Manoeuvre._counter

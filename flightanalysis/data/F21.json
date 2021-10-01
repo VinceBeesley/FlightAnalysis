@@ -1,0 +1,1377 @@
+{
+  "name": "F21",
+  "category": "F3A",
+  "entry": "upright",
+  "entry_x_offset": -1.0,
+  "entry_z_offset": 0.15,
+  "manoeuvres": [
+    {
+      "name": "golf",
+      "k": 4,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 1,
+          "length": 1.081066,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 2,
+          "loops": -0.375,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 4,
+          "length": 0.11250000000000002,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 3,
+          "length": 0.22499999999999998,
+          "rolls": 0.75,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 5,
+          "length": 0.11250000000000002,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 6,
+          "loops": -0.375,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": true,
+          "r_tag": true
+        },
+        {
+          "type": "SnapEl",
+          "uid": 7,
+          "length": 0.05,
+          "rolls": 1.0,
+          "l_tag": false
+        },
+        {
+          "type": "LoopEl",
+          "uid": 8,
+          "loops": -0.375,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": true,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 10,
+          "length": 0.11250000000000002,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 9,
+          "length": 0.22499999999999998,
+          "rolls": -0.75,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 11,
+          "length": 0.11250000000000002,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 12,
+          "loops": -0.375,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        }
+      ],
+      "rule": "F3ACentre",
+      "uid": 1
+    },
+    {
+      "name": "cub8",
+      "k": 3,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 13,
+          "length": 0.1,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 14,
+          "loops": -0.125,
+          "diameter": 0.5,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 19,
+          "length": 0.11249999999999999,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 15,
+          "length": 0.075,
+          "rolls": 0.25,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 16,
+          "length": 0.05,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 17,
+          "length": 0.075,
+          "rolls": 0.25,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 18,
+          "length": 0.075,
+          "rolls": -0.25,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 20,
+          "length": 0.11249999999999999,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 21,
+          "loops": 0.625,
+          "diameter": 0.5,
+          "rolls": 0.0,
+          "ke": true,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 22,
+          "length": 0.3,
+          "rolls": 0.75,
+          "l_tag": true
+        }
+      ],
+      "rule": "F3AEnd",
+      "uid": 2
+    },
+    {
+      "name": "circle",
+      "k": 4,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 23,
+          "length": 0.4260407468305834,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 24,
+          "loops": -0.5,
+          "diameter": 0.7,
+          "rolls": 0.5,
+          "ke": true,
+          "r_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 25,
+          "loops": 0.5,
+          "diameter": 0.7,
+          "rolls": -0.5,
+          "ke": true,
+          "r_tag": true
+        }
+      ],
+      "rule": "F3ACentre",
+      "uid": 3
+    },
+    {
+      "name": "tHat",
+      "k": 4,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 26,
+          "length": 0.4,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 27,
+          "loops": 0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 33,
+          "length": 0.0875,
+          "rolls": 0.0,
+          "l_tag": false
+        },
+        {
+          "type": "LineEl",
+          "uid": 28,
+          "length": 0.075,
+          "rolls": 0.25,
+          "l_tag": false
+        },
+        {
+          "type": "LineEl",
+          "uid": 29,
+          "length": 0.05,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 30,
+          "length": 0.075,
+          "rolls": 0.25,
+          "l_tag": false
+        },
+        {
+          "type": "LineEl",
+          "uid": 31,
+          "length": 0.05,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 32,
+          "length": 0.075,
+          "rolls": 0.25,
+          "l_tag": false
+        },
+        {
+          "type": "LineEl",
+          "uid": 34,
+          "length": 0.0875,
+          "rolls": 0.0,
+          "l_tag": false
+        },
+        {
+          "type": "LoopEl",
+          "uid": 35,
+          "loops": -0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 36,
+          "length": 0.1,
+          "rolls": 0.0,
+          "l_tag": false
+        },
+        {
+          "type": "LoopEl",
+          "uid": 37,
+          "loops": -0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 39,
+          "length": 0.23125,
+          "rolls": 0.0,
+          "l_tag": false
+        },
+        {
+          "type": "SnapEl",
+          "uid": 38,
+          "length": 0.037500000000000006,
+          "rolls": 0.75,
+          "l_tag": false
+        },
+        {
+          "type": "LineEl",
+          "uid": 40,
+          "length": 0.23125,
+          "rolls": 0.0,
+          "l_tag": false
+        },
+        {
+          "type": "LoopEl",
+          "uid": 41,
+          "loops": -0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        }
+      ],
+      "rule": "F3AEnd",
+      "uid": 4
+    },
+    {
+      "name": "hB",
+      "k": 5,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 42,
+          "length": 0.2,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 43,
+          "loops": -0.25,
+          "diameter": 0.4,
+          "rolls": -0.25,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 45,
+          "length": 0.1,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 44,
+          "length": 0.3,
+          "rolls": 1.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 46,
+          "length": 0.1,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 47,
+          "loops": 0.5,
+          "diameter": 0.4,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 50,
+          "length": 0.1,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 48,
+          "length": 0.15,
+          "rolls": 0.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 49,
+          "length": 0.15,
+          "rolls": -0.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 51,
+          "length": 0.1,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 52,
+          "loops": -0.25,
+          "diameter": 0.4,
+          "rolls": 0.25,
+          "ke": true,
+          "r_tag": true
+        }
+      ],
+      "rule": "F3ACentre",
+      "uid": 5
+    },
+    {
+      "name": "v8",
+      "k": 5,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 53,
+          "length": 0.3,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 54,
+          "loops": 0.375,
+          "diameter": 0.42,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 55,
+          "loops": 0.125,
+          "diameter": 0.42,
+          "rolls": 0.25,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 56,
+          "loops": -0.125,
+          "diameter": 0.42,
+          "rolls": 0.25,
+          "ke": true,
+          "r_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 57,
+          "loops": 0.875,
+          "diameter": 0.42,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        }
+      ],
+      "rule": "F3AEnd",
+      "uid": 6
+    },
+    {
+      "name": "stall",
+      "k": 4,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 58,
+          "length": 0.7032076438918865,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 59,
+          "loops": -0.75,
+          "diameter": 0.42,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 62,
+          "length": 0.1875,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 60,
+          "length": 0.075,
+          "rolls": 0.25,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 61,
+          "length": 0.15,
+          "rolls": -0.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 63,
+          "length": 0.1875,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        { "type": "StallTurnEl", "uid": 64, "direction": 1, "width": 0.05 },
+        {
+          "type": "LineEl",
+          "uid": 66,
+          "length": 0.1875,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 65,
+          "length": 0.22499999999999998,
+          "rolls": 0.75,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 67,
+          "length": 0.1875,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 68,
+          "loops": 0.75,
+          "diameter": 0.42,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        }
+      ],
+      "rule": "F3ACentre",
+      "uid": 7
+    },
+    {
+      "name": "9",
+      "k": 4,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 69,
+          "length": 1.046415287783774,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 70,
+          "loops": -0.75,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 71,
+          "length": 0.16,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "SnapEl",
+          "uid": 72,
+          "length": 0.1,
+          "rolls": 1.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 73,
+          "length": 0.16,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 74,
+          "loops": -0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        }
+      ],
+      "rule": "F3AEnd",
+      "uid": 8
+    },
+    {
+      "name": "tHat2",
+      "k": 6,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 75,
+          "length": 0.05,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 76,
+          "loops": -0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 78,
+          "length": 0.08750000000000002,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 77,
+          "length": 0.22499999999999998,
+          "rolls": 0.75,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 79,
+          "length": 0.08750000000000002,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 80,
+          "loops": -0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": true,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 82,
+          "length": 0.05000000000000002,
+          "rolls": 0.0,
+          "l_tag": false
+        },
+        {
+          "type": "LineEl",
+          "uid": 81,
+          "length": 0.3,
+          "rolls": 1.0,
+          "l_tag": false
+        },
+        {
+          "type": "LineEl",
+          "uid": 83,
+          "length": 0.05000000000000002,
+          "rolls": 0.0,
+          "l_tag": false
+        },
+        {
+          "type": "LoopEl",
+          "uid": 84,
+          "loops": -0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": true,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 86,
+          "length": 0.1625,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 85,
+          "length": 0.075,
+          "rolls": 0.25,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 87,
+          "length": 0.1625,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 88,
+          "loops": -0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        }
+      ],
+      "rule": "F3ACentre",
+      "uid": 9
+    },
+    {
+      "name": "hSqL",
+      "k": 3,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 90,
+          "length": 0.19999999999999998,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 89,
+          "length": 0.15,
+          "rolls": 0.5,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 91,
+          "loops": 0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 94,
+          "length": 0.050000000000000044,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 92,
+          "length": 0.15,
+          "rolls": 0.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 93,
+          "length": 0.3,
+          "rolls": -1.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 95,
+          "length": 0.050000000000000044,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 96,
+          "loops": -0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        }
+      ],
+      "rule": "F3AEnd",
+      "uid": 10
+    },
+    {
+      "name": "45Line",
+      "k": 6,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 97,
+          "length": 0.362867965644036,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 98,
+          "loops": -0.125,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 105,
+          "length": 0.33890872965260105,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 99,
+          "length": 0.1,
+          "rolls": 0.25,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 100,
+          "length": 0.05,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "SnapEl",
+          "uid": 101,
+          "length": 0.05,
+          "rolls": 1.0,
+          "l_tag": true
+        },
+        {
+          "type": "SnapEl",
+          "uid": 102,
+          "length": 0.05,
+          "rolls": -1.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 103,
+          "length": 0.05,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 104,
+          "length": 0.1,
+          "rolls": -0.25,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 106,
+          "length": 0.33890872965260105,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 107,
+          "loops": 0.125,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        }
+      ],
+      "rule": "F3ACentre",
+      "uid": 11
+    },
+    {
+      "name": "8loop",
+      "k": 3,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 108,
+          "length": 0.05,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 109,
+          "loops": 0.125,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 111,
+          "length": 0.02500000000000001,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 110,
+          "length": 0.15,
+          "rolls": 0.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 112,
+          "length": 0.02500000000000001,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 113,
+          "loops": -0.125,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 114,
+          "length": 0.2,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 115,
+          "loops": -0.125,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 117,
+          "length": 0.02500000000000001,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 116,
+          "length": 0.15,
+          "rolls": 0.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 118,
+          "length": 0.02500000000000001,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 119,
+          "loops": 0.125,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        }
+      ],
+      "rule": "F3AEnd",
+      "uid": 12
+    },
+    {
+      "name": "loop",
+      "k": 5,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 120,
+          "length": 0.5371320343559636,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 121,
+          "loops": 0.5,
+          "diameter": 0.782842712474619,
+          "rolls": 1.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 122,
+          "loops": 0.5,
+          "diameter": 0.782842712474619,
+          "rolls": -1.0,
+          "ke": false,
+          "r_tag": true
+        }
+      ],
+      "rule": "F3ACentre",
+      "uid": 13
+    },
+    {
+      "name": "spin",
+      "k": 3,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 123,
+          "length": 0.95,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "SpinEl",
+          "uid": 124,
+          "length": 0.06,
+          "turns": 2.5,
+          "opp_turns": 0.0
+        },
+        {
+          "type": "LineEl",
+          "uid": 125,
+          "length": 0.5745408015016459,
+          "rolls": 0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 126,
+          "loops": -0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        }
+      ],
+      "rule": "F3AEnd",
+      "uid": 14
+    },
+    {
+      "name": "rollC",
+      "k": 3,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 136,
+          "length": 0.4385847122162254,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 127,
+          "length": 0.15,
+          "rolls": 0.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 128,
+          "length": 0.075,
+          "rolls": -0.25,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 129,
+          "length": 0.05,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 130,
+          "length": 0.075,
+          "rolls": -0.25,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 131,
+          "length": 0.05,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 132,
+          "length": 0.075,
+          "rolls": -0.25,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 133,
+          "length": 0.05,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 134,
+          "length": 0.075,
+          "rolls": -0.25,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 135,
+          "length": 0.15,
+          "rolls": 0.5,
+          "l_tag": true
+        }
+      ],
+      "rule": "F3ACentre",
+      "uid": 15
+    },
+    {
+      "name": "fTurn",
+      "k": 4,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 137,
+          "length": 0.1,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 138,
+          "loops": -0.125,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 140,
+          "length": 0.08750000000000002,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 139,
+          "length": 0.22499999999999998,
+          "rolls": 0.75,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 141,
+          "length": 0.08750000000000002,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 142,
+          "loops": 0.5,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 144,
+          "length": 0.18125000000000002,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "SnapEl",
+          "uid": 143,
+          "length": 0.037500000000000006,
+          "rolls": -0.75,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 145,
+          "length": 0.18125000000000002,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 146,
+          "loops": -0.125,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        }
+      ],
+      "rule": "F3AEnd",
+      "uid": 16
+    },
+    {
+      "name": "square",
+      "k": 4,
+      "elements": [
+        {
+          "type": "LineEl",
+          "uid": 147,
+          "length": 0.425,
+          "rolls": 0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 148,
+          "length": 0.1,
+          "rolls": -0.25,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 149,
+          "length": 0.15,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 150,
+          "loops": 0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 152,
+          "length": 0.125,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 151,
+          "length": 0.15,
+          "rolls": 0.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 153,
+          "length": 0.125,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 154,
+          "loops": -0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 156,
+          "length": 0.125,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 155,
+          "length": 0.15,
+          "rolls": 0.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 157,
+          "length": 0.125,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 158,
+          "loops": 0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 160,
+          "length": 0.125,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 159,
+          "length": 0.15,
+          "rolls": 0.5,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 161,
+          "length": 0.125,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LoopEl",
+          "uid": 162,
+          "loops": -0.25,
+          "diameter": 0.3,
+          "rolls": 0.0,
+          "ke": false,
+          "r_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 163,
+          "length": 0.15,
+          "rolls": 0.0,
+          "l_tag": true
+        },
+        {
+          "type": "LineEl",
+          "uid": 164,
+          "length": 0.1,
+          "rolls": -0.25,
+          "l_tag": true
+        }
+      ],
+      "rule": "F3ACentre",
+      "uid": 17
+    }
+  ]
+}

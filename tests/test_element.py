@@ -1,6 +1,6 @@
 import numpy as np
 import unittest
-from flightanalysis.schedule.element import LoopEl, LineEl, SnapEl, SpinEl, StallTurnEl
+from flightanalysis.schedule.element import LoopEl, LineEl, SnapEl, SpinEl, StallTurnEl, El
 from geometry import Transformation, Points, Point, Quaternion
 
 
@@ -45,7 +45,12 @@ class TestLoopEl(unittest.TestCase):
 
         self.assertLess(intention.diameter, 100.0)
         
-
+    def test_to_from_dict(self):
+        el = LoopEl(1.0, 0.5, 0.5, False)
+        dic = el.to_dict()
+        tp = dic.pop("type")
+        el2 = LoopEl(**dic)
+        assert el.rolls == el2.rolls
 
 
 class TestLineEl(unittest.TestCase):

@@ -8,7 +8,7 @@ import pandas as pd
 from flightdata import Flight, Fields
 class TestFCJson(unittest.TestCase):
     def setUp(self):
-        with open("tests/fc_json.json", 'r') as f:
+        with open("tests/test_inputs/manual_F3A_P21_21_09_24_00000052.json", 'r') as f:
             self.json = load(f)
     def test_parse_fc_json(self):
         fcj = FCJson.parse_fc_json(self.json)

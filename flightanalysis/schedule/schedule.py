@@ -45,7 +45,7 @@ class Schedule():
     def to_dict(self):
         return dict(
             name=self.name,
-            category=str(self.category),
+            category=self.category.name,
             entry=self.entry,
             entry_x_offset=self.entry_x_offset,
             entry_z_offset=self.entry_z_offset, 
