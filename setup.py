@@ -20,7 +20,6 @@ setup(
     author='Thomas David',
     author_email='thomasdavid0@gmail.com',
     packages=['flightanalysis'],
-    # If any package contains *.txt or *.rst files, include them:
     include_package_data = True,
     package_data = {'': ['data/*.json']},
     install_requires=['numpy', 'pandas', 'flightdata', 'geometry', 'scipy', 'fastdtw'],

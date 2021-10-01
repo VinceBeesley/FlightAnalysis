@@ -1,10 +1,6 @@
 from flightanalysis import Section
 from flightplotting.plots import plotsec
-from examples.model import obj
 
-sec = Section.from_flight("test/P21_new.csv","test/gordano_box.json")
+sec = Section.from_csv("tests/test_inputs/test_log_00000052_section.csv")
 
-
-plotsec(sec, obj, 10, 10).show()
-
-plotsec(sec.subset(110, 200), obj, 10, 10).show()
+plotsec(sec.subset(110, 200), 10, 10).show()

@@ -65,7 +65,7 @@ f23 = Schedule("F23", Categories.F3A, "upright", -1.0, 0.15, [
     Manoeuvre("h8", 6, [
         LineEl( 0.62 + 0.35, 0.0),
         LoopEl( 0.7, -3/4, 3/4),
-        LoopEl(0.7, 1.0, -1.0, ke=True),
+        LoopEl(0.7, -1.0, 1.0, ke=True),
         LoopEl(0.7, 1/4, 1/4, ke=True),
     ]),
     Manoeuvre("Et", 3, [

@@ -630,9 +630,9 @@
         {
           "type": "LoopEl",
           "uid": 79,
-          "loops": 1.0,
+          "loops": -1.0,
           "diameter": 0.7,
-          "rolls": -1.0,
+          "rolls": 1.0,
           "ke": true,
           "r_tag": true
         },
