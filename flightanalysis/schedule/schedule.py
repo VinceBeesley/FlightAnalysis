@@ -7,6 +7,7 @@ import numpy as np
 from flightanalysis.schedule.figure_rules import Categories
 from json import loads, load, dumps
 
+
 class Schedule():
     def __init__(
         self,
@@ -28,10 +29,10 @@ class Schedule():
             manoeuvres (List[Manoeuvre]): [description]
         """
         self.name = name
-        
+
         if isinstance(category, Categories):
-            self.category = category  
-        elif isinstance(category, str): 
+            self.category = category
+        elif isinstance(category, str):
             self.category = Categories[category]
 
         self.entry = entry
@@ -41,14 +42,14 @@ class Schedule():
             self.manoeuvres = manoeuvres
         elif all(isinstance(x, dict) for x in manoeuvres):
             self.manoeuvres = [Manoeuvre(**x) for x in manoeuvres]
-    
+
     def to_dict(self):
         return dict(
             name=self.name,
             category=self.category.name,
             entry=self.entry,
             entry_x_offset=self.entry_x_offset,
-            entry_z_offset=self.entry_z_offset, 
+            entry_z_offset=self.entry_z_offset,
             manoeuvres=[man.to_dict() for man in self.manoeuvres]
         )
 
@@ -233,7 +234,10 @@ class Schedule():
                 flown.get_state_from_index(0).pos,
                 iatt
             )
-            templates.append(man.create_template(transform, rates["speed"]))
+            templates.append(
+                man.scale(rates["distance"] * np.tan(np.radians(60)))
+                .create_template(transform, 1.5*rates["speed"])
+            )
             iatt = templates[-1].get_state_from_index(-1).att
         return templates
 

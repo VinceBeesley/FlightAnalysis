@@ -1,5 +1,5 @@
 from flightanalysis import Section, Box, Schedule, get_schedule, Categories
-
+from flightanalysis.schedule.element import get_rates
 from flightdata import Flight
 from typing import Union, IO
 from json import loads, load
@@ -11,12 +11,13 @@ import pandas as pd
 
 
 class FCJson:
-    def __init__(self, name: str, flight: Flight, box: Box, sec: Section, schedule: Schedule):
+    def __init__(self, name: str, flight: Flight, box: Box, sec: Section, schedule: Schedule, dists=[]):
         self.name = name
         self.flight = flight
         self.box = box
         self.sec = sec
         self.schedule = schedule
+        self._dists = dists
 
     
 
@@ -40,18 +41,19 @@ class FCJson:
         
         schedule = get_schedule(*fc_json["parameters"]["schedule"]).share_seperators()
         labelled = schedule.label_from_splitter(sec, fc_json["mans"])
-        sched = schedule.match_manoeuvre_rates(labelled)
-        templates = sched.create_man_matched_template(labelled) # this is not creating the v8
+        templates = schedule.create_man_matched_template(labelled)
         
         secs = []
-        for man, templ in zip(sched.manoeuvres, templates):
+        _dists = []
+        for man, templ in zip(schedule.manoeuvres, templates):
             dist, nsec =Section.align(man.get_data(labelled).remove_labels(), templ)
             secs.append(nsec)
+            _dists.append(dist)
 
         #
         aligned = Section.stack([Schedule.get_takeoff(labelled)] + secs)
 
-        return FCJson(fc_json['name'], flight, box, aligned, sched)
+        return FCJson(fc_json['name'], flight, box, aligned, schedule, _dists)
 
     
 
