@@ -8,6 +8,10 @@ from flightanalysis.schedule.figure_rules import Categories
 from json import loads, load, dumps
 
 
+# TODO it would be better if the list index of each manoeuvre corresponded with the uid. This is not possible because takeoff is not included as a manoeuvre. 
+# TODO perhaps include takeoff in the list as manoeuvre 0 and add it when reading from the json, use a constructor rather than __init__ when creating from python
+# TODO this will cause a problem when creating templates, as some data must (probably) be created for the takeoff, which will bugger up the entry_x_offset and dtw alignment (if its a straight line)
+
 class Schedule():
     def __init__(
         self,
@@ -286,3 +290,12 @@ class Schedule():
         nmans = [getattr(man, meth)(nextman) for man, nextman in consec_mans]
         nmans.append(self.manoeuvres[-1].replace_elms([]))
         return self.replace_manoeuvres(nmans)
+
+    def get_subset(self, sec: Section, first_manoeuvre: int, last_manoeuvre: int):
+        fmanid = self.manoeuvres[first_manoeuvre].uid
+        if last_manoeuvre == -1 or last_manoeuvre >= len(self.data.manoeuvres):
+            lmanid = self.data.manoeuvres[-1].uid + 1
+        else:
+            lmanid = self.manoeuvres[last_manoeuvre].uid
+
+        return Section(sec.data.loc[sec.data.manoeuvre >= fmanid and sec.data.manoeuvre < lmanid])
