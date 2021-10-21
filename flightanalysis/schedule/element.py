@@ -1,5 +1,6 @@
 
 import numpy as np
+import pandas as pd
 from geometry import Transformation, Point, scalar_projection, Points, scalar_projection
 from flightanalysis import Section
 from scipy import optimize
@@ -135,7 +136,13 @@ class LoopEl(El):
             self.uid
         )
 
+    def segment(self, transform:Transformation, flown: Section, partitions=10):
+        subsections = flown.segment(partitions)
+        elms = [ self.match_intention( transform,sec) for sec in subsections ]
+        
+        return subsections, elms
 
+        
 class SpinEl(El):
     _speed_factor = 1 / 10
 

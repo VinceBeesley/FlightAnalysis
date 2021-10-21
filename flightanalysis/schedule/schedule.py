@@ -211,6 +211,7 @@ class Schedule():
         return self.replace_manoeuvres([man.fix_intention() for man in self.manoeuvres])
 
     def create_matched_template(self, alinged: Section) -> Section:
+        """This will go through all the manoeuvres in a labelled section and create a template with only the initial position and speed of each matched"""
         rates = get_rates(alinged)
 
         iatt = self.create_iatt(alinged.get_state_from_index(0).direction)
@@ -227,8 +228,29 @@ class Schedule():
 
         return Section.stack(templates)
 
-    def create_man_matched_template(self, alinged: Section) -> Section:
+    def create_elm_matched_template(self, alinged: Section) -> Section:
+        """This will go through all the elements in a labelled section and create a template with the initial position and speed of each matched"""
+        rates = get_rates(alinged)
 
+        iatt = self.create_iatt(alinged.get_state_from_index(0).direction)
+
+        templates = []
+        for manoeuvre in self.manoeuvres:
+            mtemps = []
+            for elm in manoeuvre.elements:
+                transform = Transformation(
+                    elm.get_data(alinged).get_state_from_index(0).pos,
+                    iatt
+                )
+                mtemps.append(elm.create_template(transform, rates["speed"]))
+                iatt = mtemps[-1].get_state_from_index(-1).att
+            
+            templates.append(manoeuvre.label(Section.stack(mtemps)))
+
+        return Section.stack(templates)
+
+    def create_man_matched_template(self, alinged: Section) -> Section:
+        """This will go through all the manoeuvres in a labelled section, measure the rates and return a scaled template for each based on the rates"""
         iatt = self.create_iatt(alinged.get_state_from_index(0).direction)
         templates = []
         for man in self.manoeuvres:

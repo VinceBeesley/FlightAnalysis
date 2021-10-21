@@ -26,8 +26,25 @@ class Section():
             return self.data[name]
         elif name in State.vars.constructs:
             return self.data[State.vars.constructs[name]]
+        elif name in ["gpos", "gbvel", "gbrvel", "gbacc"]:
+            return Points.from_pandas(self.__getattr__(name[1:]))
+        elif name == "gatt":
+            return Quaternion.from_pandas(self.att)
         else:
             raise AttributeError
+
+
+    def segment(self, partitions):
+        parts = np.linspace(self.data.index[0], self.data.index[-1], partitions)
+
+        return [
+            self.subset(p0, p1) 
+            for p0, p1 in 
+            zip(parts[:-2], parts[1:])
+        ]
+
+
+
 
     def subset(self, start: Number, end: Number):
         if start == -1 and not end == -1:
@@ -82,6 +99,27 @@ class Section():
         savevars(State.vars.bacc, bacc)
 
         return Section(df)
+
+
+    def copy(self, t=None, pos:Points=None, att:Quaternions=None, bvel:Points=None, brvel:Points=None, bacc:Points=None):
+        if t is None:
+            t=self.data.index
+        
+        pos = self.gpos if pos is None else pos
+        sec = Section.from_constructs(
+            self.data.index if t is None else t,
+            self.gpos if pos is None else pos,
+            self.gatt if att is None else att,
+            self.gbvel if bvel is None else bvel,
+            self.gbrvel if brvel is None else brvel,
+            self.gbacc if bacc is None else bacc
+        )
+
+        if len(self.data.columns) > len(sec.data.columns):
+            missing_cols = list(set(self.data.columns) - set(sec.data.columns))
+            sec.data[missing_cols] = self.data[missing_cols].copy()
+
+        return sec
 
     @staticmethod
     def from_flight(flight: Union[Flight, str], box=Union[FlightLine, Box, str]):
@@ -143,6 +181,12 @@ class Section():
     def to_csv(self, filename):
         self.data.to_csv(filename)
         return filename
+
+    def transform(self, transform: Transformation):
+        return self.copy(
+            pos=transform.point(Points.from_pandas(self.pos)),
+            att=transform.quat(Quaternions.from_pandas(self.att)), 
+        )
 
     @staticmethod
     def from_csv(filename):
