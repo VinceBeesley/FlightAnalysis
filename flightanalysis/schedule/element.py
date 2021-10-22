@@ -212,16 +212,18 @@ class SpinEl(El):
         )
 
 class SnapEl(El):
-    def __init__(self, length: float, rolls: float, l_tag=True, uid: str = None):
+    def __init__(self, length: float, rolls: float, negative=False, l_tag=True, uid: str = None):
         super().__init__(uid)
         self.length = length
         self.rolls = rolls
+        self.negative = negative
         self.l_tag = l_tag
 
-    def set_parameter(self, length=None, rolls=None, l_tag=None):
+    def set_parameter(self, length=None, rolls=None, negative=None, l_tag=None):
         return SnapEl(
             length if length is not None else self.length,
             rolls if rolls is not None else self.rolls,
+            negative if negative is not None else self.negative,
             l_tag if l_tag is not None else self.l_tag,
             self.uid
         )
@@ -349,13 +351,13 @@ def reboundrollmaker(rolls: list, length: float = 0.5, position="Centre", rlengt
     return paddinglines(position, length, lsum, elms, l_tag)
 
 
-def rollsnapcombomaker(rolls: list, length: float, position="Centre", rlength=0.3, l_tag=True):
+def rollsnapcombomaker(rolls: list, length: float, position="Centre", rlength=0.3, l_tag=True, bounce=True):
     lsum = 0.0
     elms = []
     last_dir = -np.sign(rolls[0][1])
     for roll in rolls:
-        # add pause if roll in opposite direction
-        if last_dir == np.sign(roll[1]):
+        # add pause if roll in same direction
+        if last_dir == np.sign(roll[1]) or not bounce:
             elms.append(LineEl(0.05, 0.0, l_tag))
             lsum += 0.05
         last_dir = np.sign(roll[1])
@@ -380,3 +382,5 @@ def paddinglines(position, length, lsum, elms, l_tag=True):
         return elms + [LineEl(lleft, 0.0)]
     elif position.lower() == "end":
         return [LineEl(lleft, 0.0)] + elms
+    elif position == "None":
+        return elms

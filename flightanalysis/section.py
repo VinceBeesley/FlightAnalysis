@@ -13,7 +13,7 @@ from pathlib import Path
 import warnings
 
 class Section():
-    _construct_freq = 20
+    _construct_freq = 30
 
     def __init__(self, data: pd.DataFrame):
         if len(data) == 0:
@@ -29,7 +29,7 @@ class Section():
         elif name in ["gpos", "gbvel", "gbrvel", "gbacc"]:
             return Points.from_pandas(self.__getattr__(name[1:]))
         elif name == "gatt":
-            return Quaternion.from_pandas(self.att)
+            return Quaternions.from_pandas(self.att)
         else:
             raise AttributeError
 
@@ -100,6 +100,10 @@ class Section():
 
         return Section(df)
 
+
+    def aoa(self):
+        bvel = self.gbvel
+        return np.tan(bvel.z / bvel.x), np.tan(bvel.y / bvel.x)
 
     def copy(self, t=None, pos:Points=None, att:Quaternions=None, bvel:Points=None, brvel:Points=None, bacc:Points=None):
         if t is None:
@@ -223,6 +227,28 @@ class Section():
             return NotImplemented
 
     @staticmethod
+    def t_array(duration: float, freq: float = None):
+        if freq==None:
+            freq = Section._construct_freq
+        return  np.linspace(0, duration, max(int(duration * freq), 3))
+
+    @staticmethod
+    def extrapolate_state(istate: State, duration: float, freq: float = None):
+        t = Section.t_array(duration, freq)
+
+        bvel = Points.from_point(istate.bvel, len(t))
+
+        return Section.from_constructs(
+            t,
+            pos = Points.from_point(istate.pos,len(t)) + istate.back_transform.rotate(bvel) * t,
+            att = Quaternions.from_quaternion(istate.att, len(t)),
+            bvel = bvel,
+            brvel=Points(np.zeros((len(t), 3))),
+            bacc=Points(np.zeros((len(t), 3)))
+        )
+
+
+    @staticmethod
     def from_line(itransform: Transformation, speed: float, length: float, freq: float = None):
         """generate a section representing a line. Provide an initial rotation rate to represent a roll.
 
@@ -233,15 +259,13 @@ class Section():
         Returns:
             Section: Section class representing the line or roll.
         """
-        if freq==None:
-            freq = Section._construct_freq
-        duration = length / speed
-        t = np.linspace(0, duration, max(int(duration * freq), 3))
+        
+        
+        t = Section.t_array(duration=length / speed, freq=freq)
         ibvel = Point(speed, 0.0, 0.0)
         bvel = Points.from_point(ibvel, len(t))
 
-        pos = Points.from_point(itransform.translation,
-                                len(t)) + itransform.rotate(bvel) * t
+        pos = Points.from_point(itransform.translation,len(t)) + itransform.rotate(bvel) * t
 
         att = Quaternions.from_quaternion(itransform.rotation, len(t))
 
@@ -359,6 +383,11 @@ class Section():
 
             return Section.stack([nose_drop, rotation, rotation2])
 
+    @staticmethod
+    def from_snap(itransform: Transformation, speed: float, length: float, rolls: float, negative=False):
+        pass
+
+
     def superimpose_roll(self, proportion: float):
         """Generate a new section, identical to self, but with a continous roll integrated
 
@@ -378,7 +407,6 @@ class Section():
         new_att = Quaternions.from_pandas(self.att.copy()).body_rotate(
             angles)
 
-        # axis rates:
         axisrates = Points.from_pandas(self.brvel.copy())
         new_rates = Points(np.array([
             np.full(len(t), roll_rate),
@@ -405,6 +433,37 @@ class Section():
             new_rates,
             new_acc
         )
+
+
+    def superimpose_rotation(self, axis: Point, amount: float):
+        """Generate a new section, identical to self, but with a continous rotation integrated
+
+        Args:
+            proportion (float): the amount of roll to integrate
+        """
+        t = np.array(self.data.index) - self.data.index[0]
+
+        # roll rate to add:
+        rate =2* np.pi * amount / t[-1]
+        superimposed_rotation = t * rate
+
+        angles = Points.from_point(axis.unit(), len(t)) * superimposed_rotation
+
+        new_att = self.gatt.body_rotate(angles)
+
+        new_bvel = new_att.transform_point(self.gatt.inverse().transform_point(self.gbvel))
+            
+        dt = np.gradient(t)
+
+        return Section.from_constructs(
+            t,
+            Points.from_pandas(self.pos.copy()),
+            new_att,
+            new_bvel,
+            new_att.body_diff(dt),
+            new_bvel.diff(dt)
+        )
+
 
     @staticmethod
     def align(flown, template, radius=1):

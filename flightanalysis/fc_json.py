@@ -106,7 +106,6 @@ class FCJson:
     def create_fc_json(self):
         fcdata = self.create_json_data()
         fcmans = self.create_json_mans()
-
         return {
             "version": "1.2",
             "comments": "DO NOT EDIT\n",
@@ -125,8 +124,8 @@ class FCJson:
             },
             "parameters": {
                 "rotation": -1.5707963267948966,
-                "start": 0,
-                "stop": 14929,
+                "start": int(fcmans.iloc[1].start),
+                "stop": int(fcmans.iloc[1].stop),
                 "moveEast": 0.0,
                 "moveNorth": 0.0,
                 "wingspan": 4,
@@ -141,7 +140,7 @@ class FCJson:
                 "centerLat": "0.0",
                 "centerLng": "0.0",
                 "centerAlt": "0.00",
-                "schedule": ["F3A", self.schedule.name]
+                "schedule": [self.schedule.category.name, self.schedule.name]
             },
             "mans": fcmans.to_dict("records"),
             "data": fcdata.to_dict("records")
@@ -154,13 +153,14 @@ class FCJson:
         mans["id"] = ["sp_{}".format(i) for i in range(len(self.schedule.manoeuvres) + 1)]
         mans["sp"] = list(range(len(self.schedule.manoeuvres) + 1))
         
-        mans["wd"] = [100 * sec.duration / self.sec.duration for sec in self.schedule.get_manoeuvre_data(self.sec, True)]
+        mans["wd"] = [80 * sec.duration / self.sec.duration for sec in self.schedule.get_manoeuvre_data(self.sec, True)]
         
         itsecs = self.schedule.get_manoeuvre_data(Section(self.sec.data.reset_index()), True)
         mans["stop"] = [int(sec.data.index[-1])+1 for sec in itsecs]
         mans["start"] = [int(sec.data.index[0]) for sec in itsecs]
 
         mans["sel"] = np.full(len(self.schedule.manoeuvres) + 1, False)
+        mans.loc[1,"sel"] = True
         mans["background"] = np.full(len(self.schedule.manoeuvres) + 1, "")
         #data["mans"][0]["wd"] = data["mans"][0]["wd"] + 0.3
         return mans
