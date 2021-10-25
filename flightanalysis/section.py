@@ -12,6 +12,7 @@ from scipy import optimize
 from pathlib import Path
 import warnings
 
+
 class Section():
     _construct_freq = 30
 
@@ -103,7 +104,7 @@ class Section():
 
     def aoa(self):
         bvel = self.gbvel
-        return np.tan(bvel.z / bvel.x), np.tan(bvel.y / bvel.x)
+        return np.arctan2(bvel.z, bvel.x), np.arctan2(bvel.y, bvel.x)
 
     def copy(self, t=None, pos:Points=None, att:Quaternions=None, bvel:Points=None, brvel:Points=None, bacc:Points=None):
         if t is None:
@@ -173,6 +174,7 @@ class Section():
         # this is EKF velocity estimate in NED frame transformed to contest frame
         vel = flightline.transform_to.rotate(Points.from_pandas(
             flight.data.loc[:, ["velocity_x", "velocity_y", "velocity_z"]]))
+
         bvel = att.inverse().transform_point(vel)
 
         bacc = Points.from_pandas(
@@ -181,6 +183,12 @@ class Section():
         # brvel = Points.from_pandas(flight.data.loc[:,["axis_rate_roll", "axis_rate_pitch", "axis_rate_yaw"]])
 
         return Section.from_constructs(t, pos, att, bvel, brvel, bacc)
+
+
+    def append_columns(self, data):
+        df = self.data.copy()        
+        df[data.columns] = data
+        return Section(df)
 
     def to_csv(self, filename):
         self.data.to_csv(filename)
@@ -240,7 +248,7 @@ class Section():
 
         return Section.from_constructs(
             t,
-            pos = Points.from_point(istate.pos,len(t)) + istate.back_transform.rotate(bvel) * t,
+            pos = Points.from_point(istate.pos,len(t)) + istate.transform.rotate(bvel) * t,
             att = Quaternions.from_quaternion(istate.att, len(t)),
             bvel = bvel,
             brvel=Points(np.zeros((len(t), 3))),
@@ -444,14 +452,14 @@ class Section():
         t = np.array(self.data.index) - self.data.index[0]
 
         # roll rate to add:
-        rate =2* np.pi * amount / t[-1]
+        rate = 2 * np.pi * amount / t[-1]
         superimposed_rotation = t * rate
 
         angles = Points.from_point(axis.unit(), len(t)) * superimposed_rotation
 
         new_att = self.gatt.body_rotate(angles)
 
-        new_bvel = new_att.transform_point(self.gatt.inverse().transform_point(self.gbvel))
+        new_bvel = new_att.inverse().transform_point(self.gatt.transform_point(self.gbvel))
             
         dt = np.gradient(t)
 
