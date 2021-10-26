@@ -1,6 +1,6 @@
 from geometry import Transformation
 from flightanalysis import Section
-from flightanalysis.schedule.element import LoopEl, LineEl, StallTurnEl, SnapEl, SpinEl, get_rates, El
+from flightanalysis.schedule.element import Loop, Line, StallTurn, Snap, Spin, get_rates, El
 from flightanalysis.schedule.figure_rules import IMAC, rules, Rules
 import numpy as np
 import pandas as pd
@@ -25,6 +25,8 @@ class Manoeuvre():
             self.elements = elements  
         elif all(isinstance(x, dict) for x in elements):
             self.elements = [_els[x.pop("type")](**x) for x in elements]
+        else:
+            self.elements = []
 
         if isinstance(rule,str):
             rule = rules[rule]
@@ -112,12 +114,12 @@ class Manoeuvre():
 
 
     def fix_loop_diameters(self):
-        loops = Manoeuvre.filter_elms_by_attribute(self.get_elm_by_type(LoopEl), r_tag=True)
+        loops = Manoeuvre.filter_elms_by_attribute(self.get_elm_by_type(Loop), r_tag=True)
         if len(loops) > 0:
             diameter = np.mean([loop.diameter for loop in loops])  # TODO Factor by the amount of loop flown
             return self.replace_elms(
                 [loop.set_parameter(diameter=diameter)
-                 for loop in self.get_elm_by_type(LoopEl)]
+                 for loop in self.get_elm_by_type(Loop)]
             )
         else:
             return self.replace_elms([])
@@ -152,9 +154,9 @@ class Manoeuvre():
         """Return the line (and snap) elements that are bounded on each side by a radius.
         a bounded line is a list of lines between two loops, so return is a list of lists of lines
         """
-        loop_ids = self.get_id_for_element(self.get_elm_by_type(LoopEl))
+        loop_ids = self.get_id_for_element(self.get_elm_by_type(Loop))
         line_ids = np.array(self.get_id_for_element(
-            self.get_elm_by_type([LineEl, SnapEl])))
+            self.get_elm_by_type([Line, Snap])))
 
         line_groups = np.split(line_ids, np.array(
             np.where(np.diff(line_ids) > 1)[0]) + 1)

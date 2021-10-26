@@ -57,12 +57,6 @@ class Schedule():
             manoeuvres=[man.to_dict() for man in self.manoeuvres]
         )
 
-    def manoeuvre(self, name):
-        for manoeuvre in self.manoeuvres:
-            if manoeuvre.name == name:
-                return manoeuvre
-        raise KeyError()
-
     def replace_manoeuvres(self, new_mans: List[Manoeuvre]):
         """Replace all the manoeuvres
         """
@@ -125,7 +119,7 @@ class Schedule():
             self.create_iatt(direction)
         )
 
-    def create_template(self, itrans: Transformation, speed: float) -> Section:
+    def create_template(self, itrans: Transformation, speed: float,  add_takeoff=False) -> Section:
         """Create labelled template flight data
 
         Args:
@@ -137,13 +131,25 @@ class Schedule():
         """
         templates = []
         # TODO add exit line on construction
-        for manoeuvre in self.manoeuvres:
+
+        if add_takeoff:
+            ipos = itrans.translation - itrans.rotation.transform_point(Point(30,0,0))
+            itrans = Transformation(ipos , itrans.rotation)
+            takeoff = Section.from_line(itrans, speed / 10, 60)
+            takeoff.data.loc[:,"manoeuvre"] = 0
+            takeoff.data.loc[:,"element"] = 0
+            itrans = takeoff.get_state_from_index(-1).transform
+            templates.append(takeoff)
+
+        for i, manoeuvre in enumerate(self.manoeuvres):
+            if i == len(self.manoeuvres) - 1: 
+                speed = speed / 10
             templates.append(manoeuvre.create_template(itrans, speed))
             itrans = templates[-1].get_state_from_index(-1).transform
 
         return Section.stack(templates)
 
-    def create_raw_template(self, enter_from: str, speed: float, distance: float):
+    def create_raw_template(self, enter_from: str, speed: float, distance: float, add_takeoff=False):
         """returns a section containing labelled template data 
 
         Args:
@@ -154,7 +160,7 @@ class Schedule():
             [type]: [description]
         """
 
-        return self.create_template(self.create_itransform(enter_from, distance), speed)
+        return self.create_template(self.create_itransform(enter_from, distance), speed, add_takeoff)
 
     def match_rates(self, rates: dict):
         """Perform some measurements on a section and roughly scale the schedule to match

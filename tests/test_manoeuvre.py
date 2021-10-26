@@ -2,31 +2,31 @@ import numpy as np
 import pandas as pd
 import unittest
 from flightanalysis.schedule import Manoeuvre
-from flightanalysis.schedule.element import LineEl, LoopEl, rollmaker
+from flightanalysis.schedule.element import Line, Loop, rollmaker
 from geometry import Point, Quaternion, Transformation, Coord
 
 
 class TestManoeuvre(unittest.TestCase):
     def setUp(self):
         self.v8 = Manoeuvre("v8", 3, [
-            LineEl(0.8, 0.0),
-            LineEl(0.2, 0.5),
-            LoopEl(0.45, 1.0),
-            LoopEl(0.45, -1.0),
-            LineEl(0.2, 0.5),
+            Line(0.8, 0.0),
+            Line(0.2, 0.5),
+            Loop(0.45, 1.0),
+            Loop(0.45, -1.0),
+            Line(0.2, 0.5),
         ])
         self.scaled_v8 = self.v8.scale(100.0)
         self.sql = Manoeuvre("sqL", 4, [
-            LineEl(0.5, 0.0),
-            LoopEl(0.4, -0.125),
-            LineEl(0.3, 0.0),
-            LoopEl(0.4, -0.25)
+            Line(0.5, 0.0),
+            Loop(0.4, -0.125),
+            Line(0.3, 0.0),
+            Loop(0.4, -0.25)
         ] + rollmaker(1, "/", 2, 0.3, "Centre") + [
-            LoopEl(0.4, 0.25),
-            LineEl(0.3, 0.0),
-            LoopEl(0.4, 0.25)
+            Loop(0.4, 0.25),
+            Line(0.3, 0.0),
+            Loop(0.4, 0.25)
         ] + rollmaker(1, "/", 2, 0.3, "Centre") + [
-            LoopEl(0.4, -0.125)
+            Loop(0.4, -0.125)
         ])
 
     def test_create_template(self):
@@ -50,9 +50,9 @@ class TestManoeuvre(unittest.TestCase):
             0.0).pos, v8_template.get_state_from_index(0).pos)
 
     def test_get_elm_by_type(self):
-        lines = self.v8.get_elm_by_type(LineEl)
+        lines = self.v8.get_elm_by_type(Line)
         self.assertEqual(len(lines), 3)
-        lines_loops = self.v8.get_elm_by_type([LineEl, LoopEl])
+        lines_loops = self.v8.get_elm_by_type([Line, Loop])
         self.assertEqual(len(lines_loops), 5)
 
     def test_replace_elms(self):
@@ -90,7 +90,7 @@ class TestManoeuvre(unittest.TestCase):
     
     def test_set_bounded_line_length(self):
         
-        bline = [LineEl(50.0, 0.0, True), LineEl(10.0, 1.0, True), LineEl(100.0, 0.0, True)]
+        bline = [Line(50.0, 0.0, True), Line(10.0, 1.0, True), Line(100.0, 0.0, True)]
 
         nbline = Manoeuvre.set_bounded_line_length(bline, 100.0)
         self.assertEqual(Manoeuvre.calc_line_length(nbline), 100.0)

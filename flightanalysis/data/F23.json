@@ -10,28 +10,28 @@
       "k": 5,
       "elements": [
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 1,
           "length": 0.6,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 2,
           "length": 0.3,
           "rolls": 0.75,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 3,
           "length": 0.1,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 4,
           "loops": 1.0,
           "diameter": 0.7,
@@ -40,14 +40,14 @@
           "r_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 5,
           "length": 0.1,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 6,
           "length": 0.3,
           "rolls": 0.75,
@@ -62,14 +62,14 @@
       "k": 4,
       "elements": [
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 7,
           "length": 0.3,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 8,
           "loops": 0.25,
           "diameter": 0.3,
@@ -78,50 +78,50 @@
           "r_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 10,
           "length": 0.27499999999999997,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "SnapEl",
+          "type": "Snap",
           "uid": 9,
           "length": 0.05,
           "rolls": 1.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 11,
           "length": 0.27499999999999997,
           "rolls": 0.0,
           "l_tag": true
         },
-        { "type": "StallTurnEl", "uid": 12, "direction": 1, "width": 1.0 },
+        { "type": "StallTurn", "uid": 12, "direction": 1, "width": 1.0 },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 14,
           "length": 0.15,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 13,
           "length": 0.3,
           "rolls": 1.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 15,
           "length": 0.15,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 16,
           "loops": 0.25,
           "diameter": 0.3,
@@ -138,112 +138,112 @@
       "k": 4,
       "elements": [
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 32,
           "length": 0.375,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 17,
           "length": 0.0375,
           "rolls": 0.125,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 18,
           "length": 0.05,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 19,
           "length": 0.0375,
           "rolls": 0.125,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 20,
           "length": 0.05,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 21,
           "length": 0.0375,
           "rolls": 0.125,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 22,
           "length": 0.05,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 23,
           "length": 0.0375,
           "rolls": 0.125,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 24,
           "length": 0.05,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 25,
           "length": 0.0375,
           "rolls": 0.125,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 26,
           "length": 0.05,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 27,
           "length": 0.0375,
           "rolls": 0.125,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 28,
           "length": 0.05,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 29,
           "length": 0.0375,
           "rolls": 0.125,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 30,
           "length": 0.05,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 31,
           "length": 0.0375,
           "rolls": 0.125,
@@ -258,14 +258,14 @@
       "k": 3,
       "elements": [
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 33,
           "length": 0.525,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 34,
           "loops": 0.25,
           "diameter": 0.3,
@@ -274,56 +274,56 @@
           "r_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 40,
           "length": 0.0062500000000000056,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 35,
           "length": 0.0625,
           "rolls": 0.25,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 36,
           "length": 0.05,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 37,
           "length": 0.0625,
           "rolls": 0.25,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 38,
           "length": 0.05,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 39,
           "length": 0.0625,
           "rolls": 0.25,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 41,
           "length": 0.0062500000000000056,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 42,
           "loops": -0.375,
           "diameter": 0.3,
@@ -332,28 +332,28 @@
           "r_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 44,
           "length": 0.2683820343559642,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 43,
           "length": 0.1875,
           "rolls": -0.75,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 45,
           "length": 0.2683820343559642,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 46,
           "loops": -0.125,
           "diameter": 0.3,
@@ -370,14 +370,14 @@
       "k": 5,
       "elements": [
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 47,
           "length": 0.12573593128807187,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 48,
           "loops": -0.125,
           "diameter": 0.3,
@@ -386,28 +386,28 @@
           "r_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 50,
           "length": 0.11249999999999999,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 49,
           "length": 0.075,
           "rolls": 0.25,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 51,
           "length": 0.11249999999999999,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 52,
           "loops": -0.25,
           "diameter": 0.3,
@@ -416,28 +416,28 @@
           "r_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 54,
           "length": 0.075,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 53,
           "length": 0.15,
           "rolls": 0.5,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 55,
           "length": 0.075,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 56,
           "loops": 0.25,
           "diameter": 0.3,
@@ -446,28 +446,28 @@
           "r_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 58,
           "length": 0.075,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 57,
           "length": 0.15,
           "rolls": 0.5,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 59,
           "length": 0.075,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 60,
           "loops": -0.25,
           "diameter": 0.3,
@@ -476,28 +476,28 @@
           "r_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 62,
           "length": 0.11249999999999999,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 61,
           "length": 0.075,
           "rolls": 0.25,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 63,
           "length": 0.11249999999999999,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 64,
           "loops": 0.125,
           "diameter": 0.3,
@@ -514,14 +514,14 @@
       "k": 4,
       "elements": [
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 65,
           "length": 0.2,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 66,
           "loops": 0.25,
           "diameter": 0.42,
@@ -530,42 +530,42 @@
           "r_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 70,
           "length": 0.025000000000000022,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 67,
           "length": 0.15,
           "rolls": 0.5,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 68,
           "length": 0.05,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 69,
           "length": 0.15,
           "rolls": 0.5,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 71,
           "length": 0.025000000000000022,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 72,
           "loops": -0.5,
           "diameter": 0.42,
@@ -574,28 +574,28 @@
           "r_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 74,
           "length": 0.17500000000000002,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "SnapEl",
+          "type": "Snap",
           "uid": 73,
           "length": 0.05,
           "rolls": 1.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 75,
           "length": 0.17500000000000002,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 76,
           "loops": -0.25,
           "diameter": 0.42,
@@ -612,14 +612,14 @@
       "k": 6,
       "elements": [
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 77,
           "length": 0.97,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 78,
           "loops": -0.75,
           "diameter": 0.7,
@@ -628,7 +628,7 @@
           "r_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 79,
           "loops": -1.0,
           "diameter": 0.7,
@@ -637,7 +637,7 @@
           "r_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 80,
           "loops": 0.25,
           "diameter": 0.7,
@@ -654,14 +654,14 @@
       "k": 3,
       "elements": [
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 81,
           "length": 0.4,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 82,
           "loops": -0.25,
           "diameter": 0.3,
@@ -670,28 +670,28 @@
           "r_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 84,
           "length": 0.1,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 83,
           "length": 0.3,
           "rolls": 1.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 85,
           "length": 0.1,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 86,
           "loops": -0.625,
           "diameter": 0.3,
@@ -700,42 +700,42 @@
           "r_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 90,
           "length": 0.10355339059327373,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 87,
           "length": 0.075,
           "rolls": 0.25,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 88,
           "length": 0.05,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 89,
           "length": 0.075,
           "rolls": 0.25,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 91,
           "length": 0.10355339059327373,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 92,
           "loops": -0.375,
           "diameter": 0.3,
@@ -752,21 +752,21 @@
       "k": 6,
       "elements": [
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 93,
           "length": 0.25904545570494986,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 94,
           "length": 0.1,
           "rolls": 0.25,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 95,
           "loops": -0.125,
           "diameter": 0.42,
@@ -775,35 +775,35 @@
           "r_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 98,
           "length": 0.4,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "SnapEl",
+          "type": "Snap",
           "uid": 96,
           "length": 0.05,
           "rolls": 1.0,
           "l_tag": true
         },
         {
-          "type": "SnapEl",
+          "type": "Snap",
           "uid": 97,
           "length": 0.05,
           "rolls": -1.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 99,
           "length": 0.4,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 100,
           "loops": 0.125,
           "diameter": 0.42,
@@ -812,7 +812,7 @@
           "r_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 101,
           "length": 0.1,
           "rolls": 0.25,
@@ -827,14 +827,14 @@
       "k": 3,
       "elements": [
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 102,
           "length": 0.2,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 103,
           "loops": -0.25,
           "diameter": 0.3,
@@ -843,35 +843,35 @@
           "r_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 106,
           "length": 0.10470562748477166,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 104,
           "length": 0.125,
           "rolls": 0.5,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 105,
           "length": 0.125,
           "rolls": -0.5,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 107,
           "length": 0.10470562748477166,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 108,
           "loops": -0.25,
           "diameter": 0.3,
@@ -880,42 +880,42 @@
           "r_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 112,
           "length": 0.037500000000000006,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 109,
           "length": 0.0625,
           "rolls": 0.25,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 110,
           "length": 0.05,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 111,
           "length": 0.0625,
           "rolls": 0.25,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 113,
           "length": 0.037500000000000006,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 114,
           "loops": 0.375,
           "diameter": 0.3,
@@ -924,28 +924,28 @@
           "r_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 116,
           "length": 0.05499999999999999,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 115,
           "length": 0.25,
           "rolls": 1.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 117,
           "length": 0.05499999999999999,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 118,
           "loops": -0.375,
           "diameter": 0.3,
@@ -962,14 +962,14 @@
       "k": 6,
       "elements": [
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 119,
           "length": 0.5591168824543141,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 120,
           "loops": -0.125,
           "diameter": 0.3,
@@ -978,56 +978,56 @@
           "r_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 126,
           "length": 0.0875,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 121,
           "length": 0.075,
           "rolls": -0.25,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 122,
           "length": 0.05,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 123,
           "length": 0.075,
           "rolls": -0.25,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 124,
           "length": 0.05,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 125,
           "length": 0.075,
           "rolls": -0.25,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 127,
           "length": 0.0875,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 128,
           "loops": 0.5,
           "diameter": 0.3,
@@ -1036,28 +1036,28 @@
           "r_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 130,
           "length": 0.175,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 129,
           "length": 0.15,
           "rolls": 0.5,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 131,
           "length": 0.175,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 132,
           "loops": 0.25,
           "diameter": 0.3,
@@ -1066,28 +1066,28 @@
           "r_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 134,
           "length": 0.175,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 133,
           "length": 0.15,
           "rolls": 0.5,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 135,
           "length": 0.175,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 136,
           "loops": 0.5,
           "diameter": 0.3,
@@ -1096,56 +1096,56 @@
           "r_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 142,
           "length": 0.0875,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 137,
           "length": 0.075,
           "rolls": 0.25,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 138,
           "length": 0.05,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 139,
           "length": 0.075,
           "rolls": 0.25,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 140,
           "length": 0.05,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 141,
           "length": 0.075,
           "rolls": 0.25,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 143,
           "length": 0.0875,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 144,
           "loops": -0.125,
           "diameter": 0.3,
@@ -1162,14 +1162,14 @@
       "k": 2,
       "elements": [
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 145,
           "length": 0.8,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 146,
           "loops": -0.25,
           "diameter": 0.3,
@@ -1178,28 +1178,28 @@
           "r_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 148,
           "length": 0.125,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 147,
           "length": 0.15,
           "rolls": 0.5,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 149,
           "length": 0.125,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 150,
           "loops": 0.25,
           "diameter": 0.3,
@@ -1208,14 +1208,14 @@
           "r_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 151,
           "length": 0.2,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 152,
           "loops": 0.25,
           "diameter": 0.3,
@@ -1224,28 +1224,28 @@
           "r_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 154,
           "length": 0.125,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 153,
           "length": 0.15,
           "rolls": 0.5,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 155,
           "length": 0.125,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 156,
           "loops": 0.25,
           "diameter": 0.3,
@@ -1262,28 +1262,28 @@
       "k": 5,
       "elements": [
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 157,
           "length": 0.29320764389188614,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "SpinEl",
+          "type": "Spin",
           "uid": 158,
           "length": 0.05,
           "turns": 2.25,
           "opp_turns": 2.25
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 159,
           "length": 0.5268790097452904,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 160,
           "loops": -0.25,
           "diameter": 0.3,
@@ -1300,28 +1300,28 @@
       "k": 4,
       "elements": [
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 163,
           "length": 0.24,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 161,
           "length": 0.2,
           "rolls": 0.5,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 162,
           "length": 0.2,
           "rolls": -0.5,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 164,
           "loops": -0.625,
           "diameter": 0.42,
@@ -1330,28 +1330,28 @@
           "r_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 166,
           "length": 0.1725,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "SnapEl",
+          "type": "Snap",
           "uid": 165,
           "length": 0.07500000000000001,
           "rolls": 1.5,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 167,
           "length": 0.1725,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 168,
           "loops": -0.125,
           "diameter": 0.42,
@@ -1368,14 +1368,14 @@
       "k": 5,
       "elements": [
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 169,
           "length": 0.19603030380329997,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 170,
           "loops": -0.5,
           "diameter": 0.7,
@@ -1384,7 +1384,7 @@
           "r_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 171,
           "loops": 0.5,
           "diameter": 0.7,
@@ -1401,14 +1401,14 @@
       "k": 2,
       "elements": [
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 172,
           "length": 0.4,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 173,
           "loops": -0.25,
           "diameter": 0.3,
@@ -1417,35 +1417,35 @@
           "r_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 176,
           "length": 0.04999999999999999,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 174,
           "length": 0.2,
           "rolls": 0.5,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 175,
           "length": 0.2,
           "rolls": -0.5,
           "l_tag": true
         },
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 177,
           "length": 0.04999999999999999,
           "rolls": 0.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 178,
           "loops": -0.25,
           "diameter": 0.3,
@@ -1462,14 +1462,14 @@
       "k": 5,
       "elements": [
         {
-          "type": "LineEl",
+          "type": "Line",
           "uid": 179,
           "length": 0.42500000000000004,
           "rolls": 0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 180,
           "loops": -0.25,
           "diameter": 0.7,
@@ -1478,7 +1478,7 @@
           "r_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 181,
           "loops": 0.25,
           "diameter": 0.7,
@@ -1487,14 +1487,14 @@
           "r_tag": true
         },
         {
-          "type": "SnapEl",
+          "type": "Snap",
           "uid": 182,
           "length": 0.05,
           "rolls": 1.0,
           "l_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 183,
           "loops": 0.25,
           "diameter": 0.7,
@@ -1503,7 +1503,7 @@
           "r_tag": true
         },
         {
-          "type": "LoopEl",
+          "type": "Loop",
           "uid": 184,
           "loops": 0.25,
           "diameter": 0.7,

@@ -45,8 +45,6 @@ class Section():
         ]
 
 
-
-
     def subset(self, start: Number, end: Number):
         if start == -1 and not end == -1:
             return Section(self.data.loc[:end])
@@ -206,9 +204,14 @@ class Section():
         data.index = data["time_index"].copy()
         return Section(data)
 
+    def __len__(self):
+        return len(self.data)
+
     @property
     def duration(self):
         return self.data.index[-1] - self.data.index[0]
+
+
 
     def get_state_from_index(self, index):
         return State.from_series(self.data.iloc[index].copy())
@@ -392,9 +395,36 @@ class Section():
             return Section.stack([nose_drop, rotation, rotation2])
 
     @staticmethod
-    def from_snap(itransform: Transformation, speed: float, length: float, rolls: float, negative=False):
-        pass
+    def from_snap(itransform: Transformation, speed: float, rolls: float, negative=False, freq=None):
+        """Generate a section representing a snap roll, this is compared to a real snap in examples/snap_rolls.ipynb"""
+        if freq==None:
+            freq = Section._construct_freq
 
+        direc = -1 if negative else 1
+        break_angle = np.radians(20)
+        break_amount = direc * break_angle / (2 * np.pi)
+        body_autorotation_axis = Quaternion.from_euler(
+            Point(0, direc * break_angle, 0)
+        ).inverse().transform_point(Point(1,0,0))
+
+        pitch_break = Section.from_line(
+            itransform, speed, speed/5, freq=freq
+        ).superimpose_rotation(Point(0, 1, 0), break_amount )
+        
+        autorotation = Section.extrapolate_state(
+            pitch_break.get_state_from_index(-1), speed * abs(rolls) / 50, freq=freq
+        ).superimpose_rotation(body_autorotation_axis, rolls)
+
+        correction = Section.extrapolate_state(
+            autorotation.get_state_from_index(-1), 
+            speed/300, freq=freq
+        ).superimpose_rotation(Point(0, 1, 0), -break_amount )
+
+        pitch_break.data["sub_element"] = "pitch_break"
+        autorotation.data["sub_element"] = "autorotation"
+        correction.data["sub_element"] = "correction"
+
+        return Section.stack([pitch_break, autorotation, correction])
 
     def superimpose_roll(self, proportion: float):
         """Generate a new section, identical to self, but with a continous roll integrated

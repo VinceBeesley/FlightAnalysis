@@ -1,5 +1,5 @@
 import unittest
-from flightanalysis.schedule import Schedule, get_schedule, LineEl, Categories
+from flightanalysis.schedule import Schedule, get_schedule, Line, Categories
 from flightanalysis.schedule.element import get_rates
 from flightanalysis import Section
 from json import load
@@ -45,7 +45,7 @@ def test_match_axis_rate(schedule):
 
     for manoeuvre in rate_matched.manoeuvres:
         for i, elm in enumerate(manoeuvre.elements):
-            if isinstance(elm, LineEl):
+            if isinstance(elm, Line):
 
                 assert elm.length > 0.0, "manoeuvre {}, elm {}, length {}".format(manoeuvre.name, i, elm.length)
 

@@ -8,6 +8,8 @@ import numpy as np
 import pytest
 
 
+
+
 @pytest.fixture(scope="class")
 def flight(request):
     request.cls.flight = Flight.from_csv('tests/test_inputs/test_log_00000052_flight.csv')
@@ -18,10 +20,11 @@ class TestBox(unittest.TestCase):
 
     def test_from_initial(self):
         box = Box.from_initial(self.flight)
+
         self.assertAlmostEqual(box.pilot_position.latitude, 51.6418436, 2)
         self.assertAlmostEqual(box.pilot_position.longitude, -2.5260131, 2)
 
-        self.assertAlmostEqual(box.heading, 152.55998 * pi / 180, 3)
+        self.assertAlmostEqual(box.heading, np.radians(152.55998), 3)
 
 
     def test_to_dict(self):
@@ -87,7 +90,7 @@ class TestFlightLine(unittest.TestCase):
 
     def test_from_box(self, box):
         
-        fl = FlightLine.from_box(box, p21.origin)
+        fl = FlightLine.from_box(box, self.flight.origin)
 
         np.testing.assert_array_almost_equal(
             fl.transform_to.rotate(Point(1.0, 0.0, 0.0)).to_list(),

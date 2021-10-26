@@ -78,10 +78,7 @@ class Box(object):
             first.global_position_longitude
         )
 
-        heading = Point(1, 0, 0).rotate(
-            Point(first.attitude_roll, first.attitude_pitch,
-                  first.attitude_yaw).to_rotation_matrix()
-        )
+        heading = Quaternion(*first[Fields.QUATERNION.names]).transform_point(Point(1, 0, 0))
 
         return Box('origin', home, atan2(heading.y, heading.x), "unknown", "unknown")
 

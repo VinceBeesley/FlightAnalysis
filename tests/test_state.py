@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 
 
-flight = Flight.from_csv('tests/P21.csv')
+flight = Flight.from_csv('tests/test_inputs/test_log_00000052_flight.csv')
 
 
 class TestSvars(unittest.TestCase):

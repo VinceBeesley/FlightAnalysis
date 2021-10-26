@@ -128,8 +128,8 @@ class FCJson:
                 "stop": int(fcmans.iloc[1].stop),
                 "moveEast": 0.0,
                 "moveNorth": 0.0,
-                "wingspan": 4,
-                "modelwingspan": 5,
+                "wingspan": 3,
+                "modelwingspan": 25,
                 "elevate": 0,
                 "originLat": 0.0,
                 "originLng": 0.0,
@@ -153,7 +153,7 @@ class FCJson:
         mans["id"] = ["sp_{}".format(i) for i in range(len(self.schedule.manoeuvres) + 1)]
         mans["sp"] = list(range(len(self.schedule.manoeuvres) + 1))
         
-        mans["wd"] = [80 * sec.duration / self.sec.duration for sec in self.schedule.get_manoeuvre_data(self.sec, True)]
+        mans["wd"] = [100 * sec.duration / self.sec.duration for sec in self.schedule.get_manoeuvre_data(self.sec, True)]
         
         itsecs = self.schedule.get_manoeuvre_data(Section(self.sec.data.reset_index()), True)
         mans["stop"] = [int(sec.data.index[-1])+1 for sec in itsecs]

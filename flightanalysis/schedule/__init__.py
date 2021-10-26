@@ -1,4 +1,4 @@
-from .element import rollmaker, reboundrollmaker, rollsnapcombomaker, LoopEl, LineEl, SnapEl, SpinEl, StallTurnEl
+from .element import rollmaker, reboundrollmaker, rollsnapcombomaker, Loop, Line, Snap, Spin, StallTurn
 from .manoeuvre import Manoeuvre
 from .schedule import Schedule
 
@@ -13,7 +13,9 @@ _jsons = dict(
         P23 = "../data/P23.json",
         F23 = "../data/F23.json",
     ), 
-    IMAC = dict()
+    IMAC = dict(
+        SPORTSMAN_2022 = "../data/IMACSportsman2022.json"
+    )
 )
 
 

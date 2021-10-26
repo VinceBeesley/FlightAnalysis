@@ -4,11 +4,11 @@ from .section import Section
 from .schedule import (
     Schedule,
     Manoeuvre,
-    LoopEl,
-    LineEl,
-    SnapEl,
-    SpinEl,
-    StallTurnEl,
+    Loop,
+    Line,
+    Snap,
+    Spin,
+    StallTurn,
     Categories, 
     rules,
     get_schedule
