@@ -88,9 +88,9 @@ class TestFlightLine(unittest.TestCase):
         )
 
 
-    def test_from_box(self, box):
+    def test_from_box(self):
         
-        fl = FlightLine.from_box(box, self.flight.origin)
+        fl = FlightLine.from_box(self.box, self.flight.origin)
 
         np.testing.assert_array_almost_equal(
             fl.transform_to.rotate(Point(1.0, 0.0, 0.0)).to_list(),

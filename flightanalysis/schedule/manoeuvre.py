@@ -191,7 +191,10 @@ class Manoeuvre():
             if line.uid in pad_uids:
                 nline = line.set_parameter(length=new_pad_length / len(padding_lines))
             if line.uid in roll_uids:
-                nline = line.set_parameter(length=line.length * roll_mod_ratio)
+                if not isinstance(line, Snap):
+                    nline = line.set_parameter(length=line.length * roll_mod_ratio)
+                else:
+                    nline = line.set_parameter()
             new_bline.append(nline)
 
         return new_bline         

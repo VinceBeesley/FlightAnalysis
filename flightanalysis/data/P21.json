@@ -1167,8 +1167,8 @@
         {
           "type": "Snap",
           "uid": 138,
-          "length": 0.05,
           "rolls": 1.0,
+          "negative": false,
           "l_tag": true
         },
         {

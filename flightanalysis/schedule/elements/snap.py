@@ -37,3 +37,7 @@ class Snap(El):
         return self.set_parameter(
             rolls=np.sign(np.mean(flown.gbrvel.x)) * abs(self.rolls)
         )
+
+    @property
+    def length(self):
+        return self.create_template(Transformation(), 30.0, True).get_state_from_index(-1).pos.x
