@@ -22,7 +22,7 @@ f21 = Schedule("F21", Categories.F3A, "upright", -1.0, 0.15, [
         Loop(d1, -3/8),
     ] + rollmaker(3, "/", 4, 0.45, "Centre") + [
         Loop(d1, -3/8,ke=True),
-        Snap(0.05, 1.0, l_tag=False),
+        Snap(1.0),
         Loop(d1, -3/8, ke=True),
     ] + rollmaker(3, "/", 4, 0.45, "Centre", right=True) + [
         Loop(d1, -3/8),

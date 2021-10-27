@@ -156,8 +156,7 @@ def test_align(seq, p21):
 
     template = p21.scale_distance(170.0).create_raw_template("left", 30, 170)
     
-    aligned = Section.align(flown, template)
+    aligned = Section.align(flown, template, 2)
 
-    assert len(aligned[1].data) == len(flown.data)
-    np.testing.assert_array_less(np.abs(aligned[1].pos.to_numpy()[0]), 200.0 )
+    assert len(aligned[1].data) == len(flown.data) 
 

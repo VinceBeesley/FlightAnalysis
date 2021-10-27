@@ -170,7 +170,7 @@ p21 = Schedule("P21", Categories.F3A, "inverted", -1.0, 0.55, [
     Manoeuvre("aV", 3, [
         Line(0.4399999999999997,  0.0),
         Loop(0.7,  -0.5),
-        Snap(0.05,  1.0),
+        Snap(1.0),
         Loop(0.7,  -0.5)
     ], F3ACentre
     ),

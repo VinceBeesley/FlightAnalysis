@@ -6,12 +6,12 @@ from json import load
 from flightanalysis.fc_json import FCJson
 from flightdata import Flight
 import pytest
-
+from flightanalysis import get_schedule, Categories
 
 
 @pytest.fixture(scope="session")
 def schedule_json():
-    with open("schedules/F21.json", "r") as f:
+    with open("flightanalysis/data/P21.json", "r") as f:
         return load(f)
 
 @pytest.fixture(scope="session")
