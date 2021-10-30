@@ -17,9 +17,19 @@ box = Box.from_points("test_log_box", p,c)
 box.to_json("tests/test_inputs/test_log_box.json")
 
 flight = Flight.from_log("tests/test_inputs/test_log_00000052.BIN")
+
+
 flight.to_csv("tests/test_inputs/test_log_00000052_flight.csv")
 
-section = Section.from_flight(flight, box)
+
+
+tx = flight.read_fields(Fields.TXCONTROLS)
+tx = tx - tx.iloc[0]
+tx = tx.iloc[:,:5]
+tx.columns = ["throttle", "aileron_1", "aileron_2", "elevator", "rudder"]
+
+
+section = Section.from_flight(flight, box).append_columns(tx)
 
 section.to_csv("tests/test_inputs/test_log_00000052_section.csv")
 

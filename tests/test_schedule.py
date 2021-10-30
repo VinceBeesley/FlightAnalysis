@@ -15,9 +15,14 @@ def schedule_json():
         return load(f)
 
 @pytest.fixture(scope="session")
-def schedule(schedule_json):
-    
+def schedule(schedule_json):   
     return Schedule(**schedule_json)
+
+@pytest.fixture(scope="session")
+def aligned():
+    return Section.from_csv("tests/test_inputs/test_log_00000052_aligned.csv")
+
+
 
 def test_schedule(schedule):
     assert schedule.category == Categories.F3A
@@ -64,3 +69,10 @@ def test_from_splitter():
     
 
 
+def test_get_subset(schedule, aligned):
+    subset = schedule.get_subset(aligned, 3, 5)
+
+    assert subset.duration < aligned.duration
+
+    assert max(subset.data.manoeuvre) == schedule.manoeuvres[4].uid
+    assert min(subset.data.manoeuvre) == schedule.manoeuvres[3].uid

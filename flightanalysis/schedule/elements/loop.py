@@ -1,5 +1,5 @@
 import numpy as np
-from geometry import Transformation, Points, scalar_projection
+from geometry import Transformation, Points, Coord, Point, cross_product, Quaternions
 from flightanalysis import Section
 from scipy import optimize
 
@@ -20,8 +20,77 @@ class Loop(El):
         return self.set_parameter(diameter=self.diameter * factor)
 
     def create_template(self, transform: Transformation, speed: float, simple=False):
-        el = Section.from_loop(transform, speed, self.loops,
-                               0.5 * self.diameter, self.ke, freq=1.0 if simple else None)
+        """generate a loop, based on intitial position, speed, amount of loop, radius. 
+
+        Args:
+            transform (Transformation): initial position
+            speed (float): forward speed
+            proportion (float): amount of loop. +ve offsets centre of loop in +ve body y or z
+            r (float): radius of the loop (must be +ve)
+            ke (bool, optional): [description]. Defaults to False. whether its a KE loop or normal
+
+        Returns:
+            [type]: [description]
+        """
+
+        duration = np.pi * self.diameter * abs(self.loops) / speed
+        axis_rate = -self.loops * 2 * np.pi / duration
+        freq = 1.0 if simple else Section._construct_freq
+        t = np.linspace(0, duration, max(int(duration * freq), 3))
+
+        # TODO There must be a more elegant way to do this.
+        if axis_rate == 0:
+            raise NotImplementedError()
+        radius = speed / axis_rate
+        if not self.ke:
+            radcoord = Coord.from_xy(
+                transform.point(Point(0, 0, -radius)),
+                transform.rotate(Point(0, 0, 1)),
+                transform.rotate(Point(1, 0, 0))
+            )
+            angles = Points.from_point(Point(0, axis_rate, 0), len(t)) * t
+            radcoordpoints = Points(
+                np.array(np.vectorize(
+                    lambda angle: tuple(Point(
+                        radius * np.cos(angle),
+                        radius * np.sin(angle),
+                        0
+                    ))
+                )(angles.y)).T
+            )
+            axisrates = Points.from_point(Point(0, axis_rate, 0), len(t))
+            acceleration = -Points.from_point(cross_product(
+                Point(0, axis_rate, 0) * Point(0, axis_rate, 0), Point(speed, 0, 0)), len(t))
+        else:
+            radcoord = Coord.from_xy(
+                transform.point(Point(0, -radius, 0)),
+                transform.rotate(Point(0, 1, 0)),
+                transform.rotate(Point(1, 0, 0))
+            )
+            angles = Points.from_point(Point(0, 0, -axis_rate), len(t)) * t
+            radcoordpoints = Points(
+                np.array(np.vectorize(
+                    lambda angle: tuple(Point(
+                        radius * np.cos(-angle),
+                        radius * np.sin(-angle),
+                        0
+                    ))
+                )(angles.z)).T
+            )
+            axisrates = Points.from_point(Point(0, 0, -axis_rate), len(t))
+            acceleration = Points.from_point(cross_product(
+                Point(0, 0, axis_rate) * Point(0, 0, axis_rate), Point(speed, 0, 0)), len(t))
+
+        el = Section.from_constructs(
+            t,
+            Transformation.from_coords(
+                Coord.from_nothing(), radcoord).point(radcoordpoints),
+            Quaternions.from_quaternion(
+                transform.rotation, len(t)).body_rotate(angles),
+            Points.from_point(Point(speed, 0, 0), len(t)),
+            axisrates,
+            acceleration
+        )
         return self._add_rolls(el, self.rolls)
 
     def match_axis_rate(self, pitch_rate: float, speed: float):

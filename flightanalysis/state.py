@@ -32,7 +32,14 @@ class State():
     """
     vars = SVars()
 
-    def __init__(self, pos: Point, att: Quaternion, bvel: Point, brvel: Point=Point(0.0,0.0,0.0), bacc: Point=Point(0.0,0.0,0.0)):
+    def __init__(
+        self, 
+        pos: Point, 
+        att: Quaternion, 
+        bvel: Point=Point.zeros(), 
+        brvel: Point=Point.zeros(), 
+        bacc: Point=Point.zeros()
+    ):
         self.pos = pos
         self.att = att
         self.bvel = bvel

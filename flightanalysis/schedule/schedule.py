@@ -321,9 +321,10 @@ class Schedule():
 
     def get_subset(self, sec: Section, first_manoeuvre: int, last_manoeuvre: int):
         fmanid = self.manoeuvres[first_manoeuvre].uid
-        if last_manoeuvre == -1 or last_manoeuvre >= len(self.data.manoeuvres):
-            lmanid = self.data.manoeuvres[-1].uid + 1
+        if last_manoeuvre == -1 or last_manoeuvre >= len(self.manoeuvres):
+            lmanid = self.manoeuvres[-1].uid + 1
         else:
             lmanid = self.manoeuvres[last_manoeuvre].uid
 
-        return Section(sec.data.loc[sec.data.manoeuvre >= fmanid and sec.data.manoeuvre < lmanid])
+
+        return Section(sec.data.loc[(sec.data.manoeuvre >= fmanid) & (sec.data.manoeuvre < lmanid)])

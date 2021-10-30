@@ -8,9 +8,12 @@ from typing import Tuple, Union
 from numbers import Number
 from fastdtw import fastdtw
 from scipy.spatial.distance import euclidean
-from scipy import optimize
+from scipy.optimize import minimize
 from pathlib import Path
-import warnings
+from flightanalysis.wind import wind_vector
+
+#TODO flight data represents body axis. Need to separate this from
+# stability, wind and the judging axis data the templates represent.
 
 
 class Section():
@@ -19,8 +22,10 @@ class Section():
     def __init__(self, data: pd.DataFrame):
         if len(data) == 0:
             raise Exception("Section created with empty dataframe")
-            #warnings.warn("Creating a Section with empty data is likely to cause downstream errors")
+        
+        
         self.data = data
+        self.data.index = self.data.index - self.data.index[0]
 
     def __getattr__(self, name):
         if name in self.data.columns:
@@ -43,7 +48,6 @@ class Section():
             for p0, p1 in 
             zip(parts[:-2], parts[1:])
         ]
-
 
     def subset(self, start: Number, end: Number):
         if start == -1 and not end == -1:
@@ -99,10 +103,6 @@ class Section():
 
         return Section(df)
 
-
-    def aoa(self):
-        bvel = self.gbvel
-        return np.arctan2(bvel.z, bvel.x), np.arctan2(bvel.y, bvel.x)
 
     def copy(self, t=None, pos:Points=None, att:Quaternions=None, bvel:Points=None, brvel:Points=None, bacc:Points=None):
         if t is None:
@@ -170,8 +170,7 @@ class Section():
             brvel = brvel.remove_outliers(2)  # TODO this is a bodge to get rid of phase jumps when euler angles are used directly
         
         # this is EKF velocity estimate in NED frame transformed to contest frame
-        vel = flightline.transform_to.rotate(Points.from_pandas(
-            flight.data.loc[:, ["velocity_x", "velocity_y", "velocity_z"]]))
+        vel = flightline.transform_from.rotate(Points(flight.read_numpy(Fields.VELOCITY).T))
 
         bvel = att.inverse().transform_point(vel)
 
@@ -200,9 +199,7 @@ class Section():
 
     @staticmethod
     def from_csv(filename):
-        data = pd.read_csv(filename)
-        data.index = data["time_index"].copy()
-        return Section(data)
+        return Section(pd.read_csv(filename).set_index("time_index"))
 
     def __len__(self):
         return len(self.data)
@@ -210,8 +207,6 @@ class Section():
     @property
     def duration(self):
         return self.data.index[-1] - self.data.index[0]
-
-
 
     def get_state_from_index(self, index):
         return State.from_series(self.data.iloc[index].copy())
@@ -233,7 +228,7 @@ class Section():
         """
 
         if isinstance(pin, Points) or isinstance(pin, Point):
-            return Quaternions.from_pandas(self.att).transform_point(pin) + Points.from_pandas(self.pos)
+            return self.gatt.transform_point(pin) + self.gpos
         else:
             return NotImplemented
 
@@ -258,110 +253,9 @@ class Section():
             bacc=Points(np.zeros((len(t), 3)))
         )
 
+    def __getitem__(self, key):
+        return self.get_state_from_index(key)
 
-    @staticmethod
-    def from_line(itransform: Transformation, speed: float, length: float, freq: float = None):
-        """generate a section representing a line. Provide an initial rotation rate to represent a roll.
-
-        Args:
-            initial (State): The initial state, the line will be drawn in the direction
-                            of the initial velocity vector.
-            t (np.array): the timesteps to create states for
-        Returns:
-            Section: Section class representing the line or roll.
-        """
-        
-        
-        t = Section.t_array(duration=length / speed, freq=freq)
-        ibvel = Point(speed, 0.0, 0.0)
-        bvel = Points.from_point(ibvel, len(t))
-
-        pos = Points.from_point(itransform.translation,len(t)) + itransform.rotate(bvel) * t
-
-        att = Quaternions.from_quaternion(itransform.rotation, len(t))
-
-        return Section.from_constructs(
-            t,
-            pos,
-            att,
-            bvel,
-            Points(np.zeros((len(t), 3))),
-            Points(np.zeros((len(t), 3)))
-        )
-
-    @staticmethod
-    def from_loop(itransform: Transformation, speed: float, proportion: float, radius: float, ke: bool = False, freq: float = _construct_freq):
-        """generate a loop, based on intitial position, speed, amount of loop, radius. 
-
-        Args:
-            itransform (Transformation): initial position
-            speed (float): forward speed
-            proportion (float): amount of loop. +ve offsets centre of loop in +ve body y or z
-            r (float): radius of the loop (must be +ve)
-            ke (bool, optional): [description]. Defaults to False. whether its a KE loop or normal
-
-        Returns:
-            [type]: [description]
-        """
-        duration = 2 * np.pi * radius * abs(proportion) / speed
-        axis_rate = -proportion * 2 * np.pi / duration
-        if freq==None:
-            freq = Section._construct_freq
-        t = np.linspace(0, duration, max(int(duration * freq), 3))
-
-        # TODO There must be a more elegant way to do this.
-        if axis_rate == 0:
-            raise NotImplementedError()
-        radius = speed / axis_rate
-        if not ke:
-            radcoord = Coord.from_xy(
-                itransform.point(Point(0, 0, -radius)),
-                itransform.rotate(Point(0, 0, 1)),
-                itransform.rotate(Point(1, 0, 0))
-            )
-            angles = Points.from_point(Point(0, axis_rate, 0), len(t)) * t
-            radcoordpoints = Points(
-                np.array(np.vectorize(
-                    lambda angle: tuple(Point(
-                        radius * np.cos(angle),
-                        radius * np.sin(angle),
-                        0
-                    ))
-                )(angles.y)).T
-            )
-            axisrates = Points.from_point(Point(0, axis_rate, 0), len(t))
-            acceleration = -Points.from_point(cross_product(
-                Point(0, axis_rate, 0) * Point(0, axis_rate, 0), Point(speed, 0, 0)), len(t))
-        else:
-            radcoord = Coord.from_xy(
-                itransform.point(Point(0, -radius, 0)),
-                itransform.rotate(Point(0, 1, 0)),
-                itransform.rotate(Point(1, 0, 0))
-            )
-            angles = Points.from_point(Point(0, 0, -axis_rate), len(t)) * t
-            radcoordpoints = Points(
-                np.array(np.vectorize(
-                    lambda angle: tuple(Point(
-                        radius * np.cos(-angle),
-                        radius * np.sin(-angle),
-                        0
-                    ))
-                )(angles.z)).T
-            )
-            axisrates = Points.from_point(Point(0, 0, -axis_rate), len(t))
-            acceleration = Points.from_point(cross_product(
-                Point(0, 0, axis_rate) * Point(0, 0, axis_rate), Point(speed, 0, 0)), len(t))
-
-        return Section.from_constructs(
-            t,
-            Transformation.from_coords(
-                Coord.from_nothing(), radcoord).point(radcoordpoints),
-            Quaternions.from_quaternion(
-                itransform.rotation, len(t)).body_rotate(angles),
-            Points.from_point(Point(speed, 0, 0), len(t)),
-            axisrates,
-            acceleration
-        )
 
     @staticmethod
     def from_spin(itransform: Transformation, height: float, turns: float, opp_turns: float = 0.0, freq: float = _construct_freq):
@@ -393,38 +287,6 @@ class Section():
             rotation2.data["sub_element"] = "opp_rotation"
 
             return Section.stack([nose_drop, rotation, rotation2])
-
-    @staticmethod
-    def from_snap(itransform: Transformation, speed: float, rolls: float, negative=False, freq=None):
-        """Generate a section representing a snap roll, this is compared to a real snap in examples/snap_rolls.ipynb"""
-        if freq==None:
-            freq = Section._construct_freq
-
-        direc = -1 if negative else 1
-        break_angle = np.radians(20)
-        break_amount = direc * break_angle / (2 * np.pi)
-        body_autorotation_axis = Quaternion.from_euler(
-            Point(0, direc * break_angle, 0)
-        ).inverse().transform_point(Point(1,0,0))
-
-        pitch_break = Section.from_line(
-            itransform, speed, speed/5, freq=freq
-        ).superimpose_rotation(Point(0, 1, 0), break_amount )
-        
-        autorotation = Section.extrapolate_state(
-            pitch_break.get_state_from_index(-1), speed * abs(rolls) / 50, freq=freq
-        ).superimpose_rotation(body_autorotation_axis, rolls)
-
-        correction = Section.extrapolate_state(
-            autorotation.get_state_from_index(-1), 
-            speed/300, freq=freq
-        ).superimpose_rotation(Point(0, 1, 0), -break_amount )
-
-        pitch_break.data["sub_element"] = "pitch_break"
-        autorotation.data["sub_element"] = "autorotation"
-        correction.data["sub_element"] = "correction"
-
-        return Section.stack([pitch_break, autorotation, correction])
 
     def superimpose_roll(self, proportion: float):
         """Generate a new section, identical to self, but with a continous roll integrated
@@ -476,8 +338,7 @@ class Section():
     def superimpose_rotation(self, axis: Point, amount: float):
         """Generate a new section, identical to self, but with a continous rotation integrated
 
-        Args:
-            proportion (float): the amount of roll to integrate
+        
         """
         t = np.array(self.data.index) - self.data.index[0]
 
@@ -529,3 +390,43 @@ class Section():
 
     def remove_labels(self):
         return Section(self.data.drop(["manoeuvre", "element"], 1, errors="ignore"))
+
+        
+    def get_wind(self) -> Points:
+        # TODO this should go somewhere else
+        def get_wind_error(args: np.ndarray) -> float:
+            #wind vectors at the local positions
+            local_wind = Points(wind_vector(args[0], np.maximum(self.gpos.z, 0), args[1], args[2]).T)
+
+            #wind vectors in body frame
+            body_wind = self.gatt.inverse().transform_point(local_wind)
+
+            #body frame velocity - wind vector should be wind axis velocity
+            #error in wind axis velocity, is the non x axis part (because we fly forwards)
+            air_vec_error = (self.gbvel - body_wind) * Point(0,1,1)
+
+            #but the wind is only horizontal, so transform to world frame and remove the z component
+            world_air_vec_error = self.gatt.transform_point(air_vec_error) * Point(1,1,0)
+
+            #the cost is the cumulative error
+            return sum(abs(world_air_vec_error))
+
+        res = minimize(get_wind_error, [np.pi, 5.0, 0.2], method = 'Nelder-Mead')
+
+        return Points(wind_vector(
+            res.x[0], 
+            np.maximum(self.gpos.z, 0), 
+            res.x[1], 
+            res.x[2]
+        ).T)
+
+    
+    def aoa(self):
+        bvel = self.gbvel - self.gatt.inverse().transform_point(self.get_wind())
+
+        df = pd.DataFrame(
+            np.array([np.arctan2(bvel.z, bvel.x), np.arctan2(bvel.y, bvel.x)]).T,
+            columns=["alpha", "beta"]
+            )
+        df.index =self.data.index
+        return df

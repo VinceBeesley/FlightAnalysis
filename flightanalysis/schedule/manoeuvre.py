@@ -152,7 +152,7 @@ class Manoeuvre():
         """Return the line (and snap) elements that are bounded on each side by a radius.
         a bounded line is a list of lines between two loops, so return is a list of lists of lines
         """
-        loop_ids = self.get_id_for_element(self.get_elm_by_type(Loop))
+        loop_ids = self.get_id_for_element(self.get_elm_by_type([Loop, StallTurn]))
         line_ids = np.array(self.get_id_for_element(
             self.get_elm_by_type([Line, Snap])))
 
@@ -277,3 +277,16 @@ class Manoeuvre():
         return self.replace_elms(new_elms)
 
     
+    def get_subset(self, sec: Section, first_element: int, last_element: int):
+        subsec = self.get_data(sec)
+        fmanid = self.elements[first_element].uid
+        if last_element == -1:
+            lmanid = self.elements[-1].uid + 1
+        else:
+            lmanid = self.elements[last_element].uid
+
+        return Section(subsec.data.loc[(subsec.data.element >= fmanid) & (subsec.data.element < lmanid)])
+
+    def get_elm(self, sec, elmid, padfrnt, baraft):
+        subset = self.get_subset(sec, elmid - 1, elmid + 2)
+        

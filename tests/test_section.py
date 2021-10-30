@@ -53,6 +53,11 @@ def test_generate_state(seq):
     state = seq.get_state_from_index(20)
     assert isinstance(state.pos, Point)
 
+def test_get_item(seq):
+    state = seq[20]
+    assert isinstance(state.pos, Point)
+
+
 def test_from_line():
     """from inverted at 30 m/s, fly in a stright line for 1 second
     """
@@ -159,4 +164,5 @@ def test_align(seq, p21):
     aligned = Section.align(flown, template, 2)
 
     assert len(aligned[1].data) == len(flown.data) 
+
 

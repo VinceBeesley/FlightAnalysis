@@ -1,23 +1,19 @@
 import numpy as np
 import pandas as pd
-from geometry import Transformation, Points, scalar_projection
-from flightanalysis import Section
+from geometry import Transformation, Points, Point
+from flightanalysis import Section, State
     
 from . import El
 
 
 class StallTurn(El):
-    _speed_scale = 1 / 20
-
-    def __init__(self, direction: int = 1, width: float = 1.0, uid: str = None):
+    def __init__(self, yaw_rate:float=3.0, uid: str = None):
         super().__init__(uid)
-        self.direction = direction
-        self.width = width
-
-    def set_parameter(self, direction=None, width=None):
+        self.yaw_rate = yaw_rate
+        
+    def set_parameter(self, yaw_rate=None):
         return StallTurn(
-            direction if direction is not None else self.direction,
-            width if width is not None else self.width,
+            yaw_rate if yaw_rate is not None else self.yaw_rate,
             self.uid
         )
 
@@ -25,21 +21,24 @@ class StallTurn(El):
         return self.set_parameter()
 
     def create_template(self, transform: Transformation, speed: float, simple: bool = False):
-        el = Section.from_loop(
-            transform,
-            StallTurn._speed_scale * speed,
-            0.5 * self.direction,
-            self.width / 2,
-            True,
-            freq=1.0 if simple else None)
-        return self._add_rolls(el, 0.0)
+        return self._add_rolls(
+            Section.extrapolate_state(
+                State(transform.translation, transform.rotation), 
+                2*np.pi / abs(self.yaw_rate), 
+                1.0 if simple else Section._construct_freq
+            ).superimpose_rotation(
+                Point.Z(1.0), 
+                np.sign(self.yaw_rate) / 2
+            ), 
+            0.0
+        )
 
-    def match_axis_rate(self, yaw_rate: float, speed: float):
-        return self.set_parameter(width=2 * StallTurn._speed_scale * speed / yaw_rate)
+    def match_axis_rate(self, yaw_rate: float, speed: float = 30.0):
+        return self.set_parameter(yaw_rate)
 
     def match_intention(self, transform: Transformation, flown: Section):
         return self.set_parameter(
-            direction=np.sign(np.mean(Points.from_pandas(flown.brvel).z)),
+            direction=np.sign(np.mean(flown.gbrvel.z)),
             width=0.5
         )
 
