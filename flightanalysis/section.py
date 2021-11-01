@@ -27,7 +27,7 @@ class Section():
         self.data = data
         self.data.index = self.data.index - self.data.index[0]
 
-    def __getattr__(self, name):
+    def __getattr__(self, name) -> Union[pd.DataFrame, Points, Quaternions]:
         if name in self.data.columns:
             return self.data[name]
         elif name in State.vars.constructs:
@@ -256,38 +256,6 @@ class Section():
     def __getitem__(self, key):
         return self.get_state_from_index(key)
 
-
-    @staticmethod
-    def from_spin(itransform: Transformation, height: float, turns: float, opp_turns: float = 0.0, freq: float = _construct_freq):
-        inverted = np.sign(itransform.rotate(Point(0, 0, 1)).z)
-
-        nose_drop = Section.from_loop(
-            itransform, 5.0, -0.25 * inverted, 2.0, False)
-
-        nose_drop.data["sub_element"] = "nose_drop"
-
-        rotation = Section.from_line(
-            nose_drop.get_state_from_index(-1).transform,
-            5.0,
-            height-2.5,
-            freq
-        ).superimpose_roll(turns)
-
-        rotation.data["sub_element"] = "rotation"
-
-        if opp_turns == 0.0:
-            return Section.stack([nose_drop, rotation])
-        else:
-            rotation2 = Section.from_line(
-                rotation.get_state_from_index(-1).transform,
-                5.0,
-                height-2.5
-            ).superimpose_roll(opp_turns)
-
-            rotation2.data["sub_element"] = "opp_rotation"
-
-            return Section.stack([nose_drop, rotation, rotation2])
-
     def superimpose_roll(self, proportion: float):
         """Generate a new section, identical to self, but with a continous roll integrated
 
@@ -335,15 +303,12 @@ class Section():
         )
 
 
-    def superimpose_rotation(self, axis: Point, amount: float):
-        """Generate a new section, identical to self, but with a continous rotation integrated
-
-        
+    def superimpose_rotation(self, axis: Point, angle: float):
+        """Generate a new section, identical to self, but with a continous rotation integrated       
         """
         t = np.array(self.data.index) - self.data.index[0]
 
-        # roll rate to add:
-        rate = 2 * np.pi * amount / t[-1]
+        rate = angle / t[-1]
         superimposed_rotation = t * rate
 
         angles = Points.from_point(axis.unit(), len(t)) * superimposed_rotation

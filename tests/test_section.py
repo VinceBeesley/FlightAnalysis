@@ -58,31 +58,6 @@ def test_get_item(seq):
     assert isinstance(state.pos, Point)
 
 
-def test_from_line():
-    """from inverted at 30 m/s, fly in a stright line for 1 second
-    """
-    initial = State(
-        Point(60, 170, 150),
-        Quaternion.from_euler(Point(np.pi, 0, np.pi)),
-        Point(30, 0, 0)
-    )  # somthing like the starting pos for a P21 from the right
-
-    line = Section.from_line(
-        initial.transform,
-        10,
-        100
-    )
-    np.testing.assert_array_almost_equal(
-        line.pos.iloc[-1], [-40, 170, 150]
-    )
-    np.testing.assert_array_almost_equal(
-        line.bvel, np.tile(np.array([10, 0, 0]), (len(line.data.index), 1))
-    )
-    np.testing.assert_array_almost_equal(
-        line.att, np.tile(
-            list(Quaternion.from_euler(Point(np.pi, 0, np.pi))),
-            (len(line.data.index), 1))
-    )
 
 
 def test_from_loop():

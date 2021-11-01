@@ -1,5 +1,5 @@
 from flightanalysis.schedule.figure_rules import Categories
-from flightanalysis.schedule.element import Line, Loop, Snap, Spin, StallTurn
+from flightanalysis.schedule.elements import Line, Loop, Snap, Spin, StallTurn
 from flightanalysis.schedule import Schedule, Manoeuvre, rollmaker, reboundrollmaker, rollsnapcombomaker
 import numpy as np
 
@@ -118,7 +118,7 @@ f23 = Schedule("F23", Categories.F3A, "upright", -1.0, 0.15, [
     ]),
     Manoeuvre("spin", 5, [
         Line( 0.25 + 0.043207643891886166, 0.0),
-        Spin(0.05, 2.25, 2.25),
+        Spin(2.25, 2.25),
         Line( 0.8268790097452905 - 0.15 - r1, 0.0),
         Loop( d1, -1/4),
     ]),

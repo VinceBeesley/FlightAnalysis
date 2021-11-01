@@ -1,6 +1,6 @@
 import unittest
 from flightanalysis.schedule import Schedule, get_schedule, Line, Categories
-from flightanalysis.schedule.element import get_rates
+from flightanalysis.schedule.elements import get_rates
 from flightanalysis import Section
 from json import load
 from flightanalysis.fc_json import FCJson

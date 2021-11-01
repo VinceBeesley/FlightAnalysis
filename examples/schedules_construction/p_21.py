@@ -2,7 +2,7 @@
 
 from flightanalysis.schedule import Schedule, Manoeuvre, rollmaker
 from flightanalysis.schedule.figure_rules import Categories
-from flightanalysis.schedule.element import Line, Loop, Snap, Spin, StallTurn
+from flightanalysis.schedule.elements import Line, Loop, Snap, Spin, StallTurn
 from flightanalysis.schedule.figure_rules import F3AEnd, F3ACentre, F3AEndB
 import numpy as np
 
@@ -121,7 +121,7 @@ p21 = Schedule("P21", Categories.F3A, "inverted", -1.0, 0.55, [
     ] + rollmaker(1, "/", 2, 0.5, "Centre", False) + [
         Loop(0.3,  -0.25),
         Line(0.3182076438918871,  0.0, False),  # 0.46320764389188707
-        Spin(0.05,  2.5),  # [0.47, 0.5637655569733979, 0.8516980890270289]
+        Spin(2.5),  # [0.47, 0.5637655569733979, 0.8516980890270289]
         Line(0.601698089027029,  0.0, False),
         Loop(0.3,  -0.25)  # 0.27
     ], F3AEnd

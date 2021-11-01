@@ -13,18 +13,11 @@ class Line(El):
         self.rolls = rolls
         self.l_tag = l_tag
 
-    def set_parameter(self, length=None, rolls=None, l_tag=None):
-        return Line(
-            length if length is not None else self.length,
-            rolls if rolls is not None else self.rolls,
-            l_tag if l_tag is not None else self.l_tag,
-            self.uid
-        )
 
     def scale(self, factor):
-        return self.set_parameter(length=self.length * factor)
+        return self.set_parms(length=self.length * factor)
 
-    def create_template(self, transform: Transformation, speed: float, simple: bool = False):
+    def create_template(self, transform: Transformation, speed: float, simple: bool = False) -> Section:
         """generate a section representing a line. Provide an initial rotation rate to represent a roll.
 
         Args:
@@ -52,10 +45,10 @@ class Line(El):
     def match_axis_rate(self, roll_rate: float, speed: float):
         # roll rate in radians per second, speed in m / s
         if not self.rolls == 0.0:
-            return self.set_parameter(
+            return self.set_parms(
                 length=2 * np.pi * abs(self.rolls) * speed / roll_rate)
         else:
-            return self.set_parameter()
+            return self.set_parms()
 
     def match_intention(self, transform: Transformation, flown: Section):
         length = abs(scalar_projection(
@@ -63,7 +56,7 @@ class Line(El):
             flown.get_state_from_index(0).pos,
             transform.rotate(Point(1, 0, 0))
         ))
-        return self.set_parameter(
+        return self.set_parms(
             length=length,
             rolls=np.sign(np.mean(Points.from_pandas(flown.brvel).x)) *
             abs(self.rolls)

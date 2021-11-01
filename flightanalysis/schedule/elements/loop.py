@@ -17,9 +17,9 @@ class Loop(El):
         self.r_tag = r_tag
 
     def scale(self, factor):
-        return self.set_parameter(diameter=self.diameter * factor)
+        return self.set_parms(diameter=self.diameter * factor)
 
-    def create_template(self, transform: Transformation, speed: float, simple=False):
+    def create_template(self, transform: Transformation, speed: float, simple=False) -> Section:
         """generate a loop, based on intitial position, speed, amount of loop, radius. 
 
         Args:
@@ -94,7 +94,7 @@ class Loop(El):
         return self._add_rolls(el, self.rolls)
 
     def match_axis_rate(self, pitch_rate: float, speed: float):
-        return self.set_parameter(diameter=2 * speed / pitch_rate)
+        return self.set_parms(diameter=2 * speed / pitch_rate)
 
     def match_intention(self, transform: Transformation, flown: Section):
         # https://scipy-cookbook.readthedocs.io/items/Least_Squares_Circle.html
@@ -114,20 +114,10 @@ class Loop(El):
 
         center, ier = optimize.leastsq(f_2, (np.mean(x), np.mean(y)))
 
-        return self.set_parameter(
+        return self.set_parms(
             diameter=2 * calc_R(*center).mean(),
             rolls=np.sign(np.mean(Points.from_pandas(
                 flown.brvel).x)) * abs(self.rolls)
-        )
-
-    def set_parameter(self, diameter=None, loops=None, rolls=None, ke=None, r_tag=None):
-        return Loop(
-            diameter if not diameter is None else self.diameter,
-            loops if not loops is None else self.loops,
-            rolls if not rolls is None else self.rolls,
-            ke if not ke is None else self.ke,
-            r_tag if not r_tag is None else self.r_tag,
-            self.uid
         )
 
     def segment(self, transform:Transformation, flown: Section, partitions=10):

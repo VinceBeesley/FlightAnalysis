@@ -1,7 +1,7 @@
 
 
 from flightanalysis.schedule import Schedule, Manoeuvre, rollmaker, reboundrollmaker, rollsnapcombomaker
-from flightanalysis.schedule.element import Loop, Line, Snap, Snap, Spin, StallTurn
+from flightanalysis.schedule.elements import Loop, Line, Snap, Snap, Spin, StallTurn
 from flightanalysis.schedule.figure_rules import Categories, F3ACentre, F3AEndB, F3AEnd
 import numpy as np
 
@@ -68,7 +68,7 @@ f21 = Schedule("F21", Categories.F3A, "upright", -1.0, 0.15, [
         Line(0.5+r3 - 0.006792356108113501, 0.0),
         Loop(d3, -3/4),
     ] + reboundrollmaker([0.25, -0.5], 0.6, "Centre") + [
-        StallTurn( 1, 0.05),
+        StallTurn(),
     ] + rollmaker(3, "/", 4, 0.6, "Centre", right=False) + [
         Loop(d3, 3/4),
     ], F3ACentre),
@@ -123,7 +123,7 @@ f21 = Schedule("F21", Categories.F3A, "upright", -1.0, 0.15, [
     ], F3ACentre),
     Manoeuvre("spin", 3, [
         Line(0.95, 0.0),
-        Spin(0.06, 2.5),
+        Spin(2.5),
         Line(0.5745408015016459),
         Loop(d1, -0.25),
     ], F3AEnd),

@@ -3,7 +3,7 @@ import pandas as pd
 import unittest
 from flightanalysis.schedule import Manoeuvre
 from flightanalysis import get_schedule, Section
-from flightanalysis.schedule.element import Line, Loop, rollmaker
+from flightanalysis.schedule.elements import Line, Loop, rollmaker
 from geometry import Point, Quaternion, Transformation, Coord
 
 import pytest

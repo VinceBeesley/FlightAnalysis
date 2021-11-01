@@ -30,6 +30,12 @@ class El:
     def to_dict(self):
         return dict(type=self.__class__.__name__, **self.__dict__)
 
+    def set_parms(self, **parms):
+        new_inst = self.__class__(**self.__dict__)
+        for key, value in parms.items():
+            setattr(new_inst, key, value)
+        return new_inst
+
 
 from .line import Line
 from .loop import Loop

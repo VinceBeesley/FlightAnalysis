@@ -1,4 +1,4 @@
-from .element import rollmaker, reboundrollmaker, rollsnapcombomaker, Loop, Line, Snap, Spin, StallTurn
+from .elements import rollmaker, reboundrollmaker, rollsnapcombomaker, Loop, Line, Snap, Spin, StallTurn
 from .manoeuvre import Manoeuvre
 from .schedule import Schedule
 

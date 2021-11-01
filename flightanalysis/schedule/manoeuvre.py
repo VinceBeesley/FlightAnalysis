@@ -1,6 +1,6 @@
 from geometry import Transformation
 from flightanalysis import Section
-from flightanalysis.schedule.element import Loop, Line, StallTurn, Snap, Spin, get_rates, El
+from flightanalysis.schedule.elements import Loop, Line, StallTurn, Snap, Spin, get_rates, El
 from flightanalysis.schedule.figure_rules import IMAC, rules, Rules
 import numpy as np
 import pandas as pd

@@ -58,6 +58,10 @@ class State():
             Point(*data[State.vars.constructs['bacc']])
         )
 
+    def from_transform(transform: Transformation, **kwargs): 
+        return State(transform.translation, transform.rotation, **kwargs)
+
+
     def body_to_world(self, pin: Union[Point, Points]) -> Point:
         """Rotate a point in the body frame to a point in the data frame
 
