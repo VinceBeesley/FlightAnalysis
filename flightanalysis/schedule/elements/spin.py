@@ -8,17 +8,17 @@ from . import El
 class Spin(El):
     _speed_factor = 1 / 10
 
-    def __init__(self, length: float, turns: float, opp_turns: float = 0.0, uid: str = None):
+    def __init__(self, turns: float, opp_turns: float = 0.0, rate:float=1.0, uid: str = None):
         super().__init__(uid)
-        self.length = length
         self.turns = turns
         self.opp_turns = opp_turns
+        self.rate = rate
 
-    def set_parameter(self, length: float = None, turns: float = None, opp_turns: float = None):
+    def set_parameter(self, turns: float = None, opp_turns: float = None, rate: float = None):
         return Spin(
-            length if length is not None else self.length,
             turns if turns is not None else self.turns,
             opp_turns if opp_turns is not None else self.opp_turns,
+            rate if rate is not None else self.rate,
             self.uid
         )
 

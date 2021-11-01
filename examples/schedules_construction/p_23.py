@@ -52,7 +52,7 @@ p23 = Schedule("P23", Categories.F3A, "upright", -1.0, 0.1, [
         Line(0.106586399182264974, 0.0, 0.0),
         Loop(  0.3, 0.125),
         Line(0.4, 0.0),
-        Snap(0.05, 1.5),
+        Snap(1.5, negative=True),
         Line(0.4, 0.0),
         Loop(0.3, 0.125),
     ]),

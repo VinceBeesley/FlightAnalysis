@@ -58,7 +58,7 @@ def reboundrollmaker(rolls: list, length: float = 0.5, position="Centre", rlengt
             lsum += 0.05
         last_dir = np.sign(roll)
         if snap:
-            elms.append(Snap(roll, l_tag))
+            elms.append(Snap(roll))
         else:
             elms.append(Line(rlength * abs(roll), roll, l_tag))
         lsum += rlength * abs(roll)
@@ -76,7 +76,7 @@ def rollsnapcombomaker(rolls: list, length: float, position="Centre", rlength=0.
             lsum += 0.05
         last_dir = np.sign(roll[1])
         if roll[0] == "snap":
-            elms.append(Snap(roll[1], l_tag))
+            elms.append(Snap(roll[1]))
             lsum += 0.05 * abs(roll[1])
         if roll[0] == "roll":
             elms.append(Line(rlength * abs(roll[1]), roll[1], l_tag))

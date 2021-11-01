@@ -143,7 +143,7 @@ f23 = Schedule("F23", Categories.F3A, "upright", -1.0, 0.15, [
         Line( 0.4 + 0.025),
         Loop( 0.7, -1/4, 0.5),
         Loop( 0.7, 1/4),
-        Snap(0.05, 1.0),
+        Snap(1.0),
         Loop( 0.7, 1/4),
         Loop( 0.7, 1/4, 0.5),
     ]),
