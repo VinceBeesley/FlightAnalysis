@@ -8,3 +8,5 @@ fig = plotsec(temp, 5, 2)
 fig.add_trace(boxtrace()[0])
 
 fig.show()
+
+

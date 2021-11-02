@@ -6,6 +6,9 @@ from json import load
 import numpy as np
 import pandas as pd
 from flightdata import Flight, Fields
+
+
+
 class TestFCJson(unittest.TestCase):
     def setUp(self):
         with open("tests/test_inputs/manual_F3A_P21_21_09_24_00000052.json", 'r') as f:
@@ -33,8 +36,8 @@ class TestFCJson(unittest.TestCase):
 
         mans = fcj.create_json_mans()
         old_mans["name"] = mans["name"]
-        check_frame = mans.loc[:-1, ["name", "id", "sp", "wd", "start", "stop", "background"]]
-        old_check_frame = old_mans.loc[:-1, ["name", "id", "sp", "wd", "start", "stop", "background"]]
+        check_frame = mans.loc[:, ["name", "id", "sp", "wd", "start", "stop", "background"]]
+        old_check_frame = old_mans.loc[:, ["name", "id", "sp", "wd", "start", "stop", "background"]]
 
         pd.testing.assert_frame_equal(check_frame, old_check_frame, check_less_precise=2)
     

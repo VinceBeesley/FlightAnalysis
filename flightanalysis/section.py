@@ -94,7 +94,7 @@ class Section():
 
         def savevars(vars: list, data: Union[Points, Quaternions]):
             df[vars] = data.to_pandas(columns=vars).set_index(df.index)
-
+        
         savevars(State.vars.pos, pos)
         savevars(State.vars.att, att)
         savevars(State.vars.bvel, bvel)

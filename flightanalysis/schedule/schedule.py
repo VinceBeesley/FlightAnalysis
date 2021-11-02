@@ -2,7 +2,7 @@ from . import Manoeuvre
 from typing import List, Union, IO
 from geometry import Point, Quaternion, Transformation
 from flightanalysis.section import Section
-from flightanalysis.schedule.elements import get_rates
+from flightanalysis.schedule.elements import get_rates, Line
 import numpy as np
 from flightanalysis.schedule.figure_rules import Categories
 from json import loads, load, dumps
@@ -135,7 +135,7 @@ class Schedule():
         if add_takeoff:
             ipos = itrans.translation - itrans.rotation.transform_point(Point(30,0,0))
             itrans = Transformation(ipos , itrans.rotation)
-            takeoff = Section.from_line(itrans, speed / 10, 60)
+            takeoff = Line(30).create_template(itrans, speed / 10)
             takeoff.data.loc[:,"manoeuvre"] = 0
             takeoff.data.loc[:,"element"] = 0
             itrans = takeoff.get_state_from_index(-1).transform

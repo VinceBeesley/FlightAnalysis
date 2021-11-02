@@ -153,12 +153,18 @@ class FCJson:
         mans["id"] = ["sp_{}".format(i) for i in range(len(self.schedule.manoeuvres) + 1)]
         mans["sp"] = list(range(len(self.schedule.manoeuvres) + 1))
         
-        mans["wd"] = [100 * sec.duration / self.sec.duration for sec in self.schedule.get_manoeuvre_data(self.sec, True)]
-        
-        itsecs = self.schedule.get_manoeuvre_data(Section(self.sec.data.reset_index()), True)
-        mans["stop"] = [int(sec.data.index[-1])+1 for sec in itsecs]
-        mans["start"] = [int(sec.data.index[0]) for sec in itsecs]
+        itsecs = self.schedule.get_manoeuvre_data(self.sec, True)
 
+        mans["wd"] = [100 * sec.duration / self.sec.duration for sec in itsecs]
+        
+        sec = self.sec.data.reset_index()
+
+        mans["start"] = [0] + [sec.loc[sec.manoeuvre==man.uid].index[0] for man in self.schedule.manoeuvres]
+        mans["stop"] = [mans["start"][1] + 1] + [sec.loc[sec.manoeuvre==man.uid].index[-1] + 1 for man in self.schedule.manoeuvres]
+        
+        #mans["stop"] = [sec.index.get_loc[st] for st in mans["stop"]]
+        #mans["stop"] = [sec.index.get_loc[st] for st in mans["start"]]
+       
         mans["sel"] = np.full(len(self.schedule.manoeuvres) + 1, False)
         mans.loc[1,"sel"] = True
         mans["background"] = np.full(len(self.schedule.manoeuvres) + 1, "")

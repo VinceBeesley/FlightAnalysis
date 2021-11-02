@@ -18,11 +18,12 @@ class Spin(El):
         return self.set_parms(rate=self.rate / factor)
 
     def create_template(self, transform: Transformation, speed: float, simple: bool = False):
+        speed = speed / 2
         _inverted = np.sign(transform.rotate(Point(0, 0, 1)).z)
         break_angle = np.radians(30) # pitch angle offset from vertical downline
         freq=1.0 if simple else Section._construct_freq 
         nose_drop_angle = np.pi/2 - abs(break_angle) #angle the nose has to drop through
-        nose_drop_rate = self.rate / 5
+        nose_drop_rate = self.rate 
         # The nose drop, assume it happens at the same rate as the spin
         nose_drop = Section.extrapolate_state(
             State.from_transform(transform), 

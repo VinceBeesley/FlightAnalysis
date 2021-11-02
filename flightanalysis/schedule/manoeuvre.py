@@ -88,7 +88,7 @@ class Manoeuvre():
         elm_search = {elm.uid: elm for elm in elms}
         return Manoeuvre(
             self.name, self.k,
-            [elm_search[elm.uid] if elm.uid in elm_search.keys() else elm.set_parameter()
+            [elm_search[elm.uid] if elm.uid in elm_search.keys() else elm.set_parms()
              for elm in self.elements],
             self.rule,
             self.uid
@@ -260,7 +260,7 @@ class Manoeuvre():
     def share_seperator(self, next_man): 
         """Take the following manoeuvre and share the entry line (first element)"""
         if self.elements[-1] != next_man.elements[0]:
-            return self.append_element(next_man.elements[0].set_parameter())
+            return self.append_element(next_man.elements[0].set_parms())
         else:
             return self.replace_elms([])
 
