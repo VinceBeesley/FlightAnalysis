@@ -24,12 +24,12 @@ class Snap(El):
         direc = -1 if self.negative else 1
         break_angle = np.radians(10)
 
-        pitch_rate = self.rate / 5
+        pitch_rate = self.rate
         
         pitch_break = Section.extrapolate_state(
             State.from_transform(transform, bvel=Point(speed, 0, 0)), 
             2 * np.pi * break_angle / pitch_rate, freq=freq
-        ).superimpose_rotation(Point(0, 1, 0), break_angle )
+        ).superimpose_rotation(Point(0, 1, 0), direc * break_angle )
         
         
         body_autorotation_axis = Quaternion.from_euler(
@@ -43,7 +43,7 @@ class Snap(El):
         correction = Section.extrapolate_state(
             autorotation[-1], 
             2 * np.pi * break_angle / pitch_rate, freq=freq
-        ).superimpose_rotation(Point(0, 1, 0), -break_angle )
+        ).superimpose_rotation(Point(0, 1, 0), -direc * break_angle )
 
         pitch_break.data["sub_element"] = "pitch_break"
         autorotation.data["sub_element"] = "autorotation"

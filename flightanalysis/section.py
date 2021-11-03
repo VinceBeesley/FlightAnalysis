@@ -387,7 +387,7 @@ class Section():
 
     
     def aoa(self):
-        bvel = self.gbvel - self.gatt.inverse().transform_point(self.get_wind())
+        bvel = self.gbvel #- self.gatt.inverse().transform_point(self.get_wind())
 
         df = pd.DataFrame(
             np.array([np.arctan2(bvel.z, bvel.x), np.arctan2(bvel.y, bvel.x)]).T,
