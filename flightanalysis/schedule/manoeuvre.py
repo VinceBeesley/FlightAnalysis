@@ -116,7 +116,7 @@ class Manoeuvre():
         if len(loops) > 0:
             diameter = np.mean([loop.diameter for loop in loops])  # TODO Factor by the amount of loop flown
             return self.replace_elms(
-                [loop.set_parameter(diameter=diameter)
+                [loop.set_parms(diameter=diameter)
                  for loop in self.get_elm_by_type(Loop)]
             )
         else:
@@ -185,14 +185,14 @@ class Manoeuvre():
 
         new_bline = []
         for line in bline:
-            nline = line.set_parameter()
+            nline = line.set_parms()
             if line.uid in pad_uids:
-                nline = line.set_parameter(length=new_pad_length / len(padding_lines))
+                nline = line.set_parms(length=new_pad_length / len(padding_lines))
             if line.uid in roll_uids:
                 if not isinstance(line, Snap):
-                    nline = line.set_parameter(length=line.length * roll_mod_ratio)
+                    nline = line.set_parms(length=line.length * roll_mod_ratio)
                 else:
-                    nline = line.set_parameter()
+                    nline = line.set_parms()
             new_bline.append(nline)
 
         return new_bline         
@@ -212,7 +212,7 @@ class Manoeuvre():
             pad_length = Manoeuvre.calc_line_length(padding_lines) / len(padding_lines)
         pad_uids = [el.uid for el in padding_lines]
 
-        return [line.set_parameter(length=pad_length) if line.uid in pad_uids else line.set_parameter() for line in bline]        
+        return [line.set_parms(length=pad_length) if line.uid in pad_uids else line.set_parms() for line in bline]        
     
     @staticmethod
     def get_padding_lines(bline: list):

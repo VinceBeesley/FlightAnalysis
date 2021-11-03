@@ -32,7 +32,7 @@ class StallTurn(El):
 
     def match_intention(self, transform: Transformation, flown: Section):
         return self.set_parms(
-            direction=np.sign(np.mean(flown.gbrvel.z)),
+            yaw_rate=np.sign(np.mean(flown.gbrvel.z)) * abs(self.yaw_rate), 
         )
 
 
