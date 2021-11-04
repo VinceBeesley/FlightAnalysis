@@ -1,8 +1,9 @@
 import numpy as np
 from geometry import Transformation, Point, Points, Quaternion
 from flightanalysis import Section, State
+
     
-from . import El
+from . import El, Loop
 
 
 class Spin(El):
@@ -24,21 +25,27 @@ class Spin(El):
         freq=1.0 if simple else Section._construct_freq 
         
         # The nose drop, happens in the first half turn
-        nose_drop = Section.extrapolate_state(
-            State.from_transform(transform, bvel=Point(0,0,- _inverted * speed)), 
-            np.pi / self.rate,
-            freq
-        ).superimpose_rotation(
+
+        nose_drop = Loop(15, -0.25 * _inverted).create_template(transform, speed).superimpose_rotation(
             Point.Y(1.0), 
-            (np.pi/2 - abs(break_angle)) * _inverted
-        ) 
+            -abs(break_angle) * _inverted
+        )
+
+#        nose_drop = Section.extrapolate_state(
+#            State.from_transform(transform, bvel=Point(0,0,- _inverted * speed)), 
+#            0.5*np.pi / self.rate,
+#            freq
+#        ).superimpose_rotation(
+#            Point.Y(1.0), 
+#            (np.pi/2 - abs(break_angle)) * _inverted
+#        ) 
 
         nose_drop.data["sub_element"] = "nose_drop"
 
         if self.opp_turns == 0.0:
             autorotation = Section.extrapolate_state(
                 nose_drop[-1].copy(brvel=Point.zeros()), 
-                (abs(self.turns) * 2*np.pi - np.pi - np.pi/4) / self.rate,
+                (abs(self.turns) * 2*np.pi - 3*np.pi/4) / self.rate,
                 freq=freq
             )
             autorotation.data["sub_element"] = "autorotation"
@@ -56,7 +63,7 @@ class Spin(El):
         else:
             autorotation = Section.extrapolate_state(
                 nose_drop[-1].copy(brvel=Point.zeros()), 
-                (abs(self.turns) * 2*np.pi - np.pi) / self.rate,
+                (abs(self.turns) * 2*np.pi - np.pi/2) / self.rate,
                 freq=freq
             )
             autorotation.data["sub_element"] = "autorotation"
@@ -66,7 +73,7 @@ class Spin(El):
 
             opprotation = Section.extrapolate_state(
                 first_part[-1].copy(brvel=Point.zeros()), 
-                abs(self.opp_turns) * 2 * np.pi / self.rate,
+                (abs(self.opp_turns) * 2 * np.pi - np.pi/4) / self.rate,
                 freq=freq
             )
             opprotation.data["sub_element"] = "autorotation"
