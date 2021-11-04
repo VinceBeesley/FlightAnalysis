@@ -48,6 +48,12 @@ class State():
         self.transform = Transformation(self.pos, self.att)
         self.back_transform = Transformation(-self.pos, self.att.inverse())
 
+    def copy(self, **args):
+        new_inst = State(self.pos, self.att, self.bvel, self.brvel, self.bacc)
+        for key, value in args.items():
+            setattr(new_inst, key, value)
+        return new_inst       
+
     @staticmethod
     def from_series(data: pd.Series):
         return State(

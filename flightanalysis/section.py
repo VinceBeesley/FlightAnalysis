@@ -12,9 +12,6 @@ from scipy.optimize import minimize
 from pathlib import Path
 from flightanalysis.wind import wind_vector
 
-#TODO flight data represents body axis. Need to separate this from
-# stability, wind and the judging axis data the templates represent.
-
 
 class Section():
     _construct_freq = 30
@@ -303,7 +300,7 @@ class Section():
         )
 
 
-    def superimpose_rotation(self, axis: Point, angle: float):
+    def superimpose_rotation(self, axis: Point, angle: float, reference:str="body"):
         """Generate a new section, identical to self, but with a continous rotation integrated       
         """
         t = np.array(self.data.index) - self.data.index[0]
@@ -313,7 +310,12 @@ class Section():
 
         angles = Points.from_point(axis.unit(), len(t)) * superimposed_rotation
 
-        new_att = self.gatt.body_rotate(angles)
+        if reference=="world":
+            new_att = self.gatt.rotate(angles)
+        elif reference=="body":
+            new_att = self.gatt.body_rotate(angles)
+        else:
+            raise ValueError("unknwon rotation reference")
 
         new_bvel = new_att.inverse().transform_point(self.gatt.transform_point(self.gbvel))
             
