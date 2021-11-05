@@ -59,13 +59,18 @@ class Manoeuvre():
     def get_data(self, sec: Section):
         return Section(sec.data.loc[sec.data.manoeuvre == self.uid])
 
-    def match_intention(self, transform: Transformation, flown: Section, speed: float):
+    def match_intention(self, transform: Transformation, flown: Section, speed: float=None):
+        """Create a new manoeuvre with all the elements scaled to match the corresponding flown element"""
         elms = []
 
         for elm in self.elements:
-            elms.append(elm.match_intention(transform, elm.get_data(flown)))
+            edata=elm.get_data(flown)
+            elms.append(elm.match_intention(transform, edata))
             transform = elms[-1].create_template(
-                transform, speed, True).get_state_from_index(-1).transform
+                transform, 
+                edata.data.bvx.mean(), 
+                True
+            ).get_state_from_index(-1).transform
 
         return self.replace_elms(elms), transform
 
