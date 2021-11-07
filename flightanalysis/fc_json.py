@@ -19,8 +19,6 @@ class FCJson:
         self.schedule = schedule
         self._dists = dists
 
-    
-
     @staticmethod
     def read_box(name, parms):
         return Box.from_points(
@@ -46,7 +44,7 @@ class FCJson:
         secs = []
         _dists = []
         for man, templ in zip(schedule.manoeuvres, templates):
-            dist, nsec =Section.align(man.get_data(labelled).remove_labels(), templ)
+            dist, nsec =Section.align(man.get_data(labelled).remove_labels(), templ, 5)
             secs.append(nsec)
             _dists.append(dist)
 

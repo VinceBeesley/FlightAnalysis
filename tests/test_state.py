@@ -47,6 +47,7 @@ class TestState(unittest.TestCase):
         self.assertEqual(pt.y, 169)
         self.assertEqual(pt.z, 150)
 
+    
 
 if __name__ == '__main__':
     unittest.main()

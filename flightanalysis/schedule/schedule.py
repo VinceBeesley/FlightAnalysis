@@ -268,7 +268,7 @@ class Schedule():
             )
             templates.append(
                 man.scale(rates["distance"] * np.tan(np.radians(60)))
-                .create_template(transform, 1.5*rates["speed"])
+                .create_template(transform, rates["speed"])
             )
             iatt = templates[-1].get_state_from_index(-1).att
         return templates

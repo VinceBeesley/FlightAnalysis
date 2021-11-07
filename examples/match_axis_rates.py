@@ -1,12 +1,10 @@
 import numpy as np
 import plotly.graph_objects as go
-from flightanalysis import Section
+from flightanalysis import Section, get_schedule
 from flightplotting.plots import plotsec, plotdtw
 from flightplotting.traces import axis_rate_trace, dtwtrace
 import flightplotting.templates
-from examples.model import obj
-from flightanalysis.schedule import p21
-from flightanalysis.schedule.element import get_rates
+from flightanalysis.schedule.elements import get_rates
 from geometry import Points
 from plotly.subplots import make_subplots
 
@@ -44,10 +42,12 @@ def plot_man(man, aligned_b, aligned_m):
 
 
 if __name__ == '__main__':
-    sec = Section.from_flight(
-        "test/P21_new.csv", "test/gordano_box.json").subset(106, 505)
 
-    basic = p21.scale_distance(170).create_raw_template("left", 50.0, 170.0)
+    sec = Section.from_csv("tests/test_inputs/test_log_00000052_section.csv").subset(110, 200)
+
+    p21 = get_schedule("F3A", "P21")
+
+    basic = p21.scale_distance(170).create_raw_template("left", 30.0, 170.0)
 
     rates = get_rates(sec)
     rate_matched = p21.match_rates(rates).create_raw_template(

@@ -89,6 +89,8 @@ class Section():
 
         df = pd.DataFrame(index=t, columns=list(State.vars))
 
+        df["flight_time"] = pd.DataFrame(data=t, index=df.index)
+
         def savevars(vars: list, data: Union[Points, Quaternions]):
             df[vars] = data.to_pandas(columns=vars).set_index(df.index)
         
@@ -97,7 +99,7 @@ class Section():
         savevars(State.vars.bvel, bvel)
         savevars(State.vars.brvel, brvel)
         savevars(State.vars.bacc, bacc)
-
+        
         return Section(df)
 
 
@@ -333,18 +335,19 @@ class Section():
 
     @staticmethod
     def align(flown, template, radius=1):
-        3
-        fl = flown.brvel.copy()
-        fl.brvr = abs(fl.brvr)
-        fl.brvy = abs(fl.brvy)
 
-        tp = template.brvel.copy()
+        def get_brv(brv):
+            brv.data[:,0] = abs(brv.data[:,0])
+            brv.data[:,2] = abs(brv.data[:,2])
+            return brv
 
-        tp.brvr = abs(tp.brvr)
-        tp.brvy = abs(tp.brvy)
+        fl = get_brv(flown.gbrvel)
+
+        tp = get_brv(template.gbrvel)
+
         distance, path = fastdtw(
-            tp.to_numpy(),
-            fl.to_numpy(),
+            tp.data,
+            fl.data,
             radius=radius,
             dist=euclidean
         )
@@ -355,11 +358,12 @@ class Section():
 
         return distance, Section(flown.data.reset_index().join(mans).set_index("time_index"))
 
+
     def remove_labels(self):
         return Section(self.data.drop(["manoeuvre", "element"], 1, errors="ignore"))
 
         
-    def get_wind(self) -> Points:
+    def get_wind(self) -> dict:
         # TODO this should go somewhere else
         def get_wind_error(args: np.ndarray) -> float:
             #wind vectors at the local positions
@@ -380,13 +384,12 @@ class Section():
 
         res = minimize(get_wind_error, [np.pi, 5.0, 0.2], method = 'Nelder-Mead')
 
-        return Points(wind_vector(
-            res.x[0], 
-            np.maximum(self.gpos.z, 0), 
-            res.x[1], 
-            res.x[2]
-        ).T)
-
+        return dict(
+            heading = res.x[0], 
+            speed  = res.x[1], 
+            exponent = res.x[2]
+        )
+        
     
     def aoa(self):
         bvel = self.gbvel #- self.gatt.inverse().transform_point(self.get_wind())

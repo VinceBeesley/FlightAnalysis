@@ -38,30 +38,40 @@ class State():
         att: Quaternion, 
         bvel: Point=Point.zeros(), 
         brvel: Point=Point.zeros(), 
-        bacc: Point=Point.zeros()
+        bacc: Point=Point.zeros(),
+        **kwargs
     ):
         self.pos = pos
         self.att = att
         self.bvel = bvel
         self.brvel = brvel
         self.bacc = bacc
+        self.misc = kwargs
         self.transform = Transformation(self.pos, self.att)
         self.back_transform = Transformation(-self.pos, self.att.inverse())
 
+    def __getattr__(self, name):
+        try:
+            return self.misc[name]
+        except KeyError:
+            raise AttributeError(name)
+
     def copy(self, **args):
-        new_inst = State(self.pos, self.att, self.bvel, self.brvel, self.bacc)
+        new_inst = State(self.pos, self.att, self.bvel, self.brvel, self.bacc, **self.misc)
         for key, value in args.items():
             setattr(new_inst, key, value)
         return new_inst       
 
     @staticmethod
     def from_series(data: pd.Series):
+        misc_keys = [key for key in data.keys() if not key in State.vars.columns]
         return State(
             Point(*data[State.vars.constructs['pos']]),
             Quaternion(*data[State.vars.constructs['att']]),
             Point(*data[State.vars.constructs['bvel']]),
             Point(*data[State.vars.constructs['brvel']]),
-            Point(*data[State.vars.constructs['bacc']])
+            Point(*data[State.vars.constructs['bacc']]),
+            **{key: data[key] for key in misc_keys}
         )
 
     def from_transform(transform: Transformation, **kwargs): 
