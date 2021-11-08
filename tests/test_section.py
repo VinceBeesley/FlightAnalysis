@@ -59,22 +59,6 @@ def test_get_item(seq):
 
 
 
-
-def test_from_loop():
-    """do the outside loop at the start of the P sequence"""
-    initial = State(
-        Point(0, 170, 150),
-        Quaternion.from_euler(Point(np.pi, 0, np.pi)),
-        Point(10 * np.pi, 0, 0),  # 620 m in 10 seconds
-        Point(0, np.pi / 5, 0)
-    )
-
-    radius = Section.from_loop(initial.transform, 10*np.pi, 1, 50)
-    np.testing.assert_array_almost_equal(
-        list(radius.get_state_from_index(-1).pos),
-        list(Point(0, 170, 150))
-    )
-
 def test_body_to_world(flight):
 
     seq = Section.from_flight(
@@ -103,32 +87,6 @@ def test_get_state(seq):
     st = seq.get_state_from_time(100)
     assert isinstance(st, State)
 
-def test_stack():
-    initial = State(
-        Point(10 * np.pi, 170, 150),
-        Quaternion.from_euler(Point(np.pi, 0, np.pi)),
-        Point(10 * np.pi, 0, 0),
-        Point(np.pi, 0, 0)
-    )
-
-    line = Section.from_line(initial.transform, 30, 20)
-
-    last_state = line.get_state_from_index(-1)
-    
-    radius = Section.from_loop(last_state.transform, 30, 1, 50)
-
-    combo = Section.stack([line, radius])
-
-    assert len(combo.data) == len(line.data) + len(radius.data) - 1
-    assert combo.data.iloc[-1].bvx == 30
-
-    assert isinstance(combo.get_state_from_time(10), State)
-
-    assert radius.data.index[-1] + line.data.index[-1] == combo.data.index[-1]
-
-    assert combo.get_state_from_time(0.0).pos == combo.get_state_from_index(0).pos
-
-    assert combo.data.index.name == "time_index"
 
 def test_align(seq, p21):
     
@@ -141,3 +99,8 @@ def test_align(seq, p21):
     assert len(aligned[1].data) == len(flown.data) 
 
 
+def test_append_columns(seq, flight):
+    sec = seq.append_columns(flight.read_fields(Fields.TXCONTROLS))
+    assert sec.duration == seq.duration
+
+    assert len(sec.data) == len(seq.data)

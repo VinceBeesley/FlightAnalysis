@@ -48,13 +48,13 @@ def test_get_elm_by_type(v8):
     assert len(lines_loops) == 5
 
 def test_replace_elms(v8):
-    elms = [elm.set_parameter(length=10) for elm in v8.elements[:2]]
+    elms = [elm.set_parms(length=10) for elm in v8.elements[:2]]
     new_v8 = v8.replace_elms(elms)
     assert new_v8.elements[0].uid == elms[0].uid
     assert new_v8.elements[0].length == 10
 
 def test_fix_loop_diameters(v8):
-    new_v8 = v8.replace_elms([v8.elements[3].set_parameter(diameter=10.0)])
+    new_v8 = v8.replace_elms([v8.elements[3].set_parms(diameter=10.0)])
     fixed_v8 = new_v8.fix_loop_diameters()
     assert fixed_v8.elements[3].diameter == np.mean([0.45, 10])
 
@@ -102,3 +102,5 @@ def test_get_subset(sql, aligned):
     sql_data = sql.get_data(aligned)
     elm_data = sql.get_subset(aligned, 3, 5)
     assert sql_data.duration >= elm_data.duration
+
+

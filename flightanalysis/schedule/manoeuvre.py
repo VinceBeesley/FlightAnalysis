@@ -258,9 +258,7 @@ class Manoeuvre():
         return pd.DataFrame([elm.to_dict() for elm in elm_list])
 
     def label(self, sec: Section):
-        new_data = sec.data.copy()
-        new_data.loc[:,"manoeuvre"] = self.uid
-        return Section(new_data)
+        return Section(sec.data.assign(manoeuvre=self.uid))
 
     def share_seperator(self, next_man): 
         """Take the following manoeuvre and share the entry line (first element)"""
@@ -292,6 +290,3 @@ class Manoeuvre():
 
         return Section(subsec.data.loc[(subsec.data.element >= fmanid) & (subsec.data.element < lmanid)])
 
-    def get_elm(self, sec, elmid, padfrnt, baraft):
-        subset = self.get_subset(sec, elmid - 1, elmid + 2)
-        

@@ -73,11 +73,8 @@ class Box(object):
         This is a convenient, but not very accurate way to setup the box. 
         '''
         first = flight.data.iloc[0]
-        home = GPSPosition(
-            first.global_position_latitude,
-            first.global_position_longitude
-        )
-
+        home = GPSPosition(*flight.read_fields(Fields.GLOBALPOSITION).iloc[0])
+            
         heading = Quaternion(*first[Fields.QUATERNION.names]).transform_point(Point(1, 0, 0))
 
         return Box('origin', home, atan2(heading.y, heading.x), "unknown", "unknown")

@@ -29,26 +29,14 @@ class Spin(El):
         nose_drop = Loop(15, -0.25 * _inverted).create_template(transform, speed).superimpose_rotation(
             Point.Y(1.0), 
             -abs(break_angle) * _inverted
-        )
-
-#        nose_drop = Section.extrapolate_state(
-#            State.from_transform(transform, bvel=Point(0,0,- _inverted * speed)), 
-#            0.5*np.pi / self.rate,
-#            freq
-#        ).superimpose_rotation(
-#            Point.Y(1.0), 
-#            (np.pi/2 - abs(break_angle)) * _inverted
-#        ) 
-
-        nose_drop.data["sub_element"] = "nose_drop"
+        ).label(sub_element="nose_drop")
 
         if self.opp_turns == 0.0:
             autorotation = Section.extrapolate_state(
                 nose_drop[-1].copy(brvel=Point.zeros()), 
                 (abs(self.turns) * 2*np.pi - 3*np.pi/4) / self.rate,
                 freq=freq
-            )
-            autorotation.data["sub_element"] = "autorotation"
+            ).label(sub_element="autorotation")
 
             recovery = Section.extrapolate_state(
                 autorotation[-1],
@@ -57,16 +45,15 @@ class Spin(El):
             ).superimpose_rotation(
                 Point.Y(1.0), 
                 break_angle * _inverted
-            ) 
-            recovery.data["sub_element"] = "recovery"
+            ).label(sub_element="recovery")
+            
             spin = Section.stack([nose_drop, autorotation, recovery]).superimpose_rotation(Point(0,0,1), 2*np.pi*self.turns, "world")
         else:
             autorotation = Section.extrapolate_state(
                 nose_drop[-1].copy(brvel=Point.zeros()), 
                 (abs(self.turns) * 2*np.pi - np.pi/2) / self.rate,
                 freq=freq
-            )
-            autorotation.data["sub_element"] = "autorotation"
+            ).label(sub_element="autorotation")
 
             first_part = Section.stack([nose_drop, autorotation]).superimpose_rotation(Point(0,0,1), 2*np.pi*self.turns, "world")
 
@@ -75,8 +62,7 @@ class Spin(El):
                 first_part[-1].copy(brvel=Point.zeros()), 
                 (abs(self.opp_turns) * 2 * np.pi - np.pi/4) / self.rate,
                 freq=freq
-            )
-            opprotation.data["sub_element"] = "autorotation"
+            ).label(sub_element="opprotation")
 
             recovery = Section.extrapolate_state(
                 autorotation[-1],
@@ -85,13 +71,11 @@ class Spin(El):
             ).superimpose_rotation(
                 Point.Y(1.0), 
                 break_angle * _inverted
-            ) 
-            recovery.data["sub_element"] = "recovery"
-
+            ).label(sub_element="recovery")
+            
             second_part = Section.stack([opprotation, recovery]).superimpose_rotation(Point(0,0,1), -2*np.pi*self.opp_turns, "world")
 
             spin = Section.stack([first_part, second_part])
-
 
         return self._add_rolls(spin, 0.0)
 

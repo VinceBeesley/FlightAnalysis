@@ -285,8 +285,9 @@ class Schedule():
         """
 
         takeoff = flown.data.iloc[0:int(splitter[0]["stop"])+2]
-        takeoff.loc[:, "manoeuvre"] = 0
-        labelled = [Section(takeoff)]
+
+        labelled = [Section(takeoff).label(manoeuvre=0)]
+        
         for split_man, man in zip(splitter[1:], self.manoeuvres):
             start, stop = int(split_man["start"]), int(split_man["stop"])
             labelled.append(man.label(Section(flown.data.iloc[start:stop+2])))

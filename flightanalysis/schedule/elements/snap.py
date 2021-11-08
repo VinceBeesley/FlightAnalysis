@@ -45,11 +45,11 @@ class Snap(El):
             2 * np.pi * break_angle / pitch_rate, freq=freq
         ).superimpose_rotation(Point(0, 1, 0), -direc * break_angle )
 
-        pitch_break.data["sub_element"] = "pitch_break"
-        autorotation.data["sub_element"] = "autorotation"
-        correction.data["sub_element"] = "correction"
-
-        return self._add_rolls(Section.stack([pitch_break, autorotation, correction]), 0)
+        return self._add_rolls(Section.stack([
+            pitch_break.label(sub_element="pitch_break"), 
+            autorotation.label(sub_element="autorotation"), 
+            correction.label(sub_element="correction")
+            ]), 0)
 
     def match_axis_rate(self, snap_rate: float, speed: float):
         return self.set_parms()  # TODO should probably allow this somehow

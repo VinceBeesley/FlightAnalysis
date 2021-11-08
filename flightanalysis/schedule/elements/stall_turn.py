@@ -28,7 +28,7 @@ class StallTurn(El):
         )
 
     def match_axis_rate(self, yaw_rate: float, speed: float = 30.0):
-        return self.set_parms(yaw_rate)
+        return self.set_parms(yaw_rate=yaw_rate)
 
     def match_intention(self, transform: Transformation, flown: Section):
         return self.set_parms(

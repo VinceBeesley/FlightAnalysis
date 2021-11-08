@@ -21,8 +21,7 @@ class El:
     def _add_rolls(self, el: Section, rolls: float) -> Section:
         if not rolls == 0:
             el = el.superimpose_roll(rolls)
-        el.data["element"] = self.uid
-        return el
+        return el.label(element=self.uid)
 
     def __eq__(self, other):
         return self.uid == other.uid

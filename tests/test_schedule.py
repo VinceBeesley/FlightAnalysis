@@ -7,7 +7,8 @@ from flightanalysis.fc_json import FCJson
 from flightdata import Flight
 import pytest
 from flightanalysis import get_schedule, Categories
-
+import warnings
+warnings.filterwarnings("error")
 
 @pytest.fixture(scope="session")
 def schedule_json():
@@ -76,3 +77,6 @@ def test_get_subset(schedule, aligned):
 
     assert max(subset.data.manoeuvre) == schedule.manoeuvres[4].uid
     assert min(subset.data.manoeuvre) == schedule.manoeuvres[3].uid
+
+#def test_set_withcopy(self):
+    

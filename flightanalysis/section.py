@@ -9,10 +9,12 @@ from numbers import Number
 from fastdtw import fastdtw
 from scipy.spatial.distance import euclidean
 from scipy.optimize import minimize
+from scipy.cluster.vq import whiten
 from pathlib import Path
 from flightanalysis.wind import wind_vector
 
-
+import warnings
+warnings.filterwarnings("ignore", message="Some columns have standard deviation zero. ")
 class Section():
     _construct_freq = 30
 
@@ -87,19 +89,15 @@ class Section():
     @staticmethod
     def from_constructs(t, pos, att, bvel, brvel, bacc):
 
-        df = pd.DataFrame(index=t, columns=list(State.vars))
+        df = pd.concat([
+            pd.DataFrame(data=np.array(t), index=t, columns=["flight_time"]), 
+            pos.to_pandas(columns=State.vars.pos, index=t), 
+            att.to_pandas(columns=State.vars.att, index=t),
+            bvel.to_pandas(columns=State.vars.bvel, index=t),
+            brvel.to_pandas(columns=State.vars.brvel, index=t),
+            bacc.to_pandas(columns=State.vars.bacc, index=t)
+        ], axis=1)
 
-        df["flight_time"] = pd.DataFrame(data=t, index=df.index)
-
-        def savevars(vars: list, data: Union[Points, Quaternions]):
-            df[vars] = data.to_pandas(columns=vars).set_index(df.index)
-        
-        savevars(State.vars.pos, pos)
-        savevars(State.vars.att, att)
-        savevars(State.vars.bvel, bvel)
-        savevars(State.vars.brvel, brvel)
-        savevars(State.vars.bacc, bacc)
-        
         return Section(df)
 
 
@@ -182,9 +180,7 @@ class Section():
 
 
     def append_columns(self, data):
-        df = self.data.copy()        
-        df[data.columns] = data
-        return Section(df)
+        return Section(pd.concat([self.data, data], axis=1, join="inner"))
 
     def to_csv(self, filename):
         self.data.to_csv(filename)
@@ -334,12 +330,26 @@ class Section():
 
 
     @staticmethod
-    def align(flown, template, radius=1):
+    def align(flown, template, radius=1, white=False, weights = Point(1,1,1)):
+        """Perform a temporal alignment between two sections. return the flown section with labels 
+        copied from the template along the warped path
+
+        Args:
+            flown (Section): An un-labelled Section
+            template (Section): A labelled Section
+            radius (int, optional): The DTW search radius. Defaults to 5.
+            whiten (bool, optional): Whether to whiten the data before performing the alignment. Defaults to False.
+
+        """
 
         def get_brv(brv):
             brv.data[:,0] = abs(brv.data[:,0])
             brv.data[:,2] = abs(brv.data[:,2])
-            return brv
+
+            if white:
+                brv = brv.whiten()
+
+            return brv * weights
 
         fl = get_brv(flown.gbrvel)
 
@@ -352,12 +362,30 @@ class Section():
             dist=euclidean
         )
 
+        return distance, Section.copy_labels(template, flown, path)
+
+    @staticmethod
+    def copy_labels(template, flown, path):
+        """Copy the labels from a template section to a flown section along the index warping path
+
+        Args:
+            template (Section): A labelled section
+            flown (Section): An unlabelled section
+            path (List): A list of lists containing index pairs from template to flown
+
+        Returns:
+            Section: a labelled section
+        """
         mans = pd.DataFrame(path, columns=["template", "flight"]).set_index("template").join(
-            template.data.reset_index().loc[:, ["manoeuvre", "element"]]
-        ).groupby(['flight']).last().reset_index().set_index("flight")
+                template.data.reset_index().loc[:, ["manoeuvre", "element"]]
+            ).groupby(['flight']).last().reset_index().set_index("flight")
 
-        return distance, Section(flown.data.reset_index().join(mans).set_index("time_index"))
+        return Section(flown.data.reset_index().join(mans).set_index("time_index"))
 
+
+
+    def label(self, **kwargs):
+        return Section(self.data.assign(**kwargs))
 
     def remove_labels(self):
         return Section(self.data.drop(["manoeuvre", "element"], 1, errors="ignore"))
