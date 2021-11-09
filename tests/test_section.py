@@ -1,10 +1,10 @@
 from flightanalysis.section import Section
 from flightanalysis.state import State
 from flightanalysis.flightline import Box, FlightLine
-from flightanalysis.schedule import Schedule, Categories, get_schedule
+from flightanalysis.schedule import Schedule, Categories, get_schedule, Line
 
 import unittest
-from geometry import Point, Quaternion, Points, Quaternions, GPSPosition
+from geometry import Point, Quaternion, Points, Quaternions, GPSPosition, Transformation
 from flightdata import Flight, Fields
 import numpy as np
 import pandas as pd
@@ -104,3 +104,11 @@ def test_append_columns(seq, flight):
     assert sec.duration == seq.duration
 
     assert len(sec.data) == len(seq.data)
+
+
+def test_smooth_rotation():
+    sec = Line(1).scale(100).create_template(Transformation(), 10, False)
+
+    roll = sec.smooth_rotation(Point.X(1), 2 * np.pi, "body", 0.25, 0.1)
+
+    

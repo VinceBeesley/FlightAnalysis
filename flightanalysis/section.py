@@ -308,6 +308,41 @@ class Section():
 
         angles = Points.from_point(axis.unit(), len(t)) * superimposed_rotation
 
+        return self.superimpose_angles(angles, reference)
+
+    def smooth_rotation(self, axis: Point, angle: float, reference:str="body", w: float=0.25, w2=0.1):
+        """Accelerate for acc_prop * t, flat rate for middle, slow down for acc_prop * t.
+
+        Args:
+            axis (Point): Axis to rotate around.
+            angle (float): angle to rotate.
+            reference (str, optional): rotate about body or world. Defaults to "body".
+            acc_prop (float, optional): proportion of total rotation to be accelerating for. Defaults to 0.1.
+        """
+
+        t = np.array(self.data.index) - self.data.index[0]
+
+        T = t[-1]
+
+        V = angle / (T*(1-0.5*w-0.5*w2))  # The maximum rate
+
+        #between t=0 and t=wT
+        x = t[t<=w*T]
+        angles_0 = (V * x**2) / (2 * w * T)    
+
+        #between t=wT and t=T(1-w)
+        y=t[(t>w*T) & (t<=(T-w2*T))]
+        angles_1 = V * y - V * w * T / 2
+        
+        #between t=T(1-w2) and t=T
+        z = t[t>(T-w2*T)] - T + w2*T
+        angles_2 = V*z - V * z **2 / (2*w2*T) + V*T - V * w2 * T  - 0.5*V*w*T
+
+        angles = Points.from_point(axis.unit(), len(t)) * np.concatenate([angles_0, angles_1, angles_2])
+
+        return self.superimpose_angles(angles, reference)
+
+    def superimpose_angles(self, angles: Points, reference:str="body"): 
         if reference=="world":
             new_att = self.gatt.rotate(angles)
         elif reference=="body":
@@ -317,16 +352,19 @@ class Section():
 
         new_bvel = new_att.inverse().transform_point(self.gatt.transform_point(self.gbvel))
             
-        dt = np.gradient(t)
+        dt = np.gradient(self.data.index)
 
-        return Section.from_constructs(
-            t,
+        sec =  Section.from_constructs(
+            np.array(self.data.index),
             Points.from_pandas(self.pos.copy()),
             new_att,
             new_bvel,
             new_att.body_diff(dt),
             new_bvel.diff(dt)
         )
+        if "sub_element" in self.data.columns:
+            sec = sec.append_columns(self.data["sub_element"])
+        return sec
 
 
     @staticmethod

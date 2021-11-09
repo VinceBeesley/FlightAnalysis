@@ -13,7 +13,7 @@ def np_encoder(object):
     if isinstance(object, np.generic):
         return object.item()
 
-def create_template(sec: Section, sched: Schedule, scaling: str):
+def create_template(sec: Section, sched: Schedule, scaling: str, speed_factor: float):
     #take some measurements and create a new template based on those
     _rates = get_rates(sec)
     rates = {}
@@ -24,9 +24,9 @@ def create_template(sec: Section, sched: Schedule, scaling: str):
             rates[key]=value
 
     if scaling =="global":
-        template = sched.scale_distance(_rates["distance"]).create_raw_template(sec[0].direction, _rates["speed"], _rates["distance"])
+        template = sched.scale_distance(_rates["distance"]).create_raw_template(sec[0].direction, _rates["speed"]*speed_factor, _rates["distance"])
     elif scaling == "measure":
-        template = sched.match_rates(_rates).create_raw_template(sec[0].direction, _rates["speed"], _rates["distance"])
+        template = sched.match_rates(_rates).create_raw_template(sec[0].direction, _rates["speed"], _rates["distance"]*speed_factor)
     
     return template
 
@@ -85,40 +85,43 @@ def assess_folder(input_folder, output_folder):
 
         fcj, fcj_aligned, sec, sched = parse_fc_json(path)
      
-        for scaling in tqdm(["measure", "global"]):
+        #for scaling in tqdm(["measure", "global"]):
+        scaling = "global"
 
-            template = create_template(sec, sched, scaling)
+        for speed_factor in np.linspace(0.4, 1.6, 7):
+            template = create_template(sec, sched, scaling, speed_factor)
 
-            for whiten in tqdm([True, False]):
+            whiten=False
 
-                dist, aligned = Section.align(sec, template, 5, whiten)
+            dist, aligned = Section.align(sec, template, 5, whiten)
 
-                results_path = str(Path(output_folder) / "{}_{}_{}.csv".format(path.stem, "whi" if whiten else "raw", scaling))
-                
-                df = create_alignment_assesment(results_path, sched, aligned, fcj_aligned)
-                df.to_csv(results_path, index=False)
+            results_path = str(Path(output_folder) / "{}_{}_{}_{}.csv".format(path.stem, "whi" if whiten else "raw", scaling, speed_factor)) 
+            
+            df = create_alignment_assesment(results_path, sched, aligned, fcj_aligned)
+            df.to_csv(results_path, index=False)
 
-                worst_elm = df.loc[df.difference == df.difference.max()].iloc[0]
+            worst_elm = df.loc[df.difference == df.difference.max()].iloc[0]
 
-                grid3dplot([[
-                    plotdtw(fcj_aligned, sched.manoeuvres),
-                    plotdtw(aligned, sched.manoeuvres)
-                ]]).write_html(results_path.replace(".csv", "_dtw.html"))
-                
-                results.append(dict(
-                    schedule = fcj.schedule.name,
-                    fcj = path.name,
-                    csv = Path(results_path).name,
-                    total_difference = df.difference.sum(),
-                    worst_manoeuvre = worst_elm.manoeuvre,
-                    worst_elm = worst_elm.element,
-                    worst_elm_difference = worst_elm.difference,
-                    whiten=whiten, 
-                    scaling=scaling,
-                    dtw_dist = dist,
-                    **fcj.sec.get_wind()
-                ))
-                
+            grid3dplot([[
+                plotdtw(fcj_aligned, sched.manoeuvres),
+                plotdtw(aligned, sched.manoeuvres)
+            ]]).write_html(results_path.replace(".csv", "_dtw.html"))
+            
+            results.append(dict(
+                schedule = fcj.schedule.name,
+                fcj = path.name,
+                csv = Path(results_path).name,
+                total_difference = df.difference.sum(),
+                worst_manoeuvre = worst_elm.manoeuvre,
+                worst_elm = worst_elm.element,
+                worst_elm_difference = worst_elm.difference,
+                whiten=whiten, 
+                scaling=scaling,
+                dtw_dist = dist,
+                speed_factor = speed_factor,
+                **fcj.sec.get_wind()
+            ))
+            
                 #print(json.dumps(results[-1], indent=4, default=np_encoder))
     return pd.DataFrame(results)
 
