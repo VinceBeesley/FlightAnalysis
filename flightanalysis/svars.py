@@ -8,14 +8,30 @@
     brvel = rotational velocity (body axis rates)
 
     """
+from geometry import Point, Points, Quaternion, Quaternions, Transformation
+import numpy as np
+import pandas as pd
+
+class SVar:
+    def __init__(self, names, single, multiple, description):
+        self.names = names
+        self.single = single
+        self.multiple = multiple
+        self.description = description
+    
+    @property
+    def prefix(self):
+        return self.names[0][:len(self.names[0])-1]
 
 svars = {
-    "pos": ["x", "y", "z"],
-    "att": ["rw", "rx", "ry", "rz"],
-    "bvel": ["bvx", "bvy", "bvz"],
-    "brvel": ["brvr", "brvp", "brvy"],
-    "bacc": ["bax", "bay", "baz"],
-    "wp": ["x", "y", "z", "rw", "rx", "ry", "rz"],
-    "bv": ["bvx", "bvy", "bvz", "brvr", "brvp", "brvy"]
+    "time": SVar(["tl", "tg"], dict, pd.DataFrame, ""),
+    "pos": SVar(["x", "y", "z"], Point, Points, ""),
+    "att": SVar(["rw", "rx", "ry", "rz"], Quaternion, Quaternions, ""),
+    "bvel": SVar(["bvx", "bvy", "bvz"], Point, Points, ""),
+    "brvel": SVar(["brvr", "brvp", "brvy"], Point, Points, ""),
+    "bacc": SVar(["bax", "bay", "baz"], Point, Points, ""),
+    "wind": SVar(["wvx", "wvy", "wvz"], Point, Points, ""),
+    "bwind": SVar(["bwvx", "bwvy", "bwvz"], Point, Points, ""),
+    "aoa": SVar(["aoaa", "aoab"], dict, pd.DataFrame, ""),
 }
 

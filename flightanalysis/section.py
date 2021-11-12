@@ -12,6 +12,8 @@ from scipy.optimize import minimize
 from scipy.cluster.vq import whiten
 from pathlib import Path
 from flightanalysis.wind import wind_vector
+from scipy.optimize import minimize, Bounds
+
 
 import warnings
 warnings.filterwarnings("ignore", message="Some columns have standard deviation zero. ")
@@ -88,7 +90,7 @@ class Section():
 
     @staticmethod
     def from_constructs(t, pos, att, bvel, brvel, bacc):
-
+        
         df = pd.concat([
             pd.DataFrame(data=np.array(t), index=t, columns=["flight_time"]), 
             pos.to_pandas(columns=State.vars.pos, index=t), 
@@ -173,8 +175,6 @@ class Section():
 
         bacc = Points.from_pandas(
             flight.data.loc[:, ["acceleration_x", "acceleration_y", "acceleration_z"]])
-
-        # brvel = Points.from_pandas(flight.data.loc[:,["axis_rate_roll", "axis_rate_pitch", "axis_rate_yaw"]])
 
         return Section.from_constructs(t, pos, att, bvel, brvel, bacc)
 
@@ -420,43 +420,48 @@ class Section():
 
         return Section(flown.data.reset_index().join(mans).set_index("time_index"))
 
-
-
     def label(self, **kwargs):
         return Section(self.data.assign(**kwargs))
 
     def remove_labels(self):
         return Section(self.data.drop(["manoeuvre", "element"], 1, errors="ignore"))
-
-        
-    def get_wind(self) -> dict:
-        # TODO this should go somewhere else
-        def get_wind_error(args: np.ndarray) -> float:
+    
+    def wind(self):
+        def get_wind_error(args: np.ndarray, sec: Section) -> float:
             #wind vectors at the local positions
-            local_wind = Points(wind_vector(args[0], np.maximum(self.gpos.z, 0), args[1], args[2]).T)
+            local_wind = Points(wind_vector(head=args[0], h=np.maximum(sec.gpos.z, 0), v0=args[1], a=args[2]).T)
 
             #wind vectors in body frame
-            body_wind = self.gatt.inverse().transform_point(local_wind)
+            body_wind = sec.gatt.inverse().transform_point(local_wind)
 
             #body frame velocity - wind vector should be wind axis velocity
             #error in wind axis velocity, is the non x axis part (because we fly forwards)
-            air_vec_error = (self.gbvel - body_wind) * Point(0,1,1)
+            air_vec_error = (sec.gbvel - body_wind) * Point(0,1,1)
 
             #but the wind is only horizontal, so transform to world frame and remove the z component
-            world_air_vec_error = self.gatt.transform_point(air_vec_error) * Point(1,1,0)
+            world_air_vec_error = sec.gatt.transform_point(air_vec_error) * Point(1,1,0)
 
             #the cost is the cumulative error
             return sum(abs(world_air_vec_error))
 
-        res = minimize(get_wind_error, [np.pi, 5.0, 0.2], method = 'Nelder-Mead')
+        bounds = Bounds(lb=[0.0, 0.5, 0.05], ub=[2*np.pi, 20.0, 1.0])
+        res = minimize(get_wind_error, [np.pi, 5.0, 0.2], args=self, method = 'Powell', bounds=bounds)
 
-        return dict(
-            heading = res.x[0], 
-            speed  = res.x[1], 
-            exponent = res.x[2]
+        world_wind = Points(wind_vector(
+            head=res.x[0], 
+            h=np.maximum(self.pos.z, 0), 
+            v0=res.x[1], 
+            a=res.x[2]
+        ))#.to_pandas(columns=["vwx", "vwy", "vwz"], index=self.data.index)
+
+        body_wind = self.gatt.inverse().transform_point(world_wind)
+
+        return pd.concat(
+            [world_wind.to_pandas(prefix="wv", index=self.data.index),
+            body_wind.to_pandas(prefix="bwv", index=self.data.index),
+            ]
         )
-        
-    
+
     def aoa(self):
         bvel = self.gbvel #- self.gatt.inverse().transform_point(self.get_wind())
 
@@ -466,3 +471,7 @@ class Section():
             )
         df.index =self.data.index
         return df
+
+
+
+
