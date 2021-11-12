@@ -33,12 +33,6 @@ def seq(flight, box):
 def test_from_flight(flight, box):
     seq = Section.from_flight(flight, box)
     assert isinstance(seq.x, pd.Series)
-    assert isinstance(seq.y, pd.Series)
-    assert isinstance(seq.z, pd.Series)
-    assert isinstance(seq.rw, pd.Series)
-    assert isinstance(seq.rx, pd.Series)
-    assert isinstance(seq.ry, pd.Series)
-    assert isinstance(seq.rz, pd.Series)
     assert seq.z.mean() > 0
     np.testing.assert_array_less(np.abs(seq.pos.to_numpy()[0]), 50.0 )
 
@@ -82,6 +76,13 @@ def test_subset(flight):
         seq.data.index[-1],
         2
     )
+
+
+def test_existing_constructs(seq):
+    exconsts = seq.existing_constructs()
+    assert "pos" in exconsts
+    assert not "alpha" in exconsts
+
 
 def test_get_state(seq):
     st = seq.get_state_from_time(100)

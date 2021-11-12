@@ -21,7 +21,7 @@ class TestLine(unittest.TestCase):
     def test_match_axis_rate(self):
         elm = Line(0.5, 0.5).scale(100.0).match_axis_rate(
             1.0, 30.0).create_template(Transformation(), 30.0)
-        self.assertAlmostEqual(elm.data.brvr.mean(), 1.0)
+        self.assertAlmostEqual(elm.brvr.mean(), 1.0)
 
         elm = Line(0.5, -0.5).scale(100.0).match_axis_rate(
             1.0, 30.0).create_template(Transformation(), 30.0)

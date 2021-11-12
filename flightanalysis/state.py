@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from typing import Dict, Union
 from json import load
-from .svars import svars
+from .svars import subset_vars, constructs, assert_vars, assert_constructs, all_vars
 
 
 class State():
@@ -12,13 +12,14 @@ class State():
     """
 
     def __init__(self, data:dict):
+        assert_vars(data.keys())
         self.data = data
 
     def __getattr__(self, name):
         if name in self.data.keys():
             return self.data[name]
-        elif name in svars.keys():
-            return svars[name].single(*[self.data[name] for name in svars[name].names])
+        elif name in constructs.keys():
+            return constructs[name].fromdict(self.data)
  
     @property
     def transform(self):
@@ -30,10 +31,31 @@ class State():
 
     @staticmethod
     def from_constructs(**kwargs):
-        return State({name:value for key, const in kwargs.items() for name, value in const.to_dict(svars[key].prefix)})
+        assert_constructs(kwargs.keys())
+
+        cdicts = [constructs[key].todict(const) for key, const in kwargs.items()]
+
+        return State({name:value for cdict in cdicts for name, value in cdict.items()})
+
+    def existing_constructs(self):
+        return [key for key, const in constructs.items() if all([val in self.data.keys() for val in const.keys])]
+
+    def copy(self, *args,**kwargs):
+        kwargs = dict(kwargs, **{list(constructs.keys())[i]: arg for i, arg in enumerate(args)})
+        
+        old_constructs = {key: self.__getattr__(key) for key in self.existing_constructs() if not key in kwargs}
+
+        new_constructs = {key: value for key, value in list(kwargs.items()) + list(old_constructs.items())}
+
+        return State.from_constructs(**new_constructs)
+        
 
     def from_transform(transform: Transformation, **kwargs): 
-        return State(transform.translation, transform.rotation, **kwargs)
+        if not "time" in kwargs.keys():
+            kwargs["time"] = 0.0
+        kwargs["pos"] = transform.translation
+        kwargs["att"] = transform.rotation
+        return State.from_constructs(**kwargs)
 
     def body_to_world(self, pin: Union[Point, Points]) -> Point:
         """Rotate a point in the body frame to a point in the data frame
@@ -45,10 +67,6 @@ class State():
             Point: Point in the world
         """
         return self.transform.point(pin)
-
-    @property
-    def vel(self):
-        return self.transform.rotate(self.bvel)
 
     @property
     def direction(self):

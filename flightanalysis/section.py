@@ -1,7 +1,7 @@
 from flightdata import Flight, Fields
 from geometry import Point, Quaternion, Coord, Transformation, Points, Quaternions, cross_product, GPSPosition
 from .flightline import FlightLine, Box
-from .state import State
+from .state import State, constructs, assert_vars, assert_constructs, all_vars
 import numpy as np
 import pandas as pd
 from typing import Tuple, Union
@@ -24,22 +24,18 @@ class Section():
         if len(data) == 0:
             raise Exception("Section created with empty dataframe")
         
-        
+        assert_vars(data.keys())
+
         self.data = data
         self.data.index = self.data.index - self.data.index[0]
 
     def __getattr__(self, name) -> Union[pd.DataFrame, Points, Quaternions]:
         if name in self.data.columns:
             return self.data[name]
-        elif name in State.vars.constructs:
-            return self.data[State.vars.constructs[name]]
-        elif name in ["gpos", "gbvel", "gbrvel", "gbacc"]:
-            return Points.from_pandas(self.__getattr__(name[1:]))
-        elif name == "gatt":
-            return Quaternions.from_pandas(self.att)
-        else:
-            raise AttributeError
-
+        elif name in constructs.keys():
+            return self.data[constructs[name].keys]
+        elif name in ["g" + name for name in constructs.keys()]:
+            return constructs[name[1:]].fromdf(self.data)
 
     def segment(self, partitions):
         parts = np.linspace(self.data.index[0], self.data.index[-1], partitions)
@@ -89,39 +85,29 @@ class Section():
         return Section(combo)
 
     @staticmethod
-    def from_constructs(t, pos, att, bvel, brvel, bacc):
+    def from_constructs(*args,**kwargs):
+        kwargs = dict(kwargs, **{list(constructs.keys())[i]: arg for i, arg in enumerate(args)})
+        assert_constructs(kwargs.keys())
         
-        df = pd.concat([
-            pd.DataFrame(data=np.array(t), index=t, columns=["flight_time"]), 
-            pos.to_pandas(columns=State.vars.pos, index=t), 
-            att.to_pandas(columns=State.vars.att, index=t),
-            bvel.to_pandas(columns=State.vars.bvel, index=t),
-            brvel.to_pandas(columns=State.vars.brvel, index=t),
-            bacc.to_pandas(columns=State.vars.bacc, index=t)
-        ], axis=1)
+        df = pd.concat([constructs[key].todf(x, kwargs["time"]) for key, x in kwargs.items()],axis=1)
 
         return Section(df)
 
+    def existing_constructs(self):
+        return [key for key, const in constructs.items() if all([val in self.data.columns for val in const.keys])]
 
-    def copy(self, t=None, pos:Points=None, att:Quaternions=None, bvel:Points=None, brvel:Points=None, bacc:Points=None):
-        if t is None:
-            t=self.data.index
+    def misc_cols(self):
+        return [col for col in self.data.columns if not col in all_vars]
+
+    def copy(self, *args, **kwargs):
+        kwargs = dict(kwargs, **{list(constructs.keys())[i]: arg for i, arg in enumerate(args)})
         
-        pos = self.gpos if pos is None else pos
-        sec = Section.from_constructs(
-            self.data.index if t is None else t,
-            self.gpos if pos is None else pos,
-            self.gatt if att is None else att,
-            self.gbvel if bvel is None else bvel,
-            self.gbrvel if brvel is None else brvel,
-            self.gbacc if bacc is None else bacc
-        )
+        old_constructs = {key: self.__getattr__(key) for key in self.existing_constructs() if not key in kwargs}
 
-        if len(self.data.columns) > len(sec.data.columns):
-            missing_cols = list(set(self.data.columns) - set(sec.data.columns))
-            sec.data[missing_cols] = self.data[missing_cols].copy()
+        new_constructs = {key: value for key, value in kwargs.items() + old_constructs.items()}
 
-        return sec
+        return Section.from_constructs(new_constructs).append_columns(self.data[self.misc_cols()])
+        
 
     @staticmethod
     def from_flight(flight: Union[Flight, str], box=Union[FlightLine, Box, str]):
@@ -176,7 +162,13 @@ class Section():
         bacc = Points.from_pandas(
             flight.data.loc[:, ["acceleration_x", "acceleration_y", "acceleration_z"]])
 
-        return Section.from_constructs(t, pos, att, bvel, brvel, bacc)
+        return Section.from_constructs(
+            t, 
+            pos, 
+            att, 
+            bvel, 
+            brvel, 
+            bacc)
 
 
     def append_columns(self, data):
@@ -204,7 +196,7 @@ class Section():
         return self.data.index[-1] - self.data.index[0]
 
     def get_state_from_index(self, index):
-        return State.from_series(self.data.iloc[index].copy())
+        return State(self.data.iloc[index])
 
     def get_state_from_time(self, time):
         return self.get_state_from_index(
