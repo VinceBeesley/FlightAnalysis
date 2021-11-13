@@ -81,7 +81,7 @@ class Section():
         for df, offset in zip(dfs, offsets):
             df.index = np.array(df.index) - df.index[0] + offset
         combo = pd.concat(dfs)
-        combo.index.name = "time_index"
+        combo.index.name = "t"
         return Section(combo)
 
     @staticmethod
@@ -162,13 +162,7 @@ class Section():
         bacc = Points.from_pandas(
             flight.data.loc[:, ["acceleration_x", "acceleration_y", "acceleration_z"]])
 
-        return Section.from_constructs(
-            t, 
-            pos, 
-            att, 
-            bvel, 
-            brvel, 
-            bacc)
+        return Section.from_constructs(t, pos, att, bvel, brvel, bacc)
 
 
     def append_columns(self, data):
@@ -186,7 +180,11 @@ class Section():
 
     @staticmethod
     def from_csv(filename):
-        return Section(pd.read_csv(filename).set_index("time_index"))
+        df = pd.read_csv(filename)
+        if "time_index" in df.columns:
+            df = df.rename({"time_index":"t"}, axis=1)
+
+        return Section(df.set_index("t", drop=False))
 
     def __len__(self):
         return len(self.data)
@@ -251,16 +249,13 @@ class Section():
         """
         t = np.array(self.data.index) - self.data.index[0]
 
-        # roll rate to add:
         roll_rate = 2 * np.pi * proportion / t[-1]
         superimposed_roll = t * roll_rate
 
         # attitude
-        angles = Points.from_point(
-            Point(1.0, 0.0, 0.0), len(t)) * superimposed_roll
+        angles = Points.from_point(Point(1.0, 0.0, 0.0), len(t)) * superimposed_roll
 
-        new_att = Quaternions.from_pandas(self.att.copy()).body_rotate(
-            angles)
+        new_att = Quaternions.from_pandas(self.att.copy()).body_rotate(angles)
 
         axisrates = Points.from_pandas(self.brvel.copy())
         new_rates = Points(np.array([
@@ -407,10 +402,10 @@ class Section():
             Section: a labelled section
         """
         mans = pd.DataFrame(path, columns=["template", "flight"]).set_index("template").join(
-                template.data.reset_index().loc[:, ["manoeuvre", "element"]]
+                template.data.reset_index(drop=True).loc[:, ["manoeuvre", "element"]]
             ).groupby(['flight']).last().reset_index().set_index("flight")
 
-        return Section(flown.data.reset_index().join(mans).set_index("time_index"))
+        return Section(flown.data.reset_index(drop=True).join(mans).set_index("t", drop=False))
 
     def label(self, **kwargs):
         return Section(self.data.assign(**kwargs))

@@ -36,8 +36,9 @@ class TestFCJson(unittest.TestCase):
 
         mans = fcj.create_json_mans()
         old_mans["name"] = mans["name"]
-        check_frame = mans.loc[:, ["name", "id", "sp", "wd", "start", "stop", "background"]]
-        old_check_frame = old_mans.loc[:, ["name", "id", "sp", "wd", "start", "stop", "background"]]
+        check_cols = ["name", "id", "sp", "wd", "start", "stop"]
+        check_frame = mans.loc[:, check_cols]
+        old_check_frame = old_mans.loc[:, check_cols]
 
         pd.testing.assert_frame_equal(check_frame, old_check_frame, check_less_precise=2)
     

@@ -1,4 +1,5 @@
 from flightanalysis.state import State
+from flightanalysis.svars import essential_keys
 from flightanalysis.flightline import Box, FlightLine
 import unittest
 from geometry import Point, Quaternion
@@ -15,7 +16,7 @@ def test_missing_vars():
         st = State(dict())
 
 def test_init():
-    st = State(dict(t=0,x=0,y=0,z=0,rx=0,ry=0,rz=0,rw=1) )
+    st = State({key: 0 for key in essential_keys} )
     assert st.transform.translation == Point.zeros()
 
 def test_from_constructs():

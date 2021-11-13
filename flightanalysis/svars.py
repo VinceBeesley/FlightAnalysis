@@ -37,26 +37,28 @@ fromdf = {
 }
 
 class SVar:
-    def __init__(self, name, keys, Single, Multiple, description):
+    def __init__(self, name, keys, Single, Multiple, default, description):
         self.name = name
         self.keys = keys
+        self.default = default
         self.todict = lambda x : todict[Single](x, self.keys)
         self.fromdict = lambda x : fromdict[Single]({key: x[key] for key in self.keys})
         self.todf = lambda x, index: todf[Multiple](x, index, self.keys)
         self.fromdf = lambda x: fromdf[Multiple](x.loc[:,self.keys])
         self.description = description
-    
+
+
 constructs = {
-    "time":     SVar("t",   ["t"],                      float, np.array, ""),
-    "pos":      SVar("",    ["x", "y", "z"],            Point, Points, ""),
-    "att":      SVar("r",   ["rw", "rx", "ry", "rz"],   Quaternion, Quaternions, ""),
-    "bvel":     SVar("bv",  ["bvx", "bvy", "bvz"],      Point, Points, ""),
-    "brvel":    SVar("brv", ["brvr", "brvp", "brvy"],   Point, Points, ""),
-    "bacc":     SVar("ba",  ["bax", "bay", "baz"],      Point, Points, ""),
-    "wind":     SVar("wv",  ["wvx", "wvy", "wvz"],      Point, Points, ""),
-    "bwind":    SVar("bwv", ["bwvx", "bwvy", "bwvz"],   Point, Points, ""),
-    "alpha":    SVar("alpha",["alpha"],                 float, np.array, ""),
-    "beta":     SVar("beta", ["beta"],                  float, np.array, ""),
+    "time":     SVar("t",       ["t"],                      float,          np.array,       lambda : 0.0,               ""),
+    "pos":      SVar("",        ["x", "y", "z"],            Point,          Points,         Point.zeros,                ""),
+    "att":      SVar("r",       ["rw", "rx", "ry", "rz"],   Quaternion,     Quaternions,    Quaternion.zero,            ""),
+    "bvel":     SVar("bv",      ["bvx", "bvy", "bvz"],      Point,          Points,         Point.zeros,                ""),
+    "brvel":    SVar("brv",     ["brvr", "brvp", "brvy"],   Point,          Points,         Point.zeros,                ""),
+    "bacc":     SVar("ba",      ["bax", "bay", "baz"],      Point,          Points,         Point.zeros,                ""),
+    "wind":     SVar("wv",      ["wvx", "wvy", "wvz"],      Point,          Points,         Point.zeros,                ""),
+    "bwind":    SVar("bwv",     ["bwvx", "bwvy", "bwvz"],   Point,          Points,         Point.zeros,                ""),
+    "alpha":    SVar("alpha",   ["alpha"],                  float,          np.array,       lambda : 0.0,               ""),
+    "beta":     SVar("beta",    ["beta"],                   float,          np.array,       lambda : 0.0,               ""),
 }
 
 
@@ -82,8 +84,13 @@ def assert_vars(keys):
             [key for key in essential_keys if not key in keys]
     )
 
+def missing_constructs(names):
+    return [key for key in essential if not key in names]
+
 def assert_constructs(names):
     assert set(essential).issubset(names), "missing essential constructs {}".format(
-        [key for key in essential if not key in names]
+        missing_constructs(names)
     )
 
+def default_constructs(names):
+    return {name:constructs[name].default() for name in names}

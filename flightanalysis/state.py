@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from typing import Dict, Union
 from json import load
-from .svars import subset_vars, constructs, assert_vars, assert_constructs, all_vars
+from .svars import subset_vars, constructs, assert_vars, assert_constructs, all_vars, default_constructs, missing_constructs
 
 
 class State():
@@ -31,9 +31,9 @@ class State():
 
     @staticmethod
     def from_constructs(**kwargs):
-        assert_constructs(kwargs.keys())
+        defaults = default_constructs(missing_constructs(kwargs.keys()))
 
-        cdicts = [constructs[key].todict(const) for key, const in kwargs.items()]
+        cdicts = [constructs[key].todict(const) for key, const in list(kwargs.items()) + list(defaults.items())]
 
         return State({name:value for cdict in cdicts for name, value in cdict.items()})
 
@@ -41,10 +41,10 @@ class State():
         return [key for key, const in constructs.items() if all([val in self.data.keys() for val in const.keys])]
 
     def copy(self, *args,**kwargs):
-        kwargs = dict(kwargs, **{list(constructs.keys())[i]: arg for i, arg in enumerate(args)})
-        
-        old_constructs = {key: self.__getattr__(key) for key in self.existing_constructs() if not key in kwargs}
+        kwargs = dict(kwargs, **{list(constructs.keys())[i]: arg for i, arg in enumerate(args)}) # add the args to the kwargs
 
+        old_constructs = {key: self.__getattr__(key) for key in self.existing_constructs() if not key in kwargs}
+        
         new_constructs = {key: value for key, value in list(kwargs.items()) + list(old_constructs.items())}
 
         return State.from_constructs(**new_constructs)
