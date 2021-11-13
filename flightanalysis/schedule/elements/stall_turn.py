@@ -18,7 +18,7 @@ class StallTurn(El):
         return self._add_rolls(
             Section.extrapolate_state(
                 State.from_transform(transform), 
-                2*np.pi / abs(self.yaw_rate), 
+                np.pi / abs(self.yaw_rate), 
                 1.0 if simple else Section._construct_freq
             ).superimpose_rotation(
                 Point.Z(1.0), 

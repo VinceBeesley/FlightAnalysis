@@ -181,8 +181,12 @@ class Section():
     @staticmethod
     def from_csv(filename):
         df = pd.read_csv(filename)
-        if "time_index" in df.columns:
-            df = df.rename({"time_index":"t"}, axis=1)
+
+        if "time_index" in df.columns: # This is for back compatability with old csv files where time column was labelled differently
+            if "t" in df.columns:
+                df.drop("time_index", axis=1)
+            else:
+                df = df.rename({"time_index":"t"}, axis=1)
 
         return Section(df.set_index("t", drop=False))
 

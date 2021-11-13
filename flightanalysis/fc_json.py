@@ -155,7 +155,7 @@ class FCJson:
 
         mans["wd"] = [100 * sec.duration / self.sec.duration for sec in itsecs]
         
-        sec = self.sec.data.reset_index()
+        sec = self.sec.data.reset_index(drop=True)
 
         mans["start"] = [0] + [sec.loc[sec.manoeuvre==man.uid].index[0] for man in self.schedule.manoeuvres]
         mans["stop"] = [mans["start"][1] + 1] + [sec.loc[sec.manoeuvre==man.uid].index[-1] + 1 for man in self.schedule.manoeuvres]

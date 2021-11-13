@@ -1,5 +1,5 @@
 .vscode
-_trials.py
+_trials/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
