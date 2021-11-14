@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import unittest
-from flightanalysis.schedule import Manoeuvre
+from flightanalysis.schedule import Manoeuvre, Schedule
 from flightanalysis import get_schedule, Section
 from flightanalysis.schedule.elements import Line, Loop, rollmaker
 from geometry import Point, Quaternion, Transformation, Coord
@@ -11,16 +11,16 @@ import pytest
 
 
 @pytest.fixture(scope="session")
-def schedule():
+def schedule() -> Schedule:
     return get_schedule("F3A", "P21")
 
 
 @pytest.fixture(scope="session")
-def v8(schedule):
+def v8(schedule) -> Manoeuvre:
     return schedule.manoeuvres[0]
 
 @pytest.fixture(scope="session")
-def sql(schedule):
+def sql(schedule) -> Manoeuvre:
     return schedule.manoeuvres[2]
 
 
@@ -28,7 +28,7 @@ def sql(schedule):
 def aligned():
     return Section.from_csv("tests/test_inputs/test_log_00000052_aligned.csv")
 
-def test_create_template(v8):
+def test_create_template(v8: Manoeuvre):
     v8_template = v8.scale(100).create_template(
         Transformation.from_coords(
             Coord.from_nothing(), Coord.from_nothing()),

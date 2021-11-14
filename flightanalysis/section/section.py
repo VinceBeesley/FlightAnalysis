@@ -1,18 +1,9 @@
-from flightdata import Flight, Fields
-from geometry import Point, Quaternion, Coord, Transformation, Points, Quaternions, cross_product, GPSPosition
-from flightanalysis.flightline import FlightLine, Box
+from geometry import Point, Points, Quaternions
 from .state import State, constructs, assert_vars, assert_constructs, all_vars
 import numpy as np
 import pandas as pd
-from typing import Tuple, Union
+from typing import Union
 from numbers import Number
-from fastdtw import fastdtw
-from scipy.spatial.distance import euclidean
-from scipy.optimize import minimize
-from scipy.cluster.vq import whiten
-from pathlib import Path
-from scipy.optimize import minimize, Bounds
-import warnings
 
 
 class Section():
@@ -32,6 +23,8 @@ class Section():
             return self.data[name]
         elif name in constructs.keys():
             return self.data[constructs[name].keys]
+        elif name == "gtime":     
+            return self.time.to_numpy()[:,0]
         elif name in ["g" + name for name in constructs.keys()]:
             return constructs[name[1:]].fromdf(self.data)
 
@@ -55,39 +48,14 @@ class Section():
             return Section(self.data[start:end])
 
     @staticmethod
-    def stack(sections: list):
-        """stack a list of sections on top of each other. last row of each is replaced with first row of the next, 
-           indexes are offset so they are sequential
-
-        Args:
-            sections (List[Section]): list of sections to stacked
-
-        Returns:
-            Section: the resulting Section
-        """
-        # first build list of index offsets, to be added to each dataframe
-        # TODO this assumes the first index of each is 0. should use sec.duration
-        offsets = [0] + [sec.duration for sec in sections[:-1]]
-        offsets = np.cumsum(offsets)
-
-        # The sections to be stacked need their last row removed,
-        # as this is replaced with the first row of the next, data is copied at this point
-        dfs = [section.data.iloc[:-1] for section in sections[:-1]] + \
-            [sections[-1].data.copy()]
-
-        # offset the df indexes
-        for df, offset in zip(dfs, offsets):
-            df.index = np.array(df.index) - df.index[0] + offset
-        combo = pd.concat(dfs)
-        combo.index.name = "t"
-        return Section(combo)
-
-    @staticmethod
     def from_constructs(*args,**kwargs):
         kwargs = dict(kwargs, **{list(constructs.keys())[i]: arg for i, arg in enumerate(args)})
-        assert_constructs(kwargs.keys())
+        assert_constructs(list(kwargs.keys()))
         
-        df = pd.concat([constructs[key].todf(x, kwargs["time"]) for key, x in kwargs.items()],axis=1)
+        df = pd.concat(
+            [constructs[key].todf(x, kwargs["time"]) for key, x in kwargs.items()],
+            axis=1
+        )
 
         return Section(df)
 
@@ -101,68 +69,12 @@ class Section():
     def copy(self, *args, **kwargs):
         kwargs = dict(kwargs, **{list(constructs.keys())[i]: arg for i, arg in enumerate(args)})
         
-        old_constructs = {key: self.__getattr__(key) for key in self.existing_constructs() if not key in kwargs}
+        old_constructs = {key: self.__getattr__("g" + key) for key in self.existing_constructs() if not key in kwargs.keys()}
 
-        new_constructs = {key: value for key, value in kwargs.items() + old_constructs.items()}
+        new_constructs = {key: value for key, value in list(kwargs.items()) + list(old_constructs.items())}
 
-        return Section.from_constructs(new_constructs).append_columns(self.data[self.misc_cols()])
+        return Section.from_constructs(**new_constructs).append_columns(self.data[self.misc_cols()])
         
-
-    @staticmethod
-    def from_flight(flight: Union[Flight, str], box=Union[FlightLine, Box, str]):
-        if isinstance(flight, str):
-            flight = {
-                ".csv": Flight.from_csv,
-                ".BIN": Flight.from_log
-            }[Path(flight).suffix](flight)
-
-        if isinstance(box, FlightLine):
-            return Section._from_flight(flight, box)
-        if isinstance(box, Box):
-            return Section._from_flight(flight, FlightLine.from_box(box, flight.origin))
-        if isinstance(box, str):
-            box = Box.from_json(box)
-            return Section._from_flight(flight, FlightLine.from_box(box, flight.origin))
-        raise NotImplementedError()
-
-    @staticmethod
-    def _from_flight(flight: Flight, flightline: FlightLine):
-        # read position and attitude directly from the log(after transforming to flightline)
-        t = flight.data.index
-        pos = flightline.transform_from.point(
-            Points(
-                flight.read_numpy(Fields.POSITION).T
-            ))
-
-        qs = flight.read_fields(Fields.QUATERNION)
-        
-        if not pd.isna(qs).all().all():  # for back compatibility with old csv files
-            att = flightline.transform_from.quat(
-                Quaternions.from_pandas(flight.read_fields(Fields.QUATERNION))
-            )
-        else:
-            att = flightline.transform_from.quat(
-                Quaternions.from_euler(Points(
-                    flight.read_numpy(Fields.ATTITUDE).T
-                )))
-
-        dt = np.gradient(t)
-
-        brvel = att.body_diff(dt)  
-
-        if pd.isna(qs).all().all():
-            brvel = brvel.remove_outliers(2)  # TODO this is a bodge to get rid of phase jumps when euler angles are used directly
-        
-        # this is EKF velocity estimate in NED frame transformed to contest frame
-        vel = flightline.transform_from.rotate(Points(flight.read_numpy(Fields.VELOCITY).T))
-
-        bvel = att.inverse().transform_point(vel)
-
-        bacc = Points.from_pandas(
-            flight.data.loc[:, ["acceleration_x", "acceleration_y", "acceleration_z"]])
-
-        return Section.from_constructs(t, pos, att, bvel, brvel, bacc)
-
 
     def append_columns(self, data):
         return Section(pd.concat([self.data, data], axis=1, join="inner"))
@@ -171,23 +83,6 @@ class Section():
         self.data.to_csv(filename)
         return filename
 
-    def transform(self, transform: Transformation):
-        return self.copy(
-            pos=transform.point(Points.from_pandas(self.pos)),
-            att=transform.quat(Quaternions.from_pandas(self.att)), 
-        )
-
-    @staticmethod
-    def from_csv(filename):
-        df = pd.read_csv(filename)
-
-        if "time_index" in df.columns: # This is for back compatability with old csv files where time column was labelled differently
-            if "t" in df.columns:
-                df.drop("time_index", axis=1)
-            else:
-                df = df.rename({"time_index":"t"}, axis=1)
-
-        return Section(df.set_index("t", drop=False))
 
     def __len__(self):
         return len(self.data)
@@ -207,7 +102,6 @@ class Section():
             self.data.index.get_loc(time, method='nearest')
         )
 
-
     def body_to_world(self, pin: Union[Point, Points]) -> pd.DataFrame:
         """generate world frame trace of a body frame point
 
@@ -224,179 +118,12 @@ class Section():
         else:
             return NotImplemented
 
-    @staticmethod
-    def t_array(duration: float, freq: float = None):
-        if freq==None:
-            freq = Section._construct_freq
-        return  np.linspace(0, duration, max(int(duration * freq), 3))
-
-    @staticmethod
-    def extrapolate_state(istate: State, duration: float, freq: float = None):
-        t = Section.t_array(duration, freq)
-
-        bvel = Points.from_point(istate.bvel, len(t))
-
-        return Section.from_constructs(
-            t,
-            pos = Points.from_point(istate.pos,len(t)) + istate.transform.rotate(bvel) * t,
-            att = Quaternions.from_quaternion(istate.att, len(t)),
-            bvel = bvel,
-            brvel=Points(np.zeros((len(t), 3))),
-            bacc=Points(np.zeros((len(t), 3)))
-        )
-
-
-    def superimpose_roll(self, proportion: float):
-        """Generate a new section, identical to self, but with a continous roll integrated
-
-        Args:
-            proportion (float): the amount of roll to integrate
-        """
-        return self.superimpose_rotation(Point(1,0,0), 2 * np.pi * proportion)
-
-
-    def superimpose_rotation(self, axis: Point, angle: float, reference:str="body"):
-        """Generate a new section, identical to self, but with a continous rotation integrated
-        """
-        t = np.array(self.data.index) - self.data.index[0]
-
-        rate = angle / t[-1]
-        superimposed_rotation = t * rate
-
-        angles = Points.from_point(axis.unit(), len(t)) * superimposed_rotation
-
-        return self.superimpose_angles(angles, reference)
-
-    def smooth_rotation(self, axis: Point, angle: float, reference:str="body", w: float=0.25, w2=0.1):
-        """Accelerate for acc_prop * t, flat rate for middle, slow down for acc_prop * t.
-
-        Args:
-            axis (Point): Axis to rotate around.
-            angle (float): angle to rotate.
-            reference (str, optional): rotate about body or world. Defaults to "body".
-            acc_prop (float, optional): proportion of total rotation to be accelerating for. Defaults to 0.1.
-        """
-
-        t = np.array(self.data.index) - self.data.index[0]
-
-        T = t[-1]
-
-        V = angle / (T*(1-0.5*w-0.5*w2))  # The maximum rate
-
-        #between t=0 and t=wT
-        x = t[t<=w*T]
-        angles_0 = (V * x**2) / (2 * w * T)    
-
-        #between t=wT and t=T(1-w)
-        y=t[(t>w*T) & (t<=(T-w2*T))]
-        angles_1 = V * y - V * w * T / 2
-        
-        #between t=T(1-w2) and t=T
-        z = t[t>(T-w2*T)] - T + w2*T
-        angles_2 = V*z - V * z **2 / (2*w2*T) + V*T - V * w2 * T  - 0.5*V*w*T
-
-        angles = Points.from_point(axis.unit(), len(t)) * np.concatenate([angles_0, angles_1, angles_2])
-
-        return self.superimpose_angles(angles, reference)
-
-    def superimpose_angles(self, angles: Points, reference:str="body"): 
-        if reference=="world":
-            new_att = self.gatt.rotate(angles)
-        elif reference=="body":
-            new_att = self.gatt.body_rotate(angles)
-        else:
-            raise ValueError("unknwon rotation reference")
-
-        new_bvel = new_att.inverse().transform_point(self.gatt.transform_point(self.gbvel))
-            
-        dt = np.gradient(self.data.index)
-
-        sec =  Section.from_constructs(
-            np.array(self.data.index),
-            Points.from_pandas(self.pos.copy()),
-            new_att,
-            new_bvel,
-            new_att.body_diff(dt),
-            new_bvel.diff(dt)
-        )
-        if "sub_element" in self.data.columns:
-            sec = sec.append_columns(self.data["sub_element"])
-        return sec
-
-
-    @staticmethod
-    def align(flown, template, radius=1, white=False, weights = Point(1,1,1)):
-        """Perform a temporal alignment between two sections. return the flown section with labels 
-        copied from the template along the warped path
-
-        Args:
-            flown (Section): An un-labelled Section
-            template (Section): A labelled Section
-            radius (int, optional): The DTW search radius. Defaults to 5.
-            whiten (bool, optional): Whether to whiten the data before performing the alignment. Defaults to False.
-
-        """
-        if white:
-            warnings.filterwarnings("ignore", message="Some columns have standard deviation zero. ")
-
-        def get_brv(brv):
-            brv.data[:,0] = abs(brv.data[:,0])
-            brv.data[:,2] = abs(brv.data[:,2])
-
-            if white:
-                brv = brv.whiten()
-
-            return brv * weights
-
-        fl = get_brv(flown.gbrvel)
-
-        tp = get_brv(template.gbrvel)
-
-        distance, path = fastdtw(
-            tp.data,
-            fl.data,
-            radius=radius,
-            dist=euclidean
-        )
-
-        return distance, Section.copy_labels(template, flown, path)
-
-    @staticmethod
-    def copy_labels(template, flown, path):
-        """Copy the labels from a template section to a flown section along the index warping path
-
-        Args:
-            template (Section): A labelled section
-            flown (Section): An unlabelled section
-            path (List): A list of lists containing index pairs from template to flown
-
-        Returns:
-            Section: a labelled section
-        """
-        mans = pd.DataFrame(path, columns=["template", "flight"]).set_index("template").join(
-                template.data.reset_index(drop=True).loc[:, ["manoeuvre", "element"]]
-            ).groupby(['flight']).last().reset_index().set_index("flight")
-
-        return Section(flown.data.reset_index(drop=True).join(mans).set_index("t", drop=False))
-
     def label(self, **kwargs):
         return Section(self.data.assign(**kwargs))
 
     def remove_labels(self):
         return Section(self.data.drop(["manoeuvre", "element"], 1, errors="ignore"))
     
-
-    def aoa(self):
-        bvel = self.gbvel #- self.gatt.inverse().transform_point(self.get_wind())
-
-        df = pd.DataFrame(
-            np.array([np.arctan2(bvel.z, bvel.x), np.arctan2(bvel.y, bvel.x)]).T,
-            columns=["alpha", "beta"]
-            )
-        df.index =self.data.index
-        return df
-
-
     def flying_only(self):
         above_ground = self.data.loc[self.data.z >= 5.0]
         return self.subset(above_ground.index[0], above_ground.index[-1])

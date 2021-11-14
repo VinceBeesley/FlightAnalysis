@@ -115,3 +115,15 @@ def test_smooth_rotation():
 def test_from_csv():
     sec = Section.from_csv("tests/test_inputs/test_log_00000052_section.csv")
     assert isinstance(sec.gpos, Points)
+
+
+def test_copy(seq: Section):
+    seq2 = seq.copy(bvel=seq.gbvel * 2)
+    np.testing.assert_array_equal((seq.gbvel * 2).data, seq2.gbvel.data) 
+
+
+def test_append_wind(seq: Section):
+
+    seq = seq.append_wind()
+
+    assert isinstance(seq.gbwind, Points)

@@ -68,7 +68,7 @@ def subset_constructs(names):
 def subset_vars(consts):
     return [name for sv in subset_constructs(consts) for name in sv.keys]
 
-all_vars = [subset_vars(constructs.keys())]
+all_vars = subset_vars(constructs.keys())
 
 essential = ["time", "pos", "att", "bvel", "brvel"]
 essential_keys = subset_vars(essential)
@@ -88,8 +88,8 @@ def missing_constructs(names):
     return [key for key in essential if not key in names]
 
 def assert_constructs(names):
-    assert set(essential).issubset(names), "missing essential constructs {}".format(
-        missing_constructs(names)
+    assert set(essential).issubset(names), "missing essential constructs {}, got {}".format(
+        missing_constructs(names), names
     )
 
 def default_constructs(names):
