@@ -11,7 +11,7 @@ def test_create_template():
 
     assert template[-1].att.transform_point(Point(0,0,1)).x== pytest.approx(1)
 
-@pytest.skip("This test should no longer pass")
+@pytest.mark.skip("This test should no longer pass")
 def test_match_axis_rate():
     template = Spin(1, 1).scale(100.0).match_axis_rate(10.0, 30.0).create_template(Transformation(), 30.0)
     

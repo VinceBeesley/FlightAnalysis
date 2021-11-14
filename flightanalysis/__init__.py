@@ -1,6 +1,5 @@
 from .flightline import FlightLine, Box
-from .state import State
-from .section import Section
+from .section import Section, State
 from .schedule import (
     Schedule,
     Manoeuvre,

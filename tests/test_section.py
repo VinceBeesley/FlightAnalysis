@@ -1,5 +1,5 @@
 from flightanalysis.section import Section
-from flightanalysis.state import State
+from flightanalysis import State
 from flightanalysis.flightline import Box, FlightLine
 from flightanalysis.schedule import Schedule, Categories, get_schedule, Line
 

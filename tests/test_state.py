@@ -1,5 +1,5 @@
-from flightanalysis.state import State
-from flightanalysis.svars import essential_keys
+from flightanalysis import State
+from flightanalysis.section.variables import essential_keys
 from flightanalysis.flightline import Box, FlightLine
 import unittest
 from geometry import Point, Quaternion
