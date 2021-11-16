@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from typing import Dict, Union
 from json import load
-from .variables import subset_vars, constructs, assert_vars, assert_constructs, all_vars, default_constructs, missing_constructs
+from .variables import subset_vars, constructs, assert_vars, assert_constructs, all_vars, default_constructs, missing_constructs, construct_list
 
 
 class State():

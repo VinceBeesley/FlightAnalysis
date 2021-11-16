@@ -1,10 +1,23 @@
 from geometry import Point, Points, Quaternions
-from .state import State, constructs, assert_vars, assert_constructs, all_vars
+from .state import State, constructs, assert_vars, assert_constructs, all_vars, construct_list
+from flightanalysis.fd_model.atmosphere import Atmosphere, Atmospheres
 import numpy as np
 import pandas as pd
 from typing import Union
 from numbers import Number
+import warnings
 
+
+def atmosphere_check(data):
+    constrs = construct_list(data.columns)
+    if not "atm" in constrs:
+        warnings.warn("No Atmosphere Data Available, assuming SL Standard pressure and temperature. \n This is for temporary back compatibility with old section csvs.")
+        data = pd.concat([
+            data, 
+            Atmospheres(np.full((len(data["t"]), 2), [101325, 288.15])).to_pandas(index=data.index)
+        ], axis=1)
+
+    return data
 
 class Section():
     _construct_freq = 30
@@ -12,8 +25,10 @@ class Section():
     def __init__(self, data: pd.DataFrame):
         if len(data) == 0:
             raise Exception("Section created with empty dataframe")
+
+        data = atmosphere_check(data)
         
-        assert_vars(data.keys())
+        assert_vars(data.columns)
 
         self.data = data
         self.data.index = self.data.index - self.data.index[0]
@@ -50,12 +65,15 @@ class Section():
     @staticmethod
     def from_constructs(*args,**kwargs):
         kwargs = dict(kwargs, **{list(constructs.keys())[i]: arg for i, arg in enumerate(args)})
+
         assert_constructs(list(kwargs.keys()))
-        
+
         df = pd.concat(
             [constructs[key].todf(x, kwargs["time"]) for key, x in kwargs.items()],
             axis=1
         )
+
+        df = atmosphere_check(df)       
 
         return Section(df)
 

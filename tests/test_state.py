@@ -1,5 +1,5 @@
 from flightanalysis import State
-from flightanalysis.section.variables import essential_keys
+from flightanalysis.section.variables import essential_keys, essential
 from flightanalysis.flightline import Box, FlightLine
 import unittest
 from geometry import Point, Quaternion
@@ -22,3 +22,4 @@ def test_init():
 def test_from_constructs():
     st = State.from_constructs(time=5, pos=Point.zeros(), att=Quaternion.from_euler(Point.zeros()))
     assert st.transform.translation == Point.zeros()
+    assert all([ess in st.existing_constructs() for ess in essential])

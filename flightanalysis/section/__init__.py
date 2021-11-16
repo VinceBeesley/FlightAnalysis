@@ -29,13 +29,13 @@ from .tools.wind import calculate_wind, append_wind
 Section.calculate_wind = calculate_wind
 Section.append_wind = append_wind
 
-from .tools.flight_dynamics import calculate_aoa, append_aoa
+from .tools.flow import calculate_flow, append_flow
 
-Section.calculate_aoa = calculate_aoa
-Section.append_aoa = append_aoa 
+Section.calculate_flow = calculate_flow
+Section.append_flow = append_flow 
 
 def append_derived_values(self: Section) -> Section:
-    return self.append_wind().append_aoa()
+    return self.append_wind().append_flow()
 
 Section.append_derived_values = append_derived_values
 

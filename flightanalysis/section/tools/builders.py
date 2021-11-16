@@ -6,6 +6,8 @@ from typing import Union
 from flightanalysis import FlightLine, Box
 from flightdata import Flight, Fields
 from pathlib import Path
+from flightanalysis.fd_model.atmosphere import Atmosphere, Atmospheres
+import warnings
 
 
 def extrapolate_state(istate: State, duration: float, freq: float = None) -> Section:
@@ -86,7 +88,13 @@ def _from_flight(flight: Flight, flightline: FlightLine) -> Section:
     bacc = Points.from_pandas(
         flight.data.loc[:, ["acceleration_x", "acceleration_y", "acceleration_z"]])
 
-    return Section.from_constructs(t, pos, att, bvel, brvel, bacc)
+    atm = Atmospheres.from_pandas(flight.read_fields([Fields.PRESSURE, Fields.TEMPERATURE]))
+
+    if atm.count==0:
+        warnings.warn("No Atmosphere Data Available, assuming SL Standard pressure and temperature")
+        atm=Atmospheres(np.full((len(t), 2), [101325, 288.15]))
+
+    return Section.from_constructs(t, pos, att, bvel, brvel, bacc, atm=atm)
 
 
 def stack(sections: list) -> Section:
@@ -100,12 +108,10 @@ def stack(sections: list) -> Section:
         Section: the resulting Section
     """
     # first build list of index offsets, to be added to each dataframe
-    # TODO this assumes the first index of each is 0. should use sec.duration
     offsets = [0] + [sec.duration for sec in sections[:-1]]
     offsets = np.cumsum(offsets)
 
-    # The sections to be stacked need their last row removed,
-    # as this is replaced with the first row of the next, data is copied at this point
+    # The sections to be stacked need their last row removed, as the first row of the next replaces it
     dfs = [section.data.iloc[:-1] for section in sections[:-1]] + \
         [sections[-1].data.copy()]
 
