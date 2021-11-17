@@ -99,7 +99,9 @@ class Section():
             return Section(pd.concat([self.data] + data, axis=1, join="inner"))
         elif isinstance(data,pd.DataFrame):
             return Section(pd.concat([self.data, data], axis=1, join="inner"))
-
+        elif isinstance(data, pd.Series):
+            return Section(pd.concat([self.data, data], axis=1, join="inner"))
+            
     def to_csv(self, filename):
         self.data.to_csv(filename)
         return filename
