@@ -120,6 +120,9 @@ class Loop(El):
                 flown.brvel).x)) * abs(self.rolls)
         )
 
+
+    
+
     def segment(self, transform:Transformation, flown: Section, partitions=10):
         subsections = flown.segment(partitions)
         elms = [ self.match_intention( transform,sec) for sec in subsections ]

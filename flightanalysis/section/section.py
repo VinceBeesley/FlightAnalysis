@@ -95,7 +95,10 @@ class Section():
         
 
     def append_columns(self, data):
-        return Section(pd.concat([self.data, data], axis=1, join="inner"))
+        if isinstance(data, list):
+            return Section(pd.concat([self.data] + data, axis=1, join="inner"))
+        elif isinstance(data,pd.DataFrame):
+            return Section(pd.concat([self.data, data], axis=1, join="inner"))
 
     def to_csv(self, filename):
         self.data.to_csv(filename)
