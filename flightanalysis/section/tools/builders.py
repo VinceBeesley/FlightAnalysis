@@ -120,4 +120,7 @@ def stack(sections: list) -> Section:
         df.index = np.array(df.index) - df.index[0] + offset
     combo = pd.concat(dfs)
     combo.index.name = "t"
+
+    combo["t"] = combo.index
+
     return Section(combo)

@@ -201,7 +201,7 @@ class Schedule():
         rates = get_rates(alinged)
 
         transform = self.create_itransform(
-            alinged.get_state_from_index(0).direction,
+            "left" if alinged.get_state_from_index(0).direction == "right" else "right",
             rates["distance"]
         )
 
