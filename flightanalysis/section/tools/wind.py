@@ -62,12 +62,16 @@ def calculate_wind(self: Section) -> Wind:
 
 
 def append_wind(self: Section, force=False) -> Section:
-    if "bwind" in self.existing_constructs() and not force:
+    constrs = self.existing_constructs()
+    if "bwind" in constrs and not force:
         warnings.warn("This Section already contains wind data, to overwrite use force=True")
         return self
-    wind = calculate_wind(self)
-    
-    world_wind = Points(wind(self.pos.z).T)
+
+    if "wind" in self.existing_constructs() and not force:
+        world_wind = self.wind
+    else:
+        wind = calculate_wind(self)
+        world_wind = Points(wind(self.pos.z).T)
 
     body_wind = self.gatt.inverse().transform_point(world_wind)
 

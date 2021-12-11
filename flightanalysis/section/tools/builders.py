@@ -94,7 +94,17 @@ def _from_flight(flight: Flight, flightline: FlightLine) -> Section:
         warnings.warn("No Atmosphere Data Available, assuming SL Standard pressure and temperature")
         atm=Atmospheres(np.full((len(t), 2), [101325, 288.15]))
 
-    return Section.from_constructs(t, pos, att, bvel, brvel, bacc, atm=atm)
+
+    if flight.has_pitot():
+        wind = Points.from_pandas(flight.read_fields(Fields.WIND).assign(wind_z=0.0))
+        bwind = att.inverse().transform_point(wind)
+        return Section.from_constructs(t, pos, att, bvel, brvel, bacc, atm=atm, wind=wind, bwind=bwind).append_flow()
+        #arspd = Points.X(flight.read_fields(Fields.AIRSPEED).iloc[:,0].to_numpy())
+        #flow = sec.calculate_flow(arspd)
+        #return sec.copy(flow=flow)
+
+    else:
+        return Section.from_constructs(t, pos, att, bvel, brvel, bacc, atm=atm)
 
 
 def stack(sections: list) -> Section:

@@ -7,7 +7,9 @@ from flightanalysis.fd_model.atmosphere import get_rho
 import warnings
 
 
+
 def calculate_flow(self: Section) -> FreeStreams:
+
     if not "bwind" in self.existing_constructs():
         warnings.warn("Section does not contain wind estimation, assuming 0 wind")
         arspd =  self.gbvel
@@ -21,7 +23,7 @@ def calculate_flow(self: Section) -> FreeStreams:
             get_q(get_rho(self.pressure, self.temperature), abs(arspd) )
         ]).T,
     )
-    
+
 
 def append_flow(self: Section):
     if not "bwind" in self.existing_constructs():
