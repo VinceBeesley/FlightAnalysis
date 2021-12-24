@@ -1,29 +1,16 @@
-
-from flightanalysis.section.variables import SVar
-
-from collections import namedtuple
+from geometry import Point
 
 
-FDConstants = namedtuple(
-    "FDConstants", 
-    [
-        "S", # Wing Area, m**2 
-        "MTOW", # mass, kg
-        "MAC", # Mean Aerodynamic Chord, m
-        "w", # wing span, m
-        "Inertia", # Inertia Matrix kg * m**2
-   ])
 
-FDInputs = namedtuple(
-    "FDInputs", [
-        "aspd", 
-        "alpha", 
-        "beta", 
-        "brvel"
-])
+class ACConstants:
+    def __init__(self, s: float, c:float, b:float, mass:float, cg:Point):
+        self.s = s
+        self.c = c
+        self.b = b
+        self.mass = mass
+        self.cg = cg
 
-FDOutputs = namedtuple(
-    "FDOutputs", [
-        "bacc", 
-        "bracc"
-])
+
+
+#TODO this needs to be stored somewhere else:
+cold_draft = ACConstants(0.569124, 0.31211, 1.8594, 4.5, Point(0.6192,0.0,0.0))
