@@ -1,12 +1,8 @@
 import numpy as np
 import pandas as pd
 from geometry.factory import geoms_factory, geom_factory
-<<<<<<< HEAD
-    
-=======
 from typing import Union
 
->>>>>>> devb
 
 names = ["throttle", "aileron", "elevator", "rudder", "flap"]
 
