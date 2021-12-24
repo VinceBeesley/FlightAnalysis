@@ -30,3 +30,8 @@ def append_flow(self: Section):
         self = self.append_wind()
     return self.copy(flow = calculate_flow(self))
 
+
+
+
+def stability_axis(self):
+    pass

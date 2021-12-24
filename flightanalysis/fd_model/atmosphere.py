@@ -12,3 +12,9 @@ names = ["pressure", "temperature"]
 
 Atmosphere = geom_factory("Atmosphere", names)
 Atmospheres = geoms_factory("Atmospheres", names, Atmosphere)
+
+rho=lambda self: get_rho(self.pressure, self.temperature)
+Atmosphere.rho = rho
+Atmospheres.rho = rho
+
+
