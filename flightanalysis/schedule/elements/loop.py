@@ -81,15 +81,18 @@ class Loop(El):
             acceleration = Points.from_point(cross_product(
                 Point(0, 0, axis_rate) * Point(0, 0, axis_rate), Point(speed, 0, 0)), len(t))
 
+        pos=Transformation.from_coords(Coord.from_nothing(), radcoord).point(radcoordpoints)
+        att = Quaternions.from_quaternion(transform.rotation, len(t)).body_rotate(angles)
+
+        gravity = att.inverse().transform_point(Point(0, 0, 9.81))
+
         el = Section.from_constructs(
             t,
-            Transformation.from_coords(
-                Coord.from_nothing(), radcoord).point(radcoordpoints),
-            Quaternions.from_quaternion(
-                transform.rotation, len(t)).body_rotate(angles),
+            pos,
+            att,
             Points.from_point(Point(speed, 0, 0), len(t)),
             axisrates,
-            acceleration
+            acceleration + gravity,
         )
         return self._add_rolls(el, self.rolls)
 

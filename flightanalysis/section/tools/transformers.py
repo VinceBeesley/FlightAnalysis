@@ -96,3 +96,5 @@ def smooth_rotation(self: Section, axis: Point, angle: float, reference:str="bod
     angles = Points.from_point(axis.unit(), len(t)) * np.concatenate([angles_0, angles_1, angles_2])
 
     return self.superimpose_angles(angles, reference)
+
+

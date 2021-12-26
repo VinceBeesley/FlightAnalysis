@@ -61,10 +61,13 @@ class SVar:
 constructs = {
     "time":     SVar("t",       ["t"],                      float,          np.array,       lambda : 0.0,                           ""),
     "pos":      SVar("",        ["x", "y", "z"],            Point,          Points,         Point.zeros,                            ""),
-    "att":      SVar("r",       ["rw", "rx", "ry", "rz"],   Quaternion,     Quaternions,    Quaternion.zero,                        ""),
+    "att":      SVar("r",       ["rw", "rx", "ry", "rz"],   Quaternion,     Quaternions,    Quaternion.zero,   "Body Axis Orientation"),
     "bvel":     SVar("bv",      ["bvx", "bvy", "bvz"],      Point,          Points,         Point.zeros,                            ""),
     "brvel":    SVar("brv",     ["brvr", "brvp", "brvy"],   Point,          Points,         Point.zeros,                            ""),
     "bacc":     SVar("ba",      ["bax", "bay", "baz"],      Point,          Points,         Point.zeros,                            ""),
+    "bracc":    SVar("bra",     ["brar","brap", "bray"],    Point,          Points,         Point.zeros,                            ""),
+    #"watt":     SVar("wr",      ["wrw","wrx", "wry","wrz"], Quaternion,     Quaternions,    Quaternion.zero,   "Wind Axis Orientation"),
+    #"jatt":     SVar("jr",      ["jrw","jrx", "jry","jrz"], Quaternion,     Quaternions,    Quaternion.zero,  "Judge Axis Orientation"),
     "atm":      SVar("",        ["pressure", "temperature"],Atmosphere,     Atmospheres,    lambda : Atmosphere(101325, 288.15),    ""),
     "wind":     SVar("wv",      ["wvx", "wvy", "wvz"],      Point,          Points,         Point.zeros,                            ""),
     "bwind":    SVar("bwv",     ["bwvx", "bwvy", "bwvz"],   Point,          Points,         Point.zeros,                            ""),
@@ -83,11 +86,6 @@ all_vars = subset_vars(constructs.keys())
 essential = ["time", "pos", "att", "bvel", "brvel"]
 essential_keys = subset_vars(essential)
 
-
-defaults = dict(
-    time= Point.zeros(),
-
-)
 
 def construct_list(vars):
     return [key for key, const in constructs.items() if all([val in vars for val in const.keys])]

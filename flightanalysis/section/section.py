@@ -67,7 +67,7 @@ class Section():
         kwargs = dict(kwargs, **{list(constructs.keys())[i]: arg for i, arg in enumerate(args)})
 
         assert_constructs(list(kwargs.keys()))
-
+        
         df = pd.concat(
             [constructs[key].todf(x, kwargs["time"]) for key, x in kwargs.items()],
             axis=1

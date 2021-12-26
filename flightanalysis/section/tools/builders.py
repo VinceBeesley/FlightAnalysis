@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from flightanalysis.section import Section, State
-from geometry import Points, Quaternions
+from geometry import Points, Quaternions, Point
 from typing import Union
 from flightanalysis import FlightLine, Box
 from flightdata import Flight, Fields
@@ -14,14 +14,15 @@ def extrapolate_state(istate: State, duration: float, freq: float = None) -> Sec
     t = Section.t_array(duration, freq)
 
     bvel = Points.from_point(istate.bvel, len(t))
-
+    gravity = istate.att.inverse().transform_point(Point(0, 0, 9.81))   
     return Section.from_constructs(
         t,
         pos = Points.from_point(istate.pos,len(t)) + istate.transform.rotate(bvel) * t,
         att = Quaternions.from_quaternion(istate.att, len(t)),
         bvel = bvel,
         brvel=Points(np.zeros((len(t), 3))),
-        bacc=Points(np.zeros((len(t), 3)))
+        bacc=Points.full(gravity, len(t)),   # TODO add gravity here?
+        bracc=Points(np.zeros((len(t), 3)))
     )
 
 def from_csv(filename) -> Section:

@@ -1,7 +1,7 @@
 
 import numpy as np
 from geometry import Transformation, Point, scalar_projection, Points, Quaternions
-from flightanalysis import Section
+from flightanalysis import Section, State
 
 from . import El
 
@@ -18,28 +18,18 @@ class Line(El):
         return self.set_parms(length=self.length * factor)
 
     def create_template(self, transform: Transformation, speed: float, simple: bool = False) -> Section:
-        """generate a section representing a line. Provide an initial rotation rate to represent a roll.
+        """contstruct a Section representing the judging frame for this line element
 
         Args:
-            initial (State): The initial state, the line will be drawn in the direction
-                            of the initial velocity vector.
-            t (np.array): the timesteps to create states for
+            transform (Transformation): initial position and orientation
+            speed (float): speed in judging frame X axis
+            simple (bool, optional): just create the first and last points of the section. Defaults to False.
+
         Returns:
-            Section: Section class representing the line or roll.
+            Section: [description]
         """
-        t = Section.t_array(duration=self.length / speed, freq=1.0 if simple else None)
-        ibvel = Point(speed, 0.0, 0.0)
-        bvel = Points.from_point(ibvel, len(t))
+        sec= Section.extrapolate_state(State.from_transform(transform, bvel=Point(speed, 0.0, 0.0)), duration=self.length / speed, freq=1.0 if simple else None)
 
-        pos = Points.from_point(transform.translation,len(t)) + transform.rotate(bvel) * t
-
-        att = Quaternions.from_quaternion(transform.rotation, len(t))
-
-        sec = Section.from_constructs(
-            t, pos, att, bvel,
-            Points(np.zeros((len(t), 3))),
-            Points(np.zeros((len(t), 3)))
-        )
         return self._add_rolls(sec, self.rolls)
 
     def match_axis_rate(self, roll_rate: float, speed: float):
