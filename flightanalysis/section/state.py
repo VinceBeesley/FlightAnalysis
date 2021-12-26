@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from typing import Dict, Union
 from json import load
-from .variables import subset_vars, constructs, assert_vars, assert_constructs, all_vars, default_constructs, missing_constructs, construct_list
+from .variables import subset_vars, constructs, all_vars, default_constructs, missing_constructs, subset_constructs
 
 
 class State():
@@ -12,8 +12,12 @@ class State():
     """
 
     def __init__(self, data:dict):
-        assert_vars(data.keys())
+        #assert_vars(data.keys())
+
         self.data = data
+
+        consts = self.existing_constructs()
+        assert np.all([var in consts for var in ["pos", "att"]])
 
     def __getattr__(self, name):
         if name in self.data.keys():
@@ -31,10 +35,7 @@ class State():
 
     @staticmethod
     def from_constructs(**kwargs):
-        defaults = default_constructs(missing_constructs(kwargs.keys()))
-
-        cdicts = [constructs[key].todict(const) for key, const in list(kwargs.items()) + list(defaults.items())]
-
+        cdicts = [constructs[key].todict(const) for key, const in list(kwargs.items())]
         return State({name:value for cdict in cdicts for name, value in cdict.items()})
 
     def existing_constructs(self):

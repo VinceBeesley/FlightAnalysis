@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 from flightanalysis.section import Section
 from geometry import Points
-from flightanalysis.fd_model.freestream import FreeStreams, get_q
-from flightanalysis.fd_model.atmosphere import get_rho
+from flightanalysis.model.freestream import FreeStreams, get_q
+from flightanalysis.model.atmosphere import get_rho
 import warnings
 
 

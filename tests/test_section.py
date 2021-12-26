@@ -2,7 +2,7 @@ from flightanalysis.section import Section
 from flightanalysis import State
 from flightanalysis.flightline import Box, FlightLine
 from flightanalysis.schedule import Schedule, Categories, get_schedule, Line
-from flightanalysis.fd_model.freestream import FreeStreams
+from flightanalysis.model.freestream import FreeStreams
 from flightanalysis.schedule.elements import Snap
 import unittest
 from geometry import Point, Quaternion, Points, Quaternions, GPSPosition, Transformation
@@ -113,20 +113,6 @@ def test_append_columns(seq, flight):
     assert len(sec.data) == len(seq.data)
 
 
-def test_append_wind(seq, flight):
-    sec = seq.append_wind()
-    assert isinstance(sec.bwind, pd.DataFrame)
-
-def test_append_flow(seq, flight):
-    sec = seq.append_wind()
-    sec = sec.append_flow()
-    assert isinstance(sec.gflow, FreeStreams)
-
-def test_append_wind_to_template():
-    sec = Snap(1).scale(170).create_template(Transformation(translation=Point(0,0,100)), 30.0, False)
-    sec = sec.append_wind()
-    assert isinstance(sec.bwind, pd.DataFrame)
-
 def test_smooth_rotation():
     sec = Line(1).scale(100).create_template(Transformation(), 10, False)
 
@@ -142,13 +128,6 @@ def test_copy(seq: Section):
     np.testing.assert_array_equal((seq.gbvel * 2).data, seq2.gbvel.data) 
 
 
-def test_append_wind(seq: Section):
-
-    seq = seq.append_wind()
-
-    assert isinstance(seq.gbwind, Points)
-
-
 
 def test_match_intention(aligned, p21):
     intended_p21 = p21.match_intention(aligned)
@@ -156,8 +135,3 @@ def test_match_intention(aligned, p21):
     assert not intended_p21.manoeuvres[0].elements[2].diameter == intended_p21.manoeuvres[0].elements[3].diameter
 
 
-
-
-def test_correct_intention(aligned, p21):
-    intended_p21 = p21.match_intention(aligned)
-    corrected_p21 = intended_p21.correct_intention()

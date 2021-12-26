@@ -1,28 +1,62 @@
 import numpy as np
 import pandas as pd
 from flightanalysis.section import Section, State
+from flightanalysis.section.variables import constructs, missing_constructs
 from geometry import Points, Quaternions, Point
 from typing import Union
 from flightanalysis import FlightLine, Box
 from flightdata import Flight, Fields
 from pathlib import Path
-from flightanalysis.fd_model.atmosphere import Atmosphere, Atmospheres
-import warnings
+
+
+def make_dt(self: Section) -> np.array:
+    return np.gradient(self.data.index)
+
+def make_bvel(self: Section) -> Points:
+    wvel = self.gpos.diff(self.gdt)
+    return self.gatt.inverse().transform_point(wvel)
+
+def make_brvel(self:Section) -> Points:
+    return self.gatt.body_diff(self.gdt).remove_outliers(2) 
+
+def make_bacc(self:Section) -> Points:
+    wacc = self.gatt.transform_point(self.gbvel).diff(self.gdt) + Point(0, 0, -9.81) # assumes world Z is up
+    return self.gatt.inverse().transform_point(wacc)
+
+def make_bracc(self:Section) -> Points:
+    return self.gbrvel.diff(self.gdt)
+
+
+def from_constructs(*args,**kwargs):
+    kwargs = dict(kwargs, **{list(constructs.keys())[i]: arg for i, arg in enumerate(args)})
+    df = pd.concat(
+        [constructs[key].todf(x, kwargs["time"]) for key, x in kwargs.items()],
+        axis=1
+    )
+
+    return Section(df)
+
+def copy(self, *args, **kwargs):
+    kwargs = dict(kwargs, **{list(constructs.keys())[i]: arg for i, arg in enumerate(args)})
+    
+    old_constructs = {key: self.__getattr__("g" + key) for key in self.existing_constructs() if not key in kwargs.keys()}
+
+    new_constructs = {key: value for key, value in list(kwargs.items()) + list(old_constructs.items())}
+
+    return Section.from_constructs(**new_constructs).append_columns(self.data[self.misc_cols()])
+
 
 
 def extrapolate_state(istate: State, duration: float, freq: float = None) -> Section:
     t = Section.t_array(duration, freq)
 
     bvel = Points.from_point(istate.bvel, len(t))
-    gravity = istate.att.inverse().transform_point(Point(0, 0, 9.81))   
+
     return Section.from_constructs(
         t,
         pos = Points.from_point(istate.pos,len(t)) + istate.transform.rotate(bvel) * t,
         att = Quaternions.from_quaternion(istate.att, len(t)),
-        bvel = bvel,
-        brvel=Points(np.zeros((len(t), 3))),
-        bacc=Points.full(gravity, len(t)),   # TODO add gravity here?
-        bracc=Points(np.zeros((len(t), 3)))
+        bvel = bvel
     )
 
 def from_csv(filename) -> Section:
@@ -33,7 +67,6 @@ def from_csv(filename) -> Section:
             df.drop("time_index", axis=1)
         else:
             df = df.rename({"time_index":"t"}, axis=1)
-
     return Section(df.set_index("t", drop=False))
 
 
@@ -74,38 +107,20 @@ def _from_flight(flight: Flight, flightline: FlightLine) -> Section:
                 flight.read_numpy(Fields.ATTITUDE).T
             )))
 
-    dt = np.gradient(t)
-
-    brvel = att.body_diff(dt)  
-
-    if pd.isna(qs).all().all():
-        brvel = brvel.remove_outliers(2)  # TODO this is a bodge to get rid of phase jumps when euler angles are used directly
-    
     # this is EKF velocity estimate in NED frame transformed to contest frame
     vel = flightline.transform_from.rotate(Points(flight.read_numpy(Fields.VELOCITY).T))
 
     bvel = att.inverse().transform_point(vel)
 
-    bacc = Points.from_pandas(
-        flight.data.loc[:, ["acceleration_x", "acceleration_y", "acceleration_z"]])
+    bacc = Points(flight.read_numpy(Fields.ACCELERATION).T)
 
-    atm = Atmospheres.from_pandas(flight.read_fields([Fields.PRESSURE, Fields.TEMPERATURE]))
+    dt = np.gradient(t)
+    brvel = att.body_diff(dt)  
+    if pd.isna(qs).all().all():
+        brvel = brvel.remove_outliers(2)  # TODO this is a bodge to get rid of phase jumps when euler angles are used directly
+    bracc = brvel.diff(dt)
 
-    if atm.count==0:
-        warnings.warn("No Atmosphere Data Available, assuming SL Standard pressure and temperature")
-        atm=Atmospheres(np.full((len(t), 2), [101325, 288.15]))
-
-
-    if flight.has_pitot():
-        wind = Points.from_pandas(flight.read_fields(Fields.WIND).assign(wind_z=0.0))
-        bwind = att.inverse().transform_point(wind)
-        return Section.from_constructs(t, pos, att, bvel, brvel, bacc, atm=atm, wind=wind, bwind=bwind).append_flow()
-        #arspd = Points.X(flight.read_fields(Fields.AIRSPEED).iloc[:,0].to_numpy())
-        #flow = sec.calculate_flow(arspd)
-        #return sec.copy(flow=flow)
-
-    else:
-        return Section.from_constructs(t, pos, att, bvel, brvel, bacc, atm=atm)
+    return Section.from_constructs(t, dt, pos, att, bvel, brvel, bacc, bracc)
 
 
 def stack(sections: list) -> Section:

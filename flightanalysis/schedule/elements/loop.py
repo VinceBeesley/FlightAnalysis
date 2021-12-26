@@ -58,9 +58,6 @@ class Loop(El):
                     ))
                 )(angles.y)).T
             )
-            axisrates = Points.from_point(Point(0, axis_rate, 0), len(t))
-            acceleration = -Points.from_point(cross_product(
-                Point(0, axis_rate, 0) * Point(0, axis_rate, 0), Point(speed, 0, 0)), len(t))
         else:
             radcoord = Coord.from_xy(
                 transform.point(Point(0, -radius, 0)),
@@ -77,23 +74,11 @@ class Loop(El):
                     ))
                 )(angles.z)).T
             )
-            axisrates = Points.from_point(Point(0, 0, -axis_rate), len(t))
-            acceleration = Points.from_point(cross_product(
-                Point(0, 0, axis_rate) * Point(0, 0, axis_rate), Point(speed, 0, 0)), len(t))
 
         pos=Transformation.from_coords(Coord.from_nothing(), radcoord).point(radcoordpoints)
         att = Quaternions.from_quaternion(transform.rotation, len(t)).body_rotate(angles)
 
-        gravity = att.inverse().transform_point(Point(0, 0, 9.81))
-
-        el = Section.from_constructs(
-            t,
-            pos,
-            att,
-            Points.from_point(Point(speed, 0, 0), len(t)),
-            axisrates,
-            acceleration + gravity,
-        )
+        el = Section.from_constructs(time=t, pos=pos, att=att)
         return self._add_rolls(el, self.rolls)
 
     def match_axis_rate(self, pitch_rate: float, speed: float):

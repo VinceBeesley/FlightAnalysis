@@ -9,10 +9,11 @@
 
     """
 from geometry import Point, Points, Quaternion, Quaternions, Transformation
-from flightanalysis.fd_model.freestream import FreeStream, FreeStreams
-from flightanalysis.fd_model.atmosphere import Atmosphere, Atmospheres
+from flightanalysis.model.freestream import FreeStream, FreeStreams
+from flightanalysis.model.atmosphere import Atmosphere, Atmospheres
 import numpy as np
 import pandas as pd
+from typing import List
 
 
 todict = {
@@ -43,7 +44,7 @@ fromdf = {
     Quaternions: lambda x: Quaternions.from_pandas(x),
     FreeStreams: lambda x: FreeStreams.from_pandas(x),
     Atmospheres: lambda x: Atmospheres.from_pandas(x),
-    np.array: lambda x: np.array(x)
+    np.array: lambda x: np.array(x)[:,0]
 }
 
 class SVar:
@@ -60,49 +61,33 @@ class SVar:
 
 constructs = {
     "time":     SVar("t",       ["t"],                      float,          np.array,       lambda : 0.0,                           ""),
+    "dt":       SVar("dt",      ["dt"],                     float,          np.array,       lambda : 0.0,                           ""),
     "pos":      SVar("",        ["x", "y", "z"],            Point,          Points,         Point.zeros,                            ""),
     "att":      SVar("r",       ["rw", "rx", "ry", "rz"],   Quaternion,     Quaternions,    Quaternion.zero,   "Body Axis Orientation"),
     "bvel":     SVar("bv",      ["bvx", "bvy", "bvz"],      Point,          Points,         Point.zeros,                            ""),
     "brvel":    SVar("brv",     ["brvr", "brvp", "brvy"],   Point,          Points,         Point.zeros,                            ""),
     "bacc":     SVar("ba",      ["bax", "bay", "baz"],      Point,          Points,         Point.zeros,                            ""),
     "bracc":    SVar("bra",     ["brar","brap", "bray"],    Point,          Points,         Point.zeros,                            ""),
-    #"watt":     SVar("wr",      ["wrw","wrx", "wry","wrz"], Quaternion,     Quaternions,    Quaternion.zero,   "Wind Axis Orientation"),
-    #"jatt":     SVar("jr",      ["jrw","jrx", "jry","jrz"], Quaternion,     Quaternions,    Quaternion.zero,  "Judge Axis Orientation"),
-    "atm":      SVar("",        ["pressure", "temperature"],Atmosphere,     Atmospheres,    lambda : Atmosphere(101325, 288.15),    ""),
-    "wind":     SVar("wv",      ["wvx", "wvy", "wvz"],      Point,          Points,         Point.zeros,                            ""),
-    "bwind":    SVar("bwv",     ["bwvx", "bwvy", "bwvz"],   Point,          Points,         Point.zeros,                            ""),
-    "flow":     SVar("",        ["alpha", "beta", "q"],     FreeStream,     FreeStreams,    lambda : FreeStream(0,0,0),             ""),
 }
 
-
-def subset_constructs(names):
+def subset_constructs(names: List[str]):
+    """get a subset of the constructs dict"""
     return [value for key, value in constructs.items() if key in names]
 
-def subset_vars(consts):
+def subset_vars(consts: List[str]):
+    """get a list of the column names contained in the requested subset of constructs"""
     return [name for sv in subset_constructs(consts) for name in sv.keys]
 
-all_vars = subset_vars(constructs.keys())
-
-essential = ["time", "pos", "att", "bvel", "brvel"]
-essential_keys = subset_vars(essential)
-
+all_vars = subset_vars(constructs.keys())   # All the state variables
 
 def construct_list(vars):
     return [key for key, const in constructs.items() if all([val in vars for val in const.keys])]
 
 
-def assert_vars(keys):
-    assert set(essential_keys).issubset(keys), "missing essential keys {}".format(
-            [key for key in essential_keys if not key in keys]
-    )
-
 def missing_constructs(names):
-    return [key for key in essential if not key in names]
+    """get a list of the missing construct names in the input list"""
+    return [key for key in constructs.keys() if not key in names]
 
-def assert_constructs(names):
-    assert set(essential).issubset(names), "missing essential constructs {}, got {}".format(
-        missing_constructs(names), names
-    )
 
 def default_constructs(names):
     return {name:constructs[name].default() for name in names}

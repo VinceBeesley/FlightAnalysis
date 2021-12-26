@@ -1,6 +1,5 @@
 from geometry import Point, Points, Quaternions
-from .state import State, constructs, assert_vars, assert_constructs, all_vars, construct_list
-from flightanalysis.fd_model.atmosphere import Atmosphere, Atmospheres
+from .state import State, constructs, all_vars, missing_constructs, subset_constructs
 import numpy as np
 import pandas as pd
 from typing import Union
@@ -8,16 +7,6 @@ from numbers import Number
 import warnings
 
 
-def atmosphere_check(data):
-    constrs = construct_list(data.columns)
-    if not "atm" in constrs:
-        warnings.warn("No Atmosphere Data Available, assuming SL Standard pressure and temperature. \n This is for temporary back compatibility with old section csvs.")
-        data = pd.concat([
-            data, 
-            Atmospheres(np.full((len(data["t"]), 2), [101325, 288.15])).to_pandas(index=data.index)
-        ], axis=1)
-
-    return data
 
 class Section():
     _construct_freq = 30
@@ -25,13 +14,22 @@ class Section():
     def __init__(self, data: pd.DataFrame):
         if len(data) == 0:
             raise Exception("Section created with empty dataframe")
-
-        data = atmosphere_check(data)
-        
-        assert_vars(data.columns)
-
+    
         self.data = data
         self.data.index = self.data.index - self.data.index[0]
+        
+        missing = missing_constructs(self.existing_constructs())
+
+        for key, maker in Section.construct_makers.items():
+            #subset_constructs(["bvel", "brvel", "bacc", "bracc"]).items():
+            if key in missing:
+                self.data = pd.concat([
+                    self.data, 
+                    constructs[key].todf(maker(self), self.gtime)  # TODO probably have to pass self here
+                ], axis=1)
+          
+        assert len(missing_constructs(self.existing_constructs())) == 0
+
 
     def __getattr__(self, name) -> Union[pd.DataFrame, Points, Quaternions]:
         if name in self.data.columns:
@@ -62,38 +60,13 @@ class Section():
         else:
             return Section(self.data[start:end])
 
-    @staticmethod
-    def from_constructs(*args,**kwargs):
-        kwargs = dict(kwargs, **{list(constructs.keys())[i]: arg for i, arg in enumerate(args)})
-
-        assert_constructs(list(kwargs.keys()))
-        
-        df = pd.concat(
-            [constructs[key].todf(x, kwargs["time"]) for key, x in kwargs.items()],
-            axis=1
-        )
-
-        df = atmosphere_check(df)       
-
-        return Section(df)
-
     def existing_constructs(self):
         """returns the variable construct names that exist in this section"""
         return [key for key, const in constructs.items() if all([val in self.data.columns for val in const.keys])]
 
     def misc_cols(self):
         return [col for col in self.data.columns if not col in all_vars]
-
-    def copy(self, *args, **kwargs):
-        kwargs = dict(kwargs, **{list(constructs.keys())[i]: arg for i, arg in enumerate(args)})
-        
-        old_constructs = {key: self.__getattr__("g" + key) for key in self.existing_constructs() if not key in kwargs.keys()}
-
-        new_constructs = {key: value for key, value in list(kwargs.items()) + list(old_constructs.items())}
-
-        return Section.from_constructs(**new_constructs).append_columns(self.data[self.misc_cols()])
-        
-
+       
     def append_columns(self, data):
         if isinstance(data, list):
             return Section(pd.concat([self.data] + data, axis=1, join="inner"))

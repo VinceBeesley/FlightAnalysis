@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from geometry.factory import geoms_factory, geom_factory
-from flightanalysis.fd_model.atmosphere import get_rho, Atmospheres, Atmosphere
+from flightanalysis.model.atmosphere import get_rho, Atmospheres, Atmosphere
 from typing import Union
 
 def get_q(rho, v):

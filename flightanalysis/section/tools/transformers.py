@@ -23,19 +23,14 @@ def superimpose_angles(self: Section, angles: Points, reference:str="body"):
         new_att = self.gatt.body_rotate(angles)
     else:
         raise ValueError("unknwon rotation reference")
-
-    new_bvel = new_att.inverse().transform_point(self.gatt.transform_point(self.gbvel))
-        
-    dt = np.gradient(self.data.index)
-
+       
+    
     sec =  Section.from_constructs(
-        np.array(self.data.index),
-        Points.from_pandas(self.pos.copy()),
-        new_att,
-        new_bvel,
-        new_att.body_diff(dt),
-        new_bvel.diff(dt)
+        time=np.array(self.data.index),
+        pos=Points.from_pandas(self.pos.copy()),
+        att=new_att
     )
+
     if "sub_element" in self.data.columns:
         sec = sec.append_columns(self.data["sub_element"])
     return sec

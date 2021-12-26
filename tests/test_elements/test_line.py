@@ -14,7 +14,7 @@ class TestLine(unittest.TestCase):
         elm = Line(0.5, 0.5).scale(100.0)
         template = elm.create_template(Transformation(), 30.0)
         np.testing.assert_array_almost_equal(
-            template.get_state_from_index(-1).pos.to_list(),
+            template[-1].pos.to_list(),
             [50.0, 0.0, 0.0]
         )
 
