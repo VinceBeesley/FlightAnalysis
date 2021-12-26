@@ -2,11 +2,14 @@ from flightanalysis.schedule.elements import Spin
 import unittest
 from geometry import Transformation, Points, Point, Quaternion
 import numpy as np
+import pandas as pd
 import pytest
 
 def test_create_template():
     template = Spin(1).scale(
         100.0).create_template(Transformation(), 10.0)
+
+    assert np.any(pd.isna(template.brvel)) == False
     assert template[-1].pos.z < 0
 
     assert template[-1].att.transform_point(Point(0,0,1)).x== pytest.approx(1)

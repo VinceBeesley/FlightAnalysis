@@ -118,6 +118,9 @@ def test_smooth_rotation():
 
     roll = sec.smooth_rotation(Point.X(1), 2 * np.pi, "body", 0.25, 0.1)
 
+    assert np.any(pd.isna(roll.brvel)) == False
+
+
 def test_from_csv():
     sec = Section.from_csv("tests/test_inputs/test_log_00000052_section.csv")
     assert isinstance(sec.gpos, Points)
