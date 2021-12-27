@@ -7,11 +7,7 @@ from .tools.builders import (
     from_csv, 
     from_flight, 
     stack, 
-    make_dt,
-    make_bvel, 
-    make_brvel, 
-    make_bacc, 
-    make_bracc
+    construct_makers
 )
 
 Section.from_constructs = staticmethod(from_constructs)
@@ -19,14 +15,7 @@ Section.extrapolate_state = staticmethod(extrapolate_state)
 Section.from_csv = staticmethod(from_csv)
 Section.from_flight = staticmethod(from_flight)
 Section.stack = staticmethod(stack)
-
-Section.construct_makers = dict(
-    dt=make_dt,
-    bvel=make_bvel,
-    brvel=make_brvel,
-    bacc=make_bacc,
-    bracc=make_bracc,
-)
+Section.construct_makers = construct_makers
 
 from .tools.transformers import (
     superimpose_angles, 

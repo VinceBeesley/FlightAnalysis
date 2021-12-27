@@ -26,6 +26,14 @@ def make_bacc(self:Section) -> Points:
 def make_bracc(self:Section) -> Points:
     return self.gbrvel.diff(self.gdt)
 
+construct_makers = dict(
+    dt=make_dt,
+    bvel=make_bvel,
+    brvel=make_brvel,
+    bacc=make_bacc,
+    bracc=make_bracc,
+)
+
 
 def from_constructs(*args,**kwargs):
     kwargs = dict(kwargs, **{list(constructs.keys())[i]: arg for i, arg in enumerate(args)})

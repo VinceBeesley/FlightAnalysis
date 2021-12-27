@@ -10,7 +10,7 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see <http://www.gnu.org/licenses/>.
 """
 
-from geometry import GPSPosition, Coord, Point, Quaternion, Transformation, cross_product
+from geometry import GPSPosition, Coord, Point, Quaternions, Transformation, cross_product, Quaternion
 from typing import Union
 from flightdata import Flight, Fields
 from math import atan2, sin, cos
@@ -72,12 +72,13 @@ class Box(object):
         '''Generate a box based on the initial position and heading of the model at the start of the log. 
         This is a convenient, but not very accurate way to setup the box. 
         '''
-        first = flight.data.iloc[0]
-        home = GPSPosition(*flight.read_fields(Fields.GLOBALPOSITION).iloc[0])
-            
-        heading = Quaternion(*first[Fields.QUATERNION.names]).transform_point(Point(1, 0, 0))
+        imu_ready_data = flight.data.loc[flight.imu_ready_time()]
 
-        return Box('origin', home, atan2(heading.y, heading.x), "unknown", "unknown")
+        position = GPSPosition(*imu_ready_data[Fields.GLOBALPOSITION.names])
+        heading = Quaternion(*imu_ready_data[Fields.QUATERNION.names]).transform_point(Point(1, 0, 0))
+        
+        
+        return Box('origin', position, atan2(heading.y, heading.x), "unknown", "unknown")
 
     @staticmethod
     def from_covariance(flight: Flight):
@@ -109,7 +110,27 @@ class Box(object):
         return Box(
             name,
             pilot,
-            atan2(direction.x, direction.y) + pi/2)
+            atan2(direction.y, direction.x)
+        )
+
+    def to_f3a_zone(self):
+        
+        centre = self.pilot_position.offset(
+            100 * Point(np.cos(self.heading), np.sin(self.heading), 0.0)
+        )
+
+        oformat = lambda val: "{}".format(val)
+
+        return "\n".join([
+            "Emailed box data for F3A Zone Pro - please DON'T modify!",
+            self.name,
+            oformat(self.pilot_position.latitude),
+            oformat(self.pilot_position.longitude),
+            oformat(centre.latitude),
+            oformat(centre.longitude),
+            "120"
+        ])
+
 
 
 class FlightLine(object):

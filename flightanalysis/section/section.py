@@ -20,11 +20,10 @@ class Section():
         missing = missing_constructs(self.existing_constructs())
 
         for key, maker in Section.construct_makers.items():
-            #subset_constructs(["bvel", "brvel", "bacc", "bracc"]).items():
             if key in missing:
                 self.data = pd.concat([
                     self.data, 
-                    constructs[key].todf(maker(self), self.gtime)  # TODO probably have to pass self here
+                    constructs[key].todf(maker(self), self.gtime) 
                 ], axis=1)
           
         assert len(missing_constructs(self.existing_constructs())) == 0
