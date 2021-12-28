@@ -33,11 +33,18 @@ Section.superimpose_rotation = superimpose_rotation
 Section.superimpose_roll = superimpose_roll
 Section.smooth_rotation = smooth_rotation
 
-
 from .tools.alignment import align, copy_labels
-
 
 Section.align = staticmethod(align)
 Section.copy_labels = staticmethod(copy_labels)
 
+from .tools.conversions import to_judging, body_to_wind, judging_to_wind, wind_to_body
 
+Section.to_judging = to_judging
+Section.body_to_wind = body_to_wind
+Section.judging_to_wind = judging_to_wind
+Section.wind_to_body = wind_to_body
+
+from .tools.measurements import measure_aoa
+
+Section.measure_aoa = measure_aoa

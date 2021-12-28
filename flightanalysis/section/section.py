@@ -23,7 +23,7 @@ class Section():
             if key in missing:
                 self.data = pd.concat([
                     self.data, 
-                    constructs[key].todf(maker(self), self.gtime) 
+                    constructs[key].todf(maker(self), self.data.index) 
                 ], axis=1)
           
         assert len(missing_constructs(self.existing_constructs())) == 0
