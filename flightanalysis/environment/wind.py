@@ -15,6 +15,24 @@ def wind_vector(wind_speed_model, height, heading):
         return direc * float(speed)
 
 
+
+
+def uniform_wind_builder(args):
+    """generates a wind function for constant wind
+    
+    Args:
+        args ([float]): [heading, speed, exponent]
+
+    Returns:
+        function: function to get wind vector for given altitude and time. 
+    """
+    assert len(args) == 2
+    return lambda height, time: wind_vector(
+            lambda h: args[1] * np.sign(h),
+            height, args[0]
+        )
+
+
 def wind_power_law_builder(args):
     """generates a wind function based on a standard wind altitude power law model
     
@@ -72,8 +90,8 @@ def get_wind_error(args: np.ndarray, wind_builder, body: Section, judge: Section
 
     airspeed = abs(body.gbvel )
 
-    a = body.baz / (airspeed**2 * alpha) 
-    b = body.bay / (airspeed**2 * beta)
+    a = (airspeed**2 * alpha) / body.baz
+    b = (airspeed**2 * beta) / body.bay
 
     return abs(a.var()) + abs(b.var())
 
