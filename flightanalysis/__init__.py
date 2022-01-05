@@ -13,6 +13,8 @@ from .schedule import (
     get_schedule
 )
 
+def get_q(rho, v):
+    return 0.5 * rho * v**2
 
 
 

@@ -21,7 +21,7 @@ _jsons = dict(
 
 import json
 from typing import Union
-def get_schedule(category: Union[str, Categories], name:str):
+def get_schedule(category: Union[str, Categories], name:str) -> Schedule:
     if isinstance(category, Categories): 
         category = category.name
     json_string = resource_stream(__name__, _jsons[category][name]).read().decode()

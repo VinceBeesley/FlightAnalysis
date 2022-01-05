@@ -1,7 +1,7 @@
 import numpy as np
 from geometry import Point, Points
 from scipy.interpolate import interp1d
-from flightanalysis import Section
+from flightanalysis import Section, get_q
 
 
 def wind_vector(wind_speed_model, height, heading):
@@ -28,7 +28,7 @@ def uniform_wind_builder(args):
     """
     assert len(args) == 2
     return lambda height, time: wind_vector(
-            lambda h: args[1] * np.sign(h),
+            lambda h: np.full(len(h), args[1]),
             height, args[0]
         )
 
@@ -72,14 +72,11 @@ def wind_fit_builder(args, kind="linear"):
 # Section in body frame
 # Section in judging frame
 # some wind model
-# some assumptions about the a/c model: 
-#   lift/ aspd**2 = a * alpha       ->       a = lift / (arspd**2 * alpha)
-#   sf/ aspd**2 = b * beta          ->       b = sf / (arspd**2 * beta)
-# the best wind model will have the smallest standard deviations of a and b
+# the best wind model variables will make cl vs alpha be the closest to a line
 
+# 
 
 def get_wind_error(args: np.ndarray, wind_builder, body: Section, judge: Section) -> float:
-    # TODO this is producing noncense at the moment.
     wind_model = wind_builder(args)
 
     wind_vectors = wind_model(judge.gpos.z, np.zeros(len(judge.data)))
@@ -88,11 +85,15 @@ def get_wind_error(args: np.ndarray, wind_builder, body: Section, judge: Section
 
     alpha, beta = body.measure_aoa(wind)
 
-    airspeed = abs(body.gbvel )
+    airspeed = wind.measure_airspeed(wind_vectors)
 
-    a = (airspeed**2 * alpha) / body.baz
-    b = (airspeed**2 * beta) / body.bay
+    wind_force_coeff = wind.measure_coefficients(4.5, get_q(1.225, airspeed.x), 0.6 )
 
-    return abs(a.var()) + abs(b.var())
+    long = np.array([alpha, wind_force_coeff.z])
+    lat = np.array([beta, wind_force_coeff.y])
+
+    a = 4 - np.sum(np.abs(np.corrcoef(long)))
+    b = 4 - np.sum(np.abs(np.corrcoef(lat)))
+    return a + b
 
 

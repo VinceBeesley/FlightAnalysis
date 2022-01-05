@@ -45,6 +45,8 @@ Section.body_to_wind = body_to_wind
 Section.judging_to_wind = judging_to_wind
 Section.wind_to_body = wind_to_body
 
-from .tools.measurements import measure_aoa
+from .tools.measurements import measure_aoa, measure_airspeed, measure_coefficients
 
 Section.measure_aoa = measure_aoa
+Section.measure_airspeed = measure_airspeed
+Section.measure_coefficients = measure_coefficients

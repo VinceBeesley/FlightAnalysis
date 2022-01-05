@@ -20,7 +20,7 @@ def make_brvel(self:Section) -> Points:
     return self.gatt.body_diff(self.gdt).remove_outliers(3) 
 
 def make_bacc(self:Section) -> Points:
-    wacc = self.gatt.transform_point(self.gbvel).diff(self.gdt) + Point(0, 0, -9.81) # assumes world Z is up
+    wacc = self.gatt.transform_point(self.gbvel).diff(self.gdt) + Point(0, 0, 9.81) # assumes world Z is up
     return self.gatt.inverse().transform_point(wacc)
 
 def make_bracc(self:Section) -> Points:

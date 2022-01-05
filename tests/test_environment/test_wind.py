@@ -2,7 +2,7 @@ from flightanalysis.environment.wind import wind_power_law_builder, wind_fit_bui
 import pytest
 import numpy as np 
 import pandas as pd
-from geometry import Points, Point
+from geometry import Points, Point, Quaternion, Transformation
 from ..conftest import seq
 
 
@@ -39,12 +39,20 @@ def test_get_wind_error(seq):
     assert error2 > error
 
 from flightanalysis import Line
-from geometry import Transformation
 
 
 def test_wind_error_2():
-    sec = Line(100).create_template(Transformation(), 30.0)
-    wind = sec.judging_to_wind(Points.Y(np.full(len(sec.data), 10.0)))
+    #create a straight line, upright at 30m/s, along the X axis
+    sec = Line(100).create_template(Transformation(
+        Point(0, 0,0), Quaternion.from_euler((np.pi,0,0))
+    ), 30.0)
 
-    err = get_wind_error([0.0, 10.0], uniform_wind_builder, wind, sec)
+    #create a constant wind field, 20m/s in the Y direction
+    env_wind = Points.Y(np.full(len(sec.data), 10.0))
+
+    #convert the section to wind axis
+    wind = sec.judging_to_wind(env_wind)
+
+
+    err = get_wind_error([0.0, 0.0], uniform_wind_builder, wind, sec)
     assert err == 0.0

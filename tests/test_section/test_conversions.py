@@ -29,7 +29,9 @@ def test_body_to_wind(seq: Section):
     
     jsec = to_judging(sec)
 
-    np.testing.assert_array_almost_equal(wsec.gatt.data, jsec.gatt.data, 1)
+    np.testing.assert_array_almost_equal(wsec.gatt.data, jsec.gatt.data, 0)
+
+
 
 def test_judging_to_wind():
     judging = Line(100.0).create_template(Transformation(), 20.0)
