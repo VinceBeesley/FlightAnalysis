@@ -16,10 +16,3 @@ class Environment:
         self.pressure = pressure
         self.temperature = temperature
         self.wind = wind
-
-    def __call__(self, altitude, time):
-        return self.predictor(altitude, time)
-
-    @staticmethod
-    def fit_profile(sec: Section, wind_model):
-        pass

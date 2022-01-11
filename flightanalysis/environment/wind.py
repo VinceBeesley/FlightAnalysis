@@ -1,7 +1,15 @@
 import numpy as np
+import pandas as pd
 from geometry import Point, Points
 from scipy.interpolate import interp1d
 from flightanalysis import Section, get_q
+
+
+
+
+
+
+
 
 
 def wind_vector(wind_speed_model, height, heading):
@@ -13,8 +21,6 @@ def wind_vector(wind_speed_model, height, heading):
         return Points.full(direc, len(speed)) * speed
     else:
         return direc * float(speed)
-
-
 
 
 def uniform_wind_builder(args):
@@ -68,6 +74,9 @@ def wind_fit_builder(args, kind="linear"):
     return lambda height, ttime: wind_vector(model, height, args[0])
     
 
+
+
+
 #given: 
 # Section in body frame
 # Section in judging frame
@@ -75,6 +84,26 @@ def wind_fit_builder(args, kind="linear"):
 # the best wind model variables will make cl vs alpha be the closest to a line
 
 # 
+
+
+
+def sl_cost(alpha, coef, max_alpha=8, max_coef=3):
+
+    df = pd.DataFrame(
+        np.stack([np.degrees(alpha), coef], axis=1), 
+        columns=["alpha", "cz"]
+    )
+
+    fitdata = df.loc[np.abs(df.alpha) < max_alpha ].loc[np.abs(df.cz)<max_coef]
+
+    fit = np.polyfit(fitdata.alpha,fitdata.cz, deg=1)
+
+    def error(x,y):
+        return np.abs(y - fit[1] - fit[0] * x)
+
+    return np.sum(error(df.alpha, df.cz))
+
+
 
 def get_wind_error(args: np.ndarray, wind_builder, body: Section, judge: Section) -> float:
     wind_model = wind_builder(args)
@@ -89,11 +118,8 @@ def get_wind_error(args: np.ndarray, wind_builder, body: Section, judge: Section
 
     wind_force_coeff = wind.measure_coefficients(4.5, get_q(1.225, airspeed.x), 0.6 )
 
-    long = np.array([alpha, wind_force_coeff.z])
-    lat = np.array([beta, wind_force_coeff.y])
-
-    a = 4 - np.sum(np.abs(np.corrcoef(long)))
-    b = 4 - np.sum(np.abs(np.corrcoef(lat)))
-    return a + b
+    clong = sl_cost(alpha, wind_force_coeff.z)
+#    clat = sl_cost(beta, wind_force_coeff.y)
+    return clong
 
 
