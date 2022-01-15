@@ -117,15 +117,20 @@ def _from_flight(flight: Flight, flightline: FlightLine) -> Section:
 
     # this is EKF velocity estimate in NED frame transformed to contest frame
     vel = flightline.transform_from.rotate(Points(flight.read_numpy(Fields.VELOCITY).T))
+    
 
     bvel = att.inverse().transform_point(vel)
 
     bacc = Points(flight.read_numpy(Fields.ACCELERATION).T)
 
     dt = np.gradient(t)
-    brvel = att.body_diff(dt)  
-    if pd.isna(qs).all().all():
-        brvel = brvel.remove_outliers(2)  # TODO this is a bodge to get rid of phase jumps when euler angles are used directly
+
+    
+    brvel = Points.from_pandas(flight.read_fields(Fields.AXISRATE))
+    
+    #brvel = att.body_diff(dt)  
+    #if pd.isna(qs).all().all():
+    #    brvel = brvel.remove_outliers(2)  # TODO this is a bodge to get rid of phase jumps when euler angles are used directly
     bracc = brvel.diff(dt)
 
     return Section.from_constructs(t, dt, pos, att, bvel, brvel, bacc, bracc)

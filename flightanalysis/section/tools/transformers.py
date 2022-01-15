@@ -11,9 +11,14 @@ def t_array(duration: float, freq: float = None):
 
 
 def transform(self: Section, transform: Transformation) -> Section:
-    return self.copy(
-        pos=transform.point(Points.from_pandas(self.pos)),
-        att=transform.quat(Quaternions.from_pandas(self.att)), 
+    return Section.from_constructs(
+        time=np.array(self.data.index),
+        pos=transform.point(self.gpos),
+        att=transform.quat(self.gatt),
+        bvel=transform.rotate(self.gbvel),
+        brvel=transform.rotate(self.gbrvel),
+        bacc=transform.rotate(self.gbacc),
+        bracc=transform.rotate(self.gbracc),
     )
 
 def superimpose_angles(self: Section, angles: Points, reference:str="body"): 
