@@ -131,6 +131,16 @@ class Box(object):
             "120"
         ])
 
+    @staticmethod
+    def from_f3a_zone(file: str):
+        with open(file, "r") as f:
+            data = [l.strip() for l in f.readlines()]
+
+        return Box.from_points(
+            data[1],
+            GPSPosition(float(data[3]), float(data[4])),
+            GPSPosition(float(data[5]), float(data[6]))
+        )
 
 
 class FlightLine(object):
