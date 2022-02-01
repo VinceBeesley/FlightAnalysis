@@ -6,7 +6,6 @@ from typing import Union
 from numbers import Number
 
 
-
 class Section():
     _construct_freq = 30
 
