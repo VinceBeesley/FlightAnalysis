@@ -78,7 +78,7 @@ def from_csv(filename) -> Section:
     return Section(df.set_index("t", drop=False))
 
 
-def from_flight(flight: Union[Flight, str], box=Union[FlightLine, Box, str]) -> Section:
+def from_flight(flight: Union[Flight, str], box:Union[FlightLine, Box, str]) -> Section:
     if isinstance(flight, str):
         flight = {
             ".csv": Flight.from_csv,
