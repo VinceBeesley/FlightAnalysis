@@ -30,15 +30,7 @@ class Box(object):
         self.pilot_position = pilot_position
         self.heading = heading
 
-    @staticmethod
-    def from_f3a_zone_file(file_path: str):
-        with open(file_path, "r") as f:
-            lines = f.read().splitlines()
-        return Box.from_points(
-            lines[1],
-            GPSPosition(float(lines[2]), float(lines[3])),
-            GPSPosition(float(lines[4]), float(lines[5]))
-        )
+
 
     def to_dict(self) -> dict:
         temp = self.__dict__.copy()
@@ -101,7 +93,7 @@ class Box(object):
                 first.global_position_latitude,
                 first.global_position_longitude
             ),
-            atan2(heading.y, heading.x)
+            np.arctan2(heading.y, heading.x)
         )
 
     @staticmethod
@@ -110,7 +102,7 @@ class Box(object):
         return Box(
             name,
             pilot,
-            atan2(direction.y, direction.x)
+            np.arctan2(direction.y, direction.x)
         )
 
     def to_f3a_zone(self):
@@ -131,17 +123,16 @@ class Box(object):
             "120"
         ])
 
+
     @staticmethod
-    def from_f3a_zone(file: str):
-        with open(file, "r") as f:
-            data = [l.strip() for l in f.readlines()]
-
+    def from_f3a_zone(file_path: str):
+        with open(file_path, "r") as f:
+            lines = f.read().splitlines()
         return Box.from_points(
-            data[1],
-            GPSPosition(float(data[3]), float(data[4])),
-            GPSPosition(float(data[5]), float(data[6]))
+            lines[1],
+            GPSPosition(float(lines[2]), float(lines[3])),
+            GPSPosition(float(lines[4]), float(lines[5]))
         )
-
 
 class FlightLine(object):
     '''class to define where the flight line is in relation to the raw input data
