@@ -5,13 +5,6 @@ from scipy.interpolate import interp1d
 from flightanalysis import Section, get_q
 
 
-
-
-
-
-
-
-
 def wind_vector(wind_speed_model, height, heading):
     """create a Point or Points representing the wind vector based on a wind speed model"""
     speed = wind_speed_model(height)
@@ -71,7 +64,7 @@ def wind_fit_builder(args, kind="linear"):
         y=args[1:], 
         kind=kind
     ) 
-    return lambda height, ttime: wind_vector(model, height, args[0])
+    return lambda height, time: wind_vector(model, height, args[0])
     
 
 
