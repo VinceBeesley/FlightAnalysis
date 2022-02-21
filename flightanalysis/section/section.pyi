@@ -1,5 +1,5 @@
 from flightanalysis import State, FlightLine, Box
-from typing import Union
+from typing import Union, Tuple
 from flightdata import Flight
 from flightanalysis.section.variables import constructs
 from geometry import Points
@@ -7,7 +7,7 @@ import numpy as np
 
 class Section:
     def from_constructs(*args, **kwargs) -> Section: 
-        """Construct a Section from a set of constructs ()
+        """Construct a Section from a set of constructs
 
         Returns:
             Section: [description]
@@ -93,12 +93,51 @@ class Section:
         """
         ...
 
-    def judging_to_wind(self: Section, wind: Points):
+    def judging_to_wind(self: Section, wind: Points) -> Section:
         """converts a judging frame section to the wind axis given the wind at every time instant.
 
         Args:
             self (Section): Judging frame Section
             wind (Points): instantanious wind
+        """
+        ...
+
+    
+    def wind_to_body(self: Section, alpha: np.ndarray, beta: np.ndarray) -> Section:
+        """convert a wind axis section to a body axis section
+
+        Args:
+            self (Section): Section in wind axis
+            alpha (np.ndarray): alpha for each time instant
+            beta (np.ndarray): beta for each time instant
+
+        Returns:
+            Section: body axis section
+        """
+        ...
+
+
+    def measure_aoa(self: Section, other:Section=None) -> Tuple[np.ndarray, np.ndarray]: 
+        """measure alpha and beta for two sections representing the same data in different axis systems.
+
+        Args:
+            self (Section): first section
+            other (Section, optional): Second Section, None for judging.
+
+        Returns:
+            Tuple[np.ndarray, np.ndarray]: alpha and beta
+        """
+        ...
+
+    def measure_airspeed(self: Section, wind_vectors: Points) -> np.ndarray:
+        """given a section and a set of wind vectors for each time instant calculate the airspeed.
+
+        Args:
+            self (Section): input section
+            wind_vectors (Points): wind vector at each time instant
+
+        Returns:
+            np.ndarray: airspeed for each instant
         """
         ...
 
