@@ -4,7 +4,13 @@ from flightdata import Flight, Fields
 from pathlib import Path
 
 
-
+control_conversion = {
+    "throttle", 
+    "aileron_1", 
+    "aileron_2", 
+    "elevator", 
+    "rudder"
+}
 
 
 
