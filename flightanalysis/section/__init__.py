@@ -9,14 +9,12 @@ Section.Instant = State
 State.Period = Section
 #
 from .tools.builders import (
-    from_constructs,
     extrapolate_state, 
     from_csv, 
     from_flight, 
     stack
 )
 
-Section.from_constructs = staticmethod(from_constructs)
 Section.extrapolate_state = staticmethod(extrapolate_state)
 Section.from_csv = staticmethod(from_csv)
 Section.from_flight = staticmethod(from_flight)

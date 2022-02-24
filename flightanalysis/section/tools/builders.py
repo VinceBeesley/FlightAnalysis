@@ -10,25 +10,6 @@ from pathlib import Path
 
 
 
-def from_constructs(*args,**kwargs):
-    kwargs = dict(kwargs, **{list(secvars.data.keys())[i]: arg for i, arg in enumerate(args)})
-    df = pd.concat(
-        [secvars.data[key].todf(x, kwargs["time"]) for key, x in kwargs.items()],
-        axis=1
-    )
-
-    return Section(df)
-
-def copy(self, *args, **kwargs):
-    kwargs = dict(kwargs, **{list(secvars.data.keys())[i]: arg for i, arg in enumerate(args)})
-    
-    old_constructs = {key: self.__getattr__("g" + key) for key in self.existing_constructs() if not key in kwargs.keys()}
-
-    new_constructs = {key: value for key, value in list(kwargs.items()) + list(old_constructs.items())}
-
-    return Section.from_constructs(**new_constructs).append_columns(self.data[self.misc_cols()])
-
-
 def extrapolate_state(istate: State, duration: float, freq: float = None) -> Section:
     t = Section.make_index(duration, freq)
 

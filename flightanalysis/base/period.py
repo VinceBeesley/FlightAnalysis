@@ -90,3 +90,23 @@ class Period(ABC):
             return self[:end]
         if end==-1:
             return self[start:]
+
+    @classmethod
+    def from_constructs(cls, *args,**kwargs):
+        kwargs = dict(kwargs, **{list(cls._cols.data.keys())[i]: arg for i, arg in enumerate(args)})
+        df = pd.concat(
+            [cls._cols.data[key].todf(x, kwargs["time"]) for key, x in kwargs.items()],
+            axis=1
+        )
+
+        return cls(df)
+
+    
+    def copy(self, *args, **kwargs):
+        kwargs = dict(kwargs, **{list(self.cols.data.keys())[i]: arg for i, arg in enumerate(args)})
+        
+        old_constructs = {key: self.__getattr__("g" + key) for key in self.cols.existing(self.data.columns) if not key in kwargs.keys()}
+
+        new_constructs = {key: value for key, value in list(kwargs.items()) + list(old_constructs.items())}
+
+        return self.__class__.from_constructs(**new_constructs).append_columns(self.data[self.misc_cols()])
