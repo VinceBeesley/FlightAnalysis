@@ -28,7 +28,14 @@ class Line(El):
         Returns:
             Section: [description]
         """
-        sec= Section.extrapolate_state(State.from_transform(transform, bvel=Point(speed, 0.0, 0.0)), duration=self.length / speed, freq=1.0 if simple else None)
+        sec= Section.extrapolate_state(
+            State.from_transform(
+                transform, 
+                bvel=Point(speed, 0.0, 0.0)
+            ), 
+            duration=self.length / speed, 
+            freq=1.0 if simple else None
+        )
 
         return self._add_rolls(sec, self.rolls)
 

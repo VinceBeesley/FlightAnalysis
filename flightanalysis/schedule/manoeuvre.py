@@ -52,7 +52,7 @@ class Manoeuvre():
         templates = []
         for i, element in enumerate(self.elements):
             templates.append(element.create_template(itrans, speed))
-            itrans = templates[-1].get_state_from_index(-1).transform
+            itrans = templates[-1][-1].transform
         
         return self.label(Section.stack(templates))
 

@@ -43,7 +43,7 @@ def plot_man(man, aligned_b, aligned_m):
 
 if __name__ == '__main__':
 
-    sec = Section.from_csv("tests/test_inputs/test_log_00000052_section.csv").subset(110, 200)
+    sec = Section.from_csv("tests/test_inputs/test_log_00000052_section.csv")[110:220]
 
     p21 = get_schedule("F3A", "P21")
 

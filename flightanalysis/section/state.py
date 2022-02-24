@@ -1,25 +1,18 @@
-from geometry import Point, Quaternion, Points, Quaternions, Transformation, cross_product
-from geometry.point import cross_product
+from geometry import Point, Points, Transformation
+
 import numpy as np
 import pandas as pd
-from typing import Dict, Union, type
-from json import load
-from .variables import constructs
+from typing import Union
 
-from flightanalysis.base.instant import Instant
+from flightanalysis.base import Instant
+from flightanalysis.section.variables import secvars
+
 
 
 class State(Instant):
-    """Describes the the state of the aircraft
-    """
+    _cols=secvars
 
-    def __init__(self, data:dict):
-        #assert_vars(data.keys())
-        super().__init__(constructs, data)
-        
-        consts = self.existing_constructs()
-        
-        assert np.all([var in consts for var in ["pos", "att"]])
+
 
     @property
     def transform(self):
@@ -31,7 +24,7 @@ class State(Instant):
 
     @staticmethod
     def from_constructs(**kwargs):
-        cdicts = [constructs[key].todict(const) for key, const in list(kwargs.items())]
+        cdicts = [secvars.data[key].todict(const) for key, const in list(kwargs.items())]
         return State({name:value for cdict in cdicts for name, value in cdict.items()})
       
 
@@ -60,3 +53,11 @@ class State(Instant):
         else:
             return "left"
 
+    def copy(self, *args,**kwargs):
+        kwargs = dict(kwargs, **{list(self.cols.data.keys())[i]: arg for i, arg in enumerate(args)}) # add the args to the kwargs
+
+        old_constructs = {key: self.__getattr__(key) for key in self.cols.existing(self.data.index).data if not key in kwargs}
+        
+        new_constructs = {key: value for key, value in list(kwargs.items()) + list(old_constructs.items())}
+
+        return State.from_constructs(**new_constructs)

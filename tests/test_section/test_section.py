@@ -1,5 +1,5 @@
 from flightanalysis.section import Section
-from flightanalysis import State
+from flightanalysis.section import State
 from flightanalysis.flightline import FlightLine
 from flightanalysis.schedule import Line
 from geometry import Point, Points, Transformation
@@ -24,8 +24,8 @@ def test_to_csv(seq):
     assert seq.duration == seq2.duration
     os.remove(csv_file)
 
-def test_generate_state(seq):
-    state = seq.get_state_from_index(20)
+def test_index(seq):
+    state = seq[20]
     assert isinstance(state.pos, Point)
 
 def test_get_item(seq):
@@ -47,32 +47,19 @@ def test_subset(flight):
     seq = Section.from_flight(
         flight, FlightLine.from_initial_position(flight))
 
-    assert isinstance(seq.subset(100, 200), Section)
-    pytest.approx(seq.subset(100, 200).data.index[-1], 200, 0)
+    assert isinstance(seq[100:200], Section)
+    pytest.approx(seq[100:200].data.index[-1], 200, 0)
 
-    pytest.approx(seq.subset(-1, 200).data.index[-1], 200, 0)
-
-    pytest.approx(
-        seq.subset(-1, -1).data.index[-1],
-        seq.data.index[-1],
-        2
-    )
-
-
-def test_existing_constructs(seq):
-    exconsts = seq.existing_constructs()
-    assert "pos" in exconsts
-    assert not "alpha" in exconsts
-
+    pytest.approx(seq[:200].data.index[-1], 200, 0)
 
 def test_get_state(seq):
-    st = seq.get_state_from_time(100)
+    st = seq[100]
     assert isinstance(st, State)
 
 
 def test_align(seq, p21):
     
-    flown = seq.subset(100, 493)
+    flown = seq[100:493]
 
     template = p21.scale_distance(170.0).create_raw_template("left", 30, 170)
     

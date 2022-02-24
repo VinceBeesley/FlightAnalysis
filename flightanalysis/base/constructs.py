@@ -11,7 +11,7 @@
 from geometry import Point, Points, Quaternion, Quaternions, Transformation
 import numpy as np
 import pandas as pd
-from typing import List, Dict
+from typing import List, Dict, Union
 
 
 todict = {
@@ -50,35 +50,35 @@ class SVar:
         self.description = description
 
 
-
 class Constructs:
-    def __init__(self, constructs: Dict(str, SVar)):
-        self.constructs = constructs
-        self.all_vars = self.subset_vars(self.constructs.keys())   
+    def __init__(self, data: Dict[str, SVar]):
+        self.data = data
+        self.gdata = {"g" + key: value for key, value in self.data.items()}
+        self.vars = [name for sv in self.data.values() for name in sv.keys]
 
-    def subset_constructs(self, names: List[str]):
+    def subset(self, names: List[str]):
         """get a subset of the constructs dict"""
-        return [value for key, value in self.constructs.items() if key in names]
-
-    def subset_vars(self, consts: List[str]):
-        """get a list of the column names contained in the requested subset of constructs"""
-        return [name for sv in self.subset_constructs(consts) for name in sv.keys]
-
-    def construct_list(self, vars):
-        return [key for key, const in self.constructs.items() if all([val in vars for val in const.keys])]
+        return Constructs({key: value for key, value in self.data.items() if key in names})
 
 
-    def missing_constructs(self, names):
-        """get a list of the missing construct names in the input list"""
-        return [key for key in self.constructs.keys() if not key in names]
+    def existing(self, vars: List[str]):
+        """return a subset that is fully populated by the list of vars input"""
+        return self.subset([key for key, value in self.data.items() if all(val in vars for val in value.keys)])
 
+    def missing(self, vars: List[str]):
+        #return a subset that has not been populated by the list of vars
+        return self.subset([key for key, value in self.data.items() if not all(val in vars for val in value.keys)])
 
-    def default_constructs(self, names):
-        return {name:self.constructs[name].default() for name in names}
+    def to_list(self):
+        return [value for value in self.data.values()]
 
+    def contains(self, names: Union[list, str]) -> bool:
+        
+        _names = [names] if isinstance(names, str) else names
+        
+        keys = self.data.keys()
+        res = [name in keys for name in _names]
+        return res[0] if isinstance(names, str) else res
 
     def cdicts(self, **kwargs):
-        return [self.constructs[key].todict(const) for key, const in list(kwargs.items())]        
-
-    def existing_constructs(self, names):
-        return [key for key, const in self.constructs.items() if all([val in names for val in const.keys])] 
+        return [self.data[key].todict(const) for key, const in list(kwargs.items())]        

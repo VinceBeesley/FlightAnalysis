@@ -4,7 +4,6 @@ from flightanalysis import Box
 from flightanalysis.schedule import Schedule, Categories, get_schedule, Line
 from flightanalysis import Section
 
-
 @pytest.fixture(scope="session")
 def flight():
     return Flight.from_csv('tests/test_inputs/test_log_00000052_flight.csv')

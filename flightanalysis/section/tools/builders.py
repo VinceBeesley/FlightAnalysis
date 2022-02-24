@@ -1,51 +1,26 @@
 import numpy as np
 import pandas as pd
 from flightanalysis.section import Section, State
-from flightanalysis.section.variables import constructs, missing_constructs
+from flightanalysis.section.variables import secvars
 from geometry import Points, Quaternions, Point
 from typing import Union
-from flightanalysis import FlightLine, Box
+from flightanalysis.flightline import FlightLine, Box
 from flightdata import Flight, Fields
 from pathlib import Path
 
 
-def make_dt(self: Section) -> np.array:
-    return np.gradient(self.data.index)
-
-def make_bvel(self: Section) -> Points:
-    wvel = self.gpos.diff(self.gdt)
-    return self.gatt.inverse().transform_point(wvel)
-
-def make_brvel(self:Section) -> Points:
-    return self.gatt.body_diff(self.gdt).remove_outliers(3) 
-
-def make_bacc(self:Section) -> Points:
-    wacc = self.gatt.transform_point(self.gbvel).diff(self.gdt) + Point(0, 0, 9.81) # assumes world Z is up
-    return self.gatt.inverse().transform_point(wacc)
-
-def make_bracc(self:Section) -> Points:
-    return self.gbrvel.diff(self.gdt)
-
-construct_makers = dict(
-    dt=make_dt,
-    bvel=make_bvel,
-    brvel=make_brvel,
-    bacc=make_bacc,
-    bracc=make_bracc,
-)
-
 
 def from_constructs(*args,**kwargs):
-    kwargs = dict(kwargs, **{list(constructs.keys())[i]: arg for i, arg in enumerate(args)})
+    kwargs = dict(kwargs, **{list(secvars.data.keys())[i]: arg for i, arg in enumerate(args)})
     df = pd.concat(
-        [constructs[key].todf(x, kwargs["time"]) for key, x in kwargs.items()],
+        [secvars.data[key].todf(x, kwargs["time"]) for key, x in kwargs.items()],
         axis=1
     )
 
     return Section(df)
 
 def copy(self, *args, **kwargs):
-    kwargs = dict(kwargs, **{list(constructs.keys())[i]: arg for i, arg in enumerate(args)})
+    kwargs = dict(kwargs, **{list(secvars.data.keys())[i]: arg for i, arg in enumerate(args)})
     
     old_constructs = {key: self.__getattr__("g" + key) for key in self.existing_constructs() if not key in kwargs.keys()}
 
@@ -54,9 +29,8 @@ def copy(self, *args, **kwargs):
     return Section.from_constructs(**new_constructs).append_columns(self.data[self.misc_cols()])
 
 
-
 def extrapolate_state(istate: State, duration: float, freq: float = None) -> Section:
-    t = Section.t_array(duration, freq)
+    t = Section.make_index(duration, freq)
 
     bvel = Points.from_point(istate.bvel, len(t))
 

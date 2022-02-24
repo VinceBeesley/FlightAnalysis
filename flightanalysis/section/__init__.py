@@ -2,16 +2,18 @@
 
 
 
-from .state import State
 from .section import Section
+from .state import State
 
+Section.Instant = State
+State.Period = Section
+#
 from .tools.builders import (
     from_constructs,
     extrapolate_state, 
     from_csv, 
     from_flight, 
-    stack, 
-    construct_makers
+    stack
 )
 
 Section.from_constructs = staticmethod(from_constructs)
@@ -19,19 +21,18 @@ Section.extrapolate_state = staticmethod(extrapolate_state)
 Section.from_csv = staticmethod(from_csv)
 Section.from_flight = staticmethod(from_flight)
 Section.stack = staticmethod(stack)
-Section.construct_makers = construct_makers
 
 from .tools.transformers import (
     superimpose_angles, 
     superimpose_rotation, 
     superimpose_roll, 
     smooth_rotation, 
-    t_array, 
+    make_index, 
     transform
 )
 
 Section.transform = transform
-Section.t_array = staticmethod(t_array)
+Section.make_index = staticmethod(make_index)
 Section.superimpose_angles = superimpose_angles
 Section.superimpose_rotation = superimpose_rotation
 Section.superimpose_roll = superimpose_roll

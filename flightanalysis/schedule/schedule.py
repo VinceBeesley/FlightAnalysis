@@ -138,14 +138,14 @@ class Schedule():
             takeoff = Line(30).create_template(itrans, speed / 10)
             takeoff.data.loc[:,"manoeuvre"] = 0
             takeoff.data.loc[:,"element"] = 0
-            itrans = takeoff.get_state_from_index(-1).transform
+            itrans = takeoff[-1].transform
             templates.append(takeoff)
 
         for i, manoeuvre in enumerate(self.manoeuvres):
             if i == len(self.manoeuvres) - 1: 
                 speed = speed / 10
             templates.append(manoeuvre.create_template(itrans, speed))
-            itrans = templates[-1].get_state_from_index(-1).transform
+            itrans = templates[-1][-1].transform
 
         return Section.stack(templates)
 
@@ -201,7 +201,7 @@ class Schedule():
         rates = get_rates(alinged)
 
         transform = self.create_itransform(
-            "left" if alinged.get_state_from_index(0).direction == "right" else "right",
+            "left" if alinged[0].direction == "right" else "right",
             rates["distance"]
         )
 
@@ -220,7 +220,7 @@ class Schedule():
         """This will go through all the manoeuvres in a labelled section and create a template with only the initial position and speed of each matched"""
         rates = get_rates(alinged)
 
-        iatt = self.create_iatt(alinged.get_state_from_index(0).direction)
+        iatt = self.create_iatt(alinged[0].direction)
 
         templates = []
         for manoeuvre in self.manoeuvres:

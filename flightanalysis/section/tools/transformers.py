@@ -4,7 +4,7 @@ from flightanalysis.section import Section
 from geometry import Point, Points, Quaternion, Quaternions, Transformation
 
 
-def t_array(duration: float, freq: float = None):
+def make_index(duration: float, freq: float = None):
     if freq==None:
         freq = Section._construct_freq
     return  np.linspace(0, duration, max(int(duration * freq), 3))
