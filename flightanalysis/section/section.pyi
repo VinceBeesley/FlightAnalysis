@@ -2,27 +2,15 @@ from flightanalysis import FlightLine, Box
 from typing import Union, Tuple
 from flightdata import Flight
 from flightanalysis.section.variables import secvars
-from flightanalysis.section import Section, State
 from geometry import Points
 import numpy as np
 from flightanalysis.base import Period, Instant
+from flightanalysis.section.state import State
+
 
 class Section(Period):
-    def from_constructs(*args, **kwargs) -> Section: 
-        """Construct a Section from a set of constructs
-
-        Returns:
-            Section: [description]
-        """
-        ...
-        
-    def copy(self, *args, **kwargs) -> Section: 
-        """Copy the Section and replace the desired constructs
-
-        Returns:
-            Section: [description]
-        """
-        ...
+    ...
+    @staticmethod
     def from_csv(filename: str) -> Section: 
         """Read a Section from a csv file
 
@@ -33,7 +21,7 @@ class Section(Period):
             Section: [description]
         """
         ...
-        
+    @staticmethod
     def extrapolate_state(istate: State, duration: float, freq: float = None) -> Section: 
         """Extrapolate the state along its velocity and axis rate
 
@@ -46,6 +34,7 @@ class Section(Period):
             Section: [description]
         """
         ...
+    @staticmethod
     def from_flight(flight: Union[Flight, str], box:Union[FlightLine, Box, str]) -> Section: 
         """Create a section from a Flight instance, rotated to the desired box.
 
@@ -57,7 +46,7 @@ class Section(Period):
             Section: [description]
         """
         ...
-
+    @staticmethod
     def stack(sections: list) -> Section: 
         """stack two sections on top of each other, offset time indeces appropriately
 
@@ -69,7 +58,7 @@ class Section(Period):
         """
         ...
     
-
+    
     def to_judging(self: Section) -> Section: 
         """Converts a body or wind axis section to the Judging axis 
         (x axis aligned with velocity vector)

@@ -1,5 +1,5 @@
 import pytest
-from flightanalysis.controls import Control, Controls
+from flightanalysis.controls import Control, Controls, cold_draft_conversion
 from flightdata import Flight
 import numpy as np
 import pandas as pd
@@ -10,7 +10,7 @@ def flight():
 
 
 def test_init(flight):
-    cont = Controls.from_flight(flight)
+    cont = Controls.from_flight(flight, cold_draft_conversion)
 
     assert isinstance(cont.elevator, pd.Series)
 
