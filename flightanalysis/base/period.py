@@ -74,7 +74,7 @@ class Period(ABC):
         return self.data.index[-1] - self.data.index[0]
 
     def __getitem__(self, sli):
-        if isinstance(sli, int): 
+        if isinstance(sli, int) or isinstance(sli, float): 
             if sli==-1:
                 return self._Instant(self.data.iloc[-1])
             return self._Instant(self.data.iloc[self.data.index.get_loc(sli, method="nearest")])
@@ -90,6 +90,7 @@ class Period(ABC):
             return self[:end]
         if end==-1:
             return self[start:]
+        return self[start:end]
 
     @classmethod
     def from_constructs(cls, *args,**kwargs):
