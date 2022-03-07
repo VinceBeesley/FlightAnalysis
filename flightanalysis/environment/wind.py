@@ -152,8 +152,9 @@ def fit_wind(body_axis: Section, windbuilder: WindModelBuilder):
     def cost_fn(wind_guess):
         wind_model = windbuilder(wind_guess)
         res = get_coef_data(wind_model)
-        return lincheck(res.alpha, res.cz) + lincheck(res.beta, res.cy)
+        return 100*(lincheck(res.alpha, res.cz) + lincheck(res.beta, res.cy) )
 
     res = minimize(cost_fn, windbuilder.defaults, method="Powell", bounds=windbuilder.bounds)
-
-    return windbuilder(res.x)
+    args = res.x
+    args[0] = args[0] % (2 * np.pi)
+    return windbuilder(args)
