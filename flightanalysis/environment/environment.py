@@ -1,4 +1,4 @@
-from winreg import ExpandEnvironmentStrings
+
 from flightanalysis.base import Period, make_dt, make_error
 from typing import Union
 from flightdata import Flight, Fields

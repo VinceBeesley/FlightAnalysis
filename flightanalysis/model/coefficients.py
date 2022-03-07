@@ -11,8 +11,8 @@ import numpy as np
 coefvars = Constructs({
     "time":    SVar("t",   ["t"],                  float,  np.array, make_error, ""),
     "dt":      SVar("dt",  ["dt"],                 float,  np.array, make_dt,    ""),
-    "bforce":   SVar("force", ["cx", "cy", "cz"],  Point,  Points,   make_error, ""),
-    "bmoment":  SVar("moment",["cl", "cm", "cn"],  Point,  Points,   make_error, ""),
+    "force":   SVar("force", ["cx", "cy", "cz"],  Point,  Points,   make_error, ""),
+    "moment":  SVar("moment",["cl", "cm", "cn"],  Point,  Points,   make_error, ""),
 })
 
 
