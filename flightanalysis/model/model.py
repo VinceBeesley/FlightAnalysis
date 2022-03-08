@@ -28,7 +28,7 @@ class AeroModel:
         self.derivatives = derivatives
 
 
-    def forwards(self, control: Controls, flow: Flow) -> Coefficients:
+    def forward(self, control: Controls, flow: Flow) -> Coefficients:
         pass
 
     def backward(self, coefficients: Coefficients, q) -> tuple(Controls, Flows):

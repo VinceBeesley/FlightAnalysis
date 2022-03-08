@@ -13,8 +13,8 @@ class WindModel:
         self.kind = kind
         self.args = args
 
-    def __call__(self, height, time):
-        return self.func(height, time)
+    def __call__(self, height, time=None):
+        return self.func(height, time if not time is None else np.zeros(len(height)))
 
     
 
@@ -85,10 +85,10 @@ class WindModelBuilder:
         
 
     @staticmethod
-    def fit(minwind=0.1, maxwind=20.0, npoints=10, kind="linear" ):
+    def fit(minwind=0.1, maxwind=20.0, minh=0, maxh=500, npoints=10, **kwargs ):
 
-        def wind_fit_builder(args, kind="linear"):
-            """generates a wind function based on a fit through arbitrary number of points
+        def wind_fit_builder(args):
+            """generates a wind function based on a fit through arbitrary number of points. 
 
             Args:
                 args ([float]): first index heading, rest are speeds up to 1000m
@@ -99,13 +99,13 @@ class WindModelBuilder:
                 function: function to get wind vector for given altitude and time.
             """
             model = interp1d(
-                x=np.linspace(0,np.sqrt(1000), len(args)-1) ** 2,
+                x=np.linspace(minh,np.sqrt(maxh), len(args)-1) ** 2,
                 y=args[1:], 
-                kind=kind
+                **kwargs
             ) 
             return WindModel(
                 lambda height, time: WindModelBuilder.wind_vector(model, height, args[0]),
-                f"fit_{kind}",
+                "fit",
                 args
             )
             
@@ -128,10 +128,10 @@ class WindModelBuilder:
             return direc * float(speed)
 
 
-
-
-def fit_wind(body_axis: Section, windbuilder: WindModelBuilder):
-
+def fit_wind(body_axis: Section, windbuilder: WindModelBuilder, bounds=False, **kwargs):
+    if not "method" in kwargs:
+        kwargs["method"] = "nelder-mead"
+    
     judge_axis = body_axis.to_judging()
     
     def get_coef_data(wind_model):
@@ -154,7 +154,13 @@ def fit_wind(body_axis: Section, windbuilder: WindModelBuilder):
         res = get_coef_data(wind_model)
         return 100*(lincheck(res.alpha, res.cz) + lincheck(res.beta, res.cy) )
 
-    res = minimize(cost_fn, windbuilder.defaults, method="Powell", bounds=windbuilder.bounds)
+    res = minimize(
+        cost_fn, 
+        windbuilder.defaults, 
+        bounds=windbuilder.bounds if bounds else None,
+        **kwargs
+    )
+
     args = res.x
     args[0] = args[0] % (2 * np.pi)
     return windbuilder(args)
