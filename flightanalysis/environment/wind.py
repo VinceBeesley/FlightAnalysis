@@ -34,7 +34,7 @@ class WindModelBuilder:
             """generates a wind function for constant wind
             
             Args:
-                args ([float]): [heading, speed, exponent]
+                args ([float]): [heading, speed]
 
             Returns:
                 function: function to get wind vector for given altitude and time. 
@@ -153,13 +153,13 @@ def fit_wind(body_axis: Section, windbuilder: WindModelBuilder, bounds=False, **
     def lincheck(x,y):
         fit = np.polyfit(x, y, deg=1)
         pred = fit[1] + fit[0] * x
-        return np.sum(np.abs(pred - y))
-
+        return np.sum(np.abs(pred - y)) 
 
     def cost_fn(wind_guess):
         wind_model = windbuilder(wind_guess)
         res = get_coef_data(wind_model)
-        return 100*(lincheck(res.alpha, res.cz) + lincheck(res.beta, res.cy) )
+
+        return 100*(lincheck(res.alpha, res.cz))# + lincheck(res.beta, res.cy) )
 
     res = minimize(
         cost_fn, 

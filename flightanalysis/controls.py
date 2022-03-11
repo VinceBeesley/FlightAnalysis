@@ -12,7 +12,7 @@ import numpy as np
 contvars = Constructs({
     "time":  SVar("t",         ["t"],         float,      np.array,    make_error, ""),
     "dt":    SVar("dt",        ["dt"],        float,      np.array,    make_dt,    ""),
-    "inputs":SVar("inputs",    ["throttle", 
+    "deflection":SVar("deflection",    ["throttle", 
                                 "aileron_1", 
                                 "aileron_2", 
                                 "elevator", 
@@ -29,7 +29,7 @@ class Controls(Period):
     Instant = Control
 
 
-    def from_flight(flight: Union[Flight, str], control_conversion):
+    def build(flight: Union[Flight, str], control_conversion):
         if isinstance(flight, str):
             flight = {
                 ".csv": Flight.from_csv,
@@ -39,17 +39,19 @@ class Controls(Period):
         tx_controls = flight.read_fields(Fields.TXCONTROLS).iloc[:,:5]
         tx_controls.columns = ["throttle", "aileron_1", "aileron_2", "elevator", "rudder"]
         for key, value in control_conversion.items():
-            tx_controls[key] = value(tx_controls[key])
-        return Controls.from_constructs(time=t,inputs=tx_controls.to_numpy())
+            tx_controls.loc[:,key] = value(tx_controls[key])
+
+
+        return Controls.from_constructs(time=t,deflection=tx_controls.to_numpy())
 
 
 Control.Period = Controls
 
 
 cold_draft_conversion = {
-     "throttle": lambda pwm: 15 * pwm / 700 - 1500,
-    "aileron_1": lambda pwm: 15 * pwm / 700 - 1500, 
-    "aileron_2": lambda pwm: 15 * pwm / 700 - 1500, 
-    "elevator":  lambda pwm: 15 * pwm / 700 - 1500, 
-    "rudder":    lambda pwm: 15 * pwm / 700 - 1500
+     "throttle": lambda pwm: 15 * (pwm - 1500) / 700,
+    "aileron_1": lambda pwm: 15 * (pwm - 1500) / 700, 
+    "aileron_2": lambda pwm: 15 * (pwm - 1500) / 700, 
+    "elevator":  lambda pwm: 15 * (pwm - 1500) / 700, 
+    "rudder":    lambda pwm: 15 * (pwm - 1500) / 700
 }

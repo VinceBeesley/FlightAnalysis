@@ -1,11 +1,13 @@
 
-from flightanalysis.base import Period, make_dt, make_error
+from flightanalysis.base import Period, Instant, make_dt, make_error
 from typing import Union
 from flightdata import Flight, Fields
 from pathlib import Path
 from flightanalysis.base.constructs import Constructs, SVar
 from geometry import Point, Quaternion, Quaternions, Points
+from flightanalysis.section import Section
 import numpy as np
+from .wind import WindModel
 
 R = 287.058
 GAMMA = 1.4
@@ -28,20 +30,21 @@ envvars = Constructs({
 class Environments(Period):
     _cols = envvars
 
-    def from_flight(flight: Union[Flight, str], control_conversion):
-        if isinstance(flight, str):
-            flight = {
-                ".csv": Flight.from_csv,
-                ".BIN": Flight.from_log
-            }[Path(flight).suffix](flight)
-        t=flight.data.index
+    @staticmethod
+    def build(flight: Flight, sec: Section, wmodel: WindModel):
+
+        df = flight.read_fields(Fields.PRESSURE)
+        df = df.assign(temperature_0=291.15)
+        df = df.assign(rho=get_rho(df["pressure_0"], df["temperature_0"]))
+
+        return Environments.from_constructs(
+            time=sec.gtime,
+            atm=df.to_numpy(),
+            wind=wmodel(sec.gpos.z)
+        )
 
 
-
-        return Environments.from_constructs(time=t)
-
-
-class Environment(Period):
+class Environment(Instant):
     _cols = envvars
     Period = Environments
 

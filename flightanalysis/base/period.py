@@ -80,6 +80,10 @@ class Period(ABC):
             return self._Instant(self.data.iloc[self.data.index.get_loc(sli, method="nearest")])
         return self.__class__(self.data.loc[sli])
 
+    def __iter__(self):
+        for ind in list(self.data.index):
+            yield self[ind]
+
     def get_state_from_index(self, index):
         return self._Instant(self.data.iloc[index])
 

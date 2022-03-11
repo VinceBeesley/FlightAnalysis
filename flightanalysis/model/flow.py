@@ -5,7 +5,7 @@ from flightdata import Flight, Fields
 from pathlib import Path
 from flightanalysis.base.constructs import Constructs, SVar
 from flightanalysis.section import Section
-from flightanalysis.environment.wind import WindModel
+from flightanalysis.environment import Environments
 from geometry import Point, Quaternion, Quaternions, Points
 import numpy as np
 
@@ -22,11 +22,10 @@ class Flows(Period):
     _cols = flowvars
 
     @staticmethod
-    def build(body: Section, windmodel: WindModel):
+    def build(body: Section, envs: Environments):
         judge = body.to_judging()
-        wind_vecs = windmodel(body.gpos.z)
-        wind = judge.judging_to_wind(wind_vecs)
-        airspeed = wind.measure_airspeed(wind_vecs)
+        wind = judge.judging_to_wind(envs.gwind)
+        airspeed = wind.measure_airspeed(envs.gwind)
         alpha,beta = body.measure_aoa(wind)
         return Flows.from_constructs(
             body.gtime, 
