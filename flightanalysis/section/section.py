@@ -33,6 +33,7 @@ class Section(Period):
         return Section(self.data.drop(["manoeuvre", "element"], 1, errors="ignore"))
     
     def flying_only(self):
+        #TODO if gps drift this doesn't necessarily work
         above_ground = self.data.loc[self.data.z >= 5.0]
         return self[above_ground.index[0]:above_ground.index[-1]]
 

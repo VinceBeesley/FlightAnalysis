@@ -80,7 +80,7 @@ class WindModelBuilder:
         return WindModelBuilder(
                 wind_power_law_builder,
                 [0.0, 3.0, 0.2],
-                [(0.0, 4 * np.pi), (minwind, maxwind), (0.1, 0.6)]
+                [(-np.pi, 3 * np.pi), (minwind, maxwind), (0.1, 0.6)]
             )
         
 
@@ -129,6 +129,9 @@ class WindModelBuilder:
 
 
 def fit_wind(body_axis: Section, windbuilder: WindModelBuilder, bounds=False, **kwargs):
+
+    body_axis = Section(body_axis.data.loc[body_axis.data.bvx > 10])
+
     if not "method" in kwargs:
         kwargs["method"] = "nelder-mead"
     
@@ -138,8 +141,12 @@ def fit_wind(body_axis: Section, windbuilder: WindModelBuilder, bounds=False, **
         wind_vectors = wind_model(judge_axis.gpos.z, judge_axis.gt)
         wind_axis = judge_axis.judging_to_wind(wind_vectors)
         alpha, beta = np.degrees(body_axis.measure_aoa(wind_axis))
-
-        coeffs = body_axis.measure_coefficients(4.5, 0.5 * 1.225 * abs(body_axis.gbvel)**2, 0.6)
+        
+        coeffs = wind_axis.measure_coefficients(
+            4.5, 
+            0.5 * 1.225 * wind_axis.measure_airspeed(wind_vectors).x**2, 
+            0.6
+        )
 
         return pd.DataFrame(np.stack([alpha, beta, coeffs.z, coeffs.y]).T, columns=["alpha", "beta", "cz", "cy"])
 

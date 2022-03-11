@@ -132,4 +132,13 @@ class Section(Period):
         """
         ...
 
-    
+    def fling_only(self: Section) -> Section:
+        """return a subset of self with the ground data removed
+
+        Args:
+            self (Section): _description_
+
+        Returns:
+            Section: _description_
+        """
+        ...

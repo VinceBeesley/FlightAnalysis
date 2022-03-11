@@ -4,6 +4,8 @@ from typing import Union
 from flightdata import Flight, Fields
 from pathlib import Path
 from flightanalysis.base.constructs import Constructs, SVar
+from flightanalysis.section import Section
+from flightanalysis.environment.wind import WindModel
 from geometry import Point, Quaternion, Quaternions, Points
 import numpy as np
 
@@ -12,11 +14,25 @@ flowvars = Constructs({
     "time":  SVar("t",   ["t"],               float,      np.array,    make_error, ""),
     "dt":    SVar("dt",  ["dt"],              float,      np.array,    make_dt,    ""),
     "aoa":   SVar("aoa", ["alpha", "beta"],   np.array,   np.array,    make_error, ""),
+    "q":     SVar("q",   ["q"],               np.array,   np.array,    make_error, ""),
 })
 
 
 class Flows(Period):
     _cols = flowvars
+
+    @staticmethod
+    def build(body: Section, windmodel: WindModel):
+        judge = body.to_judging()
+        wind_vecs = windmodel(body.gpos.z)
+        wind = judge.judging_to_wind(wind_vecs)
+        airspeed = wind.measure_airspeed(wind_vecs)
+        alpha,beta = body.measure_aoa(wind)
+        return Flows.from_constructs(
+            body.gtime, 
+            aoa=np.stack([alpha,beta]).T, 
+            q=0.5 * 1.225 * airspeed.x
+        )
 
 
 class Flow(Period):
@@ -24,3 +40,4 @@ class Flow(Period):
     Period = Flows
 
 Flows.Instant = Flow
+

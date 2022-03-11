@@ -6,15 +6,6 @@ from flightanalysis.model.flow import Flows, Flow
 from flightanalysis.controls import Control, Controls
 from flightanalysis.model.coefficients import Coefficients
 
-class ACConstants:
-    def __init__(self, s: float, c:float, b:float, mass:float, cg:Point):
-        self.s = s
-        self.c = c
-        self.b = b
-        self.mass = mass
-        self.cg = cg
-
-cold_draft = ACConstants(0.569124, 0.31211, 1.8594, 4.5, Point(0.6192,0.0,0.0))
 
 
 class AeroModel:
