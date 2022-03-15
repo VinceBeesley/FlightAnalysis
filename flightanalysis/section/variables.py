@@ -28,12 +28,12 @@ def make_error(sec):
 
 
 secvars = Constructs({
-    "time":  SVar("t",   ["t"],                    float,      np.array,    make_error, ""),
-    "dt":    SVar("dt",  ["dt"],                   float,      np.array,    make_dt,    ""),
-    "pos":   SVar("",    ["x", "y", "z"],          Point,      Points,      make_error, ""),
-    "att":   SVar("r",   ["rw", "rx", "ry", "rz"], Quaternion, Quaternions, make_error, "Body Axis Orientation"),
-    "bvel":  SVar("bv",  ["bvx", "bvy", "bvz"],    Point,      Points,      make_bvel,  ""),
-    "brvel": SVar("brv", ["brvr", "brvp", "brvy"], Point,      Points,      make_brvel, ""),
-    "bacc":  SVar("ba",  ["bax", "bay", "baz"],    Point,      Points,      make_bacc,  ""),
-    "bracc": SVar("bra", ["brar","brap", "bray"],  Point,      Points,      make_bracc, ""),
+    "time":  SVar(["t"],                    float,      np.array,    make_error, ""),
+    "dt":    SVar(["dt"],                   float,      np.array,    make_dt,    ""),
+    "pos":   SVar(["x", "y", "z"],          Point,      Points,      make_error, ""),
+    "att":   SVar(["rw", "rx", "ry", "rz"], Quaternion, Quaternions, make_error, "Body Axis Orientation"),
+    "bvel":  SVar(["bvx", "bvy", "bvz"],    Point,      Points,      make_bvel,  ""),
+    "brvel": SVar(["brvr", "brvp", "brvy"], Point,      Points,      make_brvel, ""),
+    "bacc":  SVar(["bax", "bay", "baz"],    Point,      Points,      make_bacc,  ""),
+    "bracc": SVar(["brar","brap", "bray"],  Point,      Points,      make_bracc, ""),
 })

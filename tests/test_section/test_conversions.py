@@ -2,7 +2,7 @@ import numpy as np
 from flightanalysis import Section
 
 from ..conftest import seq
-import pytest
+from pytest import approx
 from flightanalysis import Line
 from flightanalysis.section.tools.conversions import to_judging, body_to_wind
 from geometry import Points, Transformation, Point
@@ -39,6 +39,6 @@ def test_judging_to_wind():
     wind = judging.judging_to_wind(wind_vec)
 
     alpha, beta = wind.measure_aoa()
-    assert pytest.approx(beta[20], np.arctan(5/20))
+    assert beta[20] == approx(np.arctan(5/20))
 
 

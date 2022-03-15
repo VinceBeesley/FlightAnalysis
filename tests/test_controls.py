@@ -10,7 +10,7 @@ def flight():
 
 
 def test_init(flight):
-    cont = Controls.from_flight(flight, cold_draft_conversion)
+    cont = Controls.build(flight, cold_draft_conversion)
 
     assert isinstance(cont.elevator, pd.Series)
     

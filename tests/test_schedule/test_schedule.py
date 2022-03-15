@@ -5,21 +5,22 @@ from flightanalysis import Section
 from json import load
 from flightanalysis.fc_json import FCJson
 from flightdata import Flight
-import pytest
+
+from pytest import approx, fixture, mark
 from flightanalysis import get_schedule, Categories
 import warnings
 warnings.filterwarnings("error")
 
-@pytest.fixture(scope="session")
+@fixture(scope="session")
 def schedule_json():
     with open("flightanalysis/data/P21.json", "r") as f:
         return load(f)
 
-@pytest.fixture(scope="session")
+@fixture(scope="session")
 def schedule(schedule_json):   
     return Schedule(**schedule_json)
 
-@pytest.fixture(scope="session")
+@fixture(scope="session")
 def aligned():
     return Section.from_csv("tests/test_inputs/test_log_00000052_aligned.csv")
 
@@ -40,7 +41,7 @@ def test_create_raw_template(schedule):
     assert len(stallturn.element.unique()) == 10
     
 
-@pytest.mark.skip("doesnt work")
+@mark.skip("doesnt work")
 def test_match_axis_rate(schedule):
     
     sec = Section.from_csv("tests/test_inputs/test_log_00000052_section.csv").subset(110, 200)
@@ -66,7 +67,7 @@ def test_from_splitter():
     labelled = sched.label_from_splitter(sec, fcj["mans"])
 
     assert isinstance(labelled, Section)
-    pytest.approx(sec.duration /2 , labelled.duration/2)
+    assert sec.duration /2  == approx(labelled.duration/2, 1)
     
 
 

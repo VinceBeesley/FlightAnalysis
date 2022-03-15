@@ -20,10 +20,10 @@ def sl_assumption(sec):
 
 
 envvars = Constructs({
-    "time":  SVar("t",   ["t"],                 float,      np.array,    make_error,    ""),
-    "dt":    SVar("dt",  ["dt"],                float,      np.array,    make_dt,       ""),
-    "atm":   SVar("atm", ["P", "T", "rho"],     np.array,   np.array,    sl_assumption, ""),
-    "wind":  SVar("wind",["wvx", "wvy", "wvz"], Points,     Points,      lambda sec: Points.full(Point.zeros(), len(sec)),    ""),
+    "time":  SVar(["t"],                 float,      np.array,    make_error,    ""),
+    "dt":    SVar(["dt"],                float,      np.array,    make_dt,       ""),
+    "atm":   SVar(["P", "T", "rho"],     np.array,   np.array,    sl_assumption, ""),
+    "wind":  SVar(["wvx", "wvy", "wvz"], Points,     Points,      lambda sec: Points.full(Point.zeros(), len(sec)),    ""),
 })
 
 

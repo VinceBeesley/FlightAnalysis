@@ -10,14 +10,15 @@ import numpy as np
 
 
 contvars = Constructs({
-    "time":  SVar("t",         ["t"],         float,      np.array,    make_error, ""),
-    "dt":    SVar("dt",        ["dt"],        float,      np.array,    make_dt,    ""),
-    "deflection":SVar("deflection",    ["throttle", 
-                                "aileron_1", 
-                                "aileron_2", 
-                                "elevator", 
-                                "rudder"
-                                ],            np.array,   np.array,    make_error, ""),
+    "time":  SVar(["t"],         float,      np.array,    make_error, ""),
+    "dt":    SVar(["dt"],        float,      np.array,    make_dt,    ""),
+    "deflection":SVar([
+        "throttle", 
+        "aileron_1", 
+        "aileron_2", 
+        "elevator", 
+        "rudder"
+    ],            np.array,   np.array,    make_error, ""),
 })
 
 

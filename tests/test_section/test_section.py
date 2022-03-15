@@ -7,8 +7,8 @@ from flightdata import Fields
 import numpy as np
 import pandas as pd
 import os
-import pytest
 from ..conftest import flight, box, p21, seq, aligned
+from pytest import approx
 
 
 def test_from_flight(flight, box):
@@ -48,9 +48,10 @@ def test_subset(flight):
         flight, FlightLine.from_initial_position(flight))
 
     assert isinstance(seq[100:200], Section)
-    pytest.approx(seq[100:200].data.index[-1], 200, 0)
 
-    pytest.approx(seq[:200].data.index[-1], 200, 0)
+    assert seq[100:200].data.index[-1] == approx(100,0.1)
+
+    assert seq[:200].data.index[-1] == approx(200,0.1)
 
 def test_get_state(seq):
     st = seq[100]

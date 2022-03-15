@@ -4,7 +4,7 @@ from flightanalysis.schedule.elements import Line
 import unittest
 from geometry import Transformation, Points, Point, Quaternion
 import numpy as np
-import pytest
+from pytest import approx
 
 
 
@@ -20,11 +20,11 @@ def test_match_axis_rate():
     elm = Line(0.5, 0.5).scale(100.0).match_axis_rate(
         1.0, 30.0).create_template(Transformation(), 30.0)
 
-    pytest.approx(elm.brvr.mean(), 1.0)
+    assert elm.brvr.mean() == approx(1.0, 10)
 
     elm = Line(0.5, -0.5).scale(100.0).match_axis_rate(
         1.0, 30.0).create_template(Transformation(), 30.0)
-    pytest.approx(abs(elm.data.brvr.mean()), 1.0)
+    assert abs(elm.data.brvr.mean()) == approx(1.0)
 
 def test_match_intention():
     # fly a line 20 degrees off the X axis for 100m, with 1 roll
@@ -40,7 +40,7 @@ def test_match_intention():
         flown)
 
     # only amount of length in the intended direction is counted
-    pytest.approx(new_el.length, 100 * np.cos(np.radians(20.0)))
+    assert new_el.length == approx(100 * np.cos(np.radians(20.0)))
 
     # roll direction should match
     assert np.sign(new_el.rolls) == np.sign(np.mean(Points.from_pandas(flown.brvel).x))

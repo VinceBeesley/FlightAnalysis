@@ -5,26 +5,27 @@ from flightanalysis.flightline import FlightLine, Box
 from geometry import GPSPosition, Point, Points, Quaternions
 from math import pi, cos, sin
 import numpy as np
-import pytest
+
+from pytest import approx, fixture
 
 
-@pytest.fixture(scope="session")
+@fixture(scope="session")
 def flight():
     return Flight.from_csv('tests/test_inputs/test_log_00000052_flight.csv')
 
 
-@pytest.fixture(scope="session")
+@fixture(scope="session")
 def  box():
     return Box.from_json('tests/test_inputs/test_log_box.json')
 
 
 def test_from_initial(flight):
     box = Box.from_initial(flight)
-    assert pytest.approx(box.pilot_position.latitude, 51.6418436, 2)
+    assert box.pilot_position.latitude == approx(51.6418436, 1e-5)
     
-    assert pytest.approx(box.pilot_position.longitude, -2.5260131, 2)
+    assert box.pilot_position.longitude == approx(-2.5260131, 1e-5)
 
-    assert pytest.approx(box.heading, np.radians(139.8874730), 3)
+    assert box.heading == approx(np.radians(139.8874730), 0.001)
 
 
 def test_to_dict(flight):
@@ -80,33 +81,27 @@ def test_from_box_true_north():
 
 def test_initial(flight):
     flightline = FlightLine.from_initial_position(flight)
-    pytest.approx(flightline.world.origin.x, 0, 2)
-    pytest.approx(flightline.world.origin.y, 0, 2)
+    assert flightline.world.origin.x == approx(0)
+    assert flightline.world.origin.y == approx(0)
 
-    pytest.approx(
-        flightline.contest.y_axis.y, 
-        cos((152.55998 * pi / 180) - pi / 2), 
-        2
-    )
-
+    assert flightline.contest.y_axis.y == approx(cos((152.55998 * pi / 180) - pi / 2), 0.1)
 
 
 def test_transform_to(flight):
     flightline = FlightLine.from_initial_position(flight)
 
     npoint = flightline.transform_to.point(Point(1, 0, 0))
-    pytest.approx(npoint.x, flightline.contest.x_axis.x, 4)
+    assert npoint.x == approx(flightline.contest.x_axis.x)
 
 def test_transform_from(flight):
     flightline = FlightLine.from_initial_position(flight)
 
     npoint = flightline.transform_to.point(Point(1, 0, 0))
-    pytest.approx(npoint.x, flightline.contest.x_axis.x, 4)
+    assert npoint.x == approx(flightline.contest.x_axis.x, 1e-4)
 
 def test_from_covariance(flight):
     flightline = FlightLine.from_covariance(flight)
-    pytest.approx(flightline.contest.y_axis.y,
-                            cos((144.8 * pi / 180) - pi / 2), 1)
+    assert flightline.contest.y_axis.y == approx(cos((144.8 * pi / 180) - pi / 2), 0.1)
 
 
 def test_flightline_headings(flight):
@@ -181,7 +176,7 @@ def test_to_f3azone(box):
 
     box_copy = Box.from_points("tem", pilot, centre)
 
-    assert pytest.approx(box_copy.heading, box.heading)
+    assert box_copy.heading == approx(box.heading)
     assert float(lines[6]) == 120
 
 
