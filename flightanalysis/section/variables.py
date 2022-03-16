@@ -1,12 +1,11 @@
-from flightanalysis.base.constructs import Constructs, SVar
+from flightanalysis.base import Constructs, SVar, default_vars
+from flightanalysis.base import make_dt, make_error
 from geometry import Point, Quaternion, Quaternions, Points
 import numpy as np
 
 
 
 
-def make_dt(sec) -> np.array:
-    return np.gradient(sec.data.index)
 
 def make_bvel(sec) -> Points:
     wvel = sec.gpos.diff(sec.gdt)
@@ -22,18 +21,12 @@ def make_bacc(sec) -> Points:
 def make_bracc(sec) -> Points:
     return sec.gbrvel.diff(sec.gdt)
 
-def make_error(sec):
-    raise NotImplementedError("cant construct a section without time, pos and att data")
 
-
-
-secvars = Constructs({
-    "time":  SVar(["t"],                    float,      np.array,    make_error, ""),
-    "dt":    SVar(["dt"],                   float,      np.array,    make_dt,    ""),
-    "pos":   SVar(["x", "y", "z"],          Point,      Points,      make_error, ""),
-    "att":   SVar(["rw", "rx", "ry", "rz"], Quaternion, Quaternions, make_error, "Body Axis Orientation"),
-    "bvel":  SVar(["bvx", "bvy", "bvz"],    Point,      Points,      make_bvel,  ""),
-    "brvel": SVar(["brvr", "brvp", "brvy"], Point,      Points,      make_brvel, ""),
-    "bacc":  SVar(["bax", "bay", "baz"],    Point,      Points,      make_bacc,  ""),
-    "bracc": SVar(["brar","brap", "bray"],  Point,      Points,      make_bracc, ""),
-})
+secvars = Constructs(dict(**default_vars, **{
+    "pos":   SVar(["x", "y", "z"],          Point,      Points,      make_error),
+    "att":   SVar(["rw", "rx", "ry", "rz"], Quaternion, Quaternions, make_error),
+    "bvel":  SVar(["bvx", "bvy", "bvz"],    Point,      Points,      make_bvel),
+    "brvel": SVar(["brvr", "brvp", "brvy"], Point,      Points,      make_brvel),
+    "bacc":  SVar(["bax", "bay", "baz"],    Point,      Points,      make_bacc),
+    "bracc": SVar(["brar","brap", "bray"],  Point,      Points,      make_bracc),
+}))

@@ -1,5 +1,5 @@
 
-from flightanalysis.base import Period, make_dt, make_error
+from flightanalysis.base import Period, Instant, make_dt, make_error, default_vars
 from typing import Union
 from flightdata import Flight, Fields
 from pathlib import Path
@@ -9,20 +9,18 @@ import numpy as np
 
 
 
-contvars = Constructs({
-    "time":  SVar(["t"],         float,      np.array,    make_error, ""),
-    "dt":    SVar(["dt"],        float,      np.array,    make_dt,    ""),
+contvars = Constructs(dict(**default_vars, **{
     "deflection":SVar([
         "throttle", 
         "aileron_1", 
         "aileron_2", 
         "elevator", 
         "rudder"
-    ],            np.array,   np.array,    make_error, ""),
-})
+    ],            np.array,   np.array,    make_error),
+}))
 
 
-class Control(Period):
+class Control(Instant):
     _cols = contvars
     
 class Controls(Period):

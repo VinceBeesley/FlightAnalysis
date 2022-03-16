@@ -1,5 +1,5 @@
 
-from flightanalysis.base import Period, Instant, make_dt, make_error
+from flightanalysis.base import Period, Instant, make_dt, make_error, default_vars
 from typing import Union
 from flightdata import Flight, Fields
 from pathlib import Path
@@ -19,12 +19,10 @@ def sl_assumption(sec):
     return np.full((len(sec), 2), [101325, 288.15, get_rho(101325, 288.15)])
 
 
-envvars = Constructs({
-    "time":  SVar(["t"],                 float,      np.array,    make_error,    ""),
-    "dt":    SVar(["dt"],                float,      np.array,    make_dt,       ""),
-    "atm":   SVar(["P", "T", "rho"],     np.array,   np.array,    sl_assumption, ""),
-    "wind":  SVar(["wvx", "wvy", "wvz"], Points,     Points,      lambda sec: Points.full(Point.zeros(), len(sec)),    ""),
-})
+envvars = Constructs(dict(**default_vars, **{
+    "atm":   SVar(["P", "T", "rho"],     np.array,   np.array,    sl_assumption),
+    "wind":  SVar(["wvx", "wvy", "wvz"], Points,     Points,      lambda sec: Points.full(Point.zeros(), len(sec))),
+}))
 
 
 class Environments(Period):

@@ -39,7 +39,7 @@ fromdf = {
 }
 
 class SVar:
-    def __init__(self, keys, Single, Multiple, default, description):
+    def __init__(self, keys, Single, Multiple, default):
         #self.name = name
         self.keys = keys
         self.default = default
@@ -47,10 +47,6 @@ class SVar:
         self.fromdict = lambda x : fromdict[Single]({key: x[key] for key in self.keys})
         self.todf = lambda x, index: todf[Multiple](x, index, self.keys)
         self.fromdf = lambda x: fromdf[Multiple](x.loc[:,self.keys])
-        self.description = description
-
-
-
 
 class Constructs:
     def __init__(self, data: Dict[str, SVar]):

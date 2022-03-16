@@ -1,5 +1,5 @@
 
-from flightanalysis.base import Period, make_dt, make_error
+from flightanalysis.base import Period, make_dt, make_error, default_vars
 from typing import Union
 from flightdata import Flight, Fields
 from pathlib import Path
@@ -10,12 +10,10 @@ from geometry import Point, Quaternion, Quaternions, Points
 import numpy as np
 
 
-flowvars = Constructs({
-    "time":  SVar("t",   ["t"],               float,      np.array,    make_error, ""),
-    "dt":    SVar("dt",  ["dt"],              float,      np.array,    make_dt,    ""),
-    "aoa":   SVar("aoa", ["alpha", "beta"],   np.array,   np.array,    make_error, ""),
-    "q":     SVar("q",   ["q"],               np.array,   np.array,    make_error, ""),
-})
+flowvars = Constructs(dict(**default_vars, **{
+    "aoa":   SVar(["alpha", "beta"],   np.array,   np.array,    make_error),
+    "q":     SVar(["q"],               np.array,   np.array,    make_error),
+}))
 
 
 class Flows(Period):
