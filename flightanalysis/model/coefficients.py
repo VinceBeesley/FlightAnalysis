@@ -22,10 +22,17 @@ class Coefficients(Period):
 
     @staticmethod
     def build(sec: Section, flow: Flow, consts: ACConstants):
+        I = consts.inertia
+        u = sec.gbvel
+        du = sec.gbacc
+        w = sec.gbrvel
+        dw = sec.gbracc
+        moment=I*(dw + w.cross(w)) / (flow.gq * consts.s) 
+
         return Coefficients.from_constructs(
             time=sec.gtime,
-            force=sec.gbacc * consts.mass / (flow.gq * consts.s),
-            moment=sec.gbracc * consts.inertia / (flow.gq * consts.s * consts.c) 
+            force=(du + u.cross(u)) * consts.mass / (flow.gq * consts.s),
+            moment = moment / Point(consts.b, consts.c, consts.b)
         )
 
 class Coefficient(Period):
