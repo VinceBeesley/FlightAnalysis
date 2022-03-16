@@ -28,7 +28,7 @@ class Flows(Period):
         return Flows.from_constructs(
             body.gtime, 
             aoa=np.stack([alpha,beta]).T, 
-            q=0.5 * 1.225 * airspeed.x
+            q=0.5 * envs.rho * airspeed.x**2
         )
 
 

@@ -6,7 +6,7 @@ from flightanalysis import Section
 
 @pytest.fixture(scope="session")
 def flight():
-    return Flight.from_csv('tests/test_inputs/test_log_00000052_flight.csv')
+    return Flight.from_csv('tests/test_inputs/test_log_00000052_flight.csv').flying_only()
 
 @pytest.fixture(scope="session")
 def box():
@@ -18,7 +18,7 @@ def p21():
 
 @pytest.fixture(scope="session")
 def seq(flight, box): 
-    return Section.from_flight(flight, box)
+    return Section.from_flight(flight.flying_only(), box)
 
 @pytest.fixture(scope="session")
 def aligned():

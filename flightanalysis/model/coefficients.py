@@ -25,11 +25,12 @@ class Coefficients(Period):
         w = sec.gbrvel
         dw = sec.gbracc
         moment=I*(dw + w.cross(w)) / (flow.gq * consts.s) 
+        #not correct need to extend geometry module to include inertia matrix
 
         return Coefficients.from_constructs(
             time=sec.gtime,
             force=(du + u.cross(u)) * consts.mass / (flow.gq * consts.s),
-            moment = moment / Point(consts.b, consts.c, consts.b)
+            moment=moment / Points.full(Point(consts.b, consts.c, consts.b), moment.count)
         )
 
 class Coefficient(Instant):
