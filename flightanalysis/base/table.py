@@ -4,18 +4,24 @@ import pandas as pd
 from geometry import Base,  Point, Quaternion, Transformation
 from typing import Union, Dict
 from .constructs import SVar, Constructs
-
+from numbers import Number
 
 
 class Time(Base):
     cols=["t", "dt"]
- 
+    
+    @staticmethod
+    def from_t(t: np.ndarray):
+        if isinstance(t, Number):
+            return Time(t, 1/30)
+        else:
+            dt = np.array([1/30]) if len(t) == 1 else np.gradient(t)
+            return Time(t, dt)
+
 
 def make_time(tab):
-    dt = np.gradient(tab.t) if len(tab.t) > 1 else 1/30
-    return Time(tab.t,dt)
-
-
+    return Time.from_t(tab.t)
+    
 class Table:
     constructs = Constructs(dict(
         time = SVar(Time,        ["t", "dt"]               , make_time )
@@ -89,7 +95,7 @@ class Table:
             [
                 x.to_pandas(
                     columns=cls.constructs.data[key].keys, 
-                    index=kwargs["time"]
+                    index=kwargs["time"].t
                 ) for key, x in kwargs.items()
             ],
             axis=1

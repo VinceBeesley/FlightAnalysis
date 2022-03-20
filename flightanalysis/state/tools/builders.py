@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
-from flightanalysis.state import Section, State
-from flightanalysis.state.variables import secvars
-from geometry import Points, Quaternion, Point
+from flightanalysis.state import State
+
+from geometry import Point, Quaternion, PX
 from typing import Union
 from flightanalysis.flightline import FlightLine, Box
 from flightdata import Flight, Fields
@@ -10,19 +10,19 @@ from pathlib import Path
 
 
 
-def extrapolate_state(istate: State, duration: float, freq: float = None) -> Section:
-    t = Section.make_index(duration, freq)
+def extrapolate(istate: State, duration: float, freq: float = None) -> State:
+    t = np.linspace(0,duration, duration * freq)
 
-    bvel = Point.full(istate.bvel, len(t))
+    bvel = PX(istate.bvel, len(t))
 
-    return Section.from_constructs(
+    return State.from_constructs(
         t,
         pos = Point.full(istate.pos,len(t)) + istate.transform.rotate(bvel) * t,
         att = Quaternion.full(istate.att, len(t)),
         bvel = bvel
     )
 
-def from_csv(filename) -> Section:
+def from_csv(filename) -> State:
     df = pd.read_csv(filename)
 
     if "time_index" in df.columns: # This is for back compatability with old csv files where time column was labelled differently
@@ -30,10 +30,10 @@ def from_csv(filename) -> Section:
             df.drop("time_index", axis=1)
         else:
             df = df.rename({"time_index":"t"}, axis=1)
-    return Section(df.set_index("t", drop=False))
+    return State(df.set_index("t", drop=False))
 
 
-def from_flight(flight: Union[Flight, str], box:Union[FlightLine, Box, str]) -> Section:
+def from_flight(flight: Union[Flight, str], box:Union[FlightLine, Box, str]) -> State:
     if isinstance(flight, str):
         flight = {
             ".csv": Flight.from_csv,
@@ -50,11 +50,11 @@ def from_flight(flight: Union[Flight, str], box:Union[FlightLine, Box, str]) -> 
     raise NotImplementedError()
 
 
-def _from_flight(flight: Flight, flightline: FlightLine) -> Section:
+def _from_flight(flight: Flight, flightline: FlightLine) -> State:
     # read position and attitude directly from the log(after transforming to flightline)
     t = flight.data.index
     pos = flightline.transform_from.point(
-        Points(
+        Point(
             flight.read_numpy(Fields.POSITION).T
         ))
 
@@ -66,17 +66,17 @@ def _from_flight(flight: Flight, flightline: FlightLine) -> Section:
         )
     else:
         att = flightline.transform_from.rotate(
-            Quaternion.from_euler(Points(
+            Quaternion.from_euler(Point(
                 flight.read_numpy(Fields.ATTITUDE).T
             )))
 
     # this is EKF velocity estimate in NED frame transformed to contest frame
-    vel = flightline.transform_from.rotate(Points(flight.read_numpy(Fields.VELOCITY).T))
+    vel = flightline.transform_from.rotate(Point(flight.read_numpy(Fields.VELOCITY).T))
     
 
     bvel = att.inverse().transform_point(vel)
 
-    bacc = Points(flight.read_numpy(Fields.ACCELERATION).T)
+    bacc = Point(flight.read_numpy(Fields.ACCELERATION).T)
 
     dt = np.gradient(t)
 
@@ -88,18 +88,18 @@ def _from_flight(flight: Flight, flightline: FlightLine) -> Section:
     #    brvel = brvel.remove_outliers(2)  # TODO this is a bodge to get rid of phase jumps when euler angles are used directly
     bracc = brvel.diff(dt)
 
-    return Section.from_constructs(t, dt, pos, att, bvel, brvel, bacc, bracc)
+    return State.from_constructs(t, dt, pos, att, bvel, brvel, bacc, bracc)
 
 
-def stack(sections: list) -> Section:
-    """stack a list of sections on top of each other. last row of each is replaced with first row of the next, 
+def stack(sections: list) -> State:
+    """stack a list of States on top of each other. last row of each is replaced with first row of the next, 
         indexes are offset so they are sequential
 
     Args:
-        sections (List[Section]): list of sections to stacked
+        States (List[State]): list of States to stacked
 
     Returns:
-        Section: the resulting Section
+        State: the resulting State
     """
     # first build list of index offsets, to be added to each dataframe
     offsets = [0] + [sec.duration for sec in sections[:-1]]
@@ -117,4 +117,4 @@ def stack(sections: list) -> Section:
 
     combo["t"] = combo.index
 
-    return Section(combo)
+    return State(combo)

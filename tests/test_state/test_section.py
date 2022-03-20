@@ -1,4 +1,3 @@
-from flightanalysis.state import Section
 from flightanalysis.state import State
 from flightanalysis.flightline import FlightLine
 from flightanalysis.schedule import Line
@@ -12,7 +11,7 @@ from pytest import approx
 
 
 def test_from_flight(flight, box):
-    seq = Section.from_flight(flight, box)
+    seq = State.from_flight(flight, box)
     assert isinstance(seq.x, pd.Series)
     assert seq.z.mean() > 0
     np.testing.assert_array_less(np.abs(seq.pos.to_numpy()[0]), 50.0 )
@@ -20,7 +19,7 @@ def test_from_flight(flight, box):
 
 def test_to_csv(seq):
     csv_file = seq.to_csv('tests/test.csv')
-    seq2 = Section.from_csv(csv_file) 
+    seq2 = State.from_csv(csv_file) 
     assert seq.duration == seq2.duration
     os.remove(csv_file)
 
@@ -36,7 +35,7 @@ def test_get_item(seq):
 
 def test_body_to_world(flight):
 
-    seq = Section.from_flight(
+    seq = State.from_flight(
         flight, FlightLine.from_initial_position(flight))
 
     pnew = seq.body_to_world(Point(1, 0, 0))
@@ -44,10 +43,10 @@ def test_body_to_world(flight):
     assert isinstance(pnew, Point)
 
 def test_subset(flight):
-    seq = Section.from_flight(
+    seq = State.from_flight(
         flight, FlightLine.from_initial_position(flight))
 
-    assert isinstance(seq[100:200], Section)
+    assert isinstance(seq[100:200], State)
 
     assert seq[100:200].data.index[-1] == approx(100,0.1)
 
@@ -64,7 +63,7 @@ def test_align(seq, p21):
 
     template = p21.scale_distance(170.0).create_raw_template("left", 30, 170)
     
-    aligned = Section.align(flown, template, 2)
+    aligned = State.align(flown, template, 2)
 
     assert len(aligned[1].data) == len(flown.data) 
 
@@ -85,7 +84,7 @@ def test_smooth_rotation():
 
 
 def test_from_csv():
-    sec = Section.from_csv("tests/test_inputs/test_log_00000052_section.csv")
+    sec = State.from_csv("tests/test_inputs/test_log_00000052_section.csv")
     assert isinstance(sec.gpos, Point)
 
 

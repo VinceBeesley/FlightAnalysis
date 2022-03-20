@@ -1,7 +1,7 @@
 from flightanalysis.state.state import State
 from flightanalysis.flightline import Box, FlightLine
-import unittest
-from geometry import Point, Quaternion, Transformation
+from flightanalysis.base.table import Time
+from geometry import Point, Quaternion, Transformation, PX
 from flightdata import Flight, Fields
 import numpy as np
 import pandas as pd
@@ -19,7 +19,7 @@ def state():
     return State(df) 
 
 def test_child_init(state):
-    assert all([col in state.data.columns for col in state.cols.cols])
+    assert all([col in state.data.columns for col in state.constructs.cols])
 
 def test_child_getattr(state):
 
@@ -33,16 +33,20 @@ def test_child_getitem(state):
     st = state[20]
     assert len(st)==1
 
-
-
-
 def test_from_constructs():
-    st = State.from_constructs(time=5, pos=Point.zeros(), att=Quaternion.from_euler(Point.zeros()))
+    st = State.from_constructs(
+        time=Time(5,1/30), 
+        pos=Point.zeros(), 
+        att=Quaternion.from_euler(Point.zeros())
+    )
     assert st.transform.translation == Point.zeros()
 
 def test_from_transform():
-    st =State.from_transform(Transformation(),bvel=Point(30, 0, 0))
-    assert st.bvel.x == 30
+    st =State.from_transform(Transformation())
+    assert st.vel.x == 0
 
 
-    
+    st =State.from_transform(Transformation(), vel=PX(20))
+    assert st.vel.x == 20
+
+

@@ -1,14 +1,13 @@
-from flightanalysis import FlightLine, Box
+from flightanalysis.flightline import FlightLine, Box
 from typing import Union, Tuple
 from flightdata import Flight
 from flightanalysis.state.variables import secvars
+from flightanalysis.base.table import Table
 from geometry import Points
 import numpy as np
-from flightanalysis.base import Period, Instant
-from flightanalysis.state.state import State
 
 
-class State(Period):
+class State(Base):
     ...
     @staticmethod
     def from_csv(filename: str) -> State: 
