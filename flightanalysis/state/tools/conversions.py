@@ -1,7 +1,7 @@
 
 import numpy as np
 import pandas as pd
-from flightanalysis.section import Section
+from flightanalysis.state import Section
 from geometry import Quaternion, Quaternions, Coord, Point, Points
 
 

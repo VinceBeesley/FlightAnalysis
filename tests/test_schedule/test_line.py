@@ -43,4 +43,4 @@ def test_match_intention():
     assert new_el.length == approx(100 * np.cos(np.radians(20.0)))
 
     # roll direction should match
-    assert np.sign(new_el.rolls) == np.sign(np.mean(Points.from_pandas(flown.brvel).x))
+    assert np.sign(new_el.rolls) == np.sign(np.mean(Point(flown.brvel).x))

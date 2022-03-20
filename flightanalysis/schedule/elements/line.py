@@ -55,7 +55,7 @@ class Line(El):
         ))
         return self.set_parms(
             length=length,
-            rolls=np.sign(np.mean(Points.from_pandas(flown.brvel).x)) * abs(self.rolls)
+            rolls=np.sign(np.mean(Point(flown.brvel).x)) * abs(self.rolls)
         )
 
 

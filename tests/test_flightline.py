@@ -2,7 +2,7 @@ import unittest
 
 from flightdata.data import Flight, Fields
 from flightanalysis.flightline import FlightLine, Box
-from geometry import GPSPosition, Point, Points, Quaternions
+from geometry import GPS, Point, Quaternion, PX, PY, PZ, P0
 from math import pi, cos, sin
 import numpy as np
 
@@ -21,9 +21,9 @@ def  box():
 
 def test_from_initial(flight):
     box = Box.from_initial(flight)
-    assert box.pilot_position.latitude == approx(51.6418436, 1e-5)
+    assert box.pilot_position.lat == approx(51.6418436, 1e-5)
     
-    assert box.pilot_position.longitude == approx(-2.5260131, 1e-5)
+    assert box.pilot_position.long == approx(-2.5260131, 1e-5)
 
     assert box.heading == approx(np.radians(139.8874730), 0.001)
 
@@ -32,14 +32,14 @@ def test_to_dict(flight):
     box = Box.from_initial(flight)
     di = box.to_dict()
     assert di["name"] ==  "origin"
-    assert di["pilot_position"]['latitude'] == 51.6418417
+    assert di["pilot_position"]['lat'] == 51.6418417
 
 
 def test_from_box(flight, box):
     fl = FlightLine.from_box(box, flight.origin)
 
     np.testing.assert_array_almost_equal(
-        np.sign(fl.transform_to.rotate(Point(1.0, 0.0, 0.0)).to_list()),
+        np.sign(fl.transform_to.rotate(Point(1.0, 0.0, 0.0)).data)[0],
         [-1,-1,0]
     )   # My box faces south east ish, so world north should be -x and +y in contest frame
 
@@ -48,7 +48,7 @@ def test_from_box(flight, box):
 
 @unittest.skip
 def test_from_box_true_north():
-    home = GPSPosition(39, -105)
+    home = GPS(39, -105)
 
     # Box heading specified in radians from North (clockwise)
     box = Box('north', home, 0)
@@ -70,7 +70,7 @@ def test_from_box_true_north():
     # lat/lon to x/y is problematic over large distances; need to work with x/y displacements
     # relative to home to avoid issues with accuracy
     # 0.001 degree of latitude at 39N is 111.12 meters: http://www.csgnetwork.com/gpsdistcalc.html
-    north_of_home = GPSPosition(39.001, -105)
+    north_of_home = GPS(39.001, -105)
     deltaPos = home.__sub__(north_of_home)
     np.testing.assert_array_almost_equal(
         deltaPos.to_list(),
@@ -96,70 +96,65 @@ def test_transform_to(flight):
 def test_transform_from(flight):
     flightline = FlightLine.from_initial_position(flight)
 
-    npoint = flightline.transform_to.point(Point(1, 0, 0))
+    npoint = flightline.transform_to.point(PX())
     assert npoint.x == approx(flightline.contest.x_axis.x, 1e-4)
-
-def test_from_covariance(flight):
-    flightline = FlightLine.from_covariance(flight)
-    assert flightline.contest.y_axis.y == approx(cos((144.8 * pi / 180) - pi / 2), 0.1)
-
 
 def test_flightline_headings(flight):
     pilotNorth_ENU = Point(0, 1, 1)
     home = flight.origin
     
-    ned = Points.from_pandas(flight.read_fields(Fields.POSITION))
-    rned = Quaternions.from_euler(Points.from_pandas(flight.read_fields(Fields.ATTITUDE)))
+    ned = Point(flight.read_fields(Fields.POSITION))
+    rned = Quaternion.from_euler(Point(flight.read_fields(Fields.ATTITUDE)))
 
     #North Facing
     enu_flightline =FlightLine.from_box(Box('test',home,0.0),home)
     enu = enu_flightline.transform_to.point(ned)
-    renu = enu_flightline.transform_to.quat(rned)  # TODO think of a test for this
+    renu = enu_flightline.transform_to.rotate(rned)  # TODO think of a test for this
     np.testing.assert_array_almost_equal(ned.x, enu.y)
     np.testing.assert_array_almost_equal(ned.y, enu.x)
     np.testing.assert_array_almost_equal(ned.z, -enu.z)
 
     pilotNorth_NED = Point(1, 0, -1)
     boxNorth = enu_flightline.transform_to.point(pilotNorth_NED)
-    np.testing.assert_array_almost_equal(pilotNorth_ENU.to_tuple(), boxNorth.to_tuple())
+    np.testing.assert_array_almost_equal(pilotNorth_ENU.data, boxNorth.data)
 
     #South Facing
     wsu_flightline =FlightLine.from_box(Box('test',home,np.pi),home)
     wsu = wsu_flightline.transform_to.point(ned)
-    rwsu = wsu_flightline.transform_to.quat(rned)  # TODO think of a test for this
+    rwsu = wsu_flightline.transform_to.rotate(rned)  # TODO think of a test for this
     np.testing.assert_array_almost_equal(ned.x, -wsu.y)
     np.testing.assert_array_almost_equal(ned.y, -wsu.x)
     np.testing.assert_array_almost_equal(ned.z, -wsu.z)
 
     pilotNorth_NED = Point(-1, 0, -1)
     boxNorth = wsu_flightline.transform_to.point(pilotNorth_NED)
-    np.testing.assert_array_almost_equal(pilotNorth_ENU.to_tuple(), boxNorth.to_tuple())
+    np.testing.assert_array_almost_equal(pilotNorth_ENU.data, boxNorth.data)
 
     #West Facing
     nwu_flightline =FlightLine.from_box(Box('test',home,-np.pi/2),home)
     nwu = nwu_flightline.transform_to.point(ned)
-    rnwu = nwu_flightline.transform_to.quat(rned)  # TODO think of a test for this
+    rnwu = nwu_flightline.transform_to.rotate(rned)  # TODO think of a test for this
     np.testing.assert_array_almost_equal(ned.x, nwu.x)
     np.testing.assert_array_almost_equal(ned.y, -nwu.y)
     np.testing.assert_array_almost_equal(ned.z, -nwu.z)
 
     pilotNorth_NED = Point(0, -1, -1)
     boxNorth = nwu_flightline.transform_to.point(pilotNorth_NED)
-    np.testing.assert_array_almost_equal(pilotNorth_ENU.to_tuple(), boxNorth.to_tuple())
+    np.testing.assert_array_almost_equal(pilotNorth_ENU.data, boxNorth.data)
 
 
 
-def test_transform_from_to(flight):
-    fl = FlightLine.from_covariance(flight)
-    ned = Points.from_pandas(flight.read_fields(Fields.POSITION))
+def test_transform_from_to(box, flight):
+    fl = FlightLine.from_box(box, flight.origin)
+    ned = Point(flight.read_fields(Fields.POSITION))
     np.testing.assert_array_almost_equal(
         ned.data,
         fl.transform_from.point(fl.transform_to.point(ned)).data
     )
-    rned = Quaternions.from_euler(Points.from_pandas(flight.read_fields(Fields.ATTITUDE)))
+    rned = Quaternion.from_euler(Point(flight.read_fields(Fields.ATTITUDE)))
     np.testing.assert_array_almost_equal(
         rned.data,
-        fl.transform_from.quat(fl.transform_to.quat(rned)).data
+        fl.transform_from.rotate(fl.transform_to.rotate(rned)).data
     )
 
 
@@ -170,9 +165,9 @@ def test_to_f3azone(box):
     assert lines[0] == "Emailed box data for F3A Zone Pro - please DON'T modify!"
     assert lines[1] == box.name
 
-    pilot = GPSPosition(float(lines[2]), float(lines[3]))
+    pilot = GPS(float(lines[2]), float(lines[3]))
 
-    centre = GPSPosition(float(lines[4]), float(lines[5]))
+    centre = GPS(float(lines[4]), float(lines[5]))
 
     box_copy = Box.from_points("tem", pilot, centre)
 

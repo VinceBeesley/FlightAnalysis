@@ -4,7 +4,7 @@ from flightanalysis import Section
 from ..conftest import seq
 from pytest import approx
 from flightanalysis import Line
-from flightanalysis.section.tools.conversions import to_judging, body_to_wind
+from flightanalysis.state.tools.conversions import to_judging, body_to_wind
 from geometry import Points, Transformation, Point
 
 def test_to_judging(seq: Section):

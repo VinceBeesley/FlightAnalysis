@@ -5,7 +5,7 @@ from flightdata import Flight, Fields
 from pathlib import Path
 from flightanalysis.base.constructs import Constructs, SVar
 from geometry import Point, Quaternion, Quaternions, Points
-from flightanalysis.section import Section
+from flightanalysis.state import Section
 import numpy as np
 from .wind import WindModel
 

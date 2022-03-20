@@ -1,5 +1,5 @@
-from flightanalysis.section import Section
-from flightanalysis.section import State
+from flightanalysis.state import Section
+from flightanalysis.state import State
 from flightanalysis.flightline import FlightLine
 from flightanalysis.schedule import Line
 from geometry import Point, Points, Transformation
@@ -41,7 +41,7 @@ def test_body_to_world(flight):
 
     pnew = seq.body_to_world(Point(1, 0, 0))
 
-    assert isinstance(pnew, Points)
+    assert isinstance(pnew, Point)
 
 def test_subset(flight):
     seq = Section.from_flight(
@@ -86,7 +86,7 @@ def test_smooth_rotation():
 
 def test_from_csv():
     sec = Section.from_csv("tests/test_inputs/test_log_00000052_section.csv")
-    assert isinstance(sec.gpos, Points)
+    assert isinstance(sec.gpos, Point)
 
 
 def test_match_intention(aligned, p21):

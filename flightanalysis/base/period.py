@@ -1,5 +1,5 @@
 
-from geometry import Point, Points, Quaternions
+from geometry import Point, Quaternion
 from .constructs import Constructs
 import numpy as np
 import pandas as pd
@@ -35,7 +35,7 @@ class Period(ABC):
     def cols(self):
         return self.__class__._cols
 
-    def __getattr__(self, name) -> Union[pd.DataFrame, Points, Quaternions]:
+    def __getattr__(self, name) -> Union[pd.DataFrame, Point, Quaternion]:
         if name in self.data.columns:
             return self.data[name]
         elif name in self.cols.data.keys():

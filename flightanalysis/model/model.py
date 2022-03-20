@@ -1,9 +1,7 @@
 import numpy as np
 import pandas as pd
-from geometry import Point
-from flightanalysis.section import Section
-from flightanalysis.model.flow import Flows, Flow
-from flightanalysis.controls import Control, Controls
+from flightanalysis.model.flow import Flow
+from flightanalysis.controls import Controls
 from flightanalysis.model.coefficients import Coefficients
 
 

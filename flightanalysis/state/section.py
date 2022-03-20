@@ -1,16 +1,15 @@
-from geometry import Point, Points, Quaternions, Transformation
-
+from geometry import Point
 import numpy as np
 import pandas as pd
 from typing import Union
 from numbers import Number
-from flightanalysis.base import Period
-from flightanalysis.section.variables import secvars
 
-class Section(Period):
+from flightanalysis.state.variables import secvars
+
+class Section():
     _cols=secvars
         
-    def body_to_world(self, pin: Union[Point, Points]) -> pd.DataFrame:
+    def body_to_world(self, pin: Point) -> pd.DataFrame:
         """generate world frame trace of a body frame point
 
         Args:
@@ -21,10 +20,10 @@ class Section(Period):
             Points: trace of points
         """
 
-        if isinstance(pin, Points) or isinstance(pin, Point):
+        if isinstance(pin, Point):
             return self.gatt.transform_point(pin) + self.gpos
         else:
-            return NotImplemented
+            raise NotImplementedError
 
     def label(self, **kwargs):
         return Section(self.data.assign(**kwargs))

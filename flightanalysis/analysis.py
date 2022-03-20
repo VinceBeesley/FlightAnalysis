@@ -1,5 +1,5 @@
 
-from flightanalysis.section import Section, State
+from flightanalysis.state import Section, State
 from flightanalysis.environment import Environment, Environments
 from flightanalysis.controls import Control, Controls
 from flightanalysis.model.flow import Flow, Flows

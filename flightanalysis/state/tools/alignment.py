@@ -2,7 +2,7 @@ from geometry import Point
 from fastdtw import fastdtw
 import warnings
 from scipy.spatial.distance import euclidean
-from flightanalysis.section import Section
+from flightanalysis.state import Section
 import numpy as np
 import pandas as pd
 

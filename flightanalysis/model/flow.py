@@ -4,7 +4,7 @@ from typing import Union
 from flightdata import Flight, Fields
 from pathlib import Path
 from flightanalysis.base.constructs import Constructs, SVar
-from flightanalysis.section import Section
+from flightanalysis.state import Section
 from flightanalysis.environment import Environments
 from geometry import Point, Quaternion, Quaternions, Points
 import numpy as np

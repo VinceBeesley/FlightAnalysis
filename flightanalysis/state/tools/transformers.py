@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from flightanalysis.section import Section
+from flightanalysis.state import Section
 from geometry import Point, Points, Quaternion, Quaternions, Transformation
 
 
@@ -14,7 +14,7 @@ def transform(self: Section, transform: Transformation) -> Section:
     return Section.from_constructs(
         time=np.array(self.data.index),
         pos=transform.point(self.gpos),
-        att=transform.quat(self.gatt),
+        att=transform.rotate(self.gatt),
         bvel=transform.rotate(self.gbvel),
         brvel=transform.rotate(self.gbrvel),
         bacc=transform.rotate(self.gbacc),
@@ -32,7 +32,7 @@ def superimpose_angles(self: Section, angles: Points, reference:str="body"):
     
     sec =  Section.from_constructs(
         time=np.array(self.data.index),
-        pos=Points.from_pandas(self.pos.copy()),
+        pos=Point(self.pos.copy()),
         att=new_att
     )
 

@@ -5,7 +5,7 @@ from pathlib import Path
 from flightanalysis.base.constructs import Constructs, SVar
 from geometry import Point, Quaternion, Quaternions, Points
 import numpy as np
-from flightanalysis.section import Section
+from flightanalysis.state import Section
 from flightanalysis.model.flow import Flow
 from flightanalysis.model.constants import ACConstants
 

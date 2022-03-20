@@ -3,7 +3,7 @@ from flightanalysis import Box
 from flightanalysis.environment import Environment, Environments
 from flightanalysis.environment.wind import WindModelBuilder
 from flightanalysis.model.flow import Flow, Flows
-from flightanalysis.section import Section
+from flightanalysis.state import Section
 from pytest import approx
 import numpy as np
 from flightdata import Flight

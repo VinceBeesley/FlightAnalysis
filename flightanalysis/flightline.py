@@ -10,12 +10,10 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see <http://www.gnu.org/licenses/>.
 """
 
-from geometry import GPSPosition, Coord, Point, Quaternions, Transformation, cross_product, Quaternion
+from geometry import GPS, Coord, Point, Transformation, Quaternion, PX, PY, PZ, P0
 from typing import Union
 from flightdata import Flight, Fields
-from math import atan2, sin, cos
 import numpy as np
-from math import atan2, pi
 from json import load, dump
 
 
@@ -23,7 +21,7 @@ class Box(object):
     '''This class defines an aerobatic box in the world, it uses the pilot position and the direction 
     in which the pilot is facing (normal to the main aerobatic manoeuvering plane)'''
 
-    def __init__(self, name, pilot_position: GPSPosition, heading: float, club:str=None, country:str=None):
+    def __init__(self, name, pilot_position: GPS, heading: float, club:str=None, country:str=None):
         self.name = name
         self.club=club
         self.country=country
@@ -46,7 +44,7 @@ class Box(object):
                 data = load(f)
         read_box = Box(
             data['name'], 
-            GPSPosition(**data['pilot_position']), 
+            GPS(**data['pilot_position']), 
             data['heading'],
             data['club'],
             data['country'])
@@ -66,38 +64,14 @@ class Box(object):
         '''
         imu_ready_data = flight.data.loc[flight.imu_ready_time()]
 
-        position = GPSPosition(*imu_ready_data[Fields.GLOBALPOSITION.names])
-        heading = Quaternion(*imu_ready_data[Fields.QUATERNION.names]).transform_point(Point(1, 0, 0))
+        position = GPS(*imu_ready_data[Fields.GLOBALPOSITION.names].to_list())
+        heading = Quaternion(*imu_ready_data[Fields.QUATERNION.names].to_list()).transform_point(PX())
         
         
-        return Box('origin', position, atan2(heading.y, heading.x), "unknown", "unknown")
+        return Box('origin', position, np.arctan2(heading.y, heading.x), "unknown", "unknown")
 
     @staticmethod
-    def from_covariance(flight: Flight):
-        """Generate a box by effectively fitting a best fit line through a whole flight. 
-        Again, this is a convenient method but not very reliable as it relies on the pilot to have
-        flown on the correct manoeuvering plane for most of the flight. 
-        TODO it sometimes points in the wrong direction too.
-        """
-        pos = flight.read_fields(Fields.POSITION).iloc[:, :2]
-        # generate the covariance matrix
-        ca = np.cov(pos, y=None, rowvar=0, bias=1)
-        v, vect = np.linalg.eig(ca)  # calculate the eigenvectors
-        rotmat = np.identity(3)  # convert to a 3x3
-        rotmat[:-1, :-1] = np.linalg.inv(np.transpose(vect))
-        heading = Point(1, 0, 0).rotate(rotmat)
-        first = flight.data.iloc[0]
-        return Box(
-            'covariance',
-            GPSPosition(
-                first.global_position_latitude,
-                first.global_position_longitude
-            ),
-            np.arctan2(heading.y, heading.x)
-        )
-
-    @staticmethod
-    def from_points(name, pilot: GPSPosition, centre: GPSPosition):
+    def from_points(name, pilot: GPS, centre: GPS):
         direction = centre - pilot
         return Box(
             name,
@@ -116,10 +90,10 @@ class Box(object):
         return "\n".join([
             "Emailed box data for F3A Zone Pro - please DON'T modify!",
             self.name,
-            oformat(self.pilot_position.latitude),
-            oformat(self.pilot_position.longitude),
-            oformat(centre.latitude),
-            oformat(centre.longitude),
+            oformat(self.pilot_position.lat),
+            oformat(self.pilot_position.long),
+            oformat(centre.lat),
+            oformat(centre.long),
             "120"
         ])
 
@@ -130,8 +104,8 @@ class Box(object):
             lines = f.read().splitlines()
         return Box.from_points(
             lines[1],
-            GPSPosition(float(lines[2]), float(lines[3])),
-            GPSPosition(float(lines[4]), float(lines[5]))
+            GPS(float(lines[2]), float(lines[3])),
+            GPS(float(lines[4]), float(lines[5]))
         )
 
 class FlightLine(object):
@@ -155,18 +129,18 @@ class FlightLine(object):
         self.world = world
         self.contest = contest
         self.transform_to = Transformation.from_coords(contest, world)
-        self.transform_from = Transformation(-self.transform_to.translation,
+        self.transform_from = Transformation.build(-self.transform_to.translation,
                                              self.transform_to.rotation.conjugate())
 
     @staticmethod
-    def from_box(box: Box, world_home: GPSPosition):
+    def from_box(box: Box, world_home: GPS):
         """Constructor from a Box instance. This method assumes the input data is in the 
         Ardupilot default World frame (NED). It creates the contest frame from the box as described in __init__, 
         ie z up, y in the box heading direction. 
 
         Args:
             box (Box): box defining the contest coord
-            world_home (GPSPosition): home position of the input data
+            world_home (GPS): home position of the input data
 
         Returns:
             FlightLine
@@ -175,11 +149,11 @@ class FlightLine(object):
 
 
             # this just sets x,y,z origin to zero and unit vectors = [1 0 0] [0 1 0] [0 0 1]
-            Coord.from_zx(Point(0, 0, 0), Point(0, 0, 1), Point(1, 0, 0)),
+            Coord.from_zx(P0(), PZ(), PX()),
             Coord.from_yz(
                 box.pilot_position - world_home,
-                Point(cos(box.heading), sin(box.heading), 0),
-                Point(0.0, 0.0, -1.0)
+                Point(np.cos(box.heading), np.sin(box.heading), 0),
+                PZ(-1)
             )
         )
 
@@ -199,7 +173,7 @@ class FlightLine(object):
         return FlightLine.from_box(
             Box(
                 'heading',
-                GPSPosition(
+                GPS(
                     flight.data.iloc[0].global_position_latitude,
                     flight.data.iloc[0].global_position_longitude
                 ),

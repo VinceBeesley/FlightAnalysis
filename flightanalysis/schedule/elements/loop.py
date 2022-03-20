@@ -1,5 +1,5 @@
 import numpy as np
-from geometry import Transformation, Points, Coord, Point, cross_product, Quaternions
+from geometry import Transformation, Points, Coord, Point, Quaternion
 from flightanalysis import Section
 from scipy import optimize
 
@@ -76,7 +76,7 @@ class Loop(El):
             )
 
         pos=Transformation.from_coords(Coord.from_nothing(), radcoord).point(radcoordpoints)
-        att = Quaternions.from_quaternion(transform.rotation, len(t)).body_rotate(angles)
+        att = Quaternion.full(transform.rotation, len(t)).body_rotate(angles)
 
         el = Section.from_constructs(time=t, pos=pos, att=att)
         return self._add_rolls(el, self.rolls)
@@ -86,7 +86,7 @@ class Loop(El):
 
     def match_intention(self, transform: Transformation, flown: Section):
         # https://scipy-cookbook.readthedocs.io/items/Least_Squares_Circle.html
-        pos = transform.point(Points.from_pandas(flown.pos))
+        pos = transform.point(Point(flown.pos))
 
         if self.ke:
             x, y = pos.x, pos.y
@@ -104,7 +104,7 @@ class Loop(El):
 
         return self.set_parms(
             diameter=2 * calc_R(*center).mean(),
-            rolls=np.sign(np.mean(Points.from_pandas(
+            rolls=np.sign(np.mean(Point(
                 flown.brvel).x)) * abs(self.rolls)
         )
 

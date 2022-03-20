@@ -1,4 +1,4 @@
-from flightanalysis.section import Section
+from flightanalysis.state import Section
 import numpy as np
 from geometry import Points
 

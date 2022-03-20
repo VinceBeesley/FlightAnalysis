@@ -6,9 +6,9 @@ from . import Line, Loop, Snap, Spin, StallTurn
 
 
 def get_rates(flown: Section):
-    brvels = Points.from_pandas(flown.brvel)
-    vels = Points.from_pandas(flown.bvel)
-    pos = Points.from_pandas(flown.pos)
+    brvels = Point(flown.brvel)
+    vels = Point(flown.bvel)
+    pos = Point(flown.pos)
     return {
         Loop: np.percentile(abs(brvels.y), 90),
         Line: np.percentile(abs(brvels.x), 95),

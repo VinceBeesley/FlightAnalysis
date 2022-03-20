@@ -23,7 +23,7 @@ def test_match_axis_rate():
         1.0, 30.0
     ).create_template(Transformation(), 30.0)
     pytest.approx(
-        abs(Points.from_pandas(elm.brvel).y.mean()), 1.0)
+        abs(Point(elm.brvel).y.mean()), 1.0)
 
     elm = Loop(0.5, -0.5, 0.0, False).scale(
         100.0
@@ -31,7 +31,7 @@ def test_match_axis_rate():
         1.0, 30.0
     ).create_template(Transformation(), 30.0)
     pytest.approx(
-        abs(Points.from_pandas(elm.brvel).y.mean()), 1.0)
+        abs(Point(elm.brvel).y.mean()), 1.0)
 
 def test_match_intention():
     elm = Loop(1.0, 0.5, 0.5, False)

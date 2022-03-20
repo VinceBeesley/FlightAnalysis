@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
-from flightanalysis.section import Section, State
-from flightanalysis.section.variables import secvars
-from geometry import Points, Quaternions, Point
+from flightanalysis.state import Section, State
+from flightanalysis.state.variables import secvars
+from geometry import Points, Quaternion, Point
 from typing import Union
 from flightanalysis.flightline import FlightLine, Box
 from flightdata import Flight, Fields
@@ -13,12 +13,12 @@ from pathlib import Path
 def extrapolate_state(istate: State, duration: float, freq: float = None) -> Section:
     t = Section.make_index(duration, freq)
 
-    bvel = Points.from_point(istate.bvel, len(t))
+    bvel = Point.full(istate.bvel, len(t))
 
     return Section.from_constructs(
         t,
-        pos = Points.from_point(istate.pos,len(t)) + istate.transform.rotate(bvel) * t,
-        att = Quaternions.from_quaternion(istate.att, len(t)),
+        pos = Point.full(istate.pos,len(t)) + istate.transform.rotate(bvel) * t,
+        att = Quaternion.full(istate.att, len(t)),
         bvel = bvel
     )
 
@@ -61,12 +61,12 @@ def _from_flight(flight: Flight, flightline: FlightLine) -> Section:
     qs = flight.read_fields(Fields.QUATERNION)
     
     if not pd.isna(qs).all().all():  # for back compatibility with old csv files
-        att = flightline.transform_from.quat(
-            Quaternions.from_pandas(flight.read_fields(Fields.QUATERNION))
+        att = flightline.transform_from.rotate(
+            Quaternion(flight.read_fields(Fields.QUATERNION))
         )
     else:
-        att = flightline.transform_from.quat(
-            Quaternions.from_euler(Points(
+        att = flightline.transform_from.rotate(
+            Quaternion.from_euler(Points(
                 flight.read_numpy(Fields.ATTITUDE).T
             )))
 
@@ -81,7 +81,7 @@ def _from_flight(flight: Flight, flightline: FlightLine) -> Section:
     dt = np.gradient(t)
 
     
-    brvel = Points.from_pandas(flight.read_fields(Fields.AXISRATE))
+    brvel = Point(flight.read_fields(Fields.AXISRATE))
     
     #brvel = att.body_diff(dt)  
     #if pd.isna(qs).all().all():

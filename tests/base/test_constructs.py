@@ -2,7 +2,7 @@ import pytest
 
 from flightanalysis.base.constructs import Constructs
 
-from flightanalysis.section.variables import secvars
+from flightanalysis.state.variables import secvars
 import numpy as np
 
 

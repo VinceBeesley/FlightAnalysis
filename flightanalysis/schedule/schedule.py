@@ -1,7 +1,7 @@
 from . import Manoeuvre
 from typing import List, Union, IO
 from geometry import Point, Quaternion, Transformation
-from flightanalysis.section import Section
+from flightanalysis.state import Section
 from flightanalysis.schedule.elements import get_rates, Line
 import numpy as np
 from flightanalysis.schedule.figure_rules import Categories

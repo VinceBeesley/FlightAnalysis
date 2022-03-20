@@ -5,7 +5,7 @@ from typing import Union, IO
 from json import loads, load
 from io import open
 from warnings import warn
-from geometry import GPSPosition, Points, Quaternions, Point, Quaternion, Transformation, Coord
+from geometry import GPS, Points, Quaternions, Point, Quaternion, Transformation, Coord
 import numpy as np
 import pandas as pd
 
@@ -23,8 +23,8 @@ class FCJson:
     def read_box(name, parms):
         return Box.from_points(
             name.partition('_')[0] if '_' in name else 'unknown',
-            GPSPosition(float(parms['pilotLat']), float(parms['pilotLng'])),
-            GPSPosition(float(parms['centerLat']), float(parms['centerLng']))
+            GPS(float(parms['pilotLat']), float(parms['pilotLng'])),
+            GPS(float(parms['centerLat']), float(parms['centerLng']))
         )
 
     @staticmethod
@@ -74,7 +74,7 @@ class FCJson:
         )
 
         fcd["N"], fcd["E"], fcd["D"] = self.sec.x, -self.sec.y, -self.sec.z
-        wvels = self.sec.body_to_world(Points.from_pandas(self.sec.bvel))
+        wvels = self.sec.body_to_world(Point(self.sec.bvel))
 
         fcd["VN"], fcd["VE"], fcd["VD"] = wvels.x, -wvels.y, -wvels.z
 
@@ -83,7 +83,7 @@ class FCJson:
             Coord.from_xy(Point(0, 0, 0), Point(1, 0, 0), Point(0, -1, 0))
         )
 
-        eul = transform.quat(Quaternions.from_pandas(self.sec.att)).to_euler()
+        eul = transform.rotate(Quaternion(self.sec.att)).to_euler()
         ex, ey, ez = eul.x, eul.y, eul.z
 
         fcd["roll"], fcd["pitch"], fcd["yaw"] = ex, ey, ez
