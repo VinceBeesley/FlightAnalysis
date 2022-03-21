@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from flightanalysis.state import State
-
+from flightanalysis.base.table import Time
 from geometry import Point, Quaternion, PX
 from typing import Union
 from flightanalysis.flightline import FlightLine, Box
@@ -10,17 +10,26 @@ from pathlib import Path
 
 
 
-def extrapolate(istate: State, duration: float, freq: float = None) -> State:
-    t = np.linspace(0,duration, duration * freq)
+def extrapolate(istate: State, duration: float) -> State:
+    """extrapolate the input state, currently ignores input accelerations
 
-    bvel = PX(istate.bvel, len(t))
+    Args:
+        istate (State): initial state of length 1
+        duration (float): duration of extrapolation in seconds
 
-    return State.from_constructs(
-        t,
-        pos = Point.full(istate.pos,len(t)) + istate.transform.rotate(bvel) * t,
-        att = Quaternion.full(istate.att, len(t)),
-        bvel = bvel
-    )
+    Returns:
+        State: state projected forwards
+    """
+
+    npoints = np.ceil(duration / istate.time.dt[0])
+    time = Time.from_t(np.linspace(0,duration, int(npoints)))[:-1]
+    vel = istate.vel.tile(len(time))   
+    rvel = istate.rvel.tile(len(time))
+    att = istate.att.body_rotate(rvel * time.t)
+    pos = istate.pos + (att.transform_point(vel) * time.dt).cumsum()
+
+    return State.from_constructs(time,pos, att, vel, rvel)
+
 
 def from_csv(filename) -> State:
     df = pd.read_csv(filename)
@@ -51,13 +60,9 @@ def from_flight(flight: Union[Flight, str], box:Union[FlightLine, Box, str]) -> 
 
 
 def _from_flight(flight: Flight, flightline: FlightLine) -> State:
-    # read position and attitude directly from the log(after transforming to flightline)
-    t = flight.data.index
-    pos = flightline.transform_from.point(
-        Point(
-            flight.read_numpy(Fields.POSITION).T
-        ))
-
+    """Read position and attitude directly from the log(after transforming to flightline)"""
+    time = Time.from_t(np.array(flight.data.time_flight))
+    pos = flightline.transform_from.point(Point(flight.read_fields(Fields.POSITION)))
     qs = flight.read_fields(Fields.QUATERNION)
     
     if not pd.isna(qs).all().all():  # for back compatibility with old csv files
@@ -70,25 +75,12 @@ def _from_flight(flight: Flight, flightline: FlightLine) -> State:
                 flight.read_numpy(Fields.ATTITUDE).T
             )))
 
-    # this is EKF velocity estimate in NED frame transformed to contest frame
     vel = flightline.transform_from.rotate(Point(flight.read_numpy(Fields.VELOCITY).T))
-    
-
     bvel = att.inverse().transform_point(vel)
-
-    bacc = Point(flight.read_numpy(Fields.ACCELERATION).T)
-
-    dt = np.gradient(t)
-
+    acc = Point(flight.read_numpy(Fields.ACCELERATION).T)
+    rvel = Point(flight.read_fields(Fields.AXISRATE))
     
-    brvel = Point(flight.read_fields(Fields.AXISRATE))
-    
-    #brvel = att.body_diff(dt)  
-    #if pd.isna(qs).all().all():
-    #    brvel = brvel.remove_outliers(2)  # TODO this is a bodge to get rid of phase jumps when euler angles are used directly
-    bracc = brvel.diff(dt)
-
-    return State.from_constructs(t, dt, pos, att, bvel, brvel, bacc, bracc)
+    return State.from_constructs(time, pos, att, vel, rvel, acc)
 
 
 def stack(sections: list) -> State:

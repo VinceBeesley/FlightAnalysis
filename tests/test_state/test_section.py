@@ -10,27 +10,11 @@ from ..conftest import flight, box, p21, seq, aligned
 from pytest import approx
 
 
-def test_from_flight(flight, box):
-    seq = State.from_flight(flight, box)
-    assert isinstance(seq.x, pd.Series)
-    assert seq.z.mean() > 0
-    np.testing.assert_array_less(np.abs(seq.pos.to_numpy()[0]), 50.0 )
-
-
 def test_to_csv(seq):
     csv_file = seq.to_csv('tests/test.csv')
     seq2 = State.from_csv(csv_file) 
     assert seq.duration == seq2.duration
     os.remove(csv_file)
-
-def test_index(seq):
-    state = seq[20]
-    assert isinstance(state.pos, Point)
-
-def test_get_item(seq):
-    state = seq[20]
-    assert isinstance(state.pos, Point)
-
 
 
 def test_body_to_world(flight):
@@ -42,15 +26,7 @@ def test_body_to_world(flight):
 
     assert isinstance(pnew, Point)
 
-def test_subset(flight):
-    seq = State.from_flight(
-        flight, FlightLine.from_initial_position(flight))
 
-    assert isinstance(seq[100:200], State)
-
-    assert seq[100:200].data.index[-1] == approx(100,0.1)
-
-    assert seq[:200].data.index[-1] == approx(200,0.1)
 
 def test_get_state(seq):
     st = seq[100]
@@ -82,10 +58,6 @@ def test_smooth_rotation():
 
     assert np.any(pd.isna(roll.brvel)) == False
 
-
-def test_from_csv():
-    sec = State.from_csv("tests/test_inputs/test_log_00000052_section.csv")
-    assert isinstance(sec.gpos, Point)
 
 
 def test_match_intention(aligned, p21):

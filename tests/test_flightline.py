@@ -7,32 +7,23 @@ from math import pi, cos, sin
 import numpy as np
 
 from pytest import approx, fixture
+from .conftest import whole_flight, flight, box
 
 
-@fixture(scope="session")
-def flight():
-    return Flight.from_csv('tests/test_inputs/test_log_00000052_flight.csv')
 
-
-@fixture(scope="session")
-def  box():
-    return Box.from_json('tests/test_inputs/test_log_box.json')
-
-
-def test_from_initial(flight):
-    box = Box.from_initial(flight)
-    assert box.pilot_position.lat == approx(51.6418436, 1e-5)
+def test_box_from_initial(whole_flight):
+    box = Box.from_initial(whole_flight)
     
-    assert box.pilot_position.long == approx(-2.5260131, 1e-5)
+    assert box.pilot_position.data == approx(GPS(51.6418417, -2.5260108).data)
 
-    assert box.heading == approx(np.radians(139.8874730), 0.001)
+    assert np.degrees(box.heading) == approx(139.8874730, 1e-3)
 
 
 def test_to_dict(flight):
     box = Box.from_initial(flight)
     di = box.to_dict()
     assert di["name"] ==  "origin"
-    assert di["pilot_position"]['lat'] == 51.6418417
+    assert di["pilot_position"]['lat'] == box.pilot_position.lat[0]
 
 
 def test_from_box(flight, box):
@@ -79,25 +70,24 @@ def test_from_box_true_north():
     )
 
 
-def test_initial(flight):
-    flightline = FlightLine.from_initial_position(flight)
+def test_flightline_from_initial(whole_flight):
+    flightline = FlightLine.from_initial_position(whole_flight)
     assert flightline.world.origin.x == approx(0)
     assert flightline.world.origin.y == approx(0)
-
-    assert flightline.contest.y_axis.y == approx(cos((152.55998 * pi / 180) - pi / 2), 0.1)
 
 
 def test_transform_to(flight):
     flightline = FlightLine.from_initial_position(flight)
 
-    npoint = flightline.transform_to.point(Point(1, 0, 0))
+    npoint = flightline.transform_to.rotate(Point(1, 0, 0))
     assert npoint.x == approx(flightline.contest.x_axis.x)
 
-def test_transform_from(flight):
-    flightline = FlightLine.from_initial_position(flight)
 
-    npoint = flightline.transform_to.point(PX())
-    assert npoint.x == approx(flightline.contest.x_axis.x, 1e-4)
+def test_transform_from(flight, whole_flight):
+    flightline = FlightLine.from_initial_position(whole_flight)
+
+    npoint = flightline.transform_to.rotate(PX())
+    assert npoint.data == approx(flightline.contest.x_axis.data, 1e-4)
 
 def test_flightline_headings(flight):
     pilotNorth_ENU = Point(0, 1, 1)
@@ -149,7 +139,7 @@ def test_transform_from_to(box, flight):
     ned = Point(flight.read_fields(Fields.POSITION))
     np.testing.assert_array_almost_equal(
         ned.data,
-        fl.transform_from.point(fl.transform_to.point(ned)).data
+        fl.transform_to.rotate(fl.transform_from.rotate(ned)).data
     )
     rned = Quaternion.from_euler(Point(flight.read_fields(Fields.ATTITUDE)))
     np.testing.assert_array_almost_equal(

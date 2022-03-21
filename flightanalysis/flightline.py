@@ -64,11 +64,13 @@ class Box(object):
         '''
         imu_ready_data = flight.data.loc[flight.imu_ready_time()]
 
-        position = GPS(*imu_ready_data[Fields.GLOBALPOSITION.names].to_list())
-        heading = Quaternion(*imu_ready_data[Fields.QUATERNION.names].to_list()).transform_point(PX())
+        position = GPS(*imu_ready_data[Fields.GLOBALPOSITION.names])
+        heading = Quaternion(
+            *imu_ready_data[Fields.QUATERNION.names]
+        ).transform_point(PX())
         
         
-        return Box('origin', position, np.arctan2(heading.y, heading.x), "unknown", "unknown")
+        return Box('origin', position[0], np.arctan2(heading.y, heading.x)[0], "unknown", "unknown")
 
     @staticmethod
     def from_points(name, pilot: GPS, centre: GPS):
@@ -76,7 +78,7 @@ class Box(object):
         return Box(
             name,
             pilot,
-            np.arctan2(direction.y, direction.x)
+            np.arctan2(direction.y[0], direction.x[0])
         )
 
     def to_f3a_zone(self):
@@ -90,10 +92,10 @@ class Box(object):
         return "\n".join([
             "Emailed box data for F3A Zone Pro - please DON'T modify!",
             self.name,
-            oformat(self.pilot_position.lat),
-            oformat(self.pilot_position.long),
-            oformat(centre.lat),
-            oformat(centre.long),
+            oformat(self.pilot_position.lat[0]),
+            oformat(self.pilot_position.long[0]),
+            oformat(centre.lat[0]),
+            oformat(centre.long[0]),
             "120"
         ])
 
