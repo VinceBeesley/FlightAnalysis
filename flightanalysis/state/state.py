@@ -42,7 +42,7 @@ class State(Table):
         acc  = SVar(Point,       ["du", "dv", "dw"]        , make_bacc  ),
         racc = SVar(Point,       ["dp", "dq", "dr"]        , make_bracc ),
     ))
-
+    _construct_freq = 30
 
     @property
     def transform(self):
@@ -54,8 +54,9 @@ class State(Table):
      
 
     def from_transform(transform: Transformation, **kwargs): 
-        time = Time.from_t(np.linspace(0, 30*len(transform), len(transform)))
-        return State.from_constructs(time, transform.p, transform.q, **kwargs)
+        if not "time" in kwargs:
+            kwargs["time"] = Time.from_t(np.linspace(0, 30*len(transform), len(transform)))
+        return State.from_constructs(pos=transform.p, att=transform.q, **kwargs)
 
     def body_to_world(self, pin: Point) -> Point:
         """Rotate a point in the body frame to a point in the data frame

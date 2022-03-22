@@ -1,4 +1,4 @@
-from flightanalysis import Section
+from flightanalysis.state import State
 
 
 class El:
@@ -15,10 +15,10 @@ class El:
         else:
             self.uid = uid
 
-    def get_data(self, sec: Section):
-        return Section(sec.data.loc[sec.data.element == self.uid])
+    def get_data(self, sec: State):
+        return State(sec.data.loc[sec.data.element == self.uid])
 
-    def _add_rolls(self, el: Section, rolls: float) -> Section:
+    def _add_rolls(self, el: State, rolls: float) -> State:
         if not rolls == 0:
             el = el.superimpose_roll(rolls)
         return el.label(element=self.uid)

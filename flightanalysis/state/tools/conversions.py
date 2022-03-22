@@ -1,42 +1,42 @@
 
 import numpy as np
 import pandas as pd
-from flightanalysis.state import Section
-from geometry import Quaternion, Quaternions, Coord, Point, Points
+from flightanalysis.state import State
+from geometry import Quaternion, Coord, Point
 
 
 
-def to_judging(self: Section):
+def to_judging(st: State):
     """This rotates the body so the x axis is in the velocity vector"""
     
-    angles = Points.angles(
-        Points.X(np.ones(len(self.data))), 
-        self.gbvel.unit()
+    angles = Point.angles(
+        Point.X(np.ones(len(st.data))), 
+        st.vel.unit()
     )  # == theta * nhat
 
-    return Section.from_constructs(
-        self.gtime,
-        pos=self.gpos,
-        att = self.gatt.body_rotate(angles)
+    return State.from_constructs(
+        st.time,
+        pos=st.pos,
+        att = st.att.body_rotate(angles)
     )
 
 
-def body_to_wind(self: Section, alpha, beta):
-    return Section.from_constructs(
-        self.gtime,
-        pos=self.gpos,
-        att=self.gatt.body_rotate(Points(np.array([np.zeros(len(alpha)), -alpha, beta]).T))
+def body_to_wind(st: State, alpha, beta):
+    return State.from_constructs(
+        st.time,
+        pos=st.pos,
+        att=st.att.body_rotate(Point(np.array([np.zeros(len(alpha)), -alpha, beta]).T))
     )
 
-def judging_to_wind(self: Section, wind: Points):
-    jwind = self.gatt.inverse().transform_point(wind)
-    angles = Points.angles(jwind + self.gbvel, self.gbvel)
+def judging_to_wind(st: State, wind: Point):
+    jwind = st.att.inverse().transform_point(wind)
+    angles = Point.angles(jwind + st.vel, st.vel)
 
-    return Section.from_constructs(
-        self.gtime,
-        pos=self.gpos,
-        att = self.gatt.body_rotate(angles)
+    return State.from_constructs(
+        st.time,
+        pos=st.pos,
+        att = st.att.body_rotate(angles)
     )
 
-def wind_to_body(self: Section, alpha, beta):
-    return body_to_wind(self, -alpha, -beta)
+def wind_to_body(st: State, alpha, beta):
+    return body_to_wind(st, -alpha, -beta)

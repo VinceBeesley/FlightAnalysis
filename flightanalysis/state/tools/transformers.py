@@ -1,71 +1,58 @@
 import numpy as np
 import pandas as pd
-from flightanalysis.state import Section
-from geometry import Point, Points, Quaternion, Quaternions, Transformation
+from flightanalysis.state import State
+from geometry import Point, Quaternion, Transformation, PX
 
 
-def make_index(duration: float, freq: float = None):
-    if freq==None:
-        freq = Section._construct_freq
-    return  np.linspace(0, duration, max(int(duration * freq), 3))
 
-
-def transform(self: Section, transform: Transformation) -> Section:
-    return Section.from_constructs(
-        time=np.array(self.data.index),
-        pos=transform.point(self.gpos),
-        att=transform.rotate(self.gatt),
-        bvel=transform.rotate(self.gbvel),
-        brvel=transform.rotate(self.gbrvel),
-        bacc=transform.rotate(self.gbacc),
-        bracc=transform.rotate(self.gbracc),
+def transform(st: State, transform: Transformation) -> State:
+    return State.from_constructs(
+        time=np.array(st.data.index),
+        pos=transform.point(st.pos),
+        att=transform.rotate(st.att),
+        vel=transform.rotate(st.vel),
+        rvel=transform.rotate(st.rvel),
+        acc=transform.rotate(st.acc),
+        racc=transform.rotate(st.racc),
     )
 
-def superimpose_angles(self: Section, angles: Points, reference:str="body"): 
-    if reference=="world":
-        new_att = self.gatt.rotate(angles)
-    elif reference=="body":
-        new_att = self.gatt.body_rotate(angles)
-    else:
-        raise ValueError("unknwon rotation reference")
-       
-    
-    sec =  Section.from_constructs(
-        time=np.array(self.data.index),
-        pos=Point(self.pos.copy()),
-        att=new_att
+def superimpose_angles(st: State, angles: Point, reference:str="body"): 
+    assert reference in ["body", "world"]
+    sec =  State.from_constructs(
+        st.time,
+        st.pos,
+        st.att.rotate(angles) if reference=="world" else st.att.body_rotate(angles)
     )
 
-    if "sub_element" in self.data.columns:
-        sec = sec.append_columns(self.data["sub_element"])
+    if "sub_element" in st.data.columns:
+        sec = sec.append_columns(st.data["sub_element"])
     return sec
 
 
-def superimpose_rotation(self: Section, axis: Point, angle: float, reference:str="body"):
-    """Generate a new section, identical to self, but with a continous rotation integrated
+def superimpose_rotation(st: State, axis: Point, angle: float, reference:str="body"):
+    """Generate a new section, identical to st, but with a continous rotation integrated
     """
-    t = np.array(self.data.index) - self.data.index[0]
-
-    rate = angle / t[-1]
+    t = st.time.t - st.time.t[0]
+    rate = angle / st.time.t
     superimposed_rotation = t * rate
 
-    angles = Points.from_point(axis.unit(), len(t)) * superimposed_rotation
+    angles = axis.unit().tile(len(t)) * superimposed_rotation
 
-    return self.superimpose_angles(angles, reference)
+    return st.superimpose_angles(angles, reference)
 
 
 
-def superimpose_roll(self: Section, proportion: float) -> Section:
-    """Generate a new section, identical to self, but with a continous roll integrated
+def superimpose_roll(st: State, proportion: float) -> State:
+    """Generate a new section, identical to st, but with a continous roll integrated
 
     Args:
         proportion (float): the amount of roll to integrate
     """
-    return self.superimpose_rotation(Point(1,0,0), 2 * np.pi * proportion)
+    return st.superimpose_rotation(PX(), 2 * np.pi * proportion)
 
 
 
-def smooth_rotation(self: Section, axis: Point, angle: float, reference:str="body", w: float=0.25, w2=0.1):
+def smooth_rotation(st: State, axis: Point, angle: float, reference:str="body", w: float=0.25, w2=0.1):
     """Accelerate for acc_prop * t, flat rate for middle, slow down for acc_prop * t.
 
     Args:
@@ -75,7 +62,7 @@ def smooth_rotation(self: Section, axis: Point, angle: float, reference:str="bod
         acc_prop (float, optional): proportion of total rotation to be accelerating for. Defaults to 0.1.
     """
 
-    t = np.array(self.data.index) - self.data.index[0]
+    t = np.array(st.data.index) - st.data.index[0]
 
     T = t[-1]
 
@@ -93,8 +80,8 @@ def smooth_rotation(self: Section, axis: Point, angle: float, reference:str="bod
     z = t[t>(T-w2*T)] - T + w2*T
     angles_2 = V*z - V * z **2 / (2*w2*T) + V*T - V * w2 * T  - 0.5*V*w*T
 
-    angles = Points.from_point(axis.unit(), len(t)) * np.concatenate([angles_0, angles_1, angles_2])
+    angles = Point.from_point(axis.unit(), len(t)) * np.concatenate([angles_0, angles_1, angles_2])
 
-    return self.superimpose_angles(angles, reference)
+    return st.superimpose_angles(angles, reference)
 
 

@@ -1,8 +1,8 @@
 
 
 from flightanalysis.schedule.elements import Loop
-import pytest
-from geometry import Transformation, Points, Point, Quaternion
+from pytest import approx
+from geometry import Transformation, Point, Quaternion, PZ, PX
 import numpy as np
 
 
@@ -12,8 +12,8 @@ def test_create_template():
     new_elm = elm.create_template(Transformation(), 30.0)
 
     np.testing.assert_array_almost_equal(
-        new_elm[-1].pos.to_list(),
-        [0.0, 0.0, 100.0]
+        new_elm[-1].pos.data,
+        PZ(100).data
     )
 
 def test_match_axis_rate():
@@ -22,16 +22,14 @@ def test_match_axis_rate():
     ).match_axis_rate(
         1.0, 30.0
     ).create_template(Transformation(), 30.0)
-    pytest.approx(
-        abs(Point(elm.brvel).y.mean()), 1.0)
+    assert abs(elm.rvel.mean().y[0]) == approx(1, 1e-1)
 
     elm = Loop(0.5, -0.5, 0.0, False).scale(
         100.0
     ).match_axis_rate(
         1.0, 30.0
     ).create_template(Transformation(), 30.0)
-    pytest.approx(
-        abs(Point(elm.brvel).y.mean()), 1.0)
+    assert abs(elm.rvel.mean().y[0]) == approx(1.0, 1e-1)
 
 def test_match_intention():
     elm = Loop(1.0, 0.5, 0.5, False)

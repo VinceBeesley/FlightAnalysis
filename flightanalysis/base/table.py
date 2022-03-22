@@ -116,6 +116,19 @@ class Table:
         return State.from_constructs(**new_constructs)
 
 
+    def label(self, **kwargs):
+        return self.__class__(self.data.assign(**kwargs))
+
+    def remove_labels(self):
+        return self.__class__(
+            self.data.drop(
+                [c for c in self.data.columns if not c in self.constructs.cols], 
+                1, 
+                errors="ignore"
+            )
+        )
+    
+
 
 class State(Table):
     constructs = Table.constructs + Constructs(dict(

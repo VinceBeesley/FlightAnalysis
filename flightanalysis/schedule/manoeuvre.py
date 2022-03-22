@@ -1,5 +1,5 @@
 from geometry import Transformation
-from flightanalysis import Section
+from flightanalysis.state import State
 from flightanalysis.schedule.elements import Loop, Line, StallTurn, Snap, Spin, get_rates, El
 from flightanalysis.schedule.figure_rules import IMAC, rules, Rules
 import numpy as np
@@ -47,19 +47,19 @@ class Manoeuvre():
     def scale(self, factor: float):
         return self.replace_elms([elm.scale(factor) for elm in self.elements])
 
-    def create_template(self, transform: Transformation, speed: float) -> Section:
+    def create_template(self, transform: Transformation, speed: float) -> State:
         itrans = transform
         templates = []
         for i, element in enumerate(self.elements):
             templates.append(element.create_template(itrans, speed))
             itrans = templates[-1][-1].transform
         
-        return self.label(Section.stack(templates))
+        return self.label(State.stack(templates))
 
-    def get_data(self, sec: Section):
-        return Section(sec.data.loc[sec.data.manoeuvre == self.uid])
+    def get_data(self, sec: State):
+        return State(sec.data.loc[sec.data.manoeuvre == self.uid])
 
-    def match_intention(self, transform: Transformation, flown: Section, speed: float=None):
+    def match_intention(self, transform: Transformation, flown: State, speed: float=None):
         """Create a new manoeuvre with all the elements scaled to match the corresponding flown element"""
         elms = []
 
@@ -70,7 +70,7 @@ class Manoeuvre():
                 transform, 
                 edata.data.bvx.mean(), 
                 True
-            ).get_state_from_index(-1).transform
+            )[-1].transform
 
         return self.replace_elms(elms), transform
 
@@ -257,8 +257,8 @@ class Manoeuvre():
     def create_elm_df(elm_list):
         return pd.DataFrame([elm.to_dict() for elm in elm_list])
 
-    def label(self, sec: Section):
-        return Section(sec.data.assign(manoeuvre=self.uid))
+    def label(self, sec: State):
+        return State(sec.data.assign(manoeuvre=self.uid))
 
     def share_seperator(self, next_man): 
         """Take the following manoeuvre and share the entry line (first element)"""
@@ -280,7 +280,7 @@ class Manoeuvre():
         return self.replace_elms(new_elms)
 
     
-    def get_subset(self, sec: Section, first_element: int, last_element: int):
+    def get_subset(self, sec: State, first_element: int, last_element: int):
         subsec = self.get_data(sec)
         fmanid = self.elements[first_element].uid
         if last_element == -1:
@@ -288,5 +288,5 @@ class Manoeuvre():
         else:
             lmanid = self.elements[last_element].uid
 
-        return Section(subsec.data.loc[(subsec.data.element >= fmanid) & (subsec.data.element < lmanid)])
+        return State(subsec.data.loc[(subsec.data.element >= fmanid) & (subsec.data.element < lmanid)])
 

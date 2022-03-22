@@ -2,7 +2,7 @@
 
 from flightanalysis.schedule.elements import Line
 import unittest
-from geometry import Transformation, Points, Point, Quaternion
+from geometry import Transformation, Point, Quaternion, PX
 import numpy as np
 from pytest import approx
 
@@ -12,19 +12,20 @@ def test_create_template():
     elm = Line(0.5, 0.5).scale(100.0)
     template = elm.create_template(Transformation(), 30.0)
     np.testing.assert_array_almost_equal(
-        template[-1].pos.to_list(),
-        [50.0, 0.0, 0.0]
+        template[-1].pos.data,
+        PX(50).data
     )
 
 def test_match_axis_rate():
     elm = Line(0.5, 0.5).scale(100.0).match_axis_rate(
         1.0, 30.0).create_template(Transformation(), 30.0)
 
-    assert elm.brvr.mean() == approx(1.0, 10)
+    assert elm.rvel.mean().x[0] == approx(1.0, 10)
 
     elm = Line(0.5, -0.5).scale(100.0).match_axis_rate(
         1.0, 30.0).create_template(Transformation(), 30.0)
-    assert abs(elm.data.brvr.mean()) == approx(1.0)
+
+    assert abs(elm.rvel.mean()[0]) == approx(1.0)
 
 def test_match_intention():
     # fly a line 20 degrees off the X axis for 100m, with 1 roll

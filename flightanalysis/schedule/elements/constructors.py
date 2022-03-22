@@ -1,22 +1,20 @@
 import numpy as np
-from geometry import Points
-from flightanalysis import Section
+from geometry import Point
+from flightanalysis.state import State
 
 from . import Line, Loop, Snap, Spin, StallTurn
 
 
-def get_rates(flown: Section):
-    brvels = Point(flown.brvel)
-    vels = Point(flown.bvel)
-    pos = Point(flown.pos)
+def get_rates(flown: State):
+    
     return {
-        Loop: np.percentile(abs(brvels.y), 90),
-        Line: np.percentile(abs(brvels.x), 95),
-        Snap: max(abs(brvels.x)),
-        StallTurn: np.percentile(abs(brvels.z), 99.9),
-        Spin: np.percentile(abs(brvels.x), 99.5),
-        "speed": vels.x.mean(),
-        "distance": pos.y.mean(),
+        Loop: np.percentile(abs(flown.rvel.y), 90),
+        Line: np.percentile(abs(flown.rvel.x), 95),
+        Snap: max(abs(flown.rvel.x)),
+        StallTurn: np.percentile(abs(flown.rvel.z), 99.9),
+        Spin: np.percentile(abs(flown.rvel.x), 99.5),
+        "speed": flown.vel.x.mean(),
+        "distance": flown.pos.y.mean(),
     }
 
 

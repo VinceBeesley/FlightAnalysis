@@ -35,7 +35,6 @@ def test_extrapolate_rot():
     )
     
 
-
 @fixture
 def state(flight, box):
     return from_flight(flight, box)

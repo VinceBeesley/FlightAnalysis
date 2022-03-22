@@ -2,12 +2,12 @@ from geometry import Point
 from fastdtw import fastdtw
 import warnings
 from scipy.spatial.distance import euclidean
-from flightanalysis.state import Section
+from flightanalysis.state import State
 import numpy as np
 import pandas as pd
 
 
-def align(flown, template, radius=1, white=False, weights = Point(1,1,1)) -> Section:
+def align(flown, template, radius=1, white=False, weights = Point(1,1,1)) -> State:
     """Perform a temporal alignment between two sections. return the flown section with labels 
     copied from the template along the warped path
 
@@ -44,7 +44,7 @@ def align(flown, template, radius=1, white=False, weights = Point(1,1,1)) -> Sec
     return distance, copy_labels(template, flown, path)
 
 
-def copy_labels(template, flown, path) -> Section:
+def copy_labels(template, flown, path) -> State:
     """Copy the labels from a template section to a flown section along the index warping path
 
     Args:
@@ -59,6 +59,6 @@ def copy_labels(template, flown, path) -> Section:
             template.data.reset_index(drop=True).loc[:, ["manoeuvre", "element"]]
         ).groupby(['flight']).last().reset_index().set_index("flight")
 
-    return Section(flown.data.reset_index(drop=True).join(mans).set_index("t", drop=False))
+    return State(flown.data.reset_index(drop=True).join(mans).set_index("t", drop=False))
 
 

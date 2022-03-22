@@ -1,9 +1,8 @@
 import numpy as np
-from flightanalysis import Section
+from flightanalysis import State
 
-from ..conftest import seq
 from pytest import approx
-from flightanalysis import Line
+from flightanalysis.schedule.elements.line import Line
 from flightanalysis.state.tools.conversions import to_judging, body_to_wind
 from geometry import Points, Transformation, Point
 

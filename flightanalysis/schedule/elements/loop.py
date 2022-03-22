@@ -1,6 +1,7 @@
 import numpy as np
-from geometry import Transformation, Points, Coord, Point, Quaternion
-from flightanalysis import Section
+from geometry import Transformation, Coord, Point, Quaternion, PY
+from flightanalysis.state import State
+from flightanalysis.base.table import Time
 from scipy import optimize
 
 from . import El
@@ -19,7 +20,7 @@ class Loop(El):
     def scale(self, factor):
         return self.set_parms(diameter=self.diameter * factor)
 
-    def create_template(self, transform: Transformation, speed: float, simple=False) -> Section:
+    def create_template(self, transform: Transformation, speed: float, simple=False) -> State:
         """generate a loop, based on intitial position, speed, amount of loop, radius. 
 
         Args:
@@ -35,7 +36,7 @@ class Loop(El):
 
         duration = np.pi * self.diameter * abs(self.loops) / speed
         axis_rate = -self.loops * 2 * np.pi / duration
-        freq = 1.0 if simple else Section._construct_freq
+        freq = 1.0 if simple else State._construct_freq
         t = np.linspace(0, duration, max(int(duration * freq), 3))
 
         # TODO There must be a more elegant way to do this.
@@ -48,45 +49,35 @@ class Loop(El):
                 transform.rotate(Point(0, 0, 1)),
                 transform.rotate(Point(1, 0, 0))
             )
-            angles = Points.from_point(Point(0, axis_rate, 0), len(t)) * t
-            radcoordpoints = Points(
-                np.array(np.vectorize(
-                    lambda angle: tuple(Point(
-                        radius * np.cos(angle),
-                        radius * np.sin(angle),
-                        0
-                    ))
-                )(angles.y)).T
-            )
+            angles = PY(axis_rate).tile(len(t)) * t
+
+            radcoordpoints = Point(radius, radius, 0) * \
+                Point(np.cos(angles.y), np.sin(angles.y), np.zeros(len(angles)))
+
+            
         else:
             radcoord = Coord.from_xy(
                 transform.point(Point(0, -radius, 0)),
                 transform.rotate(Point(0, 1, 0)),
                 transform.rotate(Point(1, 0, 0))
             )
-            angles = Points.from_point(Point(0, 0, -axis_rate), len(t)) * t
-            radcoordpoints = Points(
-                np.array(np.vectorize(
-                    lambda angle: tuple(Point(
-                        radius * np.cos(-angle),
-                        radius * np.sin(-angle),
-                        0
-                    ))
-                )(angles.z)).T
-            )
+            angles = Point.from_point(Point(0, 0, -axis_rate), len(t)) * t
+
+            radcoordpoints = Point(radius, radius, 0) * \
+                Point(np.cos(-angles.z), np.sin(-angles.z), np.zeros(len(angles)))
 
         pos=Transformation.from_coords(Coord.from_nothing(), radcoord).point(radcoordpoints)
         att = Quaternion.full(transform.rotation, len(t)).body_rotate(angles)
 
-        el = Section.from_constructs(time=t, pos=pos, att=att)
+        el = State.from_constructs(Time.from_t(t), pos, att)
         return self._add_rolls(el, self.rolls)
 
     def match_axis_rate(self, pitch_rate: float, speed: float):
         return self.set_parms(diameter=2 * speed / pitch_rate)
 
-    def match_intention(self, transform: Transformation, flown: Section):
+    def match_intention(self, transform: Transformation, flown: State):
         # https://scipy-cookbook.readthedocs.io/items/Least_Squares_Circle.html
-        pos = transform.point(Point(flown.pos))
+        pos = transform.point(flown.pos)
 
         if self.ke:
             x, y = pos.x, pos.y
@@ -104,14 +95,11 @@ class Loop(El):
 
         return self.set_parms(
             diameter=2 * calc_R(*center).mean(),
-            rolls=np.sign(np.mean(Point(
-                flown.brvel).x)) * abs(self.rolls)
+            rolls=np.sign(flown.rvel.mean().x) * abs(self.rolls)
         )
-
-
     
 
-    def segment(self, transform:Transformation, flown: Section, partitions=10):
+    def segment(self, transform:Transformation, flown: State, partitions=10):
         subsections = flown.segment(partitions)
         elms = [ self.match_intention( transform,sec) for sec in subsections ]
         

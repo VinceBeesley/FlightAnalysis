@@ -21,8 +21,8 @@ def extrapolate(istate: State, duration: float) -> State:
         State: state projected forwards
     """
 
-    npoints = np.ceil(duration / istate.time.dt[0])
-    time = Time.from_t(np.linspace(0,duration, int(npoints)))[:-1]
+    npoints = np.max([int(np.ceil(duration / istate.time.dt[0])), 3])
+    time = Time.from_t(np.linspace(0,duration, int(npoints)))
     vel = istate.vel.tile(len(time))   
     rvel = istate.rvel.tile(len(time))
     att = istate.att.body_rotate(rvel * time.t)
