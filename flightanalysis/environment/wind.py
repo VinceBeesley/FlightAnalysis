@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from geometry import Point, Points
 from scipy.interpolate import interp1d
-from flightanalysis import Section, get_q
+from flightanalysis.state import State
 from typing import Callable, List, Tuple
 from scipy.optimize import minimize
 
@@ -128,9 +128,9 @@ class WindModelBuilder:
             return direc * float(speed)
 
 
-def fit_wind(body_axis: Section, windbuilder: WindModelBuilder, bounds=False, **kwargs):
+def fit_wind(body_axis: State, windbuilder: WindModelBuilder, bounds=False, **kwargs):
 
-    body_axis = Section(body_axis.data.loc[body_axis.data.bvx > 10])
+    body_axis = State(body_axis.data.loc[body_axis.vel.x > 10])
 
     if not "method" in kwargs:
         kwargs["method"] = "nelder-mead"
@@ -138,7 +138,7 @@ def fit_wind(body_axis: Section, windbuilder: WindModelBuilder, bounds=False, **
     judge_axis = body_axis.to_judging()
     
     def get_coef_data(wind_model):
-        wind_vectors = wind_model(judge_axis.gpos.z, judge_axis.gt)
+        wind_vectors = wind_model(judge_axis.pos.z, judge_axis.time.t)
         wind_axis = judge_axis.judging_to_wind(wind_vectors)
         alpha, beta = np.degrees(body_axis.measure_aoa(wind_axis))
         

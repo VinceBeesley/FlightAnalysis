@@ -1,4 +1,6 @@
-from flightanalysis import Section, Box, Schedule, get_schedule, Categories
+from flightanalysis.state import State
+from flightanalysis.flightline import Box
+from flightanalysis.schedule import Schedule, get_schedule, Categories
 from flightanalysis.schedule.elements import get_rates
 from flightdata import Flight
 from typing import Union, IO
@@ -11,7 +13,7 @@ import pandas as pd
 
 
 class FCJson:
-    def __init__(self, name: str, flight: Flight, box: Box, sec: Section, schedule: Schedule, dists=[]):
+    def __init__(self, name: str, flight: Flight, box: Box, sec: State, schedule: Schedule, dists=[]):
         self.name = name
         self.flight = flight
         self.box = box
@@ -35,7 +37,7 @@ class FCJson:
 
         box = FCJson.read_box(fc_json["name"], fc_json['parameters'])
         flight = Flight.from_fc_json(fc_json)
-        sec = Section.from_flight(flight, box)
+        sec = State.from_flight(flight, box)
         
         schedule = get_schedule(*fc_json["parameters"]["schedule"]).share_seperators()
         labelled = schedule.label_from_splitter(sec, fc_json["mans"])
@@ -44,12 +46,12 @@ class FCJson:
         secs = []
         _dists = []
         for man, templ in zip(schedule.manoeuvres, templates):
-            dist, nsec =Section.align(man.get_data(labelled).remove_labels(), templ, 5)
+            dist, nsec =State.align(man.get_data(labelled).remove_labels(), templ, 5)
             secs.append(nsec)
             _dists.append(dist)
 
         #
-        aligned = Section.stack([Schedule.get_takeoff(labelled)] + secs)
+        aligned = State.stack([Schedule.get_takeoff(labelled)] + secs)
 
         return FCJson(fc_json['name'], flight, box, aligned, schedule, _dists)
 

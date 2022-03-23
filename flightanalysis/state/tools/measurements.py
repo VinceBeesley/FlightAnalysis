@@ -1,6 +1,6 @@
 from flightanalysis.state import State
 import numpy as np
-from geometry import Points
+from geometry import Point
 
 
 def measure_aoa(st: State, other:State=None):
@@ -11,10 +11,16 @@ def measure_aoa(st: State, other:State=None):
     return alpha, beta
 
 
-def measure_airspeed(st: State, wind_vectors: Points) -> np.ndarray:
+def measure_airspeed(st: State, wind_vectors: Point) -> np.ndarray:
     return st.vel - st.att.inverse().transform_point(wind_vectors)
 
 
 def measure_coefficients(st: State, mass, q, S):
     return st.acc * mass / (q * S)
 
+
+def direction(self):
+    if self.back_transform.rotate(Point(1, 0, 0)).x > 0:
+        return "right"
+    else:
+        return "left"

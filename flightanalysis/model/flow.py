@@ -1,40 +1,33 @@
 
-from flightanalysis.base import Period, make_dt, make_error, default_vars
+from flightanalysis.base.table import Table, Time, SVar
 from typing import Union
 from flightdata import Flight, Fields
 from pathlib import Path
 from flightanalysis.base.constructs import Constructs, SVar
-from flightanalysis.state import Section
-from flightanalysis.environment import Environments
-from geometry import Point, Quaternion, Quaternions, Points
+from flightanalysis.state import State
+from flightanalysis.environment import Environment
+from geometry import Point, Quaternion, Base
 import numpy as np
 
 
-flowvars = Constructs(dict(**default_vars, **{
-    "aoa":   SVar(["alpha", "beta"],   np.array,   np.array,    make_error),
-    "q":     SVar(["q"],               np.array,   np.array,    make_error),
-}))
+class Flw(Base):
+    cols = ["alpha", "beta", "q"]
 
 
-class Flows(Period):
-    _cols = flowvars
+class Flow(Table):
+    constructs = Table.constructs + Constructs(dict(
+        flow = SVar(Flw, ["alpha", "beta", "q"], None)
+    ))
 
     @staticmethod
-    def build(body: Section, envs: Environments):
+    def build(body: State, envs: Flw):
         judge = body.to_judging()
         wind = judge.judging_to_wind(envs.gwind)
         airspeed = wind.measure_airspeed(envs.gwind)
         alpha,beta = body.measure_aoa(wind)
-        return Flows.from_constructs(
-            body.gtime, 
-            aoa=np.stack([alpha,beta]).T, 
-            q=0.5 * envs.rho * airspeed.x**2
+        return Flow.from_constructs(
+            body.time, 
+            Flw(np.stack([alpha,beta, 0.5 * envs.rho * airspeed.x**2]).T) 
         )
 
-
-class Flow(Period):
-    _cols = flowvars
-    Period = Flows
-
-Flows.Instant = Flow
 

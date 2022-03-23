@@ -43,8 +43,9 @@ State.body_to_wind = body_to_wind
 State.judging_to_wind = judging_to_wind
 State.wind_to_body = wind_to_body
 #
-from .tools.measurements import measure_aoa, measure_airspeed, measure_coefficients
+from .tools.measurements import measure_aoa, measure_airspeed, measure_coefficients, direction
 #
 State.measure_aoa = measure_aoa
 State.measure_airspeed = measure_airspeed
 State.measure_coefficients = measure_coefficients
+State.direction = direction

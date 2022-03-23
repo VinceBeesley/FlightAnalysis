@@ -1,13 +1,12 @@
 import unittest
 from flightanalysis.schedule import Schedule, get_schedule, Line, Categories
 from flightanalysis.schedule.elements import get_rates
-from flightanalysis import Section
+from flightanalysis.state import State
 from json import load
 from flightanalysis.fc_json import FCJson
 from flightdata import Flight
 
 from pytest import approx, fixture, mark
-from flightanalysis import get_schedule, Categories
 import warnings
 warnings.filterwarnings("error")
 
@@ -22,7 +21,7 @@ def schedule(schedule_json):
 
 @fixture(scope="session")
 def aligned():
-    return Section.from_csv("tests/test_inputs/test_log_00000052_aligned.csv")
+    return State.from_csv("tests/test_inputs/test_log_00000052_aligned.csv")
 
 
 
@@ -34,7 +33,7 @@ def test_create_raw_template(schedule):
     sched = schedule.scale_distance(170.0)
     out = sched.create_raw_template("left", 30.0, 170.0)
 
-    assert isinstance(out, Section)
+    assert isinstance(out, State)
 
     stallturn = schedule.manoeuvres[1].get_data(out)
 
@@ -44,7 +43,7 @@ def test_create_raw_template(schedule):
 @mark.skip("doesnt work")
 def test_match_axis_rate(schedule):
     
-    sec = Section.from_csv("tests/test_inputs/test_log_00000052_section.csv").subset(110, 200)
+    sec = State.from_csv("tests/test_inputs/test_log_00000052_section.csv").subset(110, 200)
 
     rates = get_rates(sec)
 
@@ -61,12 +60,12 @@ def test_from_splitter():
         fcj = load(f)
     box = FCJson.read_box(fcj["name"], fcj['parameters'])
     flight = Flight.from_fc_json(fcj)
-    sec = Section.from_flight(flight, box)
+    sec = State.from_flight(flight, box)
 
     sched = get_schedule(*fcj["parameters"]["schedule"])
     labelled = sched.label_from_splitter(sec, fcj["mans"])
 
-    assert isinstance(labelled, Section)
+    assert isinstance(labelled, State)
     assert sec.duration /2  == approx(labelled.duration/2, 1)
     
 

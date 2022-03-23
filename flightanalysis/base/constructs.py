@@ -14,9 +14,9 @@ from typing import List, Dict, Union
 
 
 class SVar:
-    def __init__(self, obj, keys, builder):
+    def __init__(self, obj, keys=None, builder=None):
         self.obj = obj
-        self.keys = keys
+        self.keys = obj.cols if keys is None else keys
         self.builder = builder
 
 

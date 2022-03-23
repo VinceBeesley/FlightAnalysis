@@ -1,3 +1,3 @@
-from .environment import Environment, Environments
+from .environment import Environment
 
 

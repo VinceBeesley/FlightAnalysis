@@ -1,16 +1,16 @@
 import numpy as np
-from flightanalysis import State
+from flightanalysis.state import State
 
 from pytest import approx
 from flightanalysis.schedule.elements.line import Line
 from flightanalysis.state.tools.conversions import to_judging, body_to_wind
 from geometry import Points, Transformation, Point
 
-def test_to_judging(seq: Section):
+def test_to_judging(seq: State):
     sec = seq.flying_only()
     jsec = to_judging(sec)
 
-    assert isinstance(jsec, Section)
+    assert isinstance(jsec, State)
 
     aold, bold = sec.measure_aoa()
     anew, bnew = jsec.measure_aoa()
@@ -20,7 +20,7 @@ def test_to_judging(seq: Section):
     assert np.mean(np.abs(aold / anew)) > 30
     assert np.mean(np.abs(bold / bnew)) > 30
 
-def test_body_to_wind(seq: Section):
+def test_body_to_wind(seq: State):
     sec = seq.flying_only()
     alpha, beta = sec.measure_aoa()
 

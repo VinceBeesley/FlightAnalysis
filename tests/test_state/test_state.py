@@ -39,7 +39,7 @@ def test_from_constructs():
         pos=Point.zeros(), 
         att=Quaternion.from_euler(Point.zeros())
     )
-    assert st.transform.translation == Point.zeros()
+    assert st.pos == Point.zeros()
 
 def test_from_transform():
     st =State.from_transform(Transformation())

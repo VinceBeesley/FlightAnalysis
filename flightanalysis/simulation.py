@@ -26,6 +26,4 @@ generally environment and model are not known so:
 
 """
 
-from flightanalysis import Section
-from flightanalysis.environment import Environment
 

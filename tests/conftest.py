@@ -1,6 +1,7 @@
 import pytest
 from flightdata import Flight
 from flightanalysis.flightline import Box
+from flightanalysis.state import State
 
 @pytest.fixture(scope="session")
 def whole_flight():
@@ -14,6 +15,12 @@ def flight(whole_flight):
 @pytest.fixture(scope="session")
 def box():
     return Box.from_json('tests/test_inputs/test_log_box.json')
+
+
+@pytest.fixture(scope="session")
+def st(flight, box):
+    return State.from_flight(flight, box)
+
 #
 #@pytest.fixture(scope="session")
 #def p21():

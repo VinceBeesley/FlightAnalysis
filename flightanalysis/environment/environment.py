@@ -1,11 +1,11 @@
 
-from flightanalysis.base import Period, Instant, make_dt, make_error, default_vars
+from flightanalysis.base.table import Table, Time
 from typing import Union
 from flightdata import Flight, Fields
 from pathlib import Path
 from flightanalysis.base.constructs import Constructs, SVar
-from geometry import Point, Quaternion, Quaternions, Points
-from flightanalysis.state import Section
+from geometry import Point, Quaternion, Base, P0
+from flightanalysis.state import State
 import numpy as np
 from .wind import WindModel
 
@@ -19,31 +19,32 @@ def sl_assumption(sec):
     return np.full((len(sec), 2), [101325, 288.15, get_rho(101325, 288.15)])
 
 
-envvars = Constructs(dict(**default_vars, **{
-    "atm":   SVar(["P", "T", "rho"],     np.array,   np.array,    sl_assumption),
-    "wind":  SVar(["wvx", "wvy", "wvz"], Points,     Points,      lambda sec: Points.full(Point.zeros(), len(sec))),
-}))
+class Air(Base):
+    cols = ["P", "T", "rho"]
+    
+    @staticmethod
+    def iso_sea_level():
+        return Air(101325, 288.15, get_rho(101325, 288.15))
 
 
-class Environments(Period):
-    _cols = envvars
+
+class Environment(Table):
+    constructs = Table.constructs + Constructs(dict(
+        atm = SVar(Air, ["P", "T", "rho"], lambda tab: Air.iso_sea_level()),
+        wind = SVar(Point, ["wvx", "wvy", "wvz"], lambda tab: P0(len(tab)))
+    ))
 
     @staticmethod
-    def build(flight: Flight, sec: Section, wmodel: WindModel):
+    def build(flight: Flight, sec: State, wmodel: WindModel):
 
         df = flight.read_fields(Fields.PRESSURE)
         df = df.assign(temperature_0=291.15)
         df = df.assign(rho=get_rho(df["pressure_0"], df["temperature_0"]))
 
-        return Environments.from_constructs(
-            time=sec.gtime,
-            atm=df.to_numpy(),
-            wind=wmodel(sec.gpos.z)
+        return Environment.from_constructs(
+            time=sec.time,
+            atm=Air(df.to_numpy()),
+            wind=wmodel(sec.pos.z)
         )
 
 
-class Environment(Instant):
-    _cols = envvars
-    Period = Environments
-
-Environments.Instant = Environment

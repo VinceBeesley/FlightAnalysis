@@ -69,9 +69,3 @@ class State(Table):
         """
         return self.transform.point(pin)
 
-    @property
-    def direction(self):
-        if self.back_transform.rotate(Point(1, 0, 0)).x > 0:
-            return "right"
-        else:
-            return "left"

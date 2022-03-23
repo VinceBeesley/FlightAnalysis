@@ -1,6 +1,8 @@
 import pytest
 from flightanalysis.fc_json import FCJson
-from flightanalysis import Box, Section, Schedule
+from flightanalysis.flightline import Box
+from flightanalysis.state import  State
+from flightanalysis.schedule import Schedule
 from io import open
 from json import load
 import numpy as np
@@ -20,7 +22,7 @@ def test_parse_fc_json(fcjson):
 
     assert isinstance(fcj.flight, Flight)
     assert isinstance(fcj.box, Box)
-    assert isinstance(fcj.sec, Section)
+    assert isinstance(fcj.sec, State)
     assert isinstance(fcj.schedule, Schedule)
     assert 0 in fcj.sec.data.manoeuvre.unique()
 

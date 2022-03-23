@@ -1,31 +1,37 @@
 
-from flightanalysis.base import Period, Instant, make_dt, make_error, default_vars
+from flightanalysis.base.table import Table, SVar, Time
 from typing import Union
 from flightdata import Flight, Fields
 from pathlib import Path
 from flightanalysis.base.constructs import Constructs, SVar
-from geometry import Point, Quaternion, Quaternions, Points
+from geometry import Point, Quaternion, Base
 import numpy as np
 
 
 
-contvars = Constructs(dict(**default_vars, **{
-    "deflection":SVar([
-        "throttle", 
-        "aileron_1", 
-        "aileron_2", 
-        "elevator", 
-        "rudder"
-    ],            np.array,   np.array,    make_error),
-}))
+class Channels(Base):
+    cols = ["thr", "al", "ar", "e", "r"]
 
 
-class Control(Instant):
-    _cols = contvars
-    
-class Controls(Period):
-    _cols = contvars
-    Instant = Control
+class Surfaces(Base):
+    cols = ["thr", "ail", "ele", "rud", "flp"]
+
+    @staticmethod
+    def from_channels(chans: Channels):
+        return Surfaces(
+            chans.thr, 
+            np.mean([chans.al, -chans.ar]), 
+            chans.e,
+            chans.r,
+            np.mean([chans.a1, chans.a2]),
+        )
+
+
+class Controls(Table):
+    constructs = Table.constructs + Constructs(dict(
+        surfaces = SVar(Surfaces),
+        channels = SVar(Channels)
+    ))
 
 
     def build(flight: Union[Flight, str], control_conversion):
@@ -44,13 +50,8 @@ class Controls(Period):
         return Controls.from_constructs(time=t,deflection=tx_controls.to_numpy())
 
 
-Control.Period = Controls
+def cold_draft_controls(Channels):
+    """convert a Channels of PWM values to a channels of surface deflections"""
+    pass
 
 
-cold_draft_conversion = {
-     "throttle": lambda pwm: 15 * (pwm - 1500) / 700,
-    "aileron_1": lambda pwm: 15 * (pwm - 1500) / 700, 
-    "aileron_2": lambda pwm: 15 * (pwm - 1500) / 700, 
-    "elevator":  lambda pwm: 15 * (pwm - 1500) / 700, 
-    "rudder":    lambda pwm: 15 * (pwm - 1500) / 700
-}

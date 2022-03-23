@@ -3,7 +3,7 @@ import pytest
 import numpy as np 
 import pandas as pd
 from geometry import Points, Point, Quaternion, Transformation
-from ..conftest import seq
+from ..conftest import st
 
 
 

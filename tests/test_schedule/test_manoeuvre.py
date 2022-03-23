@@ -1,8 +1,9 @@
 import numpy as np
 import pandas as pd
 import unittest
-from flightanalysis.schedule import Manoeuvre, Schedule
-from flightanalysis import get_schedule, Section
+from flightanalysis.schedule import Manoeuvre, Schedule, get_schedule
+from flightanalysis.state import State
+
 from flightanalysis.schedule.elements import Line, Loop, rollmaker
 from geometry import Point, Quaternion, Transformation, Coord
 
@@ -26,7 +27,7 @@ def sql(schedule) -> Manoeuvre:
 
 @pytest.fixture(scope="session")
 def aligned():
-    return Section.from_csv("tests/test_inputs/test_log_00000052_aligned.csv")
+    return State.from_csv("tests/test_inputs/test_log_00000052_aligned.csv")
 
 def test_create_template(v8: Manoeuvre):
     v8_template = v8.scale(100).create_template(
