@@ -42,8 +42,6 @@ def judging_to_wind(st: State, flow: Flow):
 
     jwind = st.att.inverse().transform_point(flow.wind)
 
-
-
     angles = (jwind + st.vel).angles(st.vel)
 
     return State.from_constructs(
