@@ -6,28 +6,38 @@ from pathlib import Path
 from flightanalysis.base.constructs import Constructs, SVar
 from flightanalysis.state import State
 from flightanalysis.environment import Environment
-from geometry import Point, Quaternion, Base
+from geometry import Point, Quaternion, Base, PX
 import numpy as np
 
 
-class Flw(Base):
-    cols = ["alpha", "beta", "q"]
+
+class Attack(Base):
+    cols = ['alpha', 'beta', 'q']
 
 
 class Flow(Table):
     constructs = Table.constructs + Constructs(dict(
-        flow = SVar(Flw, ["alpha", "beta", "q"], None)
+        aspd = SVar(Point, ["asx", "asy", "asz"], None),
+        flow = SVar(Point, ["alpha", "beta", "q"], None)
     ))
 
     @staticmethod
-    def build(body: State, envs: Flw):
-        judge = body.to_judging()
-        wind = judge.judging_to_wind(envs.gwind)
-        airspeed = wind.measure_airspeed(envs.gwind)
-        alpha,beta = body.measure_aoa(wind)
+    def build(body: State, env: Environment):
+#        wind = judge.judging_to_wind(env.wind)
+        airspeed = body.vel - body.att.inverse().transform_point(env.wind)
+
+        sym_airspeed = Point(1,0,1) * airspeed
+
+        beta = airspeed.angle_between(sym_airspeed)
+
+        x_arspd = Point(1,0,0) * sym_airspeed
+
+        alpha = sym_airspeed.angle_between(x_arspd)
+
+        q = 0.5 * env.rho * abs(airspeed)**2
+
         return Flow.from_constructs(
             body.time, 
-            Flw(np.stack([alpha,beta, 0.5 * envs.rho * airspeed.x**2]).T) 
+            airspeed,
+            Attack(alpha, beta, q)
         )
-
-

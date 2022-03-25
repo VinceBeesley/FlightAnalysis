@@ -123,7 +123,7 @@ class WindModelBuilder:
         direc =  Point(np.cos(heading), np.sin(heading), 0.0)
         
         if type(height) in [list, np.ndarray]:
-            return Points.full(direc, len(speed)) * speed
+            return direc.tile(len(speed)) * speed
         else:
             return direc * float(speed)
 

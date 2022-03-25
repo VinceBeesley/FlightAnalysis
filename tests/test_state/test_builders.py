@@ -18,6 +18,7 @@ def test_extrapolate_no_rot():
         (initial.pos + PX(30) * 10).data
     )
     
+    assert len(extrapolated) == 10*30-1
 
 
 def test_extrapolate_rot():

@@ -27,7 +27,7 @@ def extrapolate(istate: State, duration: float) -> State:
     vel = istate.vel.tile(len(time))   
     rvel = istate.rvel.tile(len(time))
     att = istate.att.body_rotate(rvel * time.t)
-    pos = istate.pos + (att.transform_point(vel) * time.dt).cumsum()
+    pos = (att.transform_point(vel) * time.dt).cumsum() + istate.pos
 
     return State.from_constructs(time,pos, att, vel, rvel)
 

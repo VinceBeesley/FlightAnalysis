@@ -23,14 +23,14 @@ class Air(Base):
     cols = ["P", "T", "rho"]
     
     @staticmethod
-    def iso_sea_level():
-        return Air(101325, 288.15, get_rho(101325, 288.15))
+    def iso_sea_level(length: int):
+        return Air(101325, 288.15, get_rho(101325, 288.15)).tile(length)
 
 
 
 class Environment(Table):
     constructs = Table.constructs + Constructs(dict(
-        atm = SVar(Air, ["P", "T", "rho"], lambda tab: Air.iso_sea_level()),
+        atm = SVar(Air, ["P", "T", "rho"], lambda tab: Air.iso_sea_level(len(tab))),
         wind = SVar(Point, ["wvx", "wvy", "wvz"], lambda tab: P0(len(tab)))
     ))
 

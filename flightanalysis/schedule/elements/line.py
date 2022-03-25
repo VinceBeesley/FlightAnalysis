@@ -31,7 +31,7 @@ class Line(El):
         """
         sec= State.from_transform(
             transform, 
-            time = Time(0, State._construct_freq if simple else 1),
+            time = Time(0, 1/State._construct_freq if not simple else 1),
             vel=PX(speed)
         ).extrapolate(duration=self.length / speed)
 

@@ -5,9 +5,9 @@ from geometry import Point, Quaternion, Transformation, PX
 
 
 
-def transform(st: State, transform: Transformation) -> State:
+def transform_state(st: State, transform: Transformation) -> State:
     return State.from_constructs(
-        time=np.array(st.data.index),
+        time=st.time,
         pos=transform.point(st.pos),
         att=transform.rotate(st.att),
         vel=transform.rotate(st.vel),

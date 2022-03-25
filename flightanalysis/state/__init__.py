@@ -22,10 +22,10 @@ from .tools.transformers import (
     superimpose_rotation, 
     superimpose_roll, 
     smooth_rotation, 
-    transform
+    transform_state, 
 )
 #
-State.transform = transform
+State.transform_state = transform_state
 State.superimpose_angles = superimpose_angles
 State.superimpose_rotation = superimpose_rotation
 State.superimpose_roll = superimpose_roll
@@ -43,9 +43,6 @@ State.body_to_wind = body_to_wind
 State.judging_to_wind = judging_to_wind
 State.wind_to_body = wind_to_body
 #
-from .tools.measurements import measure_aoa, measure_airspeed, measure_coefficients, direction
+from .tools.measurements import direction
 #
-State.measure_aoa = measure_aoa
-State.measure_airspeed = measure_airspeed
-State.measure_coefficients = measure_coefficients
 State.direction = direction

@@ -16,6 +16,9 @@ def test_create_template():
         PX(50).data
     )
 
+    
+
+
 def test_match_axis_rate():
     elm = Line(0.5, 0.5).scale(100.0).match_axis_rate(
         1.0, 30.0).create_template(Transformation(), 30.0)
