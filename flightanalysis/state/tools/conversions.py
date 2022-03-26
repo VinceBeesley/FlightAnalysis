@@ -2,7 +2,7 @@
 import numpy as np
 import pandas as pd
 from flightanalysis.state import State
-from geometry import Quaternion, Coord, Point, P0, Transformation
+from geometry import Quaternion, Coord, Point, P0, Transformation, PX
 from flightanalysis.model import Flow
 from flightanalysis.environment import Environment
 
@@ -26,7 +26,17 @@ def to_judging(st: State):
     return body_to_wind(st)
 
 
-def body_to_wind(st: State, flow: Flow=None):
+def body_to_wind(st: State, flow: Flow=None) -> State:
+    """go from body to wind axis, given alpha and beta. rotate by alpha then by beta, standard 
+    flight dynamics way. 
+
+    Args:
+        st (State): a State in the body axis
+        flow (Flow, optional): information on the local flow, if None zero wind will be assumed
+
+    Returns:
+        State: a State in the wind axis
+    """
     if not flow:
         env = Environment.from_constructs(st.time)
         flow = Flow.build(st, env)
@@ -38,17 +48,45 @@ def body_to_wind(st: State, flow: Flow=None):
 
 
 
-def judging_to_wind(st: State, flow: Flow):
+def judging_to_wind(st: State, env: Environment) -> State:
+    """I think the correct way to go from judging axis to wind axis is to do a yaw rotation then a pitch 
+    rotation, as this keeps the wing vector in the judging axis XY plane.
 
-    jwind = st.att.inverse().transform_point(flow.wind)
+    Args:
+        st (State): the judging axis data
+        env (Environment): the environment
 
-    angles = (jwind + st.vel).angles(st.vel)
+    Returns:
+        State: the wind axis data
+    """
+    # the local wind vector in the judging frame:
+    jwind = st.att.inverse().transform_point(env.wind)  
 
-    return State.from_constructs(
-        st.time,
-        pos=st.pos,
-        att = st.att.body_rotate(angles)
-    )
+    # the yaw rotation required to align the xz plane with the local wind vector:
+    yaw_rotation = (jwind + st.vel).angles(
+        st.att.inverse().transform_point(PX())
+    ) * Point(0,0,1) 
 
-def wind_to_body(st: State, alpha, beta):
-    return body_to_wind(st, -alpha, -beta)
+    #transform the data by this yaw rotation:
+    int_axis = convert_state(st, yaw_rotation)
+
+    #the local wind vector in the intermediate frame:
+    intwind = int_axis.att.inverse().transform_point(env.wind) 
+
+    #the pitch rotation required to align the xy plane with the local wind vector:
+    pitch_rotation = (intwind + int_axis.vel).angles(
+        int_axis.att.inverse().transform_point(PX())
+    ) * Point(0,1,0)
+
+    #transform by this pitch rotation to get the wind axis state
+    wind_axis =convert_state(int_axis, pitch_rotation)
+
+    return wind_axis
+
+
+def wind_to_body(st: State, flow: Flow):
+
+    stability_axis = convert_state(stability_axis, -Point(0,0,1) * flow.beta)
+    body_axis = convert_state(st, Point(0,1,0) * flow.alpha)
+
+    return body_axis

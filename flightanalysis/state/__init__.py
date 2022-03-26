@@ -36,8 +36,9 @@ from .tools.alignment import align, copy_labels
 State.align = staticmethod(align)
 State.copy_labels = staticmethod(copy_labels)
 #
-from .tools.conversions import to_judging, body_to_wind, judging_to_wind, wind_to_body
+from .tools.conversions import convert_state, to_judging, body_to_wind, judging_to_wind, wind_to_body
 #
+State.body_rotate = convert_state
 State.to_judging = to_judging
 State.body_to_wind = body_to_wind
 State.judging_to_wind = judging_to_wind
