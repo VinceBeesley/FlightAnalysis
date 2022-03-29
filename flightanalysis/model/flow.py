@@ -26,13 +26,7 @@ class Flow(Table):
 #        wind = judge.judging_to_wind(env.wind)
         airspeed = body.vel - body.att.inverse().transform_point(env.wind)
 
-        sym_airspeed = Point(1,0,1) * airspeed
-
-        beta = airspeed.angle_between(sym_airspeed)
-
-        x_arspd = Point(1,0,0) * sym_airspeed
-
-        alpha = sym_airspeed.angle_between(x_arspd)
+        alpha, beta =  np.arctan(airspeed.z/airspeed.x), np.arctan(airspeed.y/airspeed.x)
 
         q = 0.5 * env.rho * abs(airspeed)**2
 
