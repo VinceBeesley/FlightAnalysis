@@ -3,8 +3,8 @@ from flightanalysis.state import State
 
 from pytest import approx, fixture
 from flightanalysis.schedule.elements.line import Line
-from flightanalysis.state.tools.conversions import to_judging, body_to_wind
-from geometry import Points, Transformation, Point, P0, Euler
+from flightanalysis.state.tools.conversions import to_judging, body_to_wind, judging_to_wind, convert_state
+from geometry import Points, Transformation, Point, P0, Euler, PY
 from ..conftest import st, flight, box
 from flightanalysis.environment import Environment
 from flightanalysis.model.flow import Flow
@@ -48,25 +48,19 @@ def test_to_judging_sim(sl_wind_axis):
 
 
 
+def test_judging_to_wind(sl_wind_axis):
+    judge_axis = sl_wind_axis
+    wind_axis = convert_state(judge_axis, Point(0, 0, np.radians(10)))
+    body_axis = convert_state(wind_axis, Point(0, np.radians(20), 0))  
 
-def test_body_to_wind(st: State):
-    
-    alpha, beta = st.measure_aoa()
+    env = Environment.from_constructs(
+        sl_wind_axis.time, 
+        wind=PY(30*np.tan(np.radians(10)), len(sl_wind_axis))
+    )
 
-    wst = body_to_wind(st, alpha, beta)
-    
-    jst = to_judging(st)
+    wind = judging_to_wind(judge_axis, env)
 
-    np.testing.assert_array_almost_equal(wst.att.data, jst.att.data, 0)
+    np.testing.assert_array_almost_equal(wind.att.data, wind_axis.att.data)
 
-
-
-def test_judging_to_wind():
-    judging = Line(100.0).create_template(Transformation(), 20.0)
-    wind_vec = Points.Y(np.full(len(judging.data), 5.0))
-    wind = judging.judging_to_wind(wind_vec)
-
-    alpha, beta = wind.measure_aoa()
-    assert beta[20] == approx(np.arctan(5/20))
 
 
