@@ -25,17 +25,20 @@ def to_judging(st: State):
     """This rotates the body so the x axis is in the velocity vector"""
     return body_to_wind(st)
 
-
-def body_to_wind(st: State, flow: Flow=None):
+def body_to_stability(st: State, flow: Flow=None):
     if not flow:
         env = Environment.from_constructs(st.time)
         flow = Flow.build(st, env)
+    return convert_state(st, -Point(0,1,0) * flow.alpha)    
 
-    stability_axis = convert_state(st, -Point(0,1,0) * flow.alpha)
-    wind_axis = convert_state(stability_axis, Point(0,0,1) * flow.beta)
+def stability_to_wind(st: State, flow: Flow=None):
+    if not flow:
+        env = Environment.from_constructs(st.time)
+        flow = Flow.build(st, env)
+    return convert_state(st, Point(0,0,1) * flow.beta)
 
-    return wind_axis
-
+def body_to_wind(st: State, flow: Flow=None):
+    return stability_to_wind(body_to_stability(st, flow), flow)
 
 
 def judging_to_wind(st: State, flow: Flow):

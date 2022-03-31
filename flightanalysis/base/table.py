@@ -74,7 +74,7 @@ class Table:
                 return self.__class__(self.data.iloc[[-1], :])
 
             return self.__class__(
-                self.data.iloc[[self.data.index.get_loc(sli, method="nearest")], :]
+                self.data.iloc[self.data.index.get_indexer([sli], method="nearest"), :]
             )
         
         return self.__class__(self.data.loc[sli])
