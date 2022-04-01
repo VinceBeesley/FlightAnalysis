@@ -72,9 +72,8 @@ def judging_to_wind(st: State, env: Environment) -> State:
     ) * Point(0,1,0)
 
     #transform by this pitch rotation to get the wind axis state
-    wind_axis =convert_state(int_axis, pitch_rotation)
+    return convert_state(int_axis, pitch_rotation)
 
-    return wind_axis
 
 
 def wind_to_body(st: State, flow: Flow):

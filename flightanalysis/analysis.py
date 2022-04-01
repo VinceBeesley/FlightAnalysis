@@ -45,10 +45,10 @@ class Analysis:
         judge = body.to_judging()
         controls = Controls.build(flight, control_mapping)
         environment = Environment.build(flight, body, wmodel)
-        flows = Flow.build(body, environment)
+        flow = Flow.build(body, environment)
 
-        wind = judge.judging_to_wind(environment)
-        coeffs = Coefficients.build(wind, flows, consts)
+        wind = body.body_to_wind(flow)
+        coeffs = Coefficients.build(wind, flow, consts)
 
         return Analysis(
             flight,
@@ -58,7 +58,7 @@ class Analysis:
                 judge=judge,
                 control=controls,
                 environment=environment,
-                flow=flows,
+                flow=flow,
                 coeffs=coeffs
             )
         )
@@ -107,9 +107,9 @@ def fit_wind(body_axis: State, windbuilder: WindModelBuilder, bounds=False, **kw
     )
 
     args = res.x
-    args[0] = args[0] % (2 * np.pi)
     if args[1] < 0:
-        args[0] = (args[0] + np.pi) % (2 * np.pi)
+        args[0] = args[0] + np.pi
         args[1] = -args[1]
+    args[0] = args[0] % (2 * np.pi)
     return windbuilder(args)
 

@@ -28,7 +28,7 @@ class Coefficients(Table):
 
         return Coefficients.from_constructs(
             sec.time,
-            force=(du + u.cross(u)) * consts.mass / (flow.q * consts.s),
+            force=(du + w.cross(u)) * consts.mass / (flow.q * consts.s),
             moment=moment / Point(consts.b, consts.c, consts.b).tile(len(moment))
         )
 
