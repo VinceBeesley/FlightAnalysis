@@ -6,7 +6,7 @@ from pathlib import Path
 from flightanalysis.base.constructs import Constructs, SVar
 from flightanalysis.state import State
 from flightanalysis.environment import Environment
-from geometry import Point, Quaternion, Base, PX
+from geometry import Point, Quaternion, Base, PX, Euler
 import numpy as np
 
 
@@ -26,8 +26,19 @@ class Flow(Table):
 #        wind = judge.judging_to_wind(env.wind)
         airspeed = body.vel - body.att.inverse().transform_point(env.wind)
 
-        alpha, beta =  np.arctan(airspeed.z/airspeed.x), np.arctan(airspeed.y/airspeed.x)
+        np.seterr(invalid='ignore')
+        alpha =  np.arctan(airspeed.z / airspeed.x) 
+        
+        stab_airspeed = Euler(
+            np.zeros(len(alpha)), 
+            alpha, 
+            np.zeros(len(alpha))
+        ).transform_point(airspeed)
+        #assert np.app(stab_airspeed.z == 0)
 
+        beta = np.arctan(stab_airspeed.y / stab_airspeed.x)
+
+        np.seterr(invalid='warn')
         q = 0.5 * env.rho * abs(airspeed)**2
 
         return Flow.from_constructs(

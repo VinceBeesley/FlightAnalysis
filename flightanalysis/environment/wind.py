@@ -16,7 +16,9 @@ class WindModel:
     def __call__(self, height, time=None):
         return self.func(height, time if not time is None else np.zeros(len(height)))
 
-    
+    @staticmethod
+    def zero():
+        return WindModel(lambda h: 0, "zero", [0,0])
 
 class WindModelBuilder:
     def __init__(self, builder, defaults: List[float], bounds: List[Tuple[float]]):

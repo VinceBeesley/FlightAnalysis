@@ -76,8 +76,12 @@ def _from_flight(flight: Flight, flightline: FlightLine) -> State:
                 flight.read_numpy(Fields.ATTITUDE).T
             )))
 
-    vel = flightline.transform_from.rotate(Point(flight.read_numpy(Fields.VELOCITY).T))
-    bvel = att.inverse().transform_point(vel)
+    
+    vel = att.inverse().transform_point(
+        flightline.transform_from.rotate(
+            Point(flight.read_numpy(Fields.VELOCITY).T)
+        )
+    )
     acc = Point(flight.read_numpy(Fields.ACCELERATION).T)
     rvel = Point(flight.read_fields(Fields.AXISRATE))
     
