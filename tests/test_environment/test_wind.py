@@ -2,7 +2,7 @@ from flightanalysis.environment.wind import WindModelBuilder, WindModel, fit_win
 import pytest
 import numpy as np 
 import pandas as pd
-from geometry import Points, Point, Quaternion, Transformation
+from geometry import Point, Quaternion, Transformation
 from ..conftest import st
 
 
@@ -14,7 +14,7 @@ def test_wind_power_law_builder():
     assert isinstance(pl(300, 0.0), Point)
 
     pl_res = pl(np.random.random(100), np.random.random(100))
-    assert isinstance(pl_res, Points)
+    assert isinstance(pl_res, Point)
     assert pl_res.count, 100
 
 
@@ -23,7 +23,7 @@ def test_wind_fit_builder():
     assert isinstance(pl(300, 0.0), Point)
 
     pl_res = pl(np.random.random(100), np.random.random(100))
-    assert isinstance(pl_res, Points)
+    assert isinstance(pl_res, Point)
     assert pl_res.count, 100
 
 

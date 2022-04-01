@@ -10,7 +10,7 @@ import numpy as np
 
 
 class Channels(Base):
-    cols = ["thr", "al", "ar", "e", "r"]
+    cols = ["th", "al", "ar", "e", "r"]
 
 
 class Surfaces(Base):
@@ -34,24 +34,33 @@ class Controls(Table):
     ))
 
 
-    def build(flight: Union[Flight, str], control_conversion):
+    def build(flight: Union[Flight, str], conversion):
         if isinstance(flight, str):
             flight = {
                 ".csv": Flight.from_csv,
                 ".BIN": Flight.from_log
             }[Path(flight).suffix](flight)
         t=flight.data.index
-        tx_controls = flight.read_fields(Fields.TXCONTROLS).iloc[:,:5]
-        tx_controls.columns = ["throttle", "aileron_1", "aileron_2", "elevator", "rudder"]
-        for key, value in control_conversion.items():
-            tx_controls.loc[:,key] = value(tx_controls[key])
+        controls = Channels(flight.read_fields(Fields.TXCONTROLS).iloc[:,:5])
+
+        return Controls.from_constructs(
+            Time.from_t(t.to_numpy()),
+            channels=controls,
+            surfaces=conversion(controls)
+        )
 
 
-        return Controls.from_constructs(time=t,deflection=tx_controls.to_numpy())
-
-
-def cold_draft_controls(Channels):
+def cold_draft_controls(chans: Channels) -> Surfaces:
     """convert a Channels of PWM values to a channels of surface deflections"""
-    pass
+
+    chs = (chans - chans[0]) / (chans.max() - chans.min())
+
+    return Surfaces(
+        chs.th,
+        np.mean([chs.al, chs.ar], axis=0) * 30,
+        chs.e * 30,
+        chs.r * 30,
+        np.mean([chs.al, -chs.ar], axis=0) * 30
+    )
 
 
