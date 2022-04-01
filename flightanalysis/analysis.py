@@ -1,22 +1,22 @@
 
-from flightanalysis.state import Section, State
-from flightanalysis.environment import Environment, Environments
-from flightanalysis.controls import Control, Controls
-from flightanalysis.model.flow import Flow, Flows
-from flightanalysis.model.coefficients import Coefficient, Coefficients
-
-from flightanalysis.environment.wind import WindModel
-from flightanalysis.model.constants import ACConstants
+from flightanalysis.state import State
+from flightanalysis.environment import Environment, WindModelBuilder, WindModel, Air
+from flightanalysis.controls import Controls
+from flightanalysis.model import Coefficients, Flow, cold_draft, ACConstants
 from flightanalysis.flightline import Box
 from flightdata import Flight
+from scipy.optimize import minimize
+import numpy as np
+import pandas as pd
+
 
 contents = {
-    "body": Section, 
-    "wind": Section,
-    "judge": Section,
+    "body": State, 
+    "wind": State,
+    "judge": State,
     "control": Controls,
-    "environment": Environments,
-    "flow": Flows,
+    "environment": Environment,
+    "flow": Flow,
     "coeffs": Coefficients
 }
 
@@ -41,12 +41,13 @@ class Analysis:
         control_mapping: dict
     ):
         
-        body = Section.from_flight(flight, box)
+        body = State.from_flight(flight, box)
         judge = body.to_judging()
         controls = Controls.build(flight, control_mapping)
-        environments = Environments.build(flight, body, wmodel)
-        flows = Flows.build(body, environments)
-        wind = judge.judging_to_wind(environments.gwind)
+        environment = Environment.build(flight, body, wmodel)
+        flows = Flow.build(body, environment)
+
+        wind = judge.judging_to_wind(environment)
         coeffs = Coefficients.build(wind, flows, consts)
 
         return Analysis(
@@ -56,7 +57,7 @@ class Analysis:
                 wind=wind,
                 judge=judge,
                 control=controls,
-                environment=environments,
+                environment=environment,
                 flow=flows,
                 coeffs=coeffs
             )
@@ -68,6 +69,47 @@ class Analysis:
             {key: value[sli] for key, value in self.data.items()}    
         )
 
-    
 
+def fit_wind(body_axis: State, windbuilder: WindModelBuilder, bounds=False, **kwargs):
+
+    body_axis = State(body_axis.data.loc[body_axis.vel.x > 10])
+
+    if not "method" in kwargs:
+        kwargs["method"] = "nelder-mead"
     
+    judge_axis = body_axis.to_judging()
+    
+    def lincheck(x,y):
+        fit = np.polyfit(x, y, deg=1)
+        pred = fit[1] + fit[0] * x
+        return np.sum(np.abs(pred - y)) 
+
+    def cost_fn(wind_guess):
+        wind_model = windbuilder(wind_guess)
+        
+        env = Environment.from_constructs(
+            body_axis.time, 
+            Air.iso_sea_level(len(body_axis)),
+            wind_model(judge_axis.pos.z, judge_axis.time.t)
+        )
+        
+        flow = Flow.build(body_axis, env)
+
+        coeffs = Coefficients.build(body_axis, flow, cold_draft)  
+        
+        return 100*(lincheck(flow.alpha, coeffs.cz) + lincheck(flow.beta, coeffs.cy))  
+
+    res = minimize(
+        cost_fn, 
+        windbuilder.defaults, 
+        bounds=windbuilder.bounds if bounds else None,
+        **kwargs
+    )
+
+    args = res.x
+    args[0] = args[0] % (2 * np.pi)
+    if args[1] < 0:
+        args[0] = (args[0] + np.pi) % (2 * np.pi)
+        args[1] = -args[1]
+    return windbuilder(args)
+

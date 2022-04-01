@@ -18,6 +18,9 @@ from .schedule import (
 )
 #
 from .fc_json import FCJson
+
+
+from .analysis import Analysis, fit_wind
 ##
 ##
 ##

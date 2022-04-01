@@ -1,4 +1,4 @@
-from flightanalysis.environment.wind import WindModelBuilder, WindModel, fit_wind
+from flightanalysis.environment.wind import WindModelBuilder, WindModel
 import pytest
 import numpy as np 
 import pandas as pd
@@ -25,6 +25,5 @@ def test_wind_fit_builder():
     pl_res = pl(np.random.random(100), np.random.random(100))
     assert isinstance(pl_res, Point)
     assert pl_res.count, 100
-
 
 

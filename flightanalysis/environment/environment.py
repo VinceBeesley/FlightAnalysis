@@ -7,7 +7,8 @@ from flightanalysis.base.constructs import Constructs, SVar
 from geometry import Point, Quaternion, Base, P0
 from flightanalysis.state import State
 import numpy as np
-from .wind import WindModel
+from .wind import WindModel, WindModelBuilder
+
 
 R = 287.058
 GAMMA = 1.4
@@ -46,5 +47,7 @@ class Environment(Table):
             atm=Air(df.to_numpy()),
             wind=wmodel(sec.pos.z)
         )
+
+
 
 
