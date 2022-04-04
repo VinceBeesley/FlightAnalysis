@@ -166,5 +166,12 @@ def test_to_f3azone(box):
 
 
 
+
+def test_from_f3a_zone():
+    box = Box.from_f3a_zone("tests/test_inputs/tl_2_box.f3a")
+    assert box.pilot_position == GPS(52.5422769, -1.6318313)
+    assert np.degrees(box.heading) == approx(75.281, 1e-3)
+
+
 if __name__ == "__main__":
     unittest.main()

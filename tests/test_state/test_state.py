@@ -49,4 +49,3 @@ def test_from_transform():
     st =State.from_transform(Transformation(), vel=PX(20))
     assert st.vel.x == 20
 
-
