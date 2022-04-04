@@ -82,7 +82,7 @@ class WindModelBuilder:
         return WindModelBuilder(
                 wind_power_law_builder,
                 [0.0, 3.0, 0.2],
-                [(-np.pi, 3 * np.pi), (minwind, maxwind), (0.1, 0.6)]
+                [(-np.pi, 3 * np.pi), (minwind, maxwind), (0.01, 0.6)]
             )
         
 

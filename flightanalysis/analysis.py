@@ -70,6 +70,19 @@ class Analysis:
         )
 
 
+    def to_df(self):
+        return pd.concat([
+            self.body.data, 
+            self.control.data, 
+            self.environment.data, 
+            self.flow.data,
+            self.coeffs.data
+        ],axis=1)
+
+    def to_csv(self, path:str):
+        self.to_df().to_csv(path)
+
+
 def fit_wind(body_axis: State, windbuilder: WindModelBuilder, bounds=False, **kwargs):
 
     body_axis = State(body_axis.data.loc[body_axis.vel.x > 10])
