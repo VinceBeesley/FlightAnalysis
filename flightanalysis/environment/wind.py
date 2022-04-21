@@ -18,7 +18,7 @@ class WindModel:
 
     @staticmethod
     def zero():
-        return WindModel(lambda h: 0, "zero", [0,0])
+        return WindModel(lambda h, t=0: 0, "zero", [0,0])
 
 class WindModelBuilder:
     def __init__(self, builder, defaults: List[float], bounds: List[Tuple[float]]):
