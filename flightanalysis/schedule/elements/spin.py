@@ -29,13 +29,13 @@ class Spin(El):
             -abs(break_angle) * _inverted
         ).label(sub_element="nose_drop")
 
-        autorotation = State.extrapolate_state(
-            nose_drop[-1].copy(brvel=Point.zeros()), 
+        autorotation = State.extrapolate(
+            nose_drop[-1].copy(rvel=Point.zeros()), 
             (abs(self.turns + self.opp_turns) * 2*np.pi - 3*np.pi/2) / self.rate,
             freq=freq
         ).label(sub_element="autorotation")
 
-        recovery = State.extrapolate_state(
+        recovery = State.extrapolate(
             autorotation[-1],
             np.pi / self.rate,
             freq=freq

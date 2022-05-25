@@ -14,7 +14,7 @@ def make_bvel(sec) -> Point:
     else:
         return P0()
 
-def make_brvel(sec) -> Point:
+def make_rvel(sec) -> Point:
     if len(sec) > 1:
         return sec.att.body_diff(sec.dt).remove_outliers(3) 
     else:
@@ -27,7 +27,7 @@ def make_bacc(sec) -> Point:
     else:
         return P0()
 
-def make_bracc(sec) -> Point:
+def make_racc(sec) -> Point:
     if len(sec) > 1:
         return sec.rvel.diff(sec.dt)
     else:
@@ -38,9 +38,9 @@ class State(Table):
         pos  = SVar(Point,       ["x", "y", "z"]           , None       ), 
         att  = SVar(Quaternion,  ["rw", "rx", "ry", "rz"]  , None       ),
         vel  = SVar(Point,       ["u", "v", "w"]           , make_bvel  ),
-        rvel = SVar(Point,       ["p", "q", "r"]           , make_brvel ),
+        rvel = SVar(Point,       ["p", "q", "r"]           , make_rvel ),
         acc  = SVar(Point,       ["du", "dv", "dw"]        , make_bacc  ),
-        racc = SVar(Point,       ["dp", "dq", "dr"]        , make_bracc ),
+        racc = SVar(Point,       ["dp", "dq", "dr"]        , make_racc ),
     ))
     _construct_freq = 30
 

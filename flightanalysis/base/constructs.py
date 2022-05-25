@@ -5,7 +5,7 @@
     pos = position (Cartesian)
     att = attitude (Quaternion)
     bvel = velocity in (body frame)
-    brvel = rotational velocity (body axis rates)
+    rvel = rotational velocity (body axis rates)
 
     """
 import numpy as np
