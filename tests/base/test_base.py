@@ -39,4 +39,8 @@ def test_tab_getitem(tab_full):
 
 def test_copy(tab_full):
     tab2 = tab_full.copy()
-    assert tab2.t == tab_full.t
+    np.testing.assert_array_equal(tab2.t, tab_full.t)
+
+    tab3 = tab_full.copy(time=Time.from_t(tab_full.t+10))
+
+    np.testing.assert_array_equal(tab3.t, tab_full.t + 10)

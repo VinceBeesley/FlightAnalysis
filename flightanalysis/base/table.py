@@ -109,11 +109,11 @@ class Table:
     def copy(self, *args,**kwargs):
         kwargs = dict(kwargs, **{list(self.constructs.data.keys())[i]: arg for i, arg in enumerate(args)}) # add the args to the kwargs
 
-        old_constructs = {key: self.__getattr__(key) for key in self.constructs.existing(self.data.index).data if not key in kwargs}
+        old_constructs = {key: self.__getattr__(key) for key in self.constructs.existing(self.data.columns).data if not key in kwargs}
         
         new_constructs = {key: value for key, value in list(kwargs.items()) + list(old_constructs.items())}
 
-        return State.from_constructs(**new_constructs)
+        return self.__class__.from_constructs(**new_constructs)
 
 
     def label(self, **kwargs):
@@ -129,13 +129,3 @@ class Table:
         )
     
 
-
-class State(Table):
-    constructs = Table.constructs + Constructs(dict(
-        pos  = SVar(Point,       ["x", "y", "z"]           , None ), 
-        att  = SVar(Quaternion,  ["rw", "rx", "ry", "rz"]  , None ),
-        vel  = SVar(Point,       ["u", "v", "w"]           , None ),
-        rvel = SVar(Point,       ["p", "q", "r"]           , None ),
-        acc  = SVar(Point,       ["du", "dv", "dw"]        , None ),
-        racc = SVar(Point,       ["dp", "dq", "dr"]        , None ),
-    ))
