@@ -22,7 +22,6 @@ class Spin(El):
         speed = speed * 0.5
         _inverted = np.sign(transform.rotate(PZ()).z)[0]
         break_angle = np.radians(30) # pitch angle offset from vertical downline
-        freq=1.0 if simple else State._construct_freq 
         
         nose_drop = Loop(15, -_inverted/4).create_template(transform, speed).superimpose_rotation(
             PY(), 
@@ -31,14 +30,12 @@ class Spin(El):
 
         autorotation = State.extrapolate(
             nose_drop[-1].copy(rvel=Point.zeros()), 
-            (abs(self.turns + self.opp_turns) * 2*np.pi - 3*np.pi/2) / self.rate,
-            freq=freq
+            (abs(self.turns + self.opp_turns) * 2*np.pi - 3*np.pi/2) / self.rate
         ).label(sub_element="autorotation")
 
         recovery = State.extrapolate(
             autorotation[-1],
             np.pi / self.rate,
-            freq=freq
         ).superimpose_rotation(
             PY(), 
             break_angle * _inverted

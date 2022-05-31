@@ -11,7 +11,7 @@ class TestSnap(unittest.TestCase):
         template = raw_el.scale(170 * np.tan(np.radians(60))).create_template(Transformation(), 30.0)
         np.testing.assert_array_almost_equal(
             template[-1].pos.data,
-            PX(17.63053).data,
+            PX(18.576).data,
             4
         )
         self.assertEqual(len(raw_el.get_data(template).data),

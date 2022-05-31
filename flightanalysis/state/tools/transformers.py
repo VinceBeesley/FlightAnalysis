@@ -24,8 +24,8 @@ def superimpose_angles(st: State, angles: Point, reference:str="body"):
         st.att.rotate(angles) if reference=="world" else st.att.body_rotate(angles)
     )
 
-    if "sub_element" in st.data.columns:
-        sec = sec.append_columns(st.data["sub_element"])
+    #if "sub_element" in st.data.columns:
+     #   sec = sec.append_columns(st.data["sub_element"])
     return sec
 
 
@@ -80,7 +80,7 @@ def smooth_rotation(st: State, axis: Point, angle: float, reference:str="body", 
     z = t[t>(T-w2*T)] - T + w2*T
     angles_2 = V*z - V * z **2 / (2*w2*T) + V*T - V * w2 * T  - 0.5*V*w*T
 
-    angles = Point.from_point(axis.unit(), len(t)) * np.concatenate([angles_0, angles_1, angles_2])
+    angles = Point.full(axis.unit(), len(t)) * np.concatenate([angles_0, angles_1, angles_2])
 
     return st.superimpose_angles(angles, reference)
 

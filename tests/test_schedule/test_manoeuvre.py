@@ -37,7 +37,7 @@ def test_create_template(v8: Manoeuvre):
     )
 
     np.testing.assert_array_almost_equal(
-        v8_template[-1].pos.to_list(),
+        v8_template[-1].pos.data[0],
         [120, 0.0, 0.0]
     )
 

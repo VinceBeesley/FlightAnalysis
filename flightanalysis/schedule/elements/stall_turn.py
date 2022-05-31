@@ -16,9 +16,8 @@ class StallTurn(El):
 
     def create_template(self, transform: Transformation, speed: float, simple: bool = False):
         return self._add_rolls(
-            State.from_transform(transform, bvel=Point.zeros()).extrapolate( 
-                np.pi / abs(self.yaw_rate), 
-                1.0 if simple else State._construct_freq
+            State.from_transform(transform, vel=Point.zeros()).extrapolate( 
+                np.pi / abs(self.yaw_rate)
             ).superimpose_rotation(
                 PZ(), 
                 np.sign(self.yaw_rate) * np.pi
