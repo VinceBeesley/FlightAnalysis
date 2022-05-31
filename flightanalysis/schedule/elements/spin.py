@@ -46,15 +46,14 @@ class Spin(El):
         if self.opp_turns == 0:
             spin=no_spin.smooth_rotation(Point(0,0,1), 2*np.pi*self.turns, "world", 0.3, 0.05)
         else:
-            fwd_spin = no_spin.subset(
-                0, 
-                no_spin.duration * self.turns / (abs(self.turns) + abs(self.opp_turns))
-            ).smooth_rotation(Point(0,0,1), 2*np.pi*self.turns, "world", 0.3, 0.05)
+            fwd_spin = no_spin[
+                0:no_spin.duration * self.turns / (abs(self.turns) + abs(self.opp_turns))
+            ].smooth_rotation(Point(0,0,1), 2*np.pi*self.turns, "world", 0.3, 0.05)
 
-            aft_spin = no_spin.subset(
-                no_spin.duration * self.opp_turns / (abs(self.turns) + abs(self.opp_turns)),
-                -1
-            )
+            aft_spin = no_spin[
+                no_spin.duration * self.opp_turns / (abs(self.turns) + abs(self.opp_turns)):
+                
+            ]
             aft_spin=aft_spin.superimpose_angles(
                 (PZ() * 2 * np.pi * self.turns).tile( 
                     len(aft_spin.data)

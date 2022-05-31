@@ -61,7 +61,7 @@ class Loop(El):
                 transform.rotate(Point(0, 1, 0)),
                 transform.rotate(Point(1, 0, 0))
             )
-            angles = Point.from_point(Point(0, 0, -axis_rate), len(t)) * t
+            angles = Point.full(Point(0, 0, -axis_rate), len(t)) * t
 
             radcoordpoints = Point(radius, radius, 0) * \
                 Point(np.cos(-angles.z), np.sin(-angles.z), np.zeros(len(angles)))
