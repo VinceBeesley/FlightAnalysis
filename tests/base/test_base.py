@@ -36,3 +36,7 @@ def test_tab_getitem(tab_full):
     t = tab_full[20]
     pass
 
+
+def test_copy(tab_full):
+    tab2 = tab_full.copy()
+    assert tab2.t == tab_full.t
