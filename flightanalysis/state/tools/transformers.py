@@ -33,7 +33,7 @@ def superimpose_rotation(st: State, axis: Point, angle: float, reference:str="bo
     """Generate a new section, identical to st, but with a continous rotation integrated
     """
     t = st.time.t - st.time.t[0]
-    rate = angle / st.time.t
+    rate = angle / st.time.t[-1]
     superimposed_rotation = t * rate
 
     angles = axis.unit().tile(len(t)) * superimposed_rotation
