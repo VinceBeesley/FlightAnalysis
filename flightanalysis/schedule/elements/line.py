@@ -18,7 +18,7 @@ class Line(El):
     def scale(self, factor):
         return self.set_parms(length=self.length * factor)
 
-    def create_template(self, transform: Transformation, speed: float, simple: bool = False) -> State:
+    def create_template(self, transform: Transformation, speed: float) -> State:
         """contstruct a State representing the judging frame for this line element
 
         Args:
@@ -31,7 +31,7 @@ class Line(El):
         """
         sec= State.from_transform(
             transform, 
-            time = Time(0, 1/State._construct_freq if not simple else 1),
+            time = Time(0, 1/State._construct_freq),
             vel=PX(speed)
         ).extrapolate(duration=self.length / speed)
 

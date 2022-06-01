@@ -1,5 +1,5 @@
 import numpy as np
-from geometry import Transformation, Quaternion, Point, Euler, PX, PY, PZ
+from geometry import Transformation, Quaternion, Point, Euler, PX, PY, PZ, P0
 from flightanalysis.state import State
 from flightanalysis.base.table import Time
 from . import El, Line
@@ -17,7 +17,7 @@ class Snap(El):
     def scale(self, factor):
         return self.set_parms(rate=self.rate/factor)
 
-    def create_template(self, transform: Transformation, speed: float, simple: bool = False) -> State: 
+    def create_template(self, transform: Transformation, speed: float) -> State: 
         """Generate a section representing a snap roll, this is compared to a real snap in examples/snap_rolls.ipynb"""
         
         direc = -1 if self.negative else 1
@@ -27,7 +27,7 @@ class Snap(El):
         
         pitch_break = State.from_transform(
             transform, 
-            time = Time(0, State._construct_freq if simple else 1),
+            time = Time(0, 1/State._construct_freq),
             vel=PX(speed)
         ).extrapolate( 
             2 * np.pi * break_angle / pitch_rate
@@ -36,14 +36,14 @@ class Snap(El):
         
         body_autorotation_axis = Euler(0, direc * break_angle, 0).inverse().transform_point(PX())
         
-        autorotation = pitch_break[-1].extrapolate(
+        autorotation = pitch_break[-1].copy(rvel=P0()).extrapolate(
             2 * np.pi * abs(self.rolls) / self.rate
         ).superimpose_rotation(
             body_autorotation_axis, 
-            2 * np.pi * self.rolls
+            2 * np.pi * self.rolls,
         )
 
-        correction = autorotation[-1].extrapolate( 
+        correction = autorotation[-1].copy(rvel=P0()).extrapolate( 
             2 * np.pi * break_angle / pitch_rate
         ).superimpose_rotation(PY(), -direc * break_angle )
 

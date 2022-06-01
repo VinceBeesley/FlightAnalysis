@@ -20,7 +20,7 @@ class Loop(El):
     def scale(self, factor):
         return self.set_parms(diameter=self.diameter * factor)
 
-    def create_template(self, transform: Transformation, speed: float, simple=False) -> State:
+    def create_template(self, transform: Transformation, speed: float) -> State:
         """generate a loop, based on intitial position, speed, amount of loop, radius. 
 
         Args:
@@ -36,8 +36,8 @@ class Loop(El):
 
         duration = np.pi * self.diameter * abs(self.loops) / speed
         axis_rate = -self.loops * 2 * np.pi / duration
-        freq = 1.0 if simple else State._construct_freq
-        t = np.linspace(0, duration, max(int(duration * freq), 3))
+        
+        t = np.linspace(0, duration, max(int(duration * State._construct_freq), 3))
 
         # TODO There must be a more elegant way to do this.
         if axis_rate == 0:

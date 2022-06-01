@@ -14,7 +14,7 @@ class StallTurn(El):
     def scale(self, factor):
         return self.set_parms()
 
-    def create_template(self, transform: Transformation, speed: float, simple: bool = False):
+    def create_template(self, transform: Transformation, speed: float):
         return self._add_rolls(
             State.from_transform(transform, vel=Point.zeros()).extrapolate( 
                 np.pi / abs(self.yaw_rate)

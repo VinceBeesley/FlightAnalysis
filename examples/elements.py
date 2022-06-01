@@ -1,9 +1,10 @@
-from flightanalysis import State, Line, Loop, Snap
+from flightanalysis import State, Line, Loop, Snap, Spin
 from flightplotting import plotsec
 from geometry import Transformation
 
-line = Snap(1).scale(300).create_template(Transformation(), 30)
+from flightanalysis import get_schedule
 
-plotsec(line, nmodels=5).show()
+p23 = get_schedule("F3A", "F23")
 
-
+sched = p23.scale_distance(170).create_raw_template("right", 30, 170, False)
+plotsec(sched).show()

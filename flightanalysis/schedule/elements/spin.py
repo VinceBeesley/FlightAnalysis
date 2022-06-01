@@ -18,7 +18,7 @@ class Spin(El):
     def scale(self, factor):
         return self.set_parms(rate=self.rate / factor)
 
-    def create_template(self, transform: Transformation, speed: float, simple: bool = False):
+    def create_template(self, transform: Transformation, speed: float):
         speed = speed * 0.5
         _inverted = np.sign(transform.rotate(PZ()).z)[0]
         break_angle = np.radians(30) # pitch angle offset from vertical downline
