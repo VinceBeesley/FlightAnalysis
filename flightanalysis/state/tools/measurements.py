@@ -7,7 +7,6 @@ from geometry import Point
 
 
 def direction(self):
-    if self.back_transform.rotate(Point(1, 0, 0)).x > 0:
-        return "right"
-    else:
-        return "left"
+    """returns 1 for going right, -1 for going left"""
+    return np.sign(self.att.transform_point(Point(1, 0, 0)).x)
+    

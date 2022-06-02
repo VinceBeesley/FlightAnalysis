@@ -37,7 +37,7 @@ def test_create_raw_template(schedule):
 
     stallturn = schedule.manoeuvres[1].get_data(out)
 
-    assert len(stallturn.element.unique()) == 10
+    assert len(set(stallturn.element)) == 10
     
 
 @mark.skip("doesnt work")

@@ -30,9 +30,9 @@ def align(flown, template, radius=1, white=False, weights = Point(1,1,1)) -> Sta
 
         return brv * weights
 
-    fl = get_brv(flown.grvel)
+    fl = get_brv(flown.rvel)
 
-    tp = get_brv(template.grvel)
+    tp = get_brv(template.rvel)
 
     distance, path = fastdtw(
         tp.data,
