@@ -20,19 +20,13 @@ else:
 
 intended = p23.match_intention(aligned)
 
-
-#
 emat_template = intended.create_elm_matched_template(aligned)
 mmat_template = intended.create_matched_template(aligned)
-#
-#plotdtw(aligned, p23.manoeuvres).show()
-#plotdtw(emat_template, p23.manoeuvres).show()
-#plotdtw(mmat_template, p23.manoeuvres).show()
+
 fig = plotsec(p23.manoeuvres[12].get_data(aligned))
 fig = plotsec(p23.manoeuvres[12].get_data(mmat_template), fig=fig)
 fig.show()
 
-# TO be debugged....
 corrected = intended.correct_intention()
 
 cmat_template = corrected.create_raw_template("right", 30, 170, False)
