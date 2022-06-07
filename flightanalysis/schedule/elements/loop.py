@@ -77,7 +77,8 @@ class Loop(El):
 
     def match_intention(self, transform: Transformation, flown: State):
         # https://scipy-cookbook.readthedocs.io/items/Least_Squares_Circle.html
-        pos = transform.point(flown.pos)
+        #pos = transform.point(flown.pos)
+        pos = Transformation(-transform.translation, transform.rotation.inverse()).point(flown.pos)
 
         if self.ke:
             x, y = pos.x, pos.y

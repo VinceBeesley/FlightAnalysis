@@ -6,7 +6,7 @@ import pandas as pd
 import pytest
 
 def test_create_template():
-    template = Spin(1).scale(
+    template = Spin(-1).scale(
         100.0).create_template(Transformation(), 10.0)
 
     assert np.any(pd.isna(template.rvel)) == False

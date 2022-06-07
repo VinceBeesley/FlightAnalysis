@@ -62,7 +62,7 @@ def smooth_rotation(st: State, axis: Point, angle: float, reference:str="body", 
         acc_prop (float, optional): proportion of total rotation to be accelerating for. Defaults to 0.1.
     """
 
-    t = np.array(st.data.index) - st.data.index[0]
+    t = st.time.t - st.time.t[0]
 
     T = t[-1]
 

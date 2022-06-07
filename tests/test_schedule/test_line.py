@@ -44,7 +44,7 @@ def test_match_intention():
         flown)
 
     # only amount of length in the intended direction is counted
-    assert new_el.length == approx(100 * np.cos(np.radians(20.0)))
+    assert new_el.length == approx(100 * np.cos(np.radians(20.0)), 1)
 
     # roll direction should match
     assert np.sign(new_el.rolls) == np.sign(np.mean(Point(flown.rvel).x))

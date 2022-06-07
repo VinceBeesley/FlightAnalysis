@@ -62,7 +62,7 @@ class Snap(El):
     def match_intention(self, transform: Transformation, flown: State):
         #TODO need to match flown pos/neg if F3A, not if IMAC
         return self.set_parms(
-            rolls=np.sign(flown.rvel.mean().x * abs(self.rolls))
+            rolls=np.sign(flown.rvel.mean().x)[0] * abs(self.rolls)
         )
 
     @property

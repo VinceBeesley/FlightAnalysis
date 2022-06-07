@@ -66,11 +66,15 @@ class Manoeuvre():
         for elm in self.elements:
             edata=elm.get_data(flown)
             elms.append(elm.match_intention(transform, edata))
-            transform = elms[-1].create_template(
-                transform, 
-                edata.data.bvx.mean(), 
-                True
-            )[-1].transform
+            try:
+                transform = elms[-1].create_template(
+                    transform, 
+                    edata.data.u.mean()
+                )[-1].transform
+            except Exception as ex:
+                print(f"Error creating template for {elm.__class__.__name__}, {elm.__dict__}")
+                print(str(ex))
+                raise Exception("Error Creating Template")
 
         return self.replace_elms(elms), transform
 

@@ -30,12 +30,12 @@ class Spin(El):
 
         autorotation = State.extrapolate(
             nose_drop[-1].copy(rvel=Point.zeros()), 
-            (abs(self.turns + self.opp_turns) * 2*np.pi - 3*np.pi/2) / self.rate
+            ((abs(self.turns) + abs(self.opp_turns)) * 2*np.pi - 3*np.pi/2) / abs(self.rate)
         ).label(sub_element="autorotation")
 
         recovery = State.extrapolate(
             autorotation[-1],
-            np.pi / self.rate,
+            abs(np.pi / self.rate),
         ).superimpose_rotation(
             PY(), 
             break_angle * _inverted
@@ -72,9 +72,9 @@ class Spin(El):
     def match_intention(self, transform: Transformation, flown: State):
         #TODO does not work for reversed spins
         gbmean = flown.rvel.mean()
-        rate = np.sqrt(gbmean.x ** 2 + gbmean.z ** 2)
+        rate = np.sqrt(gbmean.x[0] ** 2 + gbmean.z[0] ** 2)
         return self.set_parms(
-            turns=np.sign(gbmean.x) * abs(self.turns),
+            turns=np.sign(gbmean.x[0]) * abs(self.turns),
             opp_turns=0.0,
             rate = rate
         )

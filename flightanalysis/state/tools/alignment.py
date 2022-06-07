@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 
 
-def align(flown, template, radius=1, white=False, weights = Point(1,1,1)) -> State:
+def align(flown, template, radius=5, white=False, weights = Point(1,1,1)) -> State:
     """Perform a temporal alignment between two sections. return the flown section with labels 
     copied from the template along the warped path
 
