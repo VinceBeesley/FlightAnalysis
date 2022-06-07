@@ -67,4 +67,4 @@ class Snap(El):
 
     @property
     def length(self):
-        return self.create_template(Transformation(), 30.0, True)[-1].pos.x
+        return self.create_template(Transformation(), 30.0)[-1].pos.x[0]

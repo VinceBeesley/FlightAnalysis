@@ -76,8 +76,7 @@ class Loop(El):
         return self.set_parms(diameter=2 * speed / pitch_rate)
 
     def match_intention(self, transform: Transformation, flown: State):
-        # https://scipy-cookbook.readthedocs.io/items/Least_Squares_Circle.html
-        #pos = transform.point(flown.pos)
+        
         pos = Transformation(-transform.translation, transform.rotation.inverse()).point(flown.pos)
 
         if self.ke:
