@@ -1,0 +1,18 @@
+MANOEUVRE      
+tophat 4 inverted centre upwind base base
+ELEMENTS      
+line l0 0 0   
+loop r0 -0.25 0   
+line l1 0 2x4   
+loop r0 -0.25 0   
+line l2 0 1/2 centre  
+loop r0 0.25 0   
+line l1 0 2x4   
+loop r0 0.25 0   
+MANOEUVRE      
+hsq 2 inverted turnaround upwind base top
+ELEMENTS      
+line l0 0 0   
+loop r0 0.25 0   
+line l1 0 1/2 end  
+loop r0 -0.25 0   

@@ -6,7 +6,7 @@ from os.path import exists
 from geometry import Transformation, Point, Euler
 
 p23 = get_schedule("F3A", "P23").scale_distance(170)
-template = p23.create_raw_template("right", 30, 170, False)
+template = p23.create_raw_template("left", 30, 170, False)
 
 
 if not exists("examples/data/p23_labelled_state.csv"):
@@ -29,8 +29,8 @@ fig.show()
 
 corrected = intended.correct_intention()
 
-cmat_template = corrected.create_raw_template("right", 30, 170, False)
+cmat_template = corrected.create_raw_template("left", 30, 170, False)
 
-plotdtw(cmat_template, p23.manoeuvres).show()
+plotdtw(cmat_template, p23.manoeuvres[:4]).show()
 
 

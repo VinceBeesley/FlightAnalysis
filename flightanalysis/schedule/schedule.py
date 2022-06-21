@@ -94,7 +94,7 @@ class Schedule():
         iatt = Euler(np.pi, 0, 0)
         if self.entry == "inverted":
             iatt = Euler(np.pi, 0, 0) * iatt
-        if direction == "left":
+        if direction == "left" or direction == -1:
             iatt = Euler(0, 0, np.pi) * iatt
         return iatt
 
@@ -108,7 +108,7 @@ class Schedule():
         Returns:
             Transformation: transformation to initial position and attitude
         """
-        dmul = 1 if direction == "right" else -1
+        dmul = 1 if direction == "right" or direction==1 else -1
         return Transformation(
             Point(
                 self.entry_x_offset * dmul,
@@ -219,7 +219,7 @@ class Schedule():
         """This will go through all the manoeuvres in a labelled State and create a template with only the initial position and speed of each matched"""
         rates = get_rates(alinged)
 
-        iatt = self.create_iatt(alinged[0].direction)
+        iatt = self.create_iatt(alinged[0].direction()[0])
 
         templates = []
         for manoeuvre in self.manoeuvres:
@@ -237,7 +237,7 @@ class Schedule():
         """This will go through all the elements in a labelled State and create a template with the initial position and speed of each matched"""
         rates = get_rates(alinged)
 
-        iatt = self.create_iatt(alinged[0].direction)
+        iatt = self.create_iatt(alinged[0].direction()[0])
 
         templates = []
         for manoeuvre in self.manoeuvres:
