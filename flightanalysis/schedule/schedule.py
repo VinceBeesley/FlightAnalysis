@@ -11,14 +11,12 @@ from flightanalysis.schedule.figure_rules import Categories
 # TODO perhaps include takeoff in the list as manoeuvre 0 and add it when reading from the json, use a constructor rather than __init__ when creating from python
 # TODO this will cause a problem when creating templates, as some data must (probably) be created for the takeoff, which will bugger up the entry_x_offset and dtw alignment (if its a straight line)
 
+
 class Schedule():
     def __init__(
         self,
         name: str,
         category: Categories,
-        entry: str,
-        entry_x_offset: float,
-        entry_z_offset: float,
         manoeuvres: List[Manoeuvre]
     ):
         """
@@ -38,9 +36,6 @@ class Schedule():
         elif isinstance(category, str):
             self.category = Categories[category]
 
-        self.entry = entry
-        self.entry_x_offset = entry_x_offset
-        self.entry_z_offset = entry_z_offset
         if all(isinstance(x, Manoeuvre) for x in manoeuvres):
             self.manoeuvres = manoeuvres
         elif all(isinstance(x, dict) for x in manoeuvres):
@@ -50,16 +45,13 @@ class Schedule():
         return dict(
             name=self.name,
             category=self.category.name,
-            entry=self.entry,
-            entry_x_offset=self.entry_x_offset,
-            entry_z_offset=self.entry_z_offset,
             manoeuvres=[man.to_dict() for man in self.manoeuvres]
         )
 
     def replace_manoeuvres(self, new_mans: List[Manoeuvre]):
         """Replace all the manoeuvres
         """
-        return Schedule(self.name, self.category, self.entry, self.entry_x_offset, self.entry_z_offset, new_mans)
+        return Schedule(self.name, self.category, new_mans)
 
     def scale(self, factor: float):
         """Scale the schedule by a factor
@@ -73,52 +65,13 @@ class Schedule():
         return Schedule(
             self.name,
             self.category,
-            self.entry,
-            self.entry_x_offset * factor,
-            self.entry_z_offset * factor,
             [manoeuvre.scale(factor) for manoeuvre in self.manoeuvres]
         )
 
     def scale_distance(self, distance):
         return self.scale(np.tan(np.radians(60)) * distance)
 
-    def create_iatt(self, direction: str) -> Quaternion:
-        """Create the initial orientation for a template
-
-        Args:
-            direction (str): "left" or "right" direction in (x axis) of velocity vector, +ve for right
-
-        Returns:
-            Quaternion: rotation to initial attitude
-        """
-        iatt = Euler(np.pi, 0, 0)
-        if self.entry == "inverted":
-            iatt = Euler(np.pi, 0, 0) * iatt
-        if direction == "left" or direction == -1:
-            iatt = Euler(0, 0, np.pi) * iatt
-        return iatt
-
-    def create_itransform(self, direction: str, distance: float) -> Transformation:
-        """create the initial transformation for a template
-
-        Args:
-            direction (str): "left" or "right" direction in (x axis) of velocity vector, +ve for right
-            distance (float): distance from pilot position (y axis)
-
-        Returns:
-            Transformation: transformation to initial position and attitude
-        """
-        dmul = 1 if direction == "right" or direction==1 else -1
-        return Transformation(
-            Point(
-                self.entry_x_offset * dmul,
-                distance,
-                self.entry_z_offset
-            ),
-            self.create_iatt(direction)
-        )
-
-    def create_template(self, itrans: Transformation, speed: float,  add_takeoff=False) -> State:
+    def create_template(self, itrans: Transformation, speed: float) -> State:
         """Create labelled template flight data
 
         Args:
@@ -129,16 +82,6 @@ class Schedule():
             State: labelled template flight data
         """
         templates = []
-        # TODO add exit line on construction
-
-        if add_takeoff:
-            ipos = itrans.translation - itrans.rotation.transform_point(PX(30))
-            itrans = Transformation(ipos , itrans.rotation)
-            takeoff = Line(30).create_template(itrans, speed / 10)
-            takeoff.data.loc[:,"manoeuvre"] = 0
-            takeoff.data.loc[:,"element"] = 0
-            itrans = takeoff[-1].transform
-            templates.append(takeoff)
 
         for i, manoeuvre in enumerate(self.manoeuvres):
             if i == len(self.manoeuvres) - 1: 
@@ -147,46 +90,6 @@ class Schedule():
             itrans = templates[-1][-1].transform
 
         return State.stack(templates)
-
-    def create_raw_template(self, enter_from: str, speed: float, distance: float, add_takeoff=False):
-        """returns a State containing labelled template data 
-
-        Args:
-            enter_from (str): [description]
-            distance (float): [description]
-
-        Returns:
-            [type]: [description]
-        """
-
-        return self.create_template(self.create_itransform(enter_from, distance), speed, add_takeoff)
-
-    def match_rates(self, rates: dict):
-        """Perform some measurements on a State and roughly scale the schedule to match
-
-        Args:
-            aligned (State): flight data
-
-        Returns:
-            Schedule: scaled so that the axis rates roughly match the flight
-        """
-        sec = self.scale_distance(rates["distance"])
-        return self.replace_manoeuvres([man.match_rates(rates) for man in sec.manoeuvres])
-
-    def match_manoeuvre_rates(self, aligned: State):
-        """Perform some measurements on a State and roughly scale the schedule to match
-
-        Args:
-            aligned (State): flight data with manoeuvre labels
-
-        Returns:
-            Schedule: scaled so that the axis rates roughly match the flight per manoeuvre
-        """
-        nmans = []
-        for man in self.manoeuvres:
-            rates = get_rates(man.get_data(aligned))
-            nmans.append(man.match_rates(rates))
-        return self.replace_manoeuvres(nmans)
 
     def match_intention(self, alinged: State):
         """resize every element of the schedule to best fit the corresponding element in a labelled State
@@ -197,17 +100,16 @@ class Schedule():
         Returns:
             Schedule: new schedule with all the elements resized
         """
-        rates = get_rates(alinged)
 
-        transform = self.create_itransform(
-            "left" if alinged[0].direction()[0] == "right" else "right",
-            rates["distance"]
+        transform = Transformation(
+            alinged[0].pos,
+            alinged[0].att.closest_principal()
         )
 
         _mans = []
         for man in self.manoeuvres:
             man, transform = man.match_intention(
-                transform, man.get_data(alinged), rates["speed"])
+                transform, man.get_data(alinged), alinged.u.mean())
             _mans.append(man)
 
         return self.replace_manoeuvres(_mans)

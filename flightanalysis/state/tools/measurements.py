@@ -10,3 +10,9 @@ def direction(self):
     """returns 1 for going right, -1 for going left"""
     return np.sign(self.att.transform_point(Point(1, 0, 0)).x)
     
+
+def inverted(self):
+    return np.sign(self.att.transform_point(Point(0, 0, 1)).z) > 0
+
+def upright(self):
+    return not inverted(self)

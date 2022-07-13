@@ -1,18 +1,24 @@
-MANOEUVRE      
-tophat 4 inverted centre upwind base base
-ELEMENTS      
-line l0 0 0   
-loop r0 -0.25 0   
-line l1 0 2x4   
-loop r0 -0.25 0   
-line l2 0 1/2 centre  
-loop r0 0.25 0   
-line l1 0 2x4   
-loop r0 0.25 0   
-MANOEUVRE      
-hsq 2 inverted turnaround upwind base top
-ELEMENTS      
-line l0 0 0   
-loop r0 0.25 0   
-line l1 0 1/2 end  
-loop r0 -0.25 0   
+MANOEUVRE
+tophat 4 INVERTED UPWIND BTM MID
+LINE l0 0 0
+LOOP r0 -0.25 0
+LINE l1 0 2x4 
+LOOP r0 -0.25 0
+LINE l2 0 1/2
+LOOP r0 0.25 0
+LINE l1 0 2x4
+LOOP r0 0.25 0
+MANOEUVRE
+hsq 2 INVERTED UPWIND BTM TOP
+LINE l0 0 0
+LOOP r0 0.25 0
+LINE l1 0 1/2
+LOOP r0 -0.25 0
+MANOEUVRE
+hump 4 INVERTED DOWNWIND TOP TOP
+LINE l0 0 0
+LOOP r0 -0.25 0
+LINE l1 0 1
+LOOP r0 -0.5 0
+LINE l1 0 1/2
+LOOP r0 0.25 0  

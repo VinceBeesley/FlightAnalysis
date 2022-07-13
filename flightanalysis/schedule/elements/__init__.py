@@ -42,4 +42,8 @@ from .snap import Snap
 from .spin import Spin
 from .stall_turn import StallTurn
 
+els = {c.__name__.lower(): c for c in El.__subclasses__()}
+
+El.from_name = lambda name: els[name.lower()]
+
 from .constructors import *
