@@ -54,12 +54,17 @@ class ElmDef():
         rollpos: RollPosition=None,
         rollrate: str=None
     ):
-        self.radius = radius
+        self.parms = []
+        def addparm(name):
+            self.parms.append(name)
+            return name
+
+        self.radius = addparm(radius)
         self.loops = loops
-        self.length = length
+        self.length = addparm(length)
         self.rolls = rolls
         self.rollpos = rollpos
-        self.rollrate = rollrate
+        self.rollrate = addparm(rollrate)
 
     @staticmethod
     def parse(radius, loops, length, rolls, rollpos, rollrate):
@@ -73,6 +78,8 @@ class ElmDef():
             rpos(parg(rollpos)),
             parg(rollrate)
         )
+
+    
 
 
 class ManDef():
