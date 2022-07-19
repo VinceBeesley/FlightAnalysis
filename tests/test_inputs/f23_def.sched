@@ -1,0 +1,12 @@
+#name  category
+F23,    F3A
+MANOEUVRE
+#name  k orientation dir    start end  pos     posel
+loop, 5, UPRIGHT,     UPWIND, BTM,   BTM,  CENTRE,  5
+p0, d0, l0, l1, r0, s
+#ID rad  loops    length     rolls 
+LINE(1, s*p0*3/4,  d0*3/4)
+LINE(2, l1, 0)
+LOOP(3, r0, d0, 1)
+
+

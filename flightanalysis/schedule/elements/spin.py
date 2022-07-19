@@ -9,8 +9,8 @@ from . import El, Loop
 class Spin(El):
     _speed_factor = 1 / 10
 
-    def __init__(self, turns: float, opp_turns: float = 0.0, rate:float=700, uid: str = None):
-        super().__init__(uid)
+    def __init__(self, speed: float, turns: float, opp_turns: float = 0.0, rate:float=700, uid: int=-1):
+        super().__init__(uid, speed)
         self.turns = turns
         self.opp_turns = opp_turns
         self.rate = rate

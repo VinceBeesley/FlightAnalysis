@@ -8,17 +8,15 @@ from . import El
 
 
 class Line(El):
-    def __init__(self, length, rolls=0, l_tag=True, uid: str = None):
-        super().__init__(uid)
+    def __init__(self, speed, length, rolls=0, uid:int=-1):
+        super().__init__(uid, speed)
         self.length = length
         self.rolls = rolls
-        self.l_tag = l_tag
-
-
+        
     def scale(self, factor):
         return self.set_parms(length=self.length * factor)
 
-    def create_template(self, transform: Transformation, speed: float) -> State:
+    def create_template(self, transform: Transformation) -> State:
         """contstruct a State representing the judging frame for this line element
 
         Args:
@@ -32,16 +30,16 @@ class Line(El):
         sec= State.from_transform(
             transform, 
             time = Time(0, 1/State._construct_freq),
-            vel=PX(speed)
-        ).extrapolate(duration=self.length / speed)
+            vel=PX(self.speed)
+        ).extrapolate(duration=self.length / self.speed)
 
         return self._add_rolls(sec, self.rolls)
 
-    def match_axis_rate(self, roll_rate: float, speed: float):
-        # roll rate in radians per second, speed in m / s
+    def match_axis_rate(self, roll_rate: float):
+        # roll rate in radians per second
         if not self.rolls == 0.0:
             return self.set_parms(
-                length=2 * np.pi * abs(self.rolls) * speed / roll_rate)
+                length=2 * np.pi * abs(self.rolls) * self.speed / roll_rate)
         else:
             return self.set_parms()
 
@@ -53,7 +51,8 @@ class Line(El):
         )
         return self.set_parms(
             length=length,
-            rolls=np.sign(np.mean(flown.rvel.x)) * abs(self.rolls)
+            rolls=np.sign(np.mean(flown.rvel.x)) * abs(self.rolls),
+            speed=np.mean(flown.u)
         )
 
 

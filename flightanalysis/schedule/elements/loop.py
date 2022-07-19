@@ -7,26 +7,22 @@ from scipy import optimize
 from . import El
 
 class Loop(El):
-    def __init__(self, diameter: float, loops: float, rolls=0.0, ke: bool = False, r_tag=True, uid: str = None):
-        super().__init__(uid)
+    def __init__(self, speed: float, diameter: float, loops: float, rolls:float=0.0, ke: bool = False, uid: int=-1):
+        super().__init__(speed, uid)
         assert not diameter == 0 and not loops == 0
-
         self.loops = loops
         self.diameter = diameter
         self.rolls = rolls
         self.ke = ke
-        self.r_tag = r_tag
 
     def scale(self, factor):
         return self.set_parms(diameter=self.diameter * factor)
 
-    def create_template(self, transform: Transformation, speed: float) -> State:
+    def create_template(self, transform: Transformation) -> State:
         """generate a loop, based on intitial position, speed, amount of loop, radius. 
 
         Args:
             transform (Transformation): initial position
-            speed (float): forward speed
-            proportion (float): amount of loop. +ve offsets centre of loop in +ve body y or z
             r (float): radius of the loop (must be +ve)
             ke (bool, optional): [description]. Defaults to False. whether its a KE loop or normal
 
@@ -34,7 +30,7 @@ class Loop(El):
             [type]: [description]
         """
 
-        duration = np.pi * self.diameter * abs(self.loops) / speed
+        duration = np.pi * self.diameter * abs(self.loops) / self.speed
         axis_rate = -self.loops * 2 * np.pi / duration
         
         t = np.linspace(0, duration, max(int(duration * State._construct_freq), 3))
@@ -42,7 +38,7 @@ class Loop(El):
         # TODO There must be a more elegant way to do this.
         if axis_rate == 0:
             raise NotImplementedError()
-        radius = speed / axis_rate
+        radius = self.speed / axis_rate
         if not self.ke:
             radcoord = Coord.from_xy(
                 transform.point(Point(0, 0, -radius)),
@@ -72,8 +68,8 @@ class Loop(El):
         el = State.from_constructs(Time.from_t(t), pos, att)
         return self._add_rolls(el, self.rolls)
 
-    def match_axis_rate(self, pitch_rate: float, speed: float):
-        return self.set_parms(diameter=2 * speed / pitch_rate)
+    def match_axis_rate(self, pitch_rate: float):
+        return self.set_parms(diameter=2 * self.speed / pitch_rate)
 
     def match_intention(self, transform: Transformation, flown: State):
         

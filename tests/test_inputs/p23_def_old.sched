@@ -1,0 +1,32 @@
+#name  category
+P23    F3A
+MANOEUVRE
+#name  k orientation dir    start end  pos     posel
+tophat 4 UPRIGHT     UPWIND BTM   BTM  CENTRE  5
+#ID rad  loops   length   rolls   rollpos  rollrate
+1   r0   -0.25   -        0       -        -
+2   -    0       l1       2x4     CENTRE   p0
+3   r0   -0.25   -        0       -        -
+4   -    0       l3       1/2     CENTRE   p1
+5   r0   0.25    -        0       -        -
+6   -    0       l1       2x4     CENTRE   p0
+7   r0   0.25    -        0       -        -
+MANOEUVRE
+#name  k orientation dir    start end  pos     posel
+hsq    2 INVERTED    UPWIND BTM   TOP  END     3
+#ID rad  loops   length   rolls   rollpos  rollrate
+1   r0   0.25    -        0       -        -
+2   -    0       l1       1/2     CENTRE   -
+3   r0   -0.25   -        0       -        -
+MANOEUVRE
+#name  k orientation dir      start end  pos     posel
+hump   4 INVERTED    DOWNWIND TOP   TOP  CENTRE  4     
+#ID rad  loops   length   rolls   rollpos  rollrate
+1   r0   -0.25   -        0       -        -
+2   -    0       l1       1       CENTRE   p0
+3   r0   -0.5    -        0       -        -
+4   -    0       l1       0.5     CENTRE   p1
+5   r0   0.25    -        0       -        -
+
+
+

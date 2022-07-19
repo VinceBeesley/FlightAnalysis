@@ -8,12 +8,12 @@ class El:
     def reset_counter():
         El._counter = 0
 
-    def __init__(self, uid: int = None):
-        if not uid:
-            El._counter += 1
-            self.uid = El._counter  # str(uuid4())
-        else:
-            self.uid = uid
+    def __init__(self, uid: int, speed: float):
+        
+        self.uid = El._counter + 1 if uid==-1 else uid
+        El._counter=self.uid
+        
+        self.speed = speed
 
     def get_data(self, sec: State):
         return State(sec.data.loc[sec.data.element == self.uid])

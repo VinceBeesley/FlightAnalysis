@@ -7,17 +7,16 @@ from . import El, Line
 
 #TODO default rate is set for box size of 2m, this is misleading. When scaled to 170m distance it is about right.
 class Snap(El):
-    def __init__(self, rolls: float, negative=False, rate:float=3400,l_tag=True, uid: str = None):
-        super().__init__(uid)
+    def __init__(self, speed:float, rolls: float, negative=False, rate:float=3400, uid: int=-1):
+        super().__init__(uid, speed)
         self.rolls = rolls
         self.negative = negative
-        self.l_tag = l_tag
         self.rate = rate
 
     def scale(self, factor):
         return self.set_parms(rate=self.rate/factor)
 
-    def create_template(self, transform: Transformation, speed: float) -> State: 
+    def create_template(self, transform: Transformation) -> State: 
         """Generate a section representing a snap roll, this is compared to a real snap in examples/snap_rolls.ipynb"""
         
         direc = -1 if self.negative else 1
@@ -28,7 +27,7 @@ class Snap(El):
         pitch_break = State.from_transform(
             transform, 
             time = Time(0, 1/State._construct_freq),
-            vel=PX(speed)
+            vel=PX(self.speed)
         ).extrapolate( 
             2 * np.pi * break_angle / pitch_rate
         ).superimpose_rotation(PY(), direc * break_angle)
@@ -56,7 +55,7 @@ class Snap(El):
             0
         )
 
-    def match_axis_rate(self, snap_rate: float, speed: float):
+    def match_axis_rate(self, snap_rate: float):
         return self.set_parms()  # TODO should probably allow this somehow
 
     def match_intention(self, transform: Transformation, flown: State):

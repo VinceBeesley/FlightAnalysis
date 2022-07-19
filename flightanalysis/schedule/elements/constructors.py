@@ -1,8 +1,10 @@
 import numpy as np
 from geometry import Point
 from flightanalysis.state import State
-
+from enum import Enum
 from . import Line, Loop, Snap, Spin, StallTurn
+from collections import namedtuple
+from typing import List
 
 
 def get_rates(flown: State):
@@ -18,51 +20,40 @@ def get_rates(flown: State):
     }
 
 
-def rollmaker(num: int, arg: str, denom: float, length: float = 0.5, position="Centre", right=False, rlength=0.3, l_tag=True):
-    """generate a list of elements representing a roll or point roll
-    examples:
-    2 points of a 4 point roll: rollmaker(2, "X", 4)
-    half a roll: rollmaker(1, "/", 2)
-    Args:
-        num (int): numerator 
-        arg (str): operator, either "X" for point rolls, or "/" for continous rolls
-        denom (float): denominator
-    """
-    lsum = 0.0
-    direction = -1 if right else 1
-    if arg == "/":
-        lsum += rlength * num / denom
-        elms = [Line(rlength * num / denom, direction * num / denom, l_tag)]
-    elif arg == "X":
-        elms = []
-        for i in range(num):
-            lsum += rlength / denom
-            elms.append(Line(rlength / denom, direction / denom, l_tag))
-            if i < num - 1:
-                elms.append(Line(0.05, 0.0))
-                lsum += 0.05
-    else:
-        raise KeyError
-    return paddinglines(position, length, lsum, elms, l_tag)
+class RollPosition(Enum):
+    CENTRE=0
+    START=1
+    END=2
+    ENTIRE=3
+
+class RollKind(Enum):
+    ROLL=0
+    SNAP=1
+
+class Roll():
+    def __init__(self, amount, rate: float, kind:RollKind=RollKind.ROLL):
+        self.kind = kind
+        self.amount = amount
+        self.rate = rate
+
+def rollcombo(rolls: List[Roll], speed, length: str, pause:str, position:RollPosition=RollPosition.CENTRE):
+    
+    def make_rolls(rolls, pause):
+        out_rolls = []
+        for roll in rolls:
+            out_rolls.append(Line(speed, roll.rate * speed * abs(roll.amount), roll.amount)),
+            out_rolls.append(Line(speed, pause))
+        return out_rolls
+
+    def pad_rolls(elms: List[Line], speed, length, position):
+        pass
+
+    return pad_rolls(make_rolls(rolls, pause), speed, length, position)
+
+    
 
 
-def reboundrollmaker(rolls: list, length: float = 0.5, position="Centre", rlength=0.3, snap=False, l_tag=True):
-    lsum = 0.0
-    elms = []
-    last_dir = -np.sign(rolls[0])
-    for roll in rolls:
-        if last_dir == np.sign(roll):
-            elms.append(Line(0.05, 0.0, l_tag))
-            lsum += 0.05
-        last_dir = np.sign(roll)
-        if snap:
-            elms.append(Snap(roll))
-        else:
-            elms.append(Line(rlength * abs(roll), roll, l_tag))
-        lsum += rlength * abs(roll)
-    return paddinglines(position, length, lsum, elms, l_tag)
-
-
+    
 def rollsnapcombomaker(rolls: list, length: float, position="Centre", rlength=0.3, l_tag=True, bounce=True):
     lsum = 0.0
     elms = []

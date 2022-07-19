@@ -1,8 +1,10 @@
 
 from enum import Enum
+from tkinter import CENTER
 from typing import List
 import numpy as np
-
+from pytest import param
+from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn
 
 class Orientation(Enum):
     DRIVEN=0
@@ -31,78 +33,32 @@ class BoxLocation():
         self.d = d
         self.o = o
 
-
-class ElType(Enum):
-    NORMAL = 1
-    SPIN = 2
-    SNAP = 3
-    STALLTURN = 4
-
-class RollPosition(Enum):
-    CENTRE = 0
-    START = 1
-    END = 2
-    
-
-class ElmDef():
-    def __init__(
-        self, 
-        radius: str=None, 
-        loops: float=0.0, 
-        length: str=None,
-        rolls: str=None, 
-        rollpos: RollPosition=None,
-        rollrate: str=None
-    ):
-        self.parms = []
-        def addparm(name):
-            self.parms.append(name)
-            return name
-
-        self.radius = addparm(radius)
-        self.loops = loops
-        self.length = addparm(length)
-        self.rolls = rolls
-        self.rollpos = rollpos
-        self.rollrate = addparm(rollrate)
-
     @staticmethod
-    def parse(radius, loops, length, rolls, rollpos, rollrate):
-        parg = lambda arg: None if arg=="-" else arg
-        rpos = lambda rpos: RollPosition[rpos] if rpos else None
-        return ElmDef(
-            parg(radius), 
-            float(parg(loops)),
-            parg(length),
-            parg(rolls),
-            rpos(parg(rollpos)),
-            parg(rollrate)
-        )
-
-    
-
+    def driven():
+        return BoxLocation(Height.DRIVEN, Direction.DRIVEN, Orientation.DRIVEN)
 
 class ManDef():
-    def __init__(self, name:str, k:int, start:BoxLocation, end:BoxLocation, pos: Position, posel: str, elms: List[ElmDef]):
+    def __init__(
+        self, 
+        name:str, 
+        k:int, 
+        start:BoxLocation,  
+        pos: Position, 
+        posel: int, 
+        generator: callable
+        ):
         self.name = name
         self.k = k
         self.start = start
-        self.end = end
-        self.elms = elms
         self.pos= pos
         self.posel = posel
+        self.generator = generator
+        
+    @property
+    def parms(self):
+        return self.generator.__code__.co_varnames
 
-    @staticmethod
-    def parse(name, k, entry, direction, start_height, end_height, pos, posel, *elments):
-        return ManDef(
-            name=name, 
-            k=int(k),
-            start=BoxLocation(Height[start_height], Direction[direction], Orientation[entry]),
-            end=BoxLocation(Height[end_height], Direction.DRIVEN, Orientation.DRIVEN),
-            pos=Position[pos],
-            posel=int(posel),
-            elms=[ElmDef.parse(*el) for el in elments]
-        )
+
 
 class SchedDef():
     def __init__(self, name, category, defs: List[ManDef]):

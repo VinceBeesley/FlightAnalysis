@@ -7,14 +7,14 @@ from . import El
 
 
 class StallTurn(El):
-    def __init__(self, yaw_rate:float=3.0, uid: str = None):
-        super().__init__(uid)
+    def __init__(self, speed:float, yaw_rate:float=3.0, uid: int=-1):
+        super().__init__(uid, speed)
         self.yaw_rate = yaw_rate
 
     def scale(self, factor):
         return self.set_parms()
 
-    def create_template(self, transform: Transformation, speed: float):
+    def create_template(self, transform: Transformation):
         return self._add_rolls(
             State.from_transform(transform, vel=Point.zeros()).extrapolate( 
                 np.pi / abs(self.yaw_rate)
@@ -25,12 +25,12 @@ class StallTurn(El):
             0.0
         )
 
-    def match_axis_rate(self, yaw_rate: float, speed: float = 30.0):
+    def match_axis_rate(self, yaw_rate: float):
         return self.set_parms(yaw_rate=yaw_rate)
 
     def match_intention(self, transform: Transformation, flown: State):
         return self.set_parms(
-            yaw_rate=np.sign(flown.rvel.mean().z[0]) * abs(self.yaw_rate), 
+            yaw_rate=np.sign(flown.r.mean().z[0]) * abs(self.yaw_rate), 
         )
 
 
