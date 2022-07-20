@@ -16,6 +16,10 @@ class Line(El):
     def scale(self, factor):
         return self.set_parms(length=self.length * factor)
 
+    @property
+    def rate(self):
+        return 2 * np.pi * abs(self.rolls) * self.speed / self.length
+
     def create_template(self, transform: Transformation) -> State:
         """contstruct a State representing the judging frame for this line element
 

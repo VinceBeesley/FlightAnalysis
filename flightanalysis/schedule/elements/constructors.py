@@ -36,54 +36,40 @@ class Roll():
         self.amount = amount
         self.rate = rate
 
+
+
+
 def rollcombo(rolls: List[Roll], speed, length: str, pause:str, position:RollPosition=RollPosition.CENTRE):
     
-    def make_rolls(rolls, pause):
-        out_rolls = []
-        for roll in rolls:
-            out_rolls.append(Line(speed, roll.rate * speed * abs(roll.amount), roll.amount)),
+    out_rolls = []
+    tlen=0.0
+    for i, roll in enumerate(rolls):
+        rlen = roll.rate * speed * abs(roll.amount) * 2 * np.pi
+        out_rolls.append(Line(speed, rlen, roll.amount))
+        tlen += rlen
+        if not i == len(rolls)-1:
             out_rolls.append(Line(speed, pause))
-        return out_rolls
+            tlen = tlen + pause
 
-    def pad_rolls(elms: List[Line], speed, length, position):
-        pass
+    lleft = length - tlen
+    assert lleft > 0
 
-    return pad_rolls(make_rolls(rolls, pause), speed, length, position)
+    if position == RollPosition.CENTRE:
+        return [Line(speed, lleft/2)] + out_rolls + [Line(speed, lleft/2)]
+    elif position == RollPosition.START:
+        return out_rolls + [Line(speed, lleft)]
+    elif position == RollPosition.END:
+        return [Line(speed, lleft)] + out_rolls
+   
 
-    
-
-
-    
-def rollsnapcombomaker(rolls: list, length: float, position="Centre", rlength=0.3, l_tag=True, bounce=True):
-    lsum = 0.0
-    elms = []
-    last_dir = -np.sign(rolls[0][1])
-    for roll in rolls:
-        # add pause if roll in same direction
-        if last_dir == np.sign(roll[1]) or not bounce:
-            elms.append(Line(0.05, 0.0, l_tag))
-            lsum += 0.05
-        last_dir = np.sign(roll[1])
-        if roll[0] == "snap":
-            elms.append(Snap(roll[1]))
-            lsum += 0.05 * abs(roll[1])
-        if roll[0] == "roll":
-            elms.append(Line(rlength * abs(roll[1]), roll[1], l_tag))
-            lsum += rlength * abs(roll[1])
-    return paddinglines(position, length, lsum, elms, l_tag)
-
-
-def paddinglines(position, length, lsum, elms, l_tag=True):
-    lleft = length - lsum
-    if position.lower() == "centre":
-        return [
-            Line(lleft / 2, 0.0, l_tag)
-        ] + elms + [
-            Line(lleft / 2, 0.0, l_tag)
-        ]
-    elif position.lower() == "start":
-        return elms + [Line(lleft, 0.0)]
-    elif position.lower() == "end":
-        return [Line(lleft, 0.0)] + elms
-    elif position == "None":
-        return elms
+def roll(rollstring, speed, length, pause, rate, position):
+    if rollstring[1] == "/":
+        return rollcombo(
+            [Roll(int(rollstring[0])/int(rollstring[2]), rate)],
+            speed, length, pause, position
+        )
+    elif rollstring[1] == "X":
+        return rollcombo(
+            [Roll(1/int(rollstring[2]), rate) for _ in range(int(rollstring[0]))],
+            speed, length, pause, position
+        )

@@ -4,7 +4,7 @@ import unittest
 from flightanalysis.schedule import Manoeuvre, Schedule, get_schedule
 from flightanalysis.state import State
 
-from flightanalysis.schedule.elements import Line, Loop, rollmaker
+from flightanalysis.schedule.elements import Line, Loop
 from geometry import Point, Quaternion, Transformation, Coord
 
 import pytest
