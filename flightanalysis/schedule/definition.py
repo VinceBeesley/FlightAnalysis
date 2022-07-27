@@ -3,8 +3,11 @@ from enum import Enum
 from tkinter import CENTER
 from typing import List
 import numpy as np
+import pandas as pd
 from pytest import param
-from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn
+from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn, El
+from flightanalysis.criteria.comparison import Comparison
+from collections.abc import Iterable
 
 class Orientation(Enum):
     DRIVEN=0
@@ -37,6 +40,8 @@ class BoxLocation():
     def driven():
         return BoxLocation(Height.DRIVEN, Direction.DRIVEN, Orientation.DRIVEN)
 
+
+
 class ManDef():
     def __init__(
         self, 
@@ -45,7 +50,8 @@ class ManDef():
         start:BoxLocation,  
         pos: Position, 
         posel: int, 
-        generator: callable
+        generator: callable,
+        comparer: callable
         ):
         self.name = name
         self.k = k
@@ -53,10 +59,26 @@ class ManDef():
         self.pos= pos
         self.posel = posel
         self.generator = generator
+        self.comparer = comparer
         
-    @property
-    def parms(self):
-        return self.generator.__code__.co_varnames
+    @staticmethod
+    def compile_elms(*args):
+
+        elms = []
+        def append_els(arg):
+            if isinstance(arg, El):
+                elms.append(arg) 
+            elif isinstance(arg, Iterable):
+                for a in arg:
+                    append_els(a)
+            else:
+                raise TypeError("expected a list or an El")
+
+        append_els(args)
+
+        return elms
+
+        
 
 
 

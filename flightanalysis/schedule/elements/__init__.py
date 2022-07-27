@@ -2,15 +2,14 @@ from flightanalysis.state import State
 
 
 class El:
-    _counter = 0
-
+    _counter = -1
     @staticmethod
     def reset_counter():
-        El._counter = 0
+        El._counter = -1
 
     def __init__(self, uid: int, speed: float):
         
-        self.uid = El._counter + 1 if uid==-1 else uid
+        self.uid = El._counter + 1 if uid is None else uid
         El._counter=self.uid
         
         self.speed = speed
@@ -18,9 +17,9 @@ class El:
     def get_data(self, sec: State):
         return State(sec.data.loc[sec.data.element == self.uid])
 
-    def _add_rolls(self, el: State, rolls: float) -> State:
-        if not rolls == 0:
-            el = el.superimpose_roll(rolls)
+    def _add_rolls(self, el: State, roll: float) -> State:
+        if not roll == 0:
+            el = el.superimpose_roll(roll)
         return el.label(element=self.uid)
 
     def __eq__(self, other):

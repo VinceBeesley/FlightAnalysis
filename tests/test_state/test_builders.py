@@ -36,6 +36,20 @@ def test_extrapolate_rot():
     )
     
 
+def test_extrapolate_first_point():
+    initial = State.from_transform(
+        Transformation(),
+        vel=PX(30),
+        rvel=PX(1)
+    )
+    extrapolated = initial.extrapolate(10)
+    np.testing.assert_array_almost_equal(extrapolated[0].att.data, initial.att.data)
+    np.testing.assert_array_almost_equal(extrapolated[0].pos.data, initial.pos.data)
+    
+
+
+
+
 @fixture
 def state(flight, box):
     return from_flight(flight, box)

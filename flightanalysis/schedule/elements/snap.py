@@ -7,7 +7,7 @@ from . import El, Line
 
 #TODO default rate is set for box size of 2m, this is misleading. When scaled to 170m distance it is about right.
 class Snap(El):
-    def __init__(self, speed:float, rolls: float, negative=False, rate:float=3400, uid: int=-1):
+    def __init__(self, speed:float, rolls: float, negative=False, rate:float=3400, uid: int=None):
         super().__init__(uid, speed)
         self.rolls = rolls
         self.negative = negative

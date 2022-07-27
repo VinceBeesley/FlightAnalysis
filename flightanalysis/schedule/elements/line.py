@@ -3,22 +3,26 @@ import numpy as np
 from geometry import Transformation, Point, PX
 from flightanalysis.base.table import Time
 from flightanalysis.state import State
-
+from enum import Enum
 from . import El
 
 
 class Line(El):
-    def __init__(self, speed, length, rolls=0, uid:int=-1):
+    def __init__(self, speed, length, roll=0, uid:int=None):
         super().__init__(uid, speed)
         self.length = length
-        self.rolls = rolls
+        self.roll = roll
         
     def scale(self, factor):
         return self.set_parms(length=self.length * factor)
 
     @property
     def rate(self):
-        return 2 * np.pi * abs(self.rolls) * self.speed / self.length
+        return abs(self.roll) * self.speed / self.length
+
+    @property
+    def roll_direction(self):
+        return np.sign(self.roll)
 
     def create_template(self, transform: Transformation) -> State:
         """contstruct a State representing the judging frame for this line element
@@ -37,13 +41,13 @@ class Line(El):
             vel=PX(self.speed)
         ).extrapolate(duration=self.length / self.speed)
 
-        return self._add_rolls(sec, self.rolls)
+        return self._add_rolls(sec, self.roll)
 
     def match_axis_rate(self, roll_rate: float):
         # roll rate in radians per second
-        if not self.rolls == 0.0:
+        if not self.roll == 0.0:
             return self.set_parms(
-                length=2 * np.pi * abs(self.rolls) * self.speed / roll_rate)
+                length=abs(self.roll) * self.speed / roll_rate)
         else:
             return self.set_parms()
 
@@ -55,9 +59,14 @@ class Line(El):
         )
         return self.set_parms(
             length=length,
-            rolls=np.sign(np.mean(flown.rvel.x)) * abs(self.rolls),
+            roll=np.sign(np.mean(flown.rvel.x)) * abs(self.roll),
             speed=np.mean(flown.u)
         )
 
+    @staticmethod
+    def from_roll(speed: float, rate: float, angle: float):
+        return Line(speed, rate * angle * speed, angle )
 
-
+def lineid(uid: int, speed: float, length: float, roll:float=0):
+    return Line(speed, length, roll, uid)
+    

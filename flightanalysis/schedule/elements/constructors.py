@@ -36,9 +36,6 @@ class Roll():
         self.amount = amount
         self.rate = rate
 
-
-
-
 def rollcombo(rolls: List[Roll], speed, length: str, pause:str, position:RollPosition=RollPosition.CENTRE):
     
     out_rolls = []

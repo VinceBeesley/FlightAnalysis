@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from flightanalysis.state import State
 from flightanalysis.base.table import Time
-from geometry import Point, Quaternion, PX
+from geometry import Point, Quaternion, PX, P0
 from typing import Union
 from flightanalysis.flightline import FlightLine, Box
 from flightdata import Flight, Fields
@@ -27,8 +27,8 @@ def extrapolate(istate: State, duration: float) -> State:
     vel = istate.vel.tile(len(time))   
     rvel = istate.rvel.tile(len(time))
     att = istate.att.body_rotate(rvel * time.t)
+    #pos = Point.concatenate([P0(), (att[1:].transform_point(vel[1:]) * time.dt[1:]).cumsum()]) + istate.pos
     pos = (att.transform_point(vel) * time.dt).cumsum() + istate.pos
-
     return State.from_constructs(time,pos, att, vel, rvel)
 
 

@@ -28,9 +28,8 @@ def test_to_judging(st: State):
 
 @fixture
 def sl_wind_axis():
-    return Line(100, 0).create_template(
-        Transformation(P0(), Euler(0, np.pi, 0)), 
-        30
+    return Line(30, 100, 0).create_template(
+        Transformation(P0(), Euler(0, np.pi, 0))
     )
 
 def test_to_judging_sim(sl_wind_axis):
@@ -45,8 +44,6 @@ def test_to_judging_sim(sl_wind_axis):
         judging.vel.data,
         Point(30,0,0).tile(len(judging)).data
     )
-
-
 
 def test_judging_to_wind(sl_wind_axis):
     judge_axis = sl_wind_axis

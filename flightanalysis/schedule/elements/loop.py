@@ -1,5 +1,5 @@
 import numpy as np
-from geometry import Transformation, Coord, Point, Quaternion, PY
+from geometry import Transformation, Coord, Point, Quaternion, PX, PY, PZ
 from flightanalysis.state import State
 from flightanalysis.base.table import Time
 from scipy import optimize
@@ -7,66 +7,45 @@ from scipy import optimize
 from . import El
 
 class Loop(El):
-    def __init__(self, speed: float, diameter: float, loops: float, rolls:float=0.0, ke: bool = False, uid: int=-1):
-        super().__init__(speed, uid)
-        assert not diameter == 0 and not loops == 0
-        self.loops = loops
+
+    def __init__(self, speed: float, diameter: float, angle: float, roll:float=0.0, ke: bool = False, uid: int=None):
+        super().__init__(uid, speed)
+        assert not diameter == 0 and not angle == 0
+        self.angle = angle
         self.diameter = diameter
-        self.rolls = rolls
+        self.roll = roll
         self.ke = ke
+    
+    @property
+    def radius(self):
+        return self.diameter / 2
 
     def scale(self, factor):
         return self.set_parms(diameter=self.diameter * factor)
 
     def create_template(self, transform: Transformation) -> State:
-        """generate a loop, based on intitial position, speed, amount of loop, radius. 
+        """generate a template loop State 
 
         Args:
-            transform (Transformation): initial position
-            r (float): radius of the loop (must be +ve)
-            ke (bool, optional): [description]. Defaults to False. whether its a KE loop or normal
+            transform (Transformation): initial pos and attitude
 
         Returns:
-            [type]: [description]
+            [State]: flight data representing the loop
         """
 
-        duration = np.pi * self.diameter * abs(self.loops) / self.speed
-        axis_rate = -self.loops * 2 * np.pi / duration
+        duration = 0.5 * self.diameter * abs(self.angle) / self.speed
+        axis_rate = self.angle / duration
         
-        t = np.linspace(0, duration, max(int(duration * State._construct_freq), 3))
-
-        # TODO There must be a more elegant way to do this.
         if axis_rate == 0:
             raise NotImplementedError()
-        radius = self.speed / axis_rate
-        if not self.ke:
-            radcoord = Coord.from_xy(
-                transform.point(Point(0, 0, -radius)),
-                transform.rotate(Point(0, 0, 1)),
-                transform.rotate(Point(1, 0, 0))
-            )
-            angles = PY(axis_rate).tile(len(t)) * t
 
-            radcoordpoints = Point(radius, radius, 0) * \
-                Point(np.cos(angles.y), np.sin(angles.y), np.zeros(len(angles)))
+        state = State.from_transform(
+            transform, 
+            vel=PX(self.speed),
+            rvel=PZ(self.angle / duration) if self.ke else PY(self.angle / duration) 
+        ).extrapolate(duration)
 
-            
-        else:
-            radcoord = Coord.from_xy(
-                transform.point(Point(0, -radius, 0)),
-                transform.rotate(Point(0, 1, 0)),
-                transform.rotate(Point(1, 0, 0))
-            )
-            angles = Point.full(Point(0, 0, -axis_rate), len(t)) * t
-
-            radcoordpoints = Point(radius, radius, 0) * \
-                Point(np.cos(-angles.z), np.sin(-angles.z), np.zeros(len(angles)))
-
-        pos=Transformation.from_coords(Coord.from_nothing(), radcoord).point(radcoordpoints)
-        att = Quaternion.full(transform.rotation, len(t)).body_rotate(angles)
-
-        el = State.from_constructs(Time.from_t(t), pos, att)
-        return self._add_rolls(el, self.rolls)
+        return self._add_rolls(state, self.roll)
 
     def match_axis_rate(self, pitch_rate: float):
         return self.set_parms(diameter=2 * self.speed / pitch_rate)
@@ -91,7 +70,7 @@ class Loop(El):
 
         return self.set_parms(
             diameter=2 * calc_R(*center).mean(),
-            rolls=np.sign(flown.rvel.mean().x) * abs(self.rolls)
+            roll=np.sign(flown.rvel.mean().x) * abs(self.roll)
         )
     
 
@@ -100,3 +79,8 @@ class Loop(El):
         elms = [ self.match_intention( transform,sec) for sec in subsections ]
         
         return subsections, elms
+
+
+def KELoop(*args, **kwargs):
+    return Loop(*args, ke=True, **kwargs)
+    

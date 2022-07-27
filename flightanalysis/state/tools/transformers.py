@@ -42,13 +42,13 @@ def superimpose_rotation(st: State, axis: Point, angle: float, reference:str="bo
 
 
 
-def superimpose_roll(st: State, proportion: float) -> State:
+def superimpose_roll(st: State, angle: float) -> State:
     """Generate a new section, identical to st, but with a continous roll integrated
 
     Args:
-        proportion (float): the amount of roll to integrate
+        angle (float): the amount of roll to integrate
     """
-    return st.superimpose_rotation(PX(), 2 * np.pi * proportion)
+    return st.superimpose_rotation(PX(), angle)
 
 
 
