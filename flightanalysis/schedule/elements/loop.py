@@ -7,8 +7,8 @@ from scipy import optimize
 from . import El
 
 class Loop(El):
-
-    def __init__(self, speed: float, diameter: float, angle: float, roll:float=0.0, ke: bool = False, uid: int=None):
+    parameters = El.parameters + "diameter,angle,roll,ke".split(",")
+    def __init__(self, speed: float, diameter: float, angle: float, roll:float=0.0, ke: bool = False, uid: str=None):
         super().__init__(uid, speed)
         assert not diameter == 0 and not angle == 0
         self.angle = angle

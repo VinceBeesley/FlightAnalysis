@@ -7,7 +7,8 @@ from . import El
 
 
 class StallTurn(El):
-    def __init__(self, speed:float, yaw_rate:float=3.0, uid: int=None):
+    parameters = El.parameters + ["yaw_rate"]
+    def __init__(self, speed:float, yaw_rate:float=3.0, uid: str=None):
         super().__init__(uid, speed)
         self.yaw_rate = yaw_rate
 

@@ -1,18 +1,31 @@
 from flightanalysis.state import State
+import numpy as np
+import pandas as pd
 
 
-class El:
-    _counter = -1
-    @staticmethod
-    def reset_counter():
-        El._counter = -1
 
-    def __init__(self, uid: int, speed: float):
-        
-        self.uid = El._counter + 1 if uid is None else uid
-        El._counter=self.uid
-        
+
+
+class El:   
+    parameters = ["speed"]
+    register = set()
+
+    def __init__(self, uid: str, speed: float):        
+
+        self.uid = El.make_id() if uid is None else uid
+
+        if self.uid in El.register:
+            raise Exception("attempting to create a new El with an existing key")
+
         self.speed = speed
+
+    @staticmethod
+    def make_id():
+        i=1
+        while f"auto_{i}" in El.register:
+            i+=1
+        else:
+            return f"auto_{i}"
 
     def get_data(self, sec: State):
         return State(sec.data.loc[sec.data.element == self.uid])

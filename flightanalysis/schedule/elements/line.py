@@ -8,7 +8,8 @@ from . import El
 
 
 class Line(El):
-    def __init__(self, speed, length, roll=0, uid:int=None):
+    parameters = El.parameters + "length,roll".split(",")
+    def __init__(self, speed, length, roll=0, uid:str=None):
         super().__init__(uid, speed)
         self.length = length
         self.roll = roll

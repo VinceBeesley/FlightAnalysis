@@ -1,105 +1,103 @@
 
-from enum import Enum
-from tkinter import CENTER
-from typing import List
+from typing import List, Dict, Callable
 import numpy as np
 import pandas as pd
-from pytest import param
+
 from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn, El
 from flightanalysis.criteria.comparison import Comparison
-from collections.abc import Iterable
-
-class Orientation(Enum):
-    DRIVEN=0
-    UPRIGHT=1
-    INVERTED=-1
-
-class Direction(Enum):
-    DRIVEN=0
-    UPWIND=1
-    DOWNWIND=2
-
-class Height(Enum):
-    DRIVEN=0
-    BTM=1
-    MID=2
-    TOP=3
-
-class Position(Enum):
-    CENTRE=1
-    END=2
 
 
-class BoxLocation():
-    def __init__(self, h: Height, d: Direction, o: Orientation):
-        self.h = h
-        self.d = d
-        self.o = o
+class ManParm:
+    """This class represents a parameter that can be used to characterise the geometry of a manoeuvre.
+    For example, the loop diameters, line lengths, roll direction. 
+    """
+    def __init__(self, name:str, criteria: Comparison, value: float, collector: Callable):
+        """Construct a ManParm
+
+        Args:
+            name (str): a short name, must work as an attribute so no spaces or funny characters
+            criteria (Comparison): The comparison criteria function to be used when judging this parameter
+            value (float): A default value, perhaps remove this it might cause more harm than convenience
+            collector (Callable): a function that will pull a list of values for this parameter from the ElDefs collection. 
+                If the manoeuvre was flown correctly these should all be the same. The resulting list can be 
+                passed through the criteria (Comparison callable) to calculate a downgrade.
+        """
+        self.name=name
+        self.criteria = criteria
+        self.value = value
+        self.collector = collector
+        
+
+class ManParms:
+    """This class wraps around a dict of ManParm. it provides attribute access to items based on their
+    names and a constructer from a list of them (as the names are internal)
+    """
+    def __init__(self, parms:Dict[str, ManParm]):
+        self.parms = parms
+    
+    def __getattr__(self, name):
+        return self.parms[name].value
 
     @staticmethod
-    def driven():
-        return BoxLocation(Height.DRIVEN, Direction.DRIVEN, Orientation.DRIVEN)
+    def from_list(mps: List[ManParm]):
+        return ManParms({mp.name: mp for mp in mps})
 
 
+class ElDef:
+    """This class creates a function to build an element (Loop, Line, Snap, Spin, Stallturn)
+    based on a ManParms collection. 
+    """
+    def __init__(self, name, Kind, pfuncs: dict):
+        """ElDef Constructor
 
-class ManDef():
-    def __init__(
-        self, 
-        name:str, 
-        k:int, 
-        start:BoxLocation,  
-        pos: Position, 
-        posel: int, 
-        generator: callable,
-        comparer: callable
-        ):
+        Args:
+            name (_type_): the name of the Eldef, must be unique and work as an attribute
+            Kind (_type_): the class of the element (Loop, Line etc)
+            pfuncs (dict): the function to create the element from the ManParms collection. takes
+                a ManParms as the only argument, returns the element.
+        """
         self.name = name
-        self.k = k
-        self.start = start
-        self.pos= pos
-        self.posel = posel
-        self.generator = generator
-        self.comparer = comparer
-        
-    @staticmethod
-    def compile_elms(*args):
+        self.Kind = Kind
+        self.pfuncs = pfuncs
 
-        elms = []
-        def append_els(arg):
-            if isinstance(arg, El):
-                elms.append(arg) 
-            elif isinstance(arg, Iterable):
-                for a in arg:
-                    append_els(a)
-            else:
-                raise TypeError("expected a list or an El")
-
-        append_els(args)
-
-        return elms
-
-        
+    def __call__(self, mps: ManParms) -> El:
+        kwargs = {pname: pfunc(mps) for pname, pfunc in self.pfuncs.items() }
+        kwargs["uid"] = self.name
+        return self.kind(**kwargs) 
 
 
 
-class SchedDef():
-    def __init__(self, name, category, defs: List[ManDef]):
-         self.name = name
-         self.category = category
-         self.defs = defs
+class ElDefs:
+    """This class wraps a dict of ElDefs, which would generally be used sequentially to build a manoeuvre.
+    It provides attribute access to the ElDefs based on their names. 
+    """
+    def __init__(self, edefs: Dict[str, ElDef]):
+        self.edefs = edefs
+
+    def __getattr__(self, name):
+        return self.edefs[name]
 
     @staticmethod
-    def parse(file: str):
-        with open(file, 'r') as f:
-            lines = [l.strip().split("#")[0].split() for l in f.readlines()]
-            lines = [l for l in lines if len(l) > 0]
-        
-        mdata = []
-        for l in lines[1:]:
-            
-            if l[0] == "MANOEUVRE":
-                mdata.append([])
-            else:
-                mdata[-1].append(l)
+    def from_list(edfs: List[ElDef]):
+        return ElDefs({ed.name: ed for ed in edfs})
 
-        return SchedDef(lines[0][0], lines[0][1], [ManDef.parse(*man[0] + man[1:]) for man in mdata])
+    def __iter__(self):
+        for ed in self.edfs:
+            yield ed
+
+    def __getitem__(self, name):
+        return self.edefs.values()[name]
+
+
+class ManDef:
+    """This is a class to define a manoeuvre for template generation and judging.
+    """
+    def __init__(self, name, mps:ManParms, eds:ElDefs):
+        self.name = name
+        self.mps = mps
+        self.eds = eds
+
+    def create_elements(self):
+        return [ed(self.mps) for ed in self.eds]
+        
+

@@ -51,3 +51,7 @@ f3a_roll_rate = Comparison(pd.Series({
     1.5: 0.5,
     2.0: 1.0
 }))
+
+f3a_free = Comparison(pd.Series({
+    1.0: 0.0
+}))
