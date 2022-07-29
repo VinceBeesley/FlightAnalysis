@@ -1,10 +1,5 @@
 from flightanalysis.state import State
-import numpy as np
-import pandas as pd
-
-
-
-
+from typing import Dict
 
 class El:   
     parameters = ["speed"]
@@ -59,3 +54,22 @@ els = {c.__name__.lower(): c for c in El.__subclasses__()}
 El.from_name = lambda name: els[name.lower()]
 
 from .constructors import *
+
+class Elements:
+    def __init__(self, els: Dict[str, El]):
+        self.els=els
+
+    def __getattr__(self, name):
+        return self.els[name]
+
+    def __iter__(self):
+        for el in self.els.values():
+            yield el
+    
+    def __getitem__(self, value):
+        return list(self.els.values())[value]
+
+    @staticmethod
+    def from_list(els):
+        return Elements({el.uid: el for el in els})
+

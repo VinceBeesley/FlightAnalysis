@@ -13,9 +13,9 @@ from typing import List, Dict, Callable, Union
 import numpy as np
 import pandas as pd
 from numbers import Number
-from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn, El
+from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn, El, Elements
 from flightanalysis.schedule.manoeuvre import Manoeuvre
-from flightanalysis.criteria.comparison import Comparison
+from flightanalysis.criteria.comparison import Comparison, f3a_free
 
 
 class ManParm:
@@ -29,9 +29,9 @@ class ManParm:
             name (str): a short name, must work as an attribute so no spaces or funny characters
             criteria (Comparison): The comparison criteria function to be used when judging this parameter
             value (float): A default value, perhaps remove this it might cause more harm than convenience
-            collector (Callable): a function that will pull a list of values for this parameter from the ElDefs collection. 
-                If the manoeuvre was flown correctly these should all be the same. The resulting list can be 
-                passed through the criteria (Comparison callable) to calculate a downgrade.
+            collector (Callable): a list of functions that will pull values for this parameter from an Elements 
+                collection. If the manoeuvre was flown correctly these should all be the same. The resulting list 
+                can be passed through the criteria (Comparison callable) to calculate a downgrade.
         """
         self.name=name
         self.criteria = criteria
@@ -39,7 +39,17 @@ class ManParm:
         self.collectors = collectors
 
     def append(self, collector):
-        self.collectors.append(collector)    
+        if isinstance(collector, Callable):
+            self.collectors.append(collector)    
+        else:
+            for coll in collector:
+                self.append(coll)
+
+    def collect(self, els):
+        return [collector(els) for collector in self.collectors]
+
+    def get_downgrades(self, els):
+        return self.criteria(*self.collect(els))
 
 class ManParms:
     """This class wraps around a dict of ManParm. it provides attribute access to items based on their
@@ -58,6 +68,20 @@ class ManParms:
     def add(self, parm):
         self.parms[parm.name] = parm
 
+    def collect(self, manoeuvre: Manoeuvre) -> Dict[str, float]:
+        """Collect the comparison downgrades for each manparm for a given manoeuvre.
+
+        TODO this is not very transparant, better to build up some kind of data structure
+        containing all the scoring information rather than just returning the downgrades.
+
+        Args:
+            manoeuvre (Manoeuvre): The Manoeuvre to assess
+
+        Returns:
+            Dict[str, float]: The sum of downgrades for each ManParm
+        """
+        return {key: np.sum(mp.get_downgrades(manoeuvre.elements)) for key, mp in self.parms.items()}
+        
 
 class ElDef:
     """This class creates a function to build an element (Loop, Line, Snap, Spin, Stallturn)
@@ -105,7 +129,7 @@ class ElDefs:
 
 
     def add(self, ed: ElDef) -> Dict[str, Callable]:
-        """Add a new element definition to the collection. Returns a the functions to retrieve
+        """Add a new element definition to the collection. Returns the functions to retrieve
         the geometric parameters for this element from the elements dict
 
         Args:
@@ -115,8 +139,7 @@ class ElDefs:
             Dict[str, Callable]: functions to retrieve the relevant parameters from the elements collection
         """
         self.edefs[ed.name] = ed
-        return {pname: lambda els: getattr(els[ed.name], pname) 
-        for pname in self.edefs[ed.name].Kind.parameters}
+        return {pname: lambda els: getattr(els.els[ed.name], pname) for pname in self.edefs[ed.name].Kind.parameters}
 
 
 
@@ -133,12 +156,12 @@ class ManDef:
         self.eds = eds
 
     def create(self):
-        return Manoeuvre(self.name, 2, [ed(self.mps) for ed in self.eds])
+        return Manoeuvre(self.name, 2, Elements.from_list([ed(self.mps) for ed in self.eds]))
 
     @staticmethod
     def _arg_check(arg):
         if isinstance(arg, str): 
-            return lambda mp: mp.parms[arg]
+            return lambda mp: mp.parms[arg].value
         elif isinstance(arg, Number):
             return lambda mp: arg
         elif isinstance(arg, Callable): 
@@ -160,24 +183,30 @@ class ManDef:
         )))
 
     def add_roll(self, name: str, s, rate, angle):
-        return self.eds.add(ElDef(name, Line.from_roll, dict(
+        return self.eds.add(ElDef(name, Line, dict(
             speed=ManDef._arg_check(s),
-            rate=ManDef._arg_check(rate),
-            angle=ManDef._arg_check(angle)
+            length=lambda mp: ManDef._arg_check(rate)(mp) * \
+                ManDef._arg_check(angle)(mp) * \
+                    ManDef._arg_check(s)(mp),
+            roll=ManDef._arg_check(angle)
         )))
 
     def add_roll_centred(self, name: str, s, l, rate, roll):
-       
-        plength = lambda mp: 0.5 * mp.parms[l] - mp.parms[rate] * np.pi * mp.parms[s]
+        
+        plength = lambda mp: 0.5 * (ManDef._arg_check(l)(mp) - \
+            ManDef._arg_check(rate)(mp) * ManDef._arg_check(s)(mp) * ManDef._arg_check(roll)(mp))
         
         l1 = self.add_line(name + "1", s, plength, 0)
         l2 = self.add_roll(name + "2", s, rate, roll)
         l3 = self.add_line(name + "3", s, plength, 0)
 
         return dict(
-            length=lambda els: els[name + "1"].length + els[name + "2"].length + els[name + "3"].length,
-            pad_length = [lambda els: els[name + "1"].length, lambda els: els[name + "2"].length]
+            length=lambda els: l1["length"](els) + l2["length"](els) + l3["length"](els) ,
+            pad_length = [l1["length"], l3["length"]],
             rate = l2["rate"],
             direction = l2["direction"],
-            roll = l2["roll"]
+            roll = l2["roll"],
+            speed = [l["speed"] for l in [l1,l2,l3] ]
         )
+
+

@@ -12,6 +12,8 @@ class Comparison:
         return self.levels[:value].iloc[-1]
 
     def compare(self, v1, v2):
+        if v1==0 or v2 == 0:
+            return 0
         return self.lookup(max(v1, v2) / min(v1,v2))
 
     def __call__(self, *values):
