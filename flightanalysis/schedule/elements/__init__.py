@@ -16,7 +16,7 @@ class El:
 
         if self.uid in El.register:
             raise Exception("attempting to create a new El with an existing key")
-
+        El.register.add(self.uid)
         self.speed = speed
 
     @staticmethod

@@ -7,21 +7,22 @@ from scipy import optimize
 from . import El
 
 class Loop(El):
-    parameters = El.parameters + "diameter,angle,roll,ke".split(",")
-    def __init__(self, speed: float, diameter: float, angle: float, roll:float=0.0, ke: bool = False, uid: str=None):
+    parameters = El.parameters + "radius,angle,roll,ke,rate".split(",")
+    def __init__(self, speed: float, radius: float, angle: float, roll:float=0.0, ke: bool = False, uid: str=None):
         super().__init__(uid, speed)
-        assert not diameter == 0 and not angle == 0
+        assert not radius == 0 and not angle == 0
         self.angle = angle
-        self.diameter = diameter
+        self.radius = radius   
         self.roll = roll
         self.ke = ke
     
     @property
-    def radius(self):
-        return self.diameter / 2
+    def diameter(self):
+        return self.radius * 2
 
-    def scale(self, factor):
-        return self.set_parms(diameter=self.diameter * factor)
+    @property
+    def rate(self):
+        return self.roll * self.speed / (self.angle * self.radius)
 
     def create_template(self, transform: Transformation) -> State:
         """generate a template loop State 
@@ -33,7 +34,7 @@ class Loop(El):
             [State]: flight data representing the loop
         """
 
-        duration = 0.5 * self.diameter * abs(self.angle) / self.speed
+        duration = self.radius * abs(self.angle) / self.speed
         axis_rate = self.angle / duration
         
         if axis_rate == 0:
@@ -48,7 +49,7 @@ class Loop(El):
         return self._add_rolls(state, self.roll)
 
     def match_axis_rate(self, pitch_rate: float):
-        return self.set_parms(diameter=2 * self.speed / pitch_rate)
+        return self.set_parms(radius=self.speed / pitch_rate)
 
     def match_intention(self, transform: Transformation, flown: State):
         
@@ -69,7 +70,7 @@ class Loop(El):
         center, ier = optimize.leastsq(f_2, (np.mean(x), np.mean(y)))
 
         return self.set_parms(
-            diameter=2 * calc_R(*center).mean(),
+            radius=calc_R(*center).mean(),
             roll=np.sign(flown.rvel.mean().x) * abs(self.roll)
         )
     

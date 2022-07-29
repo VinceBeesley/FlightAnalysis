@@ -8,7 +8,7 @@ from . import El
 
 
 class Line(El):
-    parameters = El.parameters + "length,roll".split(",")
+    parameters = El.parameters + "length,roll,rate,direction".split(",")
     def __init__(self, speed, length, roll=0, uid:str=None):
         super().__init__(uid, speed)
         self.length = length
@@ -22,7 +22,7 @@ class Line(El):
         return abs(self.roll) * self.speed / self.length
 
     @property
-    def roll_direction(self):
+    def direction(self):
         return np.sign(self.roll)
 
     def create_template(self, transform: Transformation) -> State:

@@ -12,13 +12,16 @@ _els = {c.__name__: c for c in El.__subclasses__()}
 
 class Manoeuvre():
     _counter = 0
+    register = set()
 
     @staticmethod
     def reset_counter():
         Manoeuvre._counter = 0
         El.reset_counter()
 
-    def __init__(self, name: str, k: float, elements: list, uid: int = None):
+    def __init__(self, name: str, k: float, elements: list, uid: str = None):
+        # TODO elements needs to change to a custom elements collection with
+        #element access by attribute
         self.name = name
         self.k = k
 
@@ -29,7 +32,19 @@ class Manoeuvre():
         else:
             self.elements = []
        
-        self.uid = uid
+        self.uid = Manoeuvre.make_id() if uid is None else uid
+
+        if self.uid in Manoeuvre.register:
+            raise Exception("attempting to create a new Manoeuvre with an existing key")
+        Manoeuvre.register.add(self.uid)
+
+    @staticmethod
+    def make_id():
+        i=1
+        while f"auto_{i}" in El.register:
+            i+=1
+        else:
+            return f"auto_{i}"
 
     def to_dict(self):
         data = self.__dict__.copy()
@@ -39,14 +54,14 @@ class Manoeuvre():
     def scale(self, factor: float):
         return self.replace_elms([elm.scale(factor) for elm in self.elements])
 
-    def create_template(self, transform: Transformation, speed: float) -> State:
+    def create_template(self, transform: Transformation) -> State:
         itrans = transform
         templates = []
         for i, element in enumerate(self.elements):
-            templates.append(element.create_template(itrans, speed))
+            templates.append(element.create_template(itrans))
             itrans = templates[-1][-1].transform
         
-        return self.label(State.stack(templates))
+        return State.stack(templates).label(manoeuvre=self.uid)
 
     def get_data(self, sec: State):
         return State(sec.data.loc[sec.data.manoeuvre == self.uid])
@@ -96,9 +111,6 @@ class Manoeuvre():
     @staticmethod
     def create_elm_df(elm_list):
         return pd.DataFrame([elm.to_dict() for elm in elm_list])
-
-    def label(self, sec: State):
-        return State(sec.data.assign(manoeuvre=self.uid))
 
     def share_seperator(self, next_man): 
         """Take the following manoeuvre and share the entry line (first element)"""
