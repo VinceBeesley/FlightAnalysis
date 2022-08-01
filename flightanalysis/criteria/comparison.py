@@ -17,6 +17,8 @@ class Comparison:
         return self.lookup(max(v1, v2) / min(v1,v2))
 
     def __call__(self, *values):
+        if len(values) == 0:
+            return []
         vs = [values[0]] + list(values)
         return [self.compare(v1, v2) for v1, v2 in zip(vs[:-1], vs[1:])]
     
