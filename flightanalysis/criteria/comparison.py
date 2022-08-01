@@ -21,7 +21,12 @@ class Comparison:
             return []
         vs = [values[0]] + list(values)
         return [self.compare(v1, v2) for v1, v2 in zip(vs[:-1], vs[1:])]
-    
+
+
+def hard_zero(*values):
+    vs = [values[0]] + list(values)
+    return [0 if v1==v2 else 10 for v1, v2 in zip(vs[:-1], vs[1:])]
+
 
 
 f3a_radius = Comparison(pd.Series({

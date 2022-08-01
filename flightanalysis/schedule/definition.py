@@ -16,7 +16,7 @@ import pandas as pd
 from numbers import Number
 from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn, El, Elements
 from flightanalysis.schedule.manoeuvre import Manoeuvre
-from flightanalysis.criteria.comparison import Comparison, f3a_free
+from flightanalysis.criteria.comparison import Comparison, hard_zero
 from functools import partial
 
 class ManParm:
@@ -199,14 +199,14 @@ class ManDef:
         return self.eds.add(ElDef(name, Line, dict(
             speed=_a(s),
             length=lambda mp: _a(rate)(mp) * \
-                _a(angle)(mp) * \
+                abs(_a(angle)(mp)) * \
                     _a(s)(mp),
             roll=lambda mp: _a(angle)(mp) * _a(direction)(mp)
         )))
 
     def add_roll_centred(self, name: str, s, l, rate, direction, pause, rolls, criteria):
 
-        rlength = lambda mp: _a(rate)(mp) * _a(s)(mp) * sum([_a(roll)(mp) for roll in rolls]) + _a(pause)(mp) * (len(rolls) - 1)
+        rlength = lambda mp: _a(rate)(mp) * _a(s)(mp) * sum([abs(_a(roll)(mp)) for roll in rolls]) + _a(pause)(mp) * (len(rolls) - 1)
         
         plength = lambda mp: 0.5 * (_a(l)(mp) - rlength(mp))
       
@@ -222,6 +222,15 @@ class ManDef:
         l3 = self.add_line(name + "3", s, plength, 0)
 
         self.mps.add(ManParm(f"{name}_pad", criteria, None, [l1["length"], l3["length"]]))
+
+
+
+        self.mps.add(ManParm(
+            f"{name}roll_directions", 
+            hard_zero, 
+            None, 
+            [lambda els: np.sign(r) * l2r["direction"](els)   for r, l2r in zip(rolls, l2_rolls)]
+        ))  # TODO this isn't working, need to use functools.partial
 
         all_ls = l2_rolls + l2_pauses + [l1, l3]
         return dict(

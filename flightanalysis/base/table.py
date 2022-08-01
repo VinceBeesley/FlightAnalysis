@@ -96,7 +96,7 @@ class Table:
                 x.to_pandas(
                     columns=cls.constructs.data[key].keys, 
                     index=kwargs["time"].t
-                ) for key, x in kwargs.items()
+                ) for key, x in kwargs.items() if not x is None
             ],
             axis=1
         )

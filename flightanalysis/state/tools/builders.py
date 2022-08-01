@@ -82,8 +82,11 @@ def _from_flight(flight: Flight, flightline: FlightLine) -> State:
             Point(flight.read_numpy(Fields.VELOCITY).T)
         )
     )
-    acc = Point(flight.read_numpy(Fields.ACCELERATION).T)
-    rvel = Point(flight.read_fields(Fields.AXISRATE))
+    accs=flight.read_fields(Fields.ACCELERATION)
+    acc = Point(accs) if not pd.isna(accs).all().all() else None
+
+    rvels=flight.read_fields(Fields.AXISRATE)
+    rvel = Point(rvels) if not pd.isna(rvels).all().all() else None
     
     return State.from_constructs(time, pos, att, vel, rvel, acc)
 
