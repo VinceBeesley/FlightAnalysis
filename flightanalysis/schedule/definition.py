@@ -16,27 +16,29 @@ import pandas as pd
 from numbers import Number
 from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn, El, Elements
 from flightanalysis.schedule.manoeuvre import Manoeuvre
-from flightanalysis.criteria.comparison import Comparison, hard_zero
+from flightanalysis.criteria.comparison import Comparison
+from flightanalysis.criteria.local import Combination
+
 from functools import partial
 
 class ManParm:
     """This class represents a parameter that can be used to characterise the geometry of a manoeuvre.
     For example, the loop diameters, line lengths, roll direction. 
     """
-    def __init__(self, name:str, criteria: Comparison, value: float, collectors: List[Callable]):
+    def __init__(self, name:str, criteria: Union[Comparison, Combination], collectors: List[Callable], default=None):
         """Construct a ManParm
 
         Args:
             name (str): a short name, must work as an attribute so no spaces or funny characters
             criteria (Comparison): The comparison criteria function to be used when judging this parameter
-            value (float): A default value, perhaps remove this it might cause more harm than convenience
+            default (float): A default value (or default option if specified in criteria)
             collector (Callable): a list of functions that will pull values for this parameter from an Elements 
                 collection. If the manoeuvre was flown correctly these should all be the same. The resulting list 
                 can be passed through the criteria (Comparison callable) to calculate a downgrade.
         """
         self.name=name
         self.criteria = criteria
-        self.value = value
+        self.default = default
         self.collectors = collectors
 
     def append(self, collector: Union[Callable, List[Callable]]):
@@ -51,6 +53,14 @@ class ManParm:
 
     def get_downgrades(self, els):
         return self.criteria(*self.collect(els))
+
+    @property
+    def value(self):
+        if isinstance(self.criteria, Comparison):
+            return self.default
+        elif isinstance(self.criteria, Combination):
+            return self.criteria[self.default]
+
 
 class ManParms:
     """This class wraps around a dict of ManParm. it provides attribute access to items based on their
@@ -88,7 +98,20 @@ class ManParms:
         """
         for mp, col in colls.items():
             self.parms[mp].append(col)
-            
+
+
+
+def _a(arg):
+    if isinstance(arg, Callable): 
+        return arg
+    elif isinstance(arg, ManDef):
+        return lambda mps: mps[arg.name].value
+    elif isinstance(arg, Number):
+        return lambda mps: arg
+    elif isinstance(arg, str): 
+        return lambda mps: mps[arg].value
+
+
 
 class ElDef:
     """This class creates a function to build an element (Loop, Line, Snap, Spin, Stallturn)
@@ -111,6 +134,38 @@ class ElDef:
         kwargs = {pname: pfunc(mps) for pname, pfunc in self.pfuncs.items() }
         kwargs["uid"] = self.name
         return self.Kind(**kwargs) 
+    
+    def build(name, Kind, pfuncs):
+        return ElDef(
+            name, 
+            Kind, 
+            {k: _a(v) for k, v in pfuncs.items()}
+        )
+
+    @staticmethod
+    def loop(name:str, s, r, angle, roll=0):
+        return ElDef.build(name, Loop, dict(
+            speed=s,
+            radius=r,
+            angle=angle,
+            roll=roll
+        ))
+        
+    @staticmethod        
+    def line(name:str, s, l, roll=0):
+        return ElDef.build(name, Line, dict(
+            speed=s,
+            length=l,
+            roll=roll
+        ))
+
+    @staticmethod
+    def roll(name: str, s, rate, angle):
+        return ElDef.build(name, Line, dict(
+            speed=s,
+            length=lambda mps: rate * abs(angle) * s,
+            roll=angle
+        ))
 
 
 class ElDefs:
@@ -153,19 +208,6 @@ class ElDefs:
         return {pname: partial(get_p_from_elm, pname=pname) for pname in self.edefs[ed.name].Kind.parameters}
 
 
-def _a(arg):
-    """Ths checks the arguments to the ManDef helper methods and returns the correct 
-    type of lambda"""
-    if isinstance(arg, str): 
-        return lambda mp: mp.parms[arg].value
-    elif isinstance(arg, Number):
-        return lambda mp: arg
-    elif isinstance(arg, Callable): 
-        return arg
-    else:
-        raise TypeError("Unknown argument ManDef helper method argument received")
-
-
 class ManDef:
     """This is a class to define a manoeuvre for template generation and judging.
 
@@ -180,65 +222,52 @@ class ManDef:
     def create(self):
         return Manoeuvre(self.name, 2, Elements.from_list([ed(self.mps) for ed in self.eds]))
 
-    def add_loop(self, name:str, s, r, angle, roll):
-        return self.eds.add(ElDef(name, Loop, dict(
-            speed=_a(s),
-            radius=_a(r),
-            angle=_a(angle),
-            roll=_a(roll)
-        )))
-        
-    def add_line(self, name:str, s, l, roll):
-        return self.eds.add(ElDef(name, Line, dict(
-            speed=_a(s),
-            length=_a(l),
-            roll=_a(roll)
-        )))
 
-    def add_roll(self, name: str, s, rate, angle, direction):
-        return self.eds.add(ElDef(name, Line, dict(
-            speed=_a(s),
-            length=lambda mp: _a(rate)(mp) * \
-                abs(_a(angle)(mp)) * \
-                    _a(s)(mp),
-            roll=lambda mp: _a(angle)(mp) * _a(direction)(mp)
-        )))
 
-    def add_roll_centred(self, name: str, s, l, rate, direction, pause, rolls, criteria):
-
-        rlength = lambda mp: _a(rate)(mp) * _a(s)(mp) * sum([abs(_a(roll)(mp)) for roll in rolls]) + _a(pause)(mp) * (len(rolls) - 1)
-        
-        plength = lambda mp: 0.5 * (_a(l)(mp) - rlength(mp))
-      
-        l1 = self.add_line(name + "1", s, plength, 0)
+    def create_rolls(self, name, s, rolls: ManParm, rate, pause):
+    
 
         l2_rolls = []
         l2_pauses = []
-        for i, roll in enumerate(rolls):
-            l2_rolls.append(self.add_roll(f"{name}2roll{i}", s, rate, roll, direction))
+        for i, roll in range(len(rolls.value)):
+            l2_rolls.append(self.add_roll(f"{name}2roll{i}", s, rate, roll))
             if not i == len(rolls)-1:
                 l2_pauses.append(self.add_line(f"{name}2pause{i}", s, pause, 0))
+        
+        return dict(
+            rate=None,
+            speed=None,
+            pause=None,
+            rolls=None
+        )
 
+    def add_roll_centred(self, name: str, s, l, rolls, rate, pause, criteria):
+
+        #a function to calculate the total length of the rolling elements
+        rlength = lambda mp: _a(rate)(mp) * _a(s)(mp) * sum([abs(_a(roll)(mp)) for roll in rolls]) + _a(pause)(mp) * (len(rolls) - 1)
+        
+        #subtract from total length to get the length of the pads
+        plength = lambda mp: 0.5 * (_a(l)(mp) - rlength(mp))
+
+        #create the first pad
+        l1 = self.add_line(name + "1", s, plength, 0)
+        
+        #create the rolls
+        l2 = self.create_rolls(name + "2", s, rolls, rate, pause)
+        #create the last pad
         l3 = self.add_line(name + "3", s, plength, 0)
 
+        #create an internal ManParm to check the pad lengths
         self.mps.add(ManParm(f"{name}_pad", criteria, None, [l1["length"], l3["length"]]))
 
-
-
-        self.mps.add(ManParm(
-            f"{name}roll_directions", 
-            hard_zero, 
-            None, 
-            [lambda els: np.sign(r) * l2r["direction"](els)   for r, l2r in zip(rolls, l2_rolls)]
-        ))  # TODO this isn't working, need to use functools.partial
-
-        all_ls = l2_rolls + l2_pauses + [l1, l3]
+        #return the external ManParms
+        all_ls = [l1, l2, l3]
         return dict(
             length=lambda els:  sum([l["length"](els) for l in all_ls]),
-            rate = [l["rate"] for l in  l2_rolls],
-            direction = [lambda els: l["direction"](els) * np.sign(r)  for r, l in zip(rolls, l2_rolls)],
+            rate = l2["rate"],
             speed = [l["speed"] for l in all_ls],
-            pause = [l["length"] for l in l2_pauses]
+            pause = l2["pause"],
+            rolls = l2["roll"]
         )
 
 

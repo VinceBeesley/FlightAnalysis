@@ -13,7 +13,7 @@ def vline():
             ManParm("r", f3a_radius, 100, []), 
             ManParm("l", f3a_length, 100, []), 
             ManParm("rate", f3a_roll_rate, 1, []),
-            ManParm("d", f3a_free, 1, []),
+            ManParm("d", HardZero(10, 1), 1, []),
             ManParm("p", f3a_length, 5, [])
         ])
     )
