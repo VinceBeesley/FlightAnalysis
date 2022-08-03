@@ -1,3 +1,39 @@
+"""This module models the aerobatic schedule and the rules that should be applied to it.
+
+It is split into the definition in the ManDef, ManParm and ElDef classes and the 
+implementation in the Schedule, Manoeuvre and El classes.
+
+The definition provides a means to describe an aerobatic schedule and the rules that 
+should apply to it. It is used to create template implementations and to link
+implementations to the relevant cross element scoring criteria.
+
+Criteria are devided into Inter Element and Intra Element. Intra element criteria consider
+local changes that can be assessed within the element alone. Inter element criteria
+consider the measurements that an element must meet in order to describe an 
+aerobatic sequence.
+
+Inter Element Criteria:
+    loop element average radius, 
+    line element length, 
+    line element combined length,
+    line element average roll rate,
+    roll element amount performed,
+    loop element amount performed,
+    average speed, 
+
+Intra Element Criteria:
+    changes in loop radius
+    changes in line angle
+    loop barreling
+    changes in roll rate
+    changes in speed
+
+Intra element criteria are handled by the element objects themselves. 
+
+Inter element criteria are handled by the ManParm objects, which sit within the 
+manoeuvre definition but take measurements of an implementation.
+
+"""
 from .elements import Loop, Line, Snap, Spin, StallTurn
 from .manoeuvre import Manoeuvre
 from .schedule import Schedule

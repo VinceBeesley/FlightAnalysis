@@ -30,7 +30,7 @@ class ManDef:
     It also contains lots of helper functions for creating elements and common combinations
     of elements
     """
-    def __init__(self, name, mps:ManParms=ManParms({}), eds:ElDefs=ElDefs({})):
+    def __init__(self, name, mps:ManParms=ManParms(), eds:ElDefs=ElDefs()):
         self.name = name
         self.mps = mps
         self.eds = eds

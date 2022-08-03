@@ -59,7 +59,7 @@ def rollcombo(rolls: List[Roll], speed, length: str, pause:str, position:RollPos
         return [Line(speed, lleft)] + out_rolls
    
 
-def roll(rollstring, speed, length, pause, rate, position):
+def _roll(rollstring, speed, length, pause, rate, position):
     if rollstring[1] == "/":
         return rollcombo(
             [Roll(int(rollstring[0])/int(rollstring[2]), rate)],

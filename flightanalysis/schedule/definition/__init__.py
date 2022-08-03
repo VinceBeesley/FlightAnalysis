@@ -8,10 +8,8 @@ from .manparms import ManParm, ManParms
 def _a(arg):
     if isinstance(arg, Callable): 
         return arg
-    elif isinstance(arg, Number):
-        return lambda mps: arg
-    elif isinstance(arg, str): 
-        return lambda mps: mps[arg].value
+    elif isinstance(arg, ManParm):
+        return arg.valuefunc()
 
 from .eldefs import ElDef, ElDefs
 

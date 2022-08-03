@@ -73,3 +73,5 @@ class Elements:
     def from_list(els):
         return Elements({el.uid: el for el in els})
 
+    def get_parameter_from_element(self, element_name: str, parameter_name: str):
+        return getattr(self.els[element_name], parameter_name)

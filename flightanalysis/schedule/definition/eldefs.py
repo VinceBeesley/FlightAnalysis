@@ -15,6 +15,9 @@ from . import ManParm, ManParms, _a
 class ElDef:
     """This class creates a function to build an element (Loop, Line, Snap, Spin, Stallturn)
     based on a ManParms collection. 
+
+    The eldef also contains a set of collectors. These are a dict of str:callable pairs
+    that collect the relevant parameter for this element from an Elements collection.
     """
     def __init__(self, name, Kind, pfuncs: dict):
         """ElDef Constructor
@@ -29,49 +32,74 @@ class ElDef:
         self.Kind = Kind
         self.pfuncs = pfuncs
 
+        
+        self.collectors = {}
+        for pname in self.Kind.parameters:
+            #The collectors call Els.get_parameter_from_element and only need the self parameter
+            self.collectors[pname] = partial(
+                Elements.get_parameter_from_element, 
+                element_name=self.name,
+                parameter_name=pname
+            )
+
     def __call__(self, mps: ManParms) -> El:
         kwargs = {pname: pfunc(mps) for pname, pfunc in self.pfuncs.items() }
         kwargs["uid"] = self.name
         return self.Kind(**kwargs) 
     
-    def build(name, Kind, pfuncs):
-        return ElDef(
+    def build(name, Kind, **kwargs):
+        ed = ElDef(
             name, 
             Kind, 
-            {k: _a(v) for k, v in pfuncs.items()}
+            {k: _a(v) for k, v in kwargs.items()}
         )
+        
+        for key, value in kwargs.items():
+            if isinstance(value, ManParm):
+                value.append(ed.collectors[key])
+            
+        
+        return ed
 
     @staticmethod
     def loop(name:str, s, r, angle, roll=0):
-        return ElDef.build(name, Loop, dict(
+        return ElDef.build(
+            name, 
+            Loop, 
             speed=s,
             radius=r,
             angle=angle,
             roll=roll
-        ))
+        )
         
     @staticmethod        
     def line(name:str, s, l, roll=0):
-        return ElDef.build(name, Line, dict(
+        return ElDef.build(
+            name, 
+            Line, 
             speed=s,
             length=l,
             roll=roll
-        ))
+        )
 
     @staticmethod
     def roll(name: str, s, rate, angle):
-        return ElDef.build(name, Line, dict(
-            speed=s,
-            length=lambda mps: rate * abs(angle) * s,
-            roll=angle
-        ))
+        ed = ElDef.line(
+            name, 
+            s,
+            lambda mps: abs(_a(angle)(mps)) * _a(s)(mps) / _a(rate)(mps),  
+            angle
+        )
+        if isinstance(rate, ManParm):
+            rate.append(ed.collectors["rate"])
+        return ed
 
 
 class ElDefs:
     """This class wraps a dict of ElDefs, which would generally be used sequentially to build a manoeuvre.
     It provides attribute access to the ElDefs based on their names. 
     """
-    def __init__(self, edefs: Dict[str, ElDef]):
+    def __init__(self, edefs: Dict[str, ElDef]={}):
         self.edefs = edefs
 
     def __getattr__(self, name):
@@ -89,20 +117,21 @@ class ElDefs:
         return self.edefs.values()[name]
 
 
-    def add(self, ed: ElDef) -> Dict[str, Callable]:
-        """Add a new element definition to the collection. Returns the functions to retrieve
-        the geometric parameters for this element from the elements dict
+    def add(self, ed: Union[ElDef, List[ElDef]]) -> Union[ElDef, List[ElDef]]:
+        """Add a new element definition to the collection. Returns the ElDef
 
         Args:
-            ed (ElDef): the new element definition
+            ed (Union[ElDef, List[ElDef]]): The ElDef or list of ElDefs to add
 
         Returns:
-            Dict[str, Callable]: functions to retrieve the relevant parameters from the elements collection
+            Union[ElDef, List[ElDef]]: The ElDef or list of ElDefs added
         """
-        self.edefs[ed.name] = ed
+        if isinstance(ed, ElDef):
+            self.edefs[ed.name] = ed
+            return ed
+        else:
+            return [self.add(e) for e in ed]
+        
 
-        def get_p_from_elm(els, pname):
-            return getattr(els.els[ed.name], pname)
-
-        return {pname: partial(get_p_from_elm, pname=pname) for pname in self.edefs[ed.name].Kind.parameters}
+        
 

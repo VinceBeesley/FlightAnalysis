@@ -6,7 +6,7 @@ from numbers import Number
 from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn, El, Elements
 from flightanalysis.schedule.manoeuvre import Manoeuvre
 from flightanalysis.criteria.comparison import Comparison
-from flightanalysis.criteria.local import Combination
+from flightanalysis.criteria.local import Combination, AngleCrit
 
 from functools import partial
 
@@ -15,7 +15,7 @@ class ManParm:
     """This class represents a parameter that can be used to characterise the geometry of a manoeuvre.
     For example, the loop diameters, line lengths, roll direction. 
     """
-    def __init__(self, name:str, criteria: Union[Comparison, Combination], collectors: List[Callable], default=None):
+    def __init__(self, name:str, criteria: Union[Comparison, Combination], default=None, collectors: List[Callable]=[]):
         """Construct a ManParm
 
         Args:
@@ -31,6 +31,9 @@ class ManParm:
         self.default = default
         self.collectors = collectors
 
+        #This is a bit of a bodge. intended to be set before retrieving the value property
+        #to make sure the correct id is pulled from a Combination criteria
+        
     def append(self, collector: Union[Callable, List[Callable]]):
         if isinstance(collector, Callable):
             self.collectors.append(collector)    
@@ -46,17 +49,41 @@ class ManParm:
 
     @property
     def value(self):
-        if isinstance(self.criteria, Comparison):
+        if isinstance(self.criteria, Comparison) or isinstance(self.criteria, AngleCrit):
             return self.default
         elif isinstance(self.criteria, Combination):
             return self.criteria[self.default]
 
+    def valuefunc(self, id:int=0) -> Callable:
+        """Create a function to return the value property of this manparm from a manparms collection.
+        
+        Args:
+            id (int, optional): The element id to return if reading the default from a Combination
+            criteria. Defaults to 0.
+
+        Raises:
+            Exception: If some unknown criteria is being used
+
+        Returns:
+            Callable: function to get the default value for this manparm from the mps collection
+        """
+        if isinstance(self.criteria, Comparison) or isinstance(self.criteria, AngleCrit):
+            return lambda mps: mps.parms[self.name].value 
+        elif isinstance(self.criteria, Combination):
+            return lambda mps: mps.parms[self.name].value[id] 
+            #return partial(
+            #   lambda mps, i: mps.parms[self.name].value[i], 
+            #   i=id
+            # )
+        else:
+            raise Exception("Cant create a valuefunc in this case")
+        
 
 class ManParms:
     """This class wraps around a dict of ManParm. it provides attribute access to items based on their
     names and a constructer from a list of them (as the names are internal)
     """
-    def __init__(self, parms:Dict[str, ManParm]):
+    def __init__(self, parms:Dict[str, ManParm]={}):
         self.parms = parms
     
     def __getattr__(self, name):
@@ -68,6 +95,7 @@ class ManParms:
 
     def add(self, parm):
         self.parms[parm.name] = parm
+        return parm
 
     def collect(self, manoeuvre: Manoeuvre) -> Dict[str, float]:
         """Collect the comparison downgrades for each manparm for a given manoeuvre.

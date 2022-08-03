@@ -46,13 +46,15 @@ class HardZero:
 f3a_direction = lambda direction : HardZero(10, direction)
 
 
+
 f3a_radius = Comparison(pd.Series({
     1.0: 0.0,
     1.2: 0.5,
     1.5: 1.0,
     1.8: 1.5,
     2.0: 2.0,
-    3.0: 2.5
+    3.0: 2.5,
+    4.0: 3.0
 }))
 
 # TODO this could give very low marks for short lines
