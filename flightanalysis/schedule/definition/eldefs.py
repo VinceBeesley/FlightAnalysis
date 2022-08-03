@@ -133,35 +133,5 @@ class ElDefs:
             return [self.add(e) for e in ed]
         
 
-    def create_roll_combo(self, name: str, s, l, rolls, rate, pause, no_roll, criteria):
-        
-        #functions to get the length of each roll and pause
-        rlengths = [
-            lambda mps: rolls.valuefunc(i)(mps) * _a(s)(mps) / _a(rate)(mps) 
-            for i in range(rolls.n)
-        ]
-        plengths = [lambda mps: _a(pause)(mps) * _a(s)(mps) for _ in range(rolls.n-1)]
-
-        pad_length = lambda mps: 0.5*(l - sum(rl(mps) for rl in rlengths) - sum(pl(mps) for pl in plengths))
-
-        l1 = self.add(ElDef.line(f"{name}_0", s, pad_length, no_roll))
-
-        r_els = []
-        p_els = []
-
-        for i in range(rolls.n):
-            r_els.append(self.add(ElDef.roll(
-                f"{name}_1_r{i}",
-                s,
-                rate,
-                rolls.valuefunc(i)
-            )))
-            if i < rolls.n-1:
-                p_els.append(self.add(ElDef.line(
-                    f"{name}_1_p{i}",
-                    s, plengths[i], no_roll
-                )))
-        
-        l3 = self.add(ElDef.line(f"{name}_1", s, pad_length, no_roll))
 
         

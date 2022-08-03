@@ -38,53 +38,40 @@ class ManDef:
     def create(self):
         return Manoeuvre(self.name, 2, Elements.from_list([ed(self.mps) for ed in self.eds]))
 
-    def create_rolls(self, name, s, rolls: ManParm, rate, pause):
-    
 
-        l2_rolls = []
-        l2_pauses = []
-        for i, roll in range(len(rolls.value)):
-            l2_rolls.append(self.add_roll(f"{name}2roll{i}", s, rate, roll))
-            if not i == len(rolls)-1:
-                l2_pauses.append(self.add_line(f"{name}2pause{i}", s, pause, 0))
+    def create_roll_combo(self, name: str, s, l, rolls, rate, pause, no_roll, criteria):
+        rlengths = [
+            lambda mps: rolls.valuefunc(i)(mps) * _a(s)(mps) / _a(rate)(mps) 
+            for i in range(rolls.n)
+        ]
+
+        pad_length = lambda mps: 0.5*(_a(l)(mps) - sum(rl(mps) for rl in rlengths) - _a(pause)(mps) * (rolls.n - 1) )
         
-        return dict(
-            rate=None,
-            speed=None,
-            pause=None,
-            rolls=None
-        )
+        l1 = self.eds.add(ElDef.line(f"{name}_0", s, pad_length, no_roll))
 
-    def add_roll_centred(self, name: str, s, l, rolls, rate, pause, criteria):
+        r_els = []
+        p_els = []
 
-        #a function to calculate the total length of the rolling elements
-        rlength = lambda mp: _a(rate)(mp) * _a(s)(mp) * sum([abs(_a(roll)(mp)) for roll in rolls]) + _a(pause)(mp) * (len(rolls) - 1)
+        for i in range(rolls.n):
+            r_els.append(self.eds.add(ElDef.roll(
+                f"{name}_1_r{i}",
+                s,
+                rate,
+                rolls.valuefunc(i)
+            )))
+            
+            if i < rolls.n-1:
+                p_els.append(self.eds.add(ElDef.line(
+                    f"{name}_1_p{i}",
+                    s, pause, no_roll
+                )))
         
-        #subtract from total length to get the length of the pads
-        plength = lambda mp: 0.5 * (_a(l)(mp) - rlength(mp))
+        l3 = self.eds.add(ElDef.line(f"{name}_1", s, pad_length, no_roll))
 
-        #create the first pad
-        l1 = self.add_line(name + "1", s, plength, 0)
-        
-        #create the rolls
-        l2 = self.create_rolls(name + "2", s, rolls, rate, pause)
-        #create the last pad
-        l3 = self.add_line(name + "3", s, plength, 0)
+        #create a ManParm to check the pad lengths
+        self.mps.add(ManParm(f"{name}_pad", criteria, None, [l1.collectors["length"], l3.collectors["length"]]))
 
-        #create an internal ManParm to check the pad lengths
-        self.mps.add(ManParm(f"{name}_pad", criteria, None, [l1["length"], l3["length"]]))
+        l.append(lambda els: sum([l.collectors["length"](els) for l in [l1, l3] + r_els + p_els]))
+        rolls.append([rel.collectors["roll"] for rel in r_els])
 
-        #return the external ManParms
-        all_ls = [l1, l2, l3]
-        return dict(
-            length=lambda els:  sum([l["length"](els) for l in all_ls]),
-            rate = l2["rate"],
-            speed = [l["speed"] for l in all_ls],
-            pause = l2["pause"],
-            rolls = l2["roll"]
-        )
-
-
-    @staticmethod
-    def parse():
-        pass
+        return [l1] + r_els + p_els + [l3]
