@@ -30,7 +30,7 @@ class ManParm:
         self.criteria = criteria
         self.default = default
         self.collectors = collectors
-
+        self.n = len(self.criteria.desired[0]) if isinstance(self.criteria, Combination) else None
         #This is a bit of a bodge. intended to be set before retrieving the value property
         #to make sure the correct id is pulled from a Combination criteria
         

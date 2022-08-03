@@ -41,11 +41,7 @@ class HardZero:
         return [self.compare(v1,v2) for v1, v2 in zip(vs[:-1], vs[1:])]
 
 
-
-
 f3a_direction = lambda direction : HardZero(10, direction)
-
-
 
 f3a_radius = Comparison(pd.Series({
     1.0: 0.0,

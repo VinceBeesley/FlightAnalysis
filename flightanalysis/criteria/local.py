@@ -54,8 +54,7 @@ class Combination:
     def __init__(self, desired: List[List[Number]], criteria ):
         self.desired = desired
         self.criteria = criteria
-        self.nextval = -1
-
+        
     def __getitem__(self, value):
         return self.desired[value]
 
