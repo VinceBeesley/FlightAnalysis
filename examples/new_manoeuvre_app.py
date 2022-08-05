@@ -12,7 +12,7 @@ from flightanalysis.criteria.local import *
 
 col0, col1, col2 = st.columns([1,3,1])
 
-md = ManDef.basic_f3a("vline")
+md = ManDef.basic_f3a("TopHat")
 
 md.add_loop(np.pi/2)
 md.add_roll_combo(

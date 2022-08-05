@@ -32,7 +32,7 @@ class ManDef:
     """This is a class to define a manoeuvre for template generation and judging.
 
     It also contains lots of helper functions for creating elements and common combinations
-    of elements
+    of elements.
     """
 
     def __init__(self, name, mps: ManParms = None, eds: ElDefs = None):
