@@ -37,7 +37,7 @@ class AngleCrit:
 
     @staticmethod
     def build(scores, angles, moduli=None):
-        return AngleCrit(pd.Series([0], [0]).append(pd.Series(scores, np.radians(angles))), moduli)
+        return AngleCrit(pd.concat([pd.Series([0], [0]), pd.Series(scores, np.radians(angles))]), moduli)
 
 
 _dgs = np.linspace(0.5, 10, 20)
@@ -45,13 +45,14 @@ angle_f3a = AngleCrit.build(_dgs,np.linspace(2.5, 145, 20), 2 * np.pi)
 rotation_f3a = AngleCrit.build(_dgs,np.linspace(2.5, 145, 20))
 angle_imac = AngleCrit.build(_dgs,np.linspace(2.5, 97.5, 20), 2 * np.pi)
 rotation_imac = AngleCrit.build(_dgs,np.linspace(2.5, 97.5, 20))
+angle_free = AngleCrit(pd.Series({0.0:0.0}))
 
 
 class Combination:
     """Handles a series of anglecrit assessments.
     for example a number of rolls in an element. 
     """
-    def __init__(self, desired: List[List[Number]], criteria ):
+    def __init__(self, desired: List[List[Number]], criteria=angle_free):
         self.desired = desired
         self.criteria = criteria
         

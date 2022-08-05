@@ -15,7 +15,7 @@ class ManParm:
     """This class represents a parameter that can be used to characterise the geometry of a manoeuvre.
     For example, the loop diameters, line lengths, roll direction. 
     """
-    def __init__(self, name:str, criteria: Union[Comparison, Combination], default=None, collectors: List[Callable]=[]):
+    def __init__(self, name:str, criteria: Union[Comparison, Combination], default=None, collectors: List[Callable]=None):
         """Construct a ManParm
 
         Args:
@@ -29,10 +29,10 @@ class ManParm:
         self.name=name
         self.criteria = criteria
         self.default = default
-        self.collectors = collectors
+        
+        self.collectors = [] if collectors is None else collectors
         self.n = len(self.criteria.desired[0]) if isinstance(self.criteria, Combination) else None
-        #This is a bit of a bodge. intended to be set before retrieving the value property
-        #to make sure the correct id is pulled from a Combination criteria
+
         
     def append(self, collector: Union[Callable, List[Callable]]):
         if isinstance(collector, Callable):
@@ -87,7 +87,7 @@ class ManParms:
         self.parms = parms
     
     def __getattr__(self, name):
-        return self.parms[name].value
+        return self.parms[name]
 
     @staticmethod
     def from_list(mps: List[ManParm]):
@@ -106,7 +106,7 @@ class ManParms:
         Returns:
             Dict[str, float]: The sum of downgrades for each ManParm
         """
-        return {key: mp.get_downgrades(manoeuvre.elements) for key, mp in self.parms.items()}
+        return {key: mp.get_downgrades(manoeuvre.elements) for key, mp in self.parms.items() if not isinstance(mp.criteria, Combination)}
     
     def append_collectors(self, colls: Dict[str, Callable]):
         """Append each of a dict of collector methods to the relevant ManParm

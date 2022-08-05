@@ -10,6 +10,8 @@ def _a(arg):
         return arg
     elif isinstance(arg, ManParm):
         return arg.valuefunc()
+    elif isinstance(arg, Number):
+        return lambda mps: arg
 
 from .eldefs import ElDef, ElDefs
 

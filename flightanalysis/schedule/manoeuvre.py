@@ -35,7 +35,7 @@ class Manoeuvre():
     @staticmethod
     def make_id():
         i=1
-        while f"auto_{i}" in El.register:
+        while f"auto_{i}" in Manoeuvre.register:
             i+=1
         else:
             return f"auto_{i}"

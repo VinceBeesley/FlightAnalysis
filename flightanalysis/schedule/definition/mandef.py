@@ -16,12 +16,16 @@ import pandas as pd
 from numbers import Number
 from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn, El, Elements
 from flightanalysis.schedule.manoeuvre import Manoeuvre
-from flightanalysis.criteria.comparison import Comparison
+from flightanalysis.criteria.comparison import Comparison, f3a_speed, f3a_radius, f3a_length, f3a_roll_rate
 from flightanalysis.criteria.local import Combination
 
 from functools import partial
 
 from . import ManParm, ManParms, ElDef, ElDefs, _a
+
+
+
+
 
 
 class ManDef:
@@ -30,48 +34,107 @@ class ManDef:
     It also contains lots of helper functions for creating elements and common combinations
     of elements
     """
-    def __init__(self, name, mps:ManParms=ManParms(), eds:ElDefs=ElDefs()):
-        self.name = name
-        self.mps = mps
-        self.eds = eds
+
+    def __init__(self, name, mps: ManParms = None, eds: ElDefs = None):
+        self.name: str = name
+        self.mps: ManParms = ManParms() if mps is None else mps
+        self.eds: ElDefs = ElDefs() if eds is None else eds
 
     def create(self):
         return Manoeuvre(self.name, 2, Elements.from_list([ed(self.mps) for ed in self.eds]))
 
+    @staticmethod
+    def basic_f3a(name):
+        return ManDef(
+            name,
+            ManParms.from_list([
+                ManParm("speed", f3a_speed, 30.0),
+                ManParm("loop_radius", f3a_radius, 55.0),
+                ManParm("line_length", f3a_length, 130.0),
+                ManParm("point_length", f3a_length, 10.0),
+                ManParm("continuous_roll_rate", f3a_roll_rate, np.pi),
+                ManParm("partial_roll_rate", f3a_roll_rate, np.pi)
+            ])
+        )
 
-    def create_roll_combo(self, name: str, s, l, rolls, rate, pause, no_roll, criteria):
-        rlengths = [
-            lambda mps: rolls.valuefunc(i)(mps) * _a(s)(mps) / _a(rate)(mps) 
-            for i in range(rolls.n)
-        ]
-
-        pad_length = lambda mps: 0.5*(_a(l)(mps) - sum(rl(mps) for rl in rlengths) - _a(pause)(mps) * (rolls.n - 1) )
+    def add_loop(
+        self,
+        angle: Union[float, ManParm, Callable],
+        roll: Union[float, ManParm, Callable]=0.0,
+        ke: bool=False,
+        s: Union[ManParm, Callable]=None,
+        r: Union[ManParm, Callable]=None
+    ) -> ElDef:
         
-        l1 = self.eds.add(ElDef.line(f"{name}_0", s, pad_length, no_roll))
+        self.eds.add(ElDef.loop(
+            self.eds.get_new_name(), 
+            ke,
+            self.mps.speed if s is None else s, 
+            self.mps.loop_radius if r is None else r, 
+            angle, 
+            roll
+        ))
 
-        r_els = []
-        p_els = []
-
-        for i in range(rolls.n):
-            r_els.append(self.eds.add(ElDef.roll(
-                f"{name}_1_r{i}",
-                s,
-                rate,
-                rolls.valuefunc(i)
-            )))
-            
-            if i < rolls.n-1:
-                p_els.append(self.eds.add(ElDef.line(
-                    f"{name}_1_p{i}",
-                    s, pause, no_roll
-                )))
+    def add_line(
+        self,
+        roll: Union[float, ManParm, Callable]=0.0,
+        s: Union[ManParm, Callable]=None,
+        l: Union[ManParm, Callable]=None
+    ) -> ElDef:
         
-        l3 = self.eds.add(ElDef.line(f"{name}_1", s, pad_length, no_roll))
+        self.eds.add(ElDef.line(
+            self.eds.get_new_name(), 
+            self.mps.speed if s is None else s, 
+            self.mps.line_length if l is None else l, 
+            roll
+        ))
 
-        #create a ManParm to check the pad lengths
-        self.mps.add(ManParm(f"{name}_pad", criteria, None, [l1.collectors["length"], l3.collectors["length"]]))
+    def add_roll_combo(
+        self, 
+        rolls: ManParm, 
+        rates: List[ManParm] = None,
+        s: Union[ManParm, Callable]=None,
+        l: Union[ManParm, Callable] = None,
+        pause: Union[ManParm, Callable] = None,
+        criteria=f3a_length
+    ):
+        #get rates if rate is None
+        if rates is None:
+            rates = []
+            for roll in rolls.value:
+                if abs(roll) >= 2 * np.pi:
+                    rates.append(self.mps.continuous_roll_rate)
+                else:
+                    rates.append(self.mps.partial_roll_rate)
 
-        l.append(lambda els: sum([l.collectors["length"](els) for l in [l1, l3] + r_els + p_els]))
-        rolls.append([rel.collectors["roll"] for rel in r_els])
+        roll_els = ElDefs.create_roll_combo(
+            f"{self.eds.get_new_name()}_1",  # TODO fiddiling with the names like this is not nice
+            rolls, 
+            self.mps.speed if s is None else s,
+            rates,
+            self.mps.point_length if pause is None else pause
+        )
 
-        return [l1] + r_els + p_els + [l3]
+        return self.add_and_pad_els(roll_els, l, s, criteria)
+
+
+    def add_and_pad_els(self, eds: ElDefs, l=None, s=None, criteria=f3a_length):
+        name = self.eds.get_new_name()
+        l = self.mps.line_length if l is None else l
+        s = self.mps.speed if s is None else s
+        
+        pad_length = lambda mps: 0.5 * (_a(l)(mps) - eds.builder_sum("length")(mps))
+        
+        e1 = self.eds.add(ElDef.line(f"e_{eds[0].id}_0", s, pad_length, 0))
+        e2 = self.eds.add([ed for ed in eds])
+        e3 = self.eds.add(ElDef.line(f"e_{eds[0].id}_2", s, pad_length, 0))
+
+        self.mps.add(ManParm(f"{name}_pad_length", criteria, None, [
+                     e1.collectors["length"], e3.collectors["length"]]))
+        
+        if isinstance(l, ManParm):
+            l.append(lambda els: sum([e.collectors["length"](els) for e in [e1] + e2 + [e3]]))
+        
+        return [e1] + e2 + [e3]
+
+    

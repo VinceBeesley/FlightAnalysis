@@ -37,3 +37,14 @@ class BoxLocation():
     @staticmethod
     def driven():
         return BoxLocation(Height.DRIVEN, Direction.DRIVEN, Orientation.DRIVEN)
+
+
+class ManInfo:
+    def __init__(self, name:str, short_name:str, k:float, start: BoxLocation, end: BoxLocation):
+        self.name = name
+        self.short_name = short_name
+        self.k = k
+        self.start = start
+        self.end = end
+
+        

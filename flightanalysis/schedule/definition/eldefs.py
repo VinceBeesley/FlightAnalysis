@@ -58,21 +58,24 @@ class ElDef:
             if isinstance(value, ManParm):
                 value.append(ed.collectors[key])
             
-        
         return ed
 
+    def rename(self, new_name):
+        return ElDef(new_name, self.Kind, self.pfuncs)
+
     @staticmethod
-    def loop(name:str, s, r, angle, roll):
+    def loop(name:str, ke, s, r, angle, roll):
         return ElDef.build(
             name, 
             Loop, 
             speed=s,
             radius=r,
             angle=angle,
-            roll=roll
+            roll=roll,
+            ke=lambda mps: ke
         )
-        
-    @staticmethod        
+    
+    @staticmethod
     def line(name:str, s, l, roll):
         return ElDef.build(
             name, 
@@ -94,16 +97,20 @@ class ElDef:
             rate.append(ed.collectors["rate"])
         return ed
 
+    @property
+    def id(self):
+        return int(self.name.split("_")[1])
 
 class ElDefs:
     """This class wraps a dict of ElDefs, which would generally be used sequentially to build a manoeuvre.
     It provides attribute access to the ElDefs based on their names. 
     """
-    def __init__(self, edefs: Dict[str, ElDef]={}):
-        self.edefs = edefs
+    def __init__(self, edefs: Dict[str, ElDef]=None):
+        self.edefs = {} if edefs is None else edefs
 
     def __getattr__(self, name):
-        return self.edefs[name]
+        if name in self.edefs:
+            return self.edefs[name]
 
     @staticmethod
     def from_list(edfs: List[ElDef]):
@@ -114,8 +121,11 @@ class ElDefs:
             yield ed
 
     def __getitem__(self, name):
-        return self.edefs.values()[name]
+        return list(self.edefs.values())[name]
 
+    def get_new_name(self):
+        new_id = 0 if len(self.edefs) == 0 else list(self.edefs.values())[-1].id + 1
+        return f"e_{new_id}"
 
     def add(self, ed: Union[ElDef, List[ElDef]]) -> Union[ElDef, List[ElDef]]:
         """Add a new element definition to the collection. Returns the ElDef
@@ -131,7 +141,39 @@ class ElDefs:
             return ed
         else:
             return [self.add(e) for e in ed]
-        
 
-
+    @staticmethod
+    def create_roll_combo(name: str, rolls: ManParm, s, rates, pause):
+        eds = ElDefs()
         
+        for i in range(rolls.n):
+
+            new_roll = eds.add(ElDef.roll(
+                f"{name}_{i+1}",
+                s,
+                rates[i],
+                rolls.valuefunc(i)
+            ))
+
+            rolls.append(new_roll.collectors["roll"])
+            
+            if i < rolls.n - 1 and np.sign(rolls.value[i]) == np.sign(rolls.value[i+1]):
+                eds.add(ElDef.line(
+                    eds.get_new_name(),
+                    s, pause, 0
+                ))
+            
+        return eds
+
+    def builder_list(self, name):
+        return [e.pfuncs[name] for e in self if name in e.pfuncs]
+
+    def builder_sum(self, name):
+        return lambda mps : sum(b(mps) for b in self.builder_list(name))
+
+    def collector_list(self, name):
+        return [e.collectors[name] for e in self if name in e.collectors]
+
+    def collector_sum(self, name):
+        return lambda els : sum(c(els) for c in self.collector_list(name))
+    

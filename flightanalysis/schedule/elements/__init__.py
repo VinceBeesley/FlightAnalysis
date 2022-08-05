@@ -3,24 +3,10 @@ from typing import Dict
 
 class El:   
     parameters = ["speed"]
-    register = set()
 
     def __init__(self, uid: str, speed: float):        
-
-        self.uid = El.make_id() if uid is None else uid
-
-        if self.uid in El.register:
-            raise Exception("attempting to create a new El with an existing key")
-        El.register.add(self.uid)
+        self.uid = uid
         self.speed = speed
-
-    @staticmethod
-    def make_id():
-        i=1
-        while f"auto_{i}" in El.register:
-            i+=1
-        else:
-            return f"auto_{i}"
 
     def get_data(self, sec: State):
         return State(sec.data.loc[sec.data.element == self.uid])
@@ -31,7 +17,11 @@ class El:
         return el.label(element=self.uid)
 
     def __eq__(self, other):
-        return self.uid == other.uid
+        if not self.__class__ == other.__class__:
+            return False
+        if not self.uid == other.uid:
+            return False
+        return np.all([getattr(parm, self) == other.getattr(parm, other) for parm in self.__class__.parameters])
 
     def to_dict(self):
         return dict(type=self.__class__.__name__, **self.__dict__)
