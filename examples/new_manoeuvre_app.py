@@ -12,39 +12,21 @@ from flightanalysis.criteria.local import *
 
 col0, col1, col2 = st.columns([1,3,1])
 
-md = ManDef.basic_f3a("TopHat")
+md = ManDef.basic_f3a(ManInfo(
+    "Top Hat", 
+    "TH", 
+    4,
+    Position.CENTRE,
+    BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),
+    BoxLocation(Height.BTM)
+))
 
 md.add_loop(np.pi/2)
-md.add_roll_combo(
-    md.mps.add(ManParm(
-        "roll1",
-        Combination([
-            [np.pi/2, np.pi/2],
-            [-np.pi/2, -np.pi/2]
-        ]), 0
-    ))
-)
+md.add_simple_roll("2x4")
 md.add_loop(np.pi/2)
-md.add_roll_combo(
-    md.mps.add(ManParm(
-        "roll2",
-        Combination([
-            [np.pi],
-            [-np.pi]
-        ]), 0
-    )),
-    l=100
-)
+md.add_simple_roll("1/2",l=100)
 md.add_loop(-np.pi/2)
-md.add_roll_combo(
-    md.mps.add(ManParm(
-        "roll3",
-        Combination([
-            [np.pi/2, np.pi/2],
-            [-np.pi/2, -np.pi/2]
-        ]), 0
-    ))
-)
+md.add_simple_roll("2x4")
 md.add_loop(-np.pi/2)
 man = md.create()
 
@@ -63,7 +45,7 @@ for el in man.elements:
 
 template = man.create_template(Transformation(P0(), Euler(np.pi, 0, 0)))
 
-for roll in [md.mps.roll1, md.mps.roll2, md.mps.roll3]:       
+for roll in [md.mps.roll_0, md.mps.roll_1, md.mps.roll_2]:       
     col0.write(f"{roll.name} Option {roll.criteria.check_option(roll.collect(man.elements))} was flown")
 
 col1.plotly_chart(plotsec(template, nmodels=10, height=800))

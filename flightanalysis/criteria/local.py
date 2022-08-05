@@ -70,4 +70,16 @@ class Combination:
 
     def __call__(self, *values):
         return self.criteria(*list(self.get_option_error(self.check_option(*values), *values)))
-    
+
+    @staticmethod
+    def rollcombo(rollstring, reversable=True):
+        """Convenience constructor to allow Combinations to be built from strings such as 2X4 or 
+        1/2"""
+        if rollstring[1] == "/":
+            rolls = [float(rollstring[0])/float(rollstring[2])]
+        elif rollstring[1] in ["X", "x", "*"]:
+            rolls = [1/int(rollstring[2]) for _ in range(int(rollstring[0]))]
+        rolls = [r*2*np.pi for r in rolls]
+        rolls = [rolls, [-r for r in rolls]] if reversable else [rolls]
+
+        return Combination(rolls)

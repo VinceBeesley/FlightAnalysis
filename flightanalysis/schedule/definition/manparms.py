@@ -116,3 +116,11 @@ class ManParms:
         """
         for mp, col in colls.items():
             self.parms[mp].append(col)
+
+
+class MPValue:
+    def __init__(self, value, minval, maxval, slope):
+        self.value = value
+        self.minval = minval
+        self.maxval = maxval
+        self.slope = slope

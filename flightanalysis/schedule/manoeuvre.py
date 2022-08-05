@@ -11,34 +11,9 @@ _els = {c.__name__: c for c in El.__subclasses__()}
 
 
 class Manoeuvre():
-    _counter = 0
-    register = set()
-
-    @staticmethod
-    def reset_counter():
-        Manoeuvre._counter = 0
-        El.reset_counter()
-
-    def __init__(self, name: str, k: float, elements: Elements, uid: str = None):
-        # TODO elements needs to change to a custom elements collection with
-        #element access by attribute
-        self.name = name
-        self.k = k
+    def __init__(self, elements: Elements, uid: str = None):
         self.elements = elements  
-        
-        self.uid = Manoeuvre.make_id() if uid is None else uid
-
-        if self.uid in Manoeuvre.register:
-            raise Exception("attempting to create a new Manoeuvre with an existing key")
-        Manoeuvre.register.add(self.uid)
-
-    @staticmethod
-    def make_id():
-        i=1
-        while f"auto_{i}" in Manoeuvre.register:
-            i+=1
-        else:
-            return f"auto_{i}"
+        self.uid = uid
     
     def create_template(self, transform: Transformation) -> State:
         itrans = transform

@@ -2,8 +2,8 @@
 from typing import Callable
 from numbers import Number
 
-
-from .manparms import ManParm, ManParms
+from .maninfo import ManInfo, BoxLocation, Orientation, Direction, Height, Position
+from .manparms import ManParm, ManParms, MPValue
 
 def _a(arg):
     if isinstance(arg, Callable): 

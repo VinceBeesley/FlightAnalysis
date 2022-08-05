@@ -10,20 +10,19 @@ the higher level parameters and another set of functions to collect the paramete
 elements collection.
 """
 import enum
-from typing import List, Dict, Callable, Union
+from typing import List, Dict, Callable, Union, Tuple
 import numpy as np
 import pandas as pd
 from numbers import Number
 from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn, El, Elements
 from flightanalysis.schedule.manoeuvre import Manoeuvre
+from flightanalysis.schedule.definition.maninfo import ManInfo
 from flightanalysis.criteria.comparison import Comparison, f3a_speed, f3a_radius, f3a_length, f3a_roll_rate
 from flightanalysis.criteria.local import Combination
-
+from geometry import Transformation, Euler, Point, P0
 from functools import partial
-
-from . import ManParm, ManParms, ElDef, ElDefs, _a
-
-
+from scipy.optimize import minimize
+from . import ManParm, ManParms, ElDef, ElDefs, _a, MPValue
 
 
 
@@ -35,18 +34,21 @@ class ManDef:
     of elements.
     """
 
-    def __init__(self, name, mps: ManParms = None, eds: ElDefs = None):
-        self.name: str = name
+    def __init__(self, info: ManInfo, mps: ManParms = None, eds: ElDefs = None):
+        self.info: ManInfo = info
         self.mps: ManParms = ManParms() if mps is None else mps
         self.eds: ElDefs = ElDefs() if eds is None else eds
 
     def create(self):
-        return Manoeuvre(self.name, 2, Elements.from_list([ed(self.mps) for ed in self.eds]))
+        return Manoeuvre(
+            Elements.from_list([ed(self.mps) for ed in self.eds]), 
+            uid=self.info.name
+        )
 
     @staticmethod
-    def basic_f3a(name):
+    def basic_f3a(info: ManInfo):
         return ManDef(
-            name,
+            info,
             ManParms.from_list([
                 ManParm("speed", f3a_speed, 30.0),
                 ManParm("loop_radius", f3a_radius, 55.0),
@@ -89,6 +91,19 @@ class ManDef:
             roll
         ))
 
+    def add_simple_roll(self, rolls:str, s=None, l=None, pause=None, criteria=f3a_length):
+        i=0
+        while f"roll_{i}" in self.mps.parms:
+            i+=1
+        else:
+            self.add_roll_combo(
+                self.mps.add(
+                    ManParm(
+                        f"roll_{i}", 
+                        Combination.rollcombo(rolls), 
+                        0
+            )), s=s, l=l, pause=pause, criteria=criteria)
+
     def add_roll_combo(
         self, 
         rolls: ManParm, 
@@ -108,7 +123,7 @@ class ManDef:
                     rates.append(self.mps.partial_roll_rate)
 
         roll_els = ElDefs.create_roll_combo(
-            f"{self.eds.get_new_name()}_1",  # TODO fiddiling with the names like this is not nice
+            f"{self.eds.get_new_name()}_1",  # TODO fiddling with the names like this is a bodge
             rolls, 
             self.mps.speed if s is None else s,
             rates,
@@ -117,8 +132,20 @@ class ManDef:
 
         return self.add_and_pad_els(roll_els, l, s, criteria)
 
-
     def add_and_pad_els(self, eds: ElDefs, l=None, s=None, criteria=f3a_length):
+        """Add an elements collection to this manoeuvre and pad it so that it sits between two
+        lines of equal length so that the total length is equal to l. 
+        also creates a ManParm to collect and score the two padding lines lengths.
+
+        Args:
+            eds (ElDefs): _description_
+            l (Union[ManParm, Callable], optional): the total length. Defaults to None and so picks up mps.line_length.
+            s (Union[ManParm, Callable], optional): the speed. Defaults to None and so picks up mps.speed.
+            criteria (Comparison, optional): Comparison criteria to use for the padding lines. Defaults to f3a_length.
+
+        Returns:
+            List[ElDef]: All the elements in order. These will also have been added to self.edefs.
+        """
         name = self.eds.get_new_name()
         l = self.mps.line_length if l is None else l
         s = self.mps.speed if s is None else s
@@ -137,4 +164,31 @@ class ManDef:
         
         return [e1] + e2 + [e3]
 
-    
+    def default_finder(
+        self, 
+        wind=1, 
+        depth=170, 
+        variables: Dict[str,MPValue]=None
+    ):
+        if not variables:
+            variables = dict(
+                loop_radius=MPValue(55, 30, 70, 1),
+                line_length=MPValue(130, 30, 200, 1)
+            )
+
+        itrans = self.info.initial_transform(depth, wind)
+        end_h = self.info.end.h.calculate(depth)
+
+        def cost_fn(vars):
+            for k, v in zip(variables.keys(), vars):
+                self.mps.parms[k].default = v
+            template = self.create().create_template(itrans)
+            h_cost = 10 * abs(template[-1].pos.z[0] - end_h) 
+            v_cost = [v.slope * abs((v.value - nv)) for v, nv in zip(variables.values(), vars)]
+
+            costs = v_cost + [h_cost]
+            print(costs)
+            return sum(costs)
+
+        res = minimize(cost_fn, [v.value for v in variables.values()], tol=1.0)
+        return cost_fn(res.x)
