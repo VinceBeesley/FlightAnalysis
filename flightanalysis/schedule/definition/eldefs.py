@@ -159,7 +159,7 @@ class ElDefs:
             
             if i < rolls.n - 1 and np.sign(rolls.value[i]) == np.sign(rolls.value[i+1]):
                 eds.add(ElDef.line(
-                    eds.get_new_name(),
+                    f"{name}_{i+1}_pause",
                     s, pause, 0
                 ))
             
