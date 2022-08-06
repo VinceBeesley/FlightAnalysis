@@ -68,11 +68,11 @@ class ManDef:
             case Position.CENTRE:
                 man_centre = (max(template.pos.x) + min(template.pos.x)) / 2
 
-                l_req = box_edge - man_centre
+                l_req = box_edge - man_centre 
 
             case Position.END: 
                 
-                l_req = box_edge - max(template.pos.x)
+                l_req = box_edge - max(template.pos.x) 
 
         #Create the line.
         # TODO Decide if speed should be linked to the Inter Element criteria for this manoeuvre.
@@ -120,6 +120,14 @@ class ManDef:
             self.mps.line_length if l is None else l, 
             roll
         ))
+
+    def add_stallturn(self, s=None, rate=None) -> ElDef:
+        self.eds.add(ElDef.stallturn(
+            self.eds.get_new_name(),
+            self.mps.speed if s is None else s,
+            self.mps.stallturn_rate if rate is None else rate
+        ))
+
 
     def add_snap(
         self,

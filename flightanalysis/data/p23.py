@@ -194,9 +194,23 @@ def hB2():
     ))
 
     md.add_loop(np.pi/2)
-    md.add_simple_roll(ropts.valuefunc(0), l=100)
+    md.add_and_pad_els(
+        ElDefs.from_list([ElDef.roll(
+            md.eds.get_new_name(),
+            md.mps.speed,
+            md.mps.partial_roll_rate,
+            ropts.valuefunc(0)
+        )])
+    )
     md.add_loop(np.pi)
-    md.add_simple_roll(ropts.valuefunc(1), l=100)
+    md.add_and_pad_els(
+        ElDefs.from_list([ElDef.roll(
+            md.eds.get_new_name(),
+            md.mps.speed,
+            md.mps.partial_roll_rate,
+            ropts.valuefunc(1)
+        )])
+    )
     md.add_loop(-np.pi/2)
     return md
 
@@ -215,17 +229,17 @@ def rEt():
     md.add_loop(-np.pi/4)
     md.add_and_pad_els(
         ElDefs.create_roll_combo(
-            md.eds.get_new_name(),
-            ManParm(
-                md.mps.get_new_name("roll_"),
+            f"{md.eds.get_new_name()}_1",
+            md.mps.add(ManParm(
+                md.mps.next_free_name("roll_"),
                 Combination([[np.pi, -np.pi],[-np.pi, np.pi]]),
                 0
-            ),
-            md.mps.s
+            )),
+            md.mps.speed,
             [md.mps.partial_roll_rate, md.mps.partial_roll_rate],
             md.mps.point_length
         ),
-        l=lambda mps: 2 * mps.loop_radius
+        l=lambda mps: 2 * mps.loop_radius.value
     )
     md.add_loop(7*np.pi/4)
     md.add_simple_roll("2x4")
@@ -307,7 +321,7 @@ def fTrn():
 
     ropts = md.mps.add(ManParm("roll_option", Combination(
         [
-            [np.pi*2, -np.pi/2],
+            [np.pi/2, -np.pi/2],
             [-np.pi/2, np.pi/2],
         ]
     ),0))
@@ -345,16 +359,16 @@ def trgle():
         )
     )
 
-    e1 = md.add_roll_combo([np.pi/2])
-    bline_length = lambda mps: mps.line_length.value * np.cos(45) - e1.pfuncs["length"](mps)
+    e1 = md.add_roll_combo([np.pi])
+    bline_length = lambda mps: mps.line_length.value * np.cos(np.pi/4) - 0.5*e1[0].pfuncs["length"](mps)
     md.add_line(l=bline_length)
-    md.add_loop(-np.pi*3.4)
+    md.add_loop(-np.pi*3/4)
     md.add_simple_roll("2x4")
     md.add_loop(np.pi/2)
     md.add_simple_roll("2x4")
-    md.add_loop(-np.pi*3.4)
+    md.add_loop(-np.pi*3/4)
     md.add_line(l=bline_length)
-    e1 = md.add_roll_combo([np.pi/2])
+    e1 = md.add_roll_combo([np.pi])
     return md
 
 def sFin():
@@ -369,8 +383,8 @@ def sFin():
         )
     )
 
-    md.add_loop(np.pi)
-    md.add_simple_roll("1/2")
+    md.add_loop(np.pi/2)
+    md.add_simple_roll("1/2", l=50)
     md.add_loop(-np.pi*3/4)
     md.add_simple_roll("2X4", l=150)
     md.add_loop(-np.pi/4)
@@ -392,9 +406,9 @@ def lop():
 
     md.add_loop(-np.pi*3/4)
     md.add_loop(
-        np.pi/2, 
+        -np.pi/2, 
         md.mps.add(ManParm(
-            md.mps.get_new_name("roll_"), 
+            md.mps.next_free_name("roll_"), 
             Combination([[np.pi, -np.pi]]), 0
         ))
     )
@@ -411,18 +425,22 @@ def create_p23():
 
 
 if __name__ == "__main__":
-    for mfunc in p23funcs[8:]:
-        md = mfunc()
-        man = md.create()
-        itrans = md.info.initial_transform(170, 1)
-        eld = md.create_entry_line(itrans)
-        el = eld(md.mps)
-        et = el.create_template(itrans)
-        template = man.create_template(et[-1].transform)
-        
+    p23 = create_p23()
+
+
+#    for mfunc in p23funcs:
+#        md = mfunc()
+#
+#        man = md.create()
+#        itrans = md.info.initial_transform(170, 1)
+#        eld = md.create_entry_line(itrans)
+#        el = eld(md.mps)
+#        et = el.create_template(itrans)
+#        template = man.create_template(et[-1].transform)
+#        
         
 
-        from flightplotting import plotsec
-
-        plotsec(State.stack([et, template]), nmodels=3).show()
-        pass
+    from flightplotting import plotsec
+    template = p23.create_template()
+    plotsec(template, nmodels=0).show()
+    pass

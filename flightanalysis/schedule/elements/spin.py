@@ -23,7 +23,7 @@ class Spin(El):
         _inverted = np.sign(transform.rotate(PZ()).z)[0]
         break_angle = np.radians(30) # pitch angle offset from vertical downline
         
-        nose_drop = Loop(speed, 15, -_inverted/4).create_template(transform).superimpose_rotation(
+        nose_drop = Loop(speed, 7.5, np.pi*_inverted/2).create_template(transform).superimpose_rotation(
             PY(), 
             -abs(break_angle) * _inverted
         ).label(sub_element="nose_drop")

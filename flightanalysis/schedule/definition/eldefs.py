@@ -129,6 +129,15 @@ class ElDef:
             rate=rate
         )
 
+    @staticmethod
+    def stallturn(name, s, rate):
+        return ElDef.build(
+            name,
+            StallTurn,
+            speed=s,
+            yaw_rate=rate
+        )
+
     @property
     def id(self):
         return int(self.name.split("_")[1])
