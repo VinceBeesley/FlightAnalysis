@@ -7,9 +7,10 @@ from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn, 
 from flightanalysis.schedule.manoeuvre import Manoeuvre
 from flightanalysis.criteria.comparison import Comparison
 from flightanalysis.criteria.local import Combination
-
+from inspect import getfullargspec
 from functools import partial
 from . import ManParm, ManParms, _a
+from copy import deepcopy
 
 
 class ElDef:
@@ -43,9 +44,13 @@ class ElDef:
             )
 
     def __call__(self, mps: ManParms) -> El:
-        kwargs = {pname: pfunc(mps) for pname, pfunc in self.pfuncs.items() }
-        kwargs["uid"] = self.name
-        return self.Kind(**kwargs) 
+        kwargs = {}
+        args = getfullargspec(self.Kind.__init__).args
+        for pname, pfunc in self.pfuncs.items():
+            # only use the parameter if it is actually needed to create the element
+            if pname in args: 
+                kwargs[pname] = pfunc(mps)
+        return self.Kind(uid=self.name, **kwargs) 
     
     def build(name, Kind, **kwargs):
         ed = ElDef(
@@ -96,6 +101,33 @@ class ElDef:
         if isinstance(rate, ManParm):
             rate.append(ed.collectors["rate"])
         return ed
+
+    @staticmethod
+    def snap(name: str, s, rate, roll, direction):
+        #The only way to work out the length of the snap is to create a template
+        #and measure it, as it is a bit complicated and not used in the constructor. 
+        # Therefore we bodge an extra pfunc onto the ElDef to do this. The pfuncs 
+        # are only used if they are needed so it doesn't give an argument error.
+        return ElDef.build(
+            name,
+            Snap,
+            speed=s,
+            rolls=roll,
+            direction=direction,
+            rate=rate,
+            length=lambda mps: Snap(_a(s)(mps), _a(roll)(mps), _a(rate)(mps), 1, "temp").length
+        )
+
+    @staticmethod
+    def spin(name: str, s, turns, opp_turns, rate):
+        return ElDef.build(
+            name,
+            Spin,
+            speed=s,
+            turns=turns,
+            opp_turns=opp_turns,
+            rate=rate
+        )
 
     @property
     def id(self):

@@ -16,3 +16,7 @@ def _a(arg):
 from .eldefs import ElDef, ElDefs
 
 from .mandef import ManDef
+
+
+from .schedule_definition import SchedDef
+

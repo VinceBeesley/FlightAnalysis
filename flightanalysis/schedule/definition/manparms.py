@@ -5,7 +5,7 @@ import pandas as pd
 from numbers import Number
 from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn, El, Elements
 from flightanalysis.schedule.manoeuvre import Manoeuvre
-from flightanalysis.criteria.comparison import Comparison
+from flightanalysis.criteria.comparison import *
 from flightanalysis.criteria.local import Combination, AngleCrit
 
 from functools import partial
@@ -117,6 +117,34 @@ class ManParms:
         for mp, col in colls.items():
             self.parms[mp].append(col)
 
+    @staticmethod
+    def create_defaults_f3a(**kwargs):
+        mps = ManParms.from_list([
+            ManParm("speed", f3a_speed, 30.0),
+            ManParm("loop_radius", f3a_radius, 55.0),
+            ManParm("line_length", f3a_length, 130.0),
+            ManParm("point_length", f3a_length, 10.0),
+            ManParm("continuous_roll_rate", f3a_roll_rate, np.pi),
+            ManParm("partial_roll_rate", f3a_roll_rate, np.pi),
+            ManParm("snap_rate", f3a_roll_rate, 4*np.pi),
+            ManParm("stallturn_rate", f3a_roll_rate, 2*np.pi),
+            ManParm("spin_rate", f3a_roll_rate, 2*np.pi),
+        ])
+
+        for k, v in kwargs.items():
+            if isinstance(v, ManParm):
+                mps.parms[v.name] = v
+            elif isinstance(v, Number):
+                mps.parms[k].default = v
+        return mps
+
+    def next_free_name(self, prefix: str):
+        i=0
+        while f"{prefix}{i}" in self.parms:
+            i+=1
+        else:
+            return f"{prefix}{i}"
+
 
 class MPValue:
     def __init__(self, value, minval, maxval, slope):
@@ -124,3 +152,6 @@ class MPValue:
         self.minval = minval
         self.maxval = maxval
         self.slope = slope
+
+
+

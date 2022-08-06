@@ -14,28 +14,29 @@ class Orientation(Enum):
     INVERTED=-1
 
     def roll_angle(self):
-        try:
-            return {
-                1: np.pi,
-                -1: 0
-            }[self.value]
-        except KeyError:
-            raise ValueError("Cant calculate yaw angle for driven Orientation")
+        return {
+            Orientation.UPRIGHT: np.pi,
+            Orientation.INVERTED: 0
+        }[self]
 
 class Direction(Enum):
     DRIVEN=0
     UPWIND=1
-    DOWNWIND=-1
+    DOWNWIND=2
 
-    def yaw_angle(self, wind: int=1) -> float:
-        try:
-            return {
-                1: np.sign(wind),
-                -1: 0
-            }[self.value]
-        except KeyError:
-            raise ValueError("Cant calculate yaw angle for driven Direction")
+    def get_wind(self, direction: int=1) -> int:
+        return {
+            Direction.UPWIND: -direction,
+            Direction.DOWNWIND: direction
+        }[self]
 
+    def get_direction(self, wind: int=1) -> int:
+        """return 1 for heading in +ve x direction, -1 for negative"""
+        return {
+            Direction.UPWIND: -wind,
+            Direction.DOWNWIND: wind
+        }[self]
+        
 
 class Height(Enum):
     BTM=1
@@ -47,10 +48,10 @@ class Height(Enum):
         btm = np.tan(np.radians(15))* depth
     
         return {
-            1: btm ,
-            2: 0.5 * (btm + top),
-            3: top
-        }[self.value]
+            Height.BTM: btm ,
+            Height.MID: 0.5 * (btm + top),
+            Height.TOP: top
+        }[self]
         
 class Position(Enum):
     CENTRE=0
@@ -68,6 +69,12 @@ class BoxLocation():
         self.d = d
         self.o = o
     
+    def initial_rotation(self, wind):
+        return Euler(
+            self.o.roll_angle(),
+            0.0,
+            np.pi*(-self.d.get_direction(wind) + 1) / 2 
+        )
 
 class ManInfo:
     def __init__(
@@ -87,25 +94,22 @@ class ManInfo:
         self.start = start
         self.end = end
 
-    def initial_transform(self, depth=170, wind=1) -> Transformation:
+
+    def initial_transform(self, depth, wind) -> Transformation:
         return Transformation(
             Point(
                 {
                     Position.CENTRE: {
-                        Direction.UPWIND: -depth * np.tan(np.radians(60)),
-                        Direction.DOWNWIND: depth * np.tan(np.radians(60))
+                        Direction.UPWIND: depth * np.tan(np.radians(60)),
+                        Direction.DOWNWIND: -depth * np.tan(np.radians(60))
                     }[self.start.d],
                     Position.END: 0.0
                 }[self.position],
                 depth,
                 self.start.h.calculate(depth)
             ), 
-            Euler(
-                self.start.o.roll_angle(),
-                0.0,
-                self.start.d.yaw_angle(wind)
-            )
+            self.start.initial_rotation(wind)
         )
 
 
-        
+    

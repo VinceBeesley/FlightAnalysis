@@ -7,12 +7,16 @@ from . import El, Line
 
 #TODO default rate is set for box size of 2m, this is misleading. When scaled to 170m distance it is about right.
 class Snap(El):
-    parameters = El.parameters + "rolls,negative,rate".split(",")
-    def __init__(self, speed:float, rolls: float, negative=False, rate:float=3400, uid: str=None):
+    parameters = El.parameters + "rolls,direction,rate,length".split(",")
+    def __init__(self, speed:float, rolls: float, rate:float, direction:int=1, uid: str=None):
         super().__init__(uid, speed)
         self.rolls = rolls
-        self.negative = negative
+        self.direction = direction
         self.rate = rate
+
+    @property
+    def length(self):
+        return self.create_template(Transformation()).pos.x[-1]  
 
     def scale(self, factor):
         return self.set_parms(rate=self.rate/factor)
@@ -20,7 +24,6 @@ class Snap(El):
     def create_template(self, transform: Transformation) -> State: 
         """Generate a section representing a snap roll, this is compared to a real snap in examples/snap_rolls.ipynb"""
         
-        direc = -1 if self.negative else 1
         break_angle = np.radians(10)
 
         pitch_rate = self.rate
@@ -31,10 +34,10 @@ class Snap(El):
             vel=PX(self.speed)
         ).extrapolate( 
             2 * np.pi * break_angle / pitch_rate
-        ).superimpose_rotation(PY(), direc * break_angle)
+        ).superimpose_rotation(PY(), self.direction * break_angle)
         
         
-        body_autorotation_axis = Euler(0, direc * break_angle, 0).inverse().transform_point(PX())
+        body_autorotation_axis = Euler(0, self.direction * break_angle, 0).inverse().transform_point(PX())
         
         autorotation = pitch_break[-1].copy(rvel=P0()).extrapolate(
             2 * np.pi * abs(self.rolls) / self.rate
@@ -45,7 +48,7 @@ class Snap(El):
 
         correction = autorotation[-1].copy(rvel=P0()).extrapolate( 
             2 * np.pi * break_angle / pitch_rate
-        ).superimpose_rotation(PY(), -direc * break_angle )
+        ).superimpose_rotation(PY(), -self.direction * break_angle )
 
         return self._add_rolls(
             State.stack([
@@ -67,4 +70,4 @@ class Snap(El):
 
     @property
     def length(self):
-        return self.create_template(Transformation(), 30.0)[-1].pos.x[0]
+        return self.create_template(Transformation())[-1].pos.x[-1]

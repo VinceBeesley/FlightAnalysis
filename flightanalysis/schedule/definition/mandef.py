@@ -17,14 +17,13 @@ from numbers import Number
 from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn, El, Elements
 from flightanalysis.schedule.manoeuvre import Manoeuvre
 from flightanalysis.schedule.definition.maninfo import ManInfo
-from flightanalysis.criteria.comparison import Comparison, f3a_speed, f3a_radius, f3a_length, f3a_roll_rate
+from flightanalysis.criteria.comparison import Comparison, f3a_speed, f3a_radius, f3a_length, f3a_roll_rate, f3a_free
 from flightanalysis.criteria.local import Combination
 from geometry import Transformation, Euler, Point, P0
 from functools import partial
 from scipy.optimize import minimize
-from . import ManParm, ManParms, ElDef, ElDefs, _a, MPValue
-
-
+from . import ManParm, ManParms, ElDef, ElDefs, _a, MPValue, Position, Direction
+from copy import deepcopy
 
 
 class ManDef:
@@ -36,27 +35,58 @@ class ManDef:
 
     def __init__(self, info: ManInfo, mps: ManParms = None, eds: ElDefs = None):
         self.info: ManInfo = info
-        self.mps: ManParms = ManParms() if mps is None else mps
+        self.mps: ManParms = ManParms.create_defaults_f3a() if mps is None else mps
         self.eds: ElDefs = ElDefs() if eds is None else eds
 
-    def create(self):
+    def create_entry_line(self, itrans: Transformation) -> ElDef:
+        """Create a line definition connecting Transformation to the start of this manoeuvre.
+
+        The length of the line is set so that the manoeuvre is centred or extended to box
+        edge as required.
+
+        Args:
+            itrans (Transformation): The location to draw the line from, usually the end of the last manoeuvre.
+
+        Returns:
+            ElDef: A Line element that will position this manoeuvre correctly.
+        """
+        #Is heading in the +ve or -ve x direction?
+        heading = np.sign(itrans.rotation.transform_point(Point(1, 0, 0)).x[0]) 
+
+        #Is the wind is in +ve or negative x direction?
+        wind = self.info.start.d.get_wind(heading)
+
+        #Create a template, at zero
+        template = self.create().create_template(Transformation(
+            P0(),
+            Euler(self.info.start.o.roll_angle(), 0, 0)
+        ))
+
+        #Calculate the line length required.
+        box_edge = np.tan(np.radians(60)) * itrans.translation.y[0]
+        match self.info.position:
+            case Position.CENTRE:
+                man_centre = (max(template.pos.x) + min(template.pos.x)) / 2
+
+                l_req = box_edge - man_centre
+
+            case Position.END: 
+                
+                l_req = box_edge - max(template.pos.x)
+
+        #Create the line.
+        # TODO Decide if speed should be linked to the Inter Element criteria for this manoeuvre.
+        return ElDef.line(f"entry_{self.info.short_name}", self.mps.speed, l_req, 0)
+
+    def create(self) -> Manoeuvre:
+        """Create the manoeuvre based on the default values in self.mps.
+
+        Returns:
+            Manoeuvre: The manoeuvre
+        """
         return Manoeuvre(
             Elements.from_list([ed(self.mps) for ed in self.eds]), 
             uid=self.info.name
-        )
-
-    @staticmethod
-    def basic_f3a(info: ManInfo):
-        return ManDef(
-            info,
-            ManParms.from_list([
-                ManParm("speed", f3a_speed, 30.0),
-                ManParm("loop_radius", f3a_radius, 55.0),
-                ManParm("line_length", f3a_length, 130.0),
-                ManParm("point_length", f3a_length, 10.0),
-                ManParm("continuous_roll_rate", f3a_roll_rate, np.pi),
-                ManParm("partial_roll_rate", f3a_roll_rate, np.pi)
-            ])
         )
 
     def add_loop(
@@ -91,20 +121,112 @@ class ManDef:
             roll
         ))
 
-    def add_simple_roll(self, rolls:str, s=None, l=None, pause=None, criteria=f3a_length):
-        i=0
-        while f"roll_{i}" in self.mps.parms:
-            i+=1
-        else:
-            self.add_roll_combo(
-                self.mps.add(
-                    ManParm(
-                        f"roll_{i}", 
-                        Combination.rollcombo(rolls), 
-                        0
-            )), s=s, l=l, pause=pause, criteria=criteria)
+    def add_snap(
+        self,
+        roll: Union[float, ManParm, Callable],
+        direction: Union[int, ManParm, Callable],
+        rate: Union[float, ManParm, Callable]=None,
+        s: Union[ManParm, Callable]=None
+    ) -> ElDef:
+        return self.eds.add(ElDef.snap(
+            self.eds.get_new_name(),
+            self.mps.speed if s is None else s, 
+            self.mps.snap_rate if rate is None else rate,
+            roll,
+            direction
+        ))
 
-    def add_roll_combo(
+    def add_spin(
+        self,
+        turns: List[List[float]],
+        rate: Union[float, ManParm, Callable]=None
+    ):
+        turns = self.mps.add(ManParm(
+            self.mps.next_free_name("spins_"),
+            Combination(turns),
+            0
+        ))
+        return self.eds.add(ElDef.spin(
+            self.eds.get_new_name(),
+            20,
+            turns.valuefunc(0),
+            turns.valuefunc(1) if turns.n == 2 else 0,
+            self.mps.spin_rate if rate is None else rate
+        ))
+
+    def add_padded_snap(
+        self,
+        roll:List[List[float]],
+        direction:int=None,
+        s=None,
+        rate=None,
+        l=None,
+        criteria=f3a_length
+    ):
+        return self.add_and_pad_els(
+            ElDefs.from_list([ElDef.snap(
+                self.eds.get_new_name(),
+                self.mps.speed if s is None else s, 
+                self.mps.snap_rate if rate is None else rate,
+                self.mps.add(ManParm(
+                    self.mps.next_free_name("snaproll_"),
+                    Combination(roll), 
+                    0
+                )),
+                self.mps.add(ManParm(
+                    self.mps.next_free_name("snapdirection_"),
+                    Combination([[1], [-1]] if direction is None else [[direction]]),
+                    0
+                )) 
+            )]), l, s, criteria
+        )
+
+    def add_simple_snap(
+        self,
+        roll:List[float],
+        direction:int=None,
+        s=None,
+        rate=None
+    ):
+        return self.add_snap(
+            self.mps.add(ManParm(
+                self.mps.next_free_name("snaproll_"),
+                Combination([roll]),
+                0
+            )),
+            self.mps.add(ManParm(
+                self.mps.next_free_name("snapdirection_"),
+                Combination([[1, -1 ]] if direction is None else [[direction]]),
+                0
+            )),
+            rate,
+            s
+        )
+
+    def add_simple_roll(self, rolls:str, s=None, l=None, rates=None, pause=None, criteria=f3a_length):
+        self.add_padded_roll_combo(
+            self.mps.add(
+                ManParm(
+                    self.mps.next_free_name("roll_"), 
+                    Combination.rollcombo(rolls), 
+                    0
+                )
+            ), 
+            rates=rates, s=s, l=l, pause=pause, criteria=criteria
+        )
+
+    def get_f3a_rates(self, rolls: ManParm) -> List[ManParm]:
+        rates = []
+        for roll in rolls.value:
+            if abs(roll) >= 2 * np.pi:
+                rates.append(self.mps.continuous_roll_rate)
+            else:
+                rates.append(self.mps.partial_roll_rate)
+        return rates            
+
+
+
+    def add_padded_roll_combo(
         self, 
         rolls: ManParm, 
         rates: List[ManParm] = None,
@@ -113,24 +235,37 @@ class ManDef:
         pause: Union[ManParm, Callable] = None,
         criteria=f3a_length
     ):
-        #get rates if rate is None
-        if rates is None:
-            rates = []
-            for roll in rolls.value:
-                if abs(roll) >= 2 * np.pi:
-                    rates.append(self.mps.continuous_roll_rate)
-                else:
-                    rates.append(self.mps.partial_roll_rate)
 
         roll_els = ElDefs.create_roll_combo(
             f"{self.eds.get_new_name()}_1",  # TODO fiddling with the names like this is a bodge
             rolls, 
             self.mps.speed if s is None else s,
-            rates,
+            self.get_f3a_rates(rolls) if rates is None else rates,
             self.mps.point_length if pause is None else pause
         )
 
         return self.add_and_pad_els(roll_els, l, s, criteria)
+
+    def add_roll_combo(
+        self,rolls:Union[ManParm, List[float]], 
+        reversible: bool = True,
+        rates: List[ManParm] = None,
+        s=None,
+        pause=None
+    ):
+        
+        if not isinstance(rolls,ManParm):
+            rolls = self.mps.add(ManParm("roll_combo", Combination.rolllist(rolls, reversible), 0))
+
+        return self.eds.add(ElDefs.create_roll_combo(
+            self.eds.get_new_name(),
+            rolls,
+            self.mps.speed if s is None else s,
+            self.get_f3a_rates(rolls) if rates is None else rates,
+            self.mps.point_length if pause is None else pause
+        ))
+
+
 
     def add_and_pad_els(self, eds: ElDefs, l=None, s=None, criteria=f3a_length):
         """Add an elements collection to this manoeuvre and pad it so that it sits between two
@@ -170,20 +305,23 @@ class ManDef:
         depth=170, 
         variables: Dict[str,MPValue]=None
     ):
+        
+        nmd = deepcopy(self)
+
         if not variables:
             variables = dict(
                 loop_radius=MPValue(55, 30, 70, 1),
                 line_length=MPValue(130, 30, 200, 1)
             )
 
-        itrans = self.info.initial_transform(depth, wind)
-        end_h = self.info.end.h.calculate(depth)
+        itrans = nmd.info.initial_transform(depth, wind)
+        end_h = nmd.info.end.h.calculate(depth)
 
         def cost_fn(vars):
             for k, v in zip(variables.keys(), vars):
-                self.mps.parms[k].default = v
-            template = self.create().create_template(itrans)
-            h_cost = 10 * abs(template[-1].pos.z[0] - end_h) 
+                nmd.mps.parms[k].default = v
+            template = nmd.create().create_template(itrans)
+            h_cost = 10 * abs(template[-1].pos.z[0] - end_h)**2
             v_cost = [v.slope * abs((v.value - nv)) for v, nv in zip(variables.values(), vars)]
 
             costs = v_cost + [h_cost]
@@ -191,4 +329,4 @@ class ManDef:
             return sum(costs)
 
         res = minimize(cost_fn, [v.value for v in variables.values()], tol=1.0)
-        return cost_fn(res.x)
+        return nmd

@@ -8,7 +8,7 @@ from . import El
 
 
 class Line(El):
-    parameters = El.parameters + "length,roll,rate,direction".split(",")
+    parameters = El.parameters + "length,roll,rate".split(",")
     def __init__(self, speed, length, roll=0, uid:str=None):
         super().__init__(uid, speed)
         self.length = length
@@ -20,10 +20,6 @@ class Line(El):
     @property
     def rate(self):
         return abs(self.roll) * self.speed / self.length
-
-    @property
-    def direction(self):
-        return np.sign(self.roll)
 
     def create_template(self, transform: Transformation) -> State:
         """contstruct a State representing the judging frame for this line element
