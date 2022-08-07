@@ -10,7 +10,7 @@ class Comparison:
         self.initial_value = initial_value
 
     def lookup(self,value):
-        return self.levels[:value].iloc[-1]
+        return self.levels[:abs(value)].iloc[-1]
 
     def compare(self, v1, v2):
         if v1 is None:

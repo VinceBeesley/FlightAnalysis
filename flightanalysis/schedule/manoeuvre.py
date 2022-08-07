@@ -2,7 +2,7 @@ from geometry import Transformation
 from flightanalysis.state import State
 from flightanalysis.schedule.elements import Loop, Line, StallTurn, Snap, Spin, get_rates, El, Elements
 from flightanalysis.schedule.figure_rules import IMAC, rules, Rules
-
+from typing import List
 import numpy as np
 import pandas as pd
 
@@ -11,14 +11,23 @@ _els = {c.__name__: c for c in El.__subclasses__()}
 
 
 class Manoeuvre():
-    def __init__(self, elements: Elements, uid: str = None):
+    def __init__(self, entry_line: Line, elements: Elements, uid: str = None):
+        self.entry_line = entry_line
         self.elements = elements  
         self.uid = uid
-    
+
+    @staticmethod
+    def from_all_elements(els: List[El]):
+        return Manoeuvre(els[0], els[1:])
+
+    @property
+    def all_elements(self):
+        return Elements.from_list([self.entry_line, *self.elements.to_list()]) if not self.entry_line is None else self.elements
+
     def create_template(self, transform: Transformation) -> State:
         itrans = transform
         templates = []
-        for i, element in enumerate(self.elements):
+        for i, element in enumerate(self.all_elements):
             templates.append(element.create_template(itrans))
             itrans = templates[-1][-1].transform
         
@@ -27,24 +36,23 @@ class Manoeuvre():
     def get_data(self, sec: State):
         return State(sec.data.loc[sec.data.manoeuvre == self.uid])
 
-    def match_intention(self, transform: Transformation, flown: State, speed: float=None):
+    def match_intention(self, transform: Transformation, flown: State):
         """Create a new manoeuvre with all the elements scaled to match the corresponding flown element"""
         elms = []
-
-        for elm in self.elements:
+        flown = self.get_data(flown)
+        for elm in self.all_elements:
             edata=elm.get_data(flown)
             elms.append(elm.match_intention(transform, edata))
             try:
                 transform = elms[-1].create_template(
-                    transform, 
-                    edata.data.u.mean()
+                    transform
                 )[-1].transform
             except Exception as ex:
                 print(f"Error creating template for {elm.__class__.__name__}, {elm.__dict__}")
                 print(str(ex))
                 raise Exception("Error Creating Template")
 
-        return self.replace_elms(elms), transform
+        return Manoeuvre(elms[0], Elements.from_list(elms[1:]), self.uid), transform
 
 
 

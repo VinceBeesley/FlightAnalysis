@@ -171,7 +171,7 @@ def iSp():
     md.add_loop(np.pi/2)
     return md
 
-def hB2():
+def hB2(option: int=0):
     md = ManDef(
         ManInfo(
             "Humpty Bump", 
@@ -193,7 +193,7 @@ def hB2():
             [-np.pi*1.5, np.pi/2]
         ]
         ), 
-        0
+        option
     ))
 
     md.add_loop(np.pi/2)
@@ -267,7 +267,7 @@ def sqL():
     md.add_loop(np.pi/2)
     return md
 
-def M():
+def M(option:int=1):
     md = ManDef(
         ManInfo(
             "Figure M", 
@@ -285,7 +285,7 @@ def M():
             [np.pi*3/2, np.pi*3/2],
             [-np.pi*3/2, -np.pi*3/2],
         ]
-    ),1))
+    ),option))
 
     md.add_loop(np.pi/2)
     md.add_and_pad_els(
@@ -312,7 +312,7 @@ def M():
     md.add_loop(np.pi/2)
     return md
 
-def fTrn():
+def fTrn(option:int=1):
     md = ManDef(
         ManInfo(
             "Fighter Turn", 
@@ -329,7 +329,7 @@ def fTrn():
             [np.pi/2, -np.pi/2],
             [-np.pi/2, np.pi/2],
         ]
-    ),1))
+    ),option))
 
     md.add_loop(np.pi/4)
     md.add_and_pad_els(
@@ -424,9 +424,15 @@ def lop():
 
 p23funcs = [tHat,hSqL,hB,hSqLC,upL,h8L,rollc,pImm,iSp,hB2,rEt,sqL,M,fTrn,trgle,sFin,lop]
 
-def create_p23():
+def create_p23(wind=-1) -> SchedDef:
     sd =  SchedDef("P23")
+      
+
     for mfunc in p23funcs:
+        if mfunc is M:
+            mfunc = lambda : M(1 if wind==-1 else 0)
+        if mfunc is fTrn:
+            mfunc = lambda : fTrn(1 if wind==-1 else 0)
         sd.add(mfunc())
     return sd
 

@@ -81,20 +81,25 @@ class ManDef:
 
         return ElDef.line(f"entry_{self.info.short_name}", self.mps.speed, l_req, 0)
 
-    def create(self, itrans:Transformation=None) -> Manoeuvre:
+
+    def create(self, itrans=None, depth=None, wind=None) -> Manoeuvre:
         """Create the manoeuvre based on the default values in self.mps.
 
         Returns:
             Manoeuvre: The manoeuvre
         """
-        eline = self.create_entry_line(itrans)(self.mps)
+        
         return Manoeuvre(
-            Elements.from_list([eline, *[ed(self.mps) for ed in self.eds]]), 
-            uid=self.info.name
+            self.create_entry_line(
+                self.info.initial_transform(depth, wind) if itrans is None else itrans
+            )(self.mps),
+            Elements.from_list([ed(self.mps) for ed in self.eds]), 
+            uid=self.info.short_name
         )
 
     def _create(self) -> Manoeuvre:
         return Manoeuvre(
+            None,
             Elements.from_list([ed(self.mps) for ed in self.eds]), 
             uid=self.info.name
         )

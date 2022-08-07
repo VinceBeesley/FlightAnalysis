@@ -31,7 +31,7 @@ class StallTurn(El):
 
     def match_intention(self, transform: Transformation, flown: State):
         return self.set_parms(
-            yaw_rate=np.sign(flown.r.mean().z[0]) * abs(self.yaw_rate), 
+            yaw_rate=flown.r.max(), 
         )
 
 

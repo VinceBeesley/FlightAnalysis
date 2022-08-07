@@ -59,6 +59,9 @@ class Elements:
     def __getitem__(self, value):
         return list(self.els.values())[value]
 
+    def to_list(self):
+        return list(self.els.values())
+
     @staticmethod
     def from_list(els):
         return Elements({el.uid: el for el in els})

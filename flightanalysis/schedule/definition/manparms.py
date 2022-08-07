@@ -106,7 +106,7 @@ class ManParms:
         Returns:
             Dict[str, float]: The sum of downgrades for each ManParm
         """
-        return {key: mp.get_downgrades(manoeuvre.elements) for key, mp in self.parms.items() if not isinstance(mp.criteria, Combination)}
+        return {key: mp.get_downgrades(manoeuvre.all_elements) for key, mp in self.parms.items() if not isinstance(mp.criteria, Combination)}
     
     def append_collectors(self, colls: Dict[str, Callable]):
         """Append each of a dict of collector methods to the relevant ManParm
