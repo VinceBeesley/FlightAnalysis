@@ -5,21 +5,29 @@ from pytest import approx, fixture
 
 from geometry import Transformation, Point, Quaternion, PZ, PX, Euler
 import numpy as np
-
+from geometry.testing import assert_almost_equal, assert_equal
 
 @fixture
 def half_loop():
     return Loop(30, 50.0, np.pi, 0)
 
+@fixture
+def hl_template(half_loop):
+    return half_loop.create_template(Transformation())
 
-def test_create_template(half_loop):
-    new_elm = half_loop.create_template(Transformation())
-
-    np.testing.assert_array_almost_equal(
-        new_elm[-1].pos.data,
-        PZ(-50).data,
-        0
+def test_create_template_final_position(half_loop, hl_template):
+    assert_almost_equal(
+        hl_template[-1].pos,
+        PZ(-half_loop.diameter),
+        2
     )
+
+def test_create_template_final_attitude(half_loop, hl_template):
+    assert_almost_equal(
+        hl_template[-1].att.transform_point(PX(1)),
+        PX(-1)
+    )
+
 
 def test_match_axis_rate(half_loop):
     elm = half_loop.match_axis_rate(1.0).create_template(Transformation())

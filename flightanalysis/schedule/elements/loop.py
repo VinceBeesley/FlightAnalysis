@@ -45,7 +45,7 @@ class Loop(El):
             vel=PX(self.speed),
             rvel=PZ(self.angle / duration) if self.ke else PY(self.angle / duration) 
         ).extrapolate(duration)
-
+        
         return self._add_rolls(state, self.roll)
 
     def match_axis_rate(self, pitch_rate: float):

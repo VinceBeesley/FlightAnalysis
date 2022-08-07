@@ -8,6 +8,12 @@ length of lines, roll direction.
 A complete manoeuvre description includes a set of functions to create the elements based on
 the higher level parameters and another set of functions to collect the parameters from the 
 elements collection.
+
+TODO Tidy all the helper functions
+TODO Scale the manoeuvres defaults so they fit in a box
+TODO Define a serialisation format
+
+
 """
 import enum
 from typing import List, Dict, Callable, Union, Tuple
@@ -38,7 +44,7 @@ class ManDef:
         self.mps: ManParms = ManParms.create_defaults_f3a() if mps is None else mps
         self.eds: ElDefs = ElDefs() if eds is None else eds
 
-    def create_entry_line(self, itrans: Transformation) -> ElDef:
+    def create_entry_line(self, itrans: Transformation=None) -> ElDef:
         """Create a line definition connecting Transformation to the start of this manoeuvre.
 
         The length of the line is set so that the manoeuvre is centred or extended to box
@@ -50,40 +56,44 @@ class ManDef:
         Returns:
             ElDef: A Line element that will position this manoeuvre correctly.
         """
-        #Is heading in the +ve or -ve x direction?
-        heading = np.sign(itrans.rotation.transform_point(Point(1, 0, 0)).x[0]) 
-
-        #Is the wind is in +ve or negative x direction?
-        wind = self.info.start.d.get_wind(heading)
+        itrans = self.info.initial_transform(170, 1) if itrans is None else itrans
+        
+        
+        heading = np.sign(itrans.rotation.transform_point(Point(1, 0, 0)).x[0]) # 1 for +ve x heading, -1 for negative x
+        wind = self.info.start.d.get_wind(heading) # is wind in +ve or negative x direction?
 
         #Create a template, at zero
-        template = self.create().create_template(Transformation(
-            P0(),
+        template = self._create().create_template(Transformation(
+            Point(0,itrans.pos.y[0],0),
             Euler(self.info.start.o.roll_angle(), 0, 0)
         ))
-
-        #Calculate the line length required.
-        box_edge = np.tan(np.radians(60)) * itrans.translation.y[0]
+          
+        
         match self.info.position:
             case Position.CENTRE:
-                man_centre = (max(template.pos.x) + min(template.pos.x)) / 2
+                man_start_x = -(max(template.pos.x) + min(template.pos.x))/2  # distance from start to centre
+            case Position.END:
+                box_edge = np.tan(np.radians(60)) * template.pos.y #x location of box edge at every point 
+                man_start_x = min(box_edge - template.pos.x)
+        
+        #subtract the itrans
+        l_req =man_start_x - itrans.translation.x[0] * heading
 
-                l_req = box_edge - man_centre 
-
-            case Position.END: 
-                
-                l_req = box_edge - max(template.pos.x) 
-
-        #Create the line.
-        # TODO Decide if speed should be linked to the Inter Element criteria for this manoeuvre.
         return ElDef.line(f"entry_{self.info.short_name}", self.mps.speed, l_req, 0)
 
-    def create(self) -> Manoeuvre:
+    def create(self, itrans:Transformation=None) -> Manoeuvre:
         """Create the manoeuvre based on the default values in self.mps.
 
         Returns:
             Manoeuvre: The manoeuvre
         """
+        eline = self.create_entry_line(itrans)(self.mps)
+        return Manoeuvre(
+            Elements.from_list([eline, *[ed(self.mps) for ed in self.eds]]), 
+            uid=self.info.name
+        )
+
+    def _create(self) -> Manoeuvre:
         return Manoeuvre(
             Elements.from_list([ed(self.mps) for ed in self.eds]), 
             uid=self.info.name

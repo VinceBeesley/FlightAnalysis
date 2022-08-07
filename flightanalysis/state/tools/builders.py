@@ -21,13 +21,14 @@ def extrapolate(istate: State, duration: float) -> State:
         State: state projected forwards
     """
 
-    npoints = np.max([int(np.ceil(duration / istate.time.dt[0])), 3])
+    npoints = np.max([int(np.ceil(duration / istate.dt[0])), 3])
 
-    time = Time.from_t(np.linspace(0,duration, npoints))[:-1]
+    time = Time.from_t(np.linspace(0,duration, npoints))
     vel = istate.vel.tile(len(time))   
     rvel = istate.rvel.tile(len(time))
     att = istate.att.body_rotate(rvel * time.t)
     #pos = Point.concatenate([P0(), (att[1:].transform_point(vel[1:]) * time.dt[1:]).cumsum()]) + istate.pos
+    #TODO improve the position accuracy by extrapolating the points round a circle
     pos = (att.transform_point(vel) * time.dt).cumsum() + istate.pos
     return State.from_constructs(time,pos, att, vel, rvel)
 

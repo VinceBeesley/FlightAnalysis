@@ -74,7 +74,8 @@ def hSqLC():
             Position.END,
             BoxLocation(Height.TOP, Direction.DOWNWIND, Orientation.UPRIGHT),
             BoxLocation(Height.BTM)
-        )
+        ),
+        ManParms.create_defaults_f3a(line_length=130*np.cos(np.radians(45)))
     )
     md.add_loop(-np.pi/4)
     md.add_simple_roll("1/2") 
@@ -92,7 +93,8 @@ def upL():
             Position.CENTRE,
             BoxLocation(Height.BTM, Direction.UPWIND, Orientation.INVERTED),
             BoxLocation(Height.TOP)
-        )
+        ),
+        ManParms.create_defaults_f3a(line_length=110 + 130/np.cos(np.radians(45)))
     )
     md.add_loop(-np.pi/4)
     md.add_padded_snap([[1.5], [-1.5]])
@@ -144,7 +146,8 @@ def pImm():
             Position.END,
             BoxLocation(Height.BTM, Direction.DOWNWIND, Orientation.INVERTED),
             BoxLocation(Height.TOP)
-        )
+        ),
+        ManParms.create_defaults_f3a(loop_radius=100)
     )
 
     md.add_loop(-np.pi)
@@ -223,7 +226,8 @@ def rEt():
             Position.CENTRE,
             BoxLocation(Height.BTM, Direction.DOWNWIND, Orientation.INVERTED),
             BoxLocation(Height.TOP)
-        )
+        ),
+        ManParms.create_defaults_f3a(loop_radius=70.0, line_length=100.0)
     )
 
     md.add_loop(-np.pi/4)
@@ -272,7 +276,8 @@ def M():
             Position.CENTRE,
             BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),
             BoxLocation(Height.BTM)
-        )
+        ),
+        ManParms.create_defaults_f3a(line_length=150.0)
     )
 
     ropts = md.mps.add(ManParm("roll_option", Combination(
@@ -280,7 +285,7 @@ def M():
             [np.pi*3/2, np.pi*3/2],
             [-np.pi*3/2, -np.pi*3/2],
         ]
-    ),0))
+    ),1))
 
     md.add_loop(np.pi/2)
     md.add_and_pad_els(
@@ -324,7 +329,7 @@ def fTrn():
             [np.pi/2, -np.pi/2],
             [-np.pi/2, np.pi/2],
         ]
-    ),0))
+    ),1))
 
     md.add_loop(np.pi/4)
     md.add_and_pad_els(
@@ -380,13 +385,14 @@ def sFin():
             Position.END,
             BoxLocation(Height.BTM, Direction.DOWNWIND, Orientation.UPRIGHT),
             BoxLocation(Height.BTM)
-        )
+        ),
+        ManParms.create_defaults_f3a(loop_radius=30.0)
     )
 
     md.add_loop(np.pi/2)
-    md.add_simple_roll("1/2", l=50)
+    md.add_simple_roll("1/2", l=80)
     md.add_loop(-np.pi*3/4)
-    md.add_simple_roll("2X4", l=150)
+    md.add_simple_roll("2X4", l=80/np.cos(np.radians(45)) + 60)
     md.add_loop(-np.pi/4)
     return md
 
@@ -400,7 +406,8 @@ def lop():
             Position.CENTRE,
             BoxLocation(Height.BTM, Direction.UPWIND, Orientation.INVERTED),
             BoxLocation(Height.BTM)
-        )
+        ),
+        ManParms.create_defaults_f3a(loop_radius=100.0)
     )
 
 
@@ -440,7 +447,7 @@ if __name__ == "__main__":
 #        
         
 
-    from flightplotting import plotsec
+    from flightplotting import plotsec, plotdtw
     template = p23.create_template()
     plotsec(template, nmodels=0).show()
     pass

@@ -95,21 +95,30 @@ class ManInfo:
         self.end = end
 
 
-    def initial_transform(self, depth, wind) -> Transformation:
-        return Transformation(
-            Point(
-                {
-                    Position.CENTRE: {
-                        Direction.UPWIND: depth * np.tan(np.radians(60)),
-                        Direction.DOWNWIND: -depth * np.tan(np.radians(60))
-                    }[self.start.d],
-                    Position.END: 0.0
-                }[self.position],
-                depth,
-                self.start.h.calculate(depth)
-            ), 
-            self.start.initial_rotation(wind)
+    def initial_position(self, depth: float, wind: int) -> Transformation: 
+        return Point(
+            {
+                Position.CENTRE: {
+                    Direction.UPWIND: -depth * np.tan(np.radians(60)),
+                    Direction.DOWNWIND: depth * np.tan(np.radians(60))
+                }[self.start.d],
+                Position.END: 0.0
+            }[self.position],
+            depth,
+            self.start.h.calculate(depth)
         )
+
+    def initial_transform(self, depth, wind) -> Transformation:
+        """The default initial position. For a centre manoeuvre this is the box edge, for an end manoeuvre it is the centre
+
+        Args:
+            depth (float): _description_
+            wind (int): 1 for wind in +ve x direction, -1 for -ve x direction
+
+        Returns:
+            Transformation: _description_
+        """
+        return Transformation(self.initial_position(depth, wind), self.start.initial_rotation(wind))
 
 
     
