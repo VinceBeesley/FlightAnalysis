@@ -11,6 +11,14 @@ class StallTurn(El):
     def __init__(self, speed:float, yaw_rate:float=3.0, uid: str=None):
         super().__init__(uid, speed)
         self.yaw_rate = yaw_rate
+    
+    def to_dict(self):
+        return dict(
+            kind=self.__class__.__name__,
+            yaw_rate=self.yaw_rate,
+            speed=self.speed,
+            uid=self.uid
+        )
 
     def scale(self, factor):
         return self.set_parms()

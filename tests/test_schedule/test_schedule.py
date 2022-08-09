@@ -25,10 +25,6 @@ def aligned():
 
 
 
-def test_schedule(schedule):
-    assert schedule.category == Categories.F3A
-
-
 def test_create_raw_template(schedule):
     sched = schedule.scale_distance(170.0)
     out = sched.create_raw_template("left", 30.0, 170.0)
@@ -40,20 +36,7 @@ def test_create_raw_template(schedule):
     assert len(set(stallturn.element)) == 10
     
 
-@mark.skip("doesnt work")
-def test_match_axis_rate(schedule):
-    
-    sec = State.from_csv("tests/test_inputs/test_log_00000052_section.csv").subset(110, 200)
 
-    rates = get_rates(sec)
-
-    rate_matched = schedule.match_rates(rates)
-
-    for manoeuvre in rate_matched.manoeuvres:
-        for i, elm in enumerate(manoeuvre.elements):
-            if isinstance(elm, Line):
-
-                assert elm.length > 0.0, "manoeuvre {}, elm {}, length {}".format(manoeuvre.name, i, elm.length)
 
 def test_from_splitter():
     with open("tests/test_inputs/manual_F3A_P21_21_09_24_00000052.json", 'r') as f:

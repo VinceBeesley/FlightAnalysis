@@ -15,6 +15,16 @@ class Spin(El):
         self.opp_turns = opp_turns
         self.rate = rate
 
+    def to_dict(self):
+        return dict(
+            kind=self.__class__.__name__,
+            turns=self.turns,
+            opp_turns=self.opp_turns,
+            rate=self.rate,
+            speed=self.speed,
+            uid=self.uid
+        )
+
     def scale(self, factor):
         return self.set_parms(rate=self.rate / factor)
 

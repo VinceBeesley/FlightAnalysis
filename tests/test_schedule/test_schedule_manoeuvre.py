@@ -8,26 +8,11 @@ from flightanalysis.schedule.elements import Line, Loop
 from geometry import Point, Quaternion, Transformation, Coord
 
 import pytest
+from flightanalysis.data.p23 import create_p23
 
 
 
-@pytest.fixture(scope="session")
-def schedule() -> Schedule:
-    return get_schedule("F3A", "P21")
 
-
-@pytest.fixture(scope="session")
-def v8(schedule) -> Manoeuvre:
-    return schedule.manoeuvres[0]
-
-@pytest.fixture(scope="session")
-def sql(schedule) -> Manoeuvre:
-    return schedule.manoeuvres[2]
-
-
-@pytest.fixture(scope="session")
-def aligned():
-    return State.from_csv("tests/test_inputs/test_log_00000052_aligned.csv")
 
 def test_create_template(v8: Manoeuvre):
     v8_template = v8.scale(100).create_template(

@@ -15,7 +15,18 @@ class Loop(El):
         self.radius = radius   
         self.roll = roll
         self.ke = ke
-    
+
+    def to_dict(self):
+        return dict(
+            kind=self.__class__.__name__,
+            angle=self.angle,
+            radius=self.radius,
+            roll=self.roll,
+            speed=self.speed,
+            ke=self.ke,
+            uid=self.uid
+        )
+
     @property
     def diameter(self):
         return self.radius * 2

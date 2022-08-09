@@ -13,7 +13,16 @@ class Line(El):
         super().__init__(uid, speed)
         self.length = length
         self.roll = roll
-        
+    
+    def to_dict(self):
+        return dict(
+            kind=self.__class__.__name__,
+            length=self.length,
+            roll=self.roll,
+            speed=self.speed,
+            uid=self.uid
+        )
+
     def scale(self, factor):
         return self.set_parms(length=self.length * factor)
 

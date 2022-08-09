@@ -87,7 +87,8 @@ class ManParms:
         self.parms = parms
     
     def __getattr__(self, name):
-        return self.parms[name]
+        if name in self.parms:
+            return self.parms[name]
 
     @staticmethod
     def from_list(mps: List[ManParm]):

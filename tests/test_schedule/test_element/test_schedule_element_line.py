@@ -9,11 +9,12 @@ from pytest import approx
 
 
 def test_create_template():
-    template = Line(30, 100, 0).create_template(Transformation())
+    template = Line(30, 100).create_template(Transformation())
     
     np.testing.assert_array_almost_equal(
         template[-1].pos.data,
-        PX(100).data
+        PX(100).data,
+        2
     )
   
 

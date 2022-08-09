@@ -3,46 +3,46 @@ from pytest import fixture
 from flightanalysis.schedule.definition import *
 from flightanalysis.schedule.elements import *
 from flightanalysis.criteria.comparison import *
+from flightanalysis import Manoeuvre
+
+
+import dill as pickle
+
 
 @fixture(scope="session")
 def vline():
-    md = ManDef(
-        "vline",
-        ManParms.from_list([
-            ManParm("s", f3a_speed, 30, []),
-            ManParm("r", f3a_radius, 100, []), 
-            ManParm("l", f3a_length, 100, []), 
-            ManParm("rate", f3a_roll_rate, 1, []),
-            ManParm("d", HardZero(10, 1), 1, []),
-            ManParm("p", f3a_length, 5, [])
-        ])
-    )
-
-    p1 = md.add_loop("e1", "s", "r", -np.pi/2, 0)
-    p2 = md.add_roll_centred("e2", "s", "l", "rate", "d", "p", [np.pi/2, -np.pi/2], f3a_length)
-    p3=md.add_loop("e3", "s", "r", np.pi/2, 0)
-    
-    md.mps.append_collectors(dict(
-        s=[p["speed"] for p in [p1,p2,p3]],
-        r=[p["radius"] for p in [p1, p3]],
-        l=p2["length"],
-        rate=p2["rate"],
-        d=p2["direction"],
-        p=p2["pause"]
+    md = ManDef(ManInfo(
+            "Vertical Line", 
+            "vline", 
+            2,
+            Position.CENTRE,
+            BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),
+            BoxLocation(Height.BTM)
     ))
 
+    p1 = md.add_loop(-np.pi/2)
+    p2 = md.add_simple_roll("1/2")
+    p3=md.add_loop(np.pi/2)
+    
     return md
 
 
 @fixture(scope="session")
 def man(vline):
-    return vline.create()
+    return vline.create(vline.info.initial_transform(170,1))
 
 def test_create(man):
     assert isinstance(man, Manoeuvre)
     
 def test_collect(vline, man):
     downgrades = vline.mps.collect(man)
-    assert np.all(np.array(downgrades["s"])==0)
+    assert np.all(np.array(downgrades["speed"])==0)
  
 
+def test_pickle(vline, man):
+    
+    vlpk = pickle.dumps(vline)
+    
+    vline2 = pickle.loads(vlpk)
+    downgrades = vline2.mps.collect(man)
+    assert np.all(np.array(downgrades["speed"])==0)

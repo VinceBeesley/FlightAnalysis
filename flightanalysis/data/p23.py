@@ -400,7 +400,7 @@ def sFin():
 def lop():
     md = ManDef(
         ManInfo(
-            "Shark Fin", 
+            "Loop", 
             "lop", 
             3,
             Position.CENTRE,
@@ -416,7 +416,7 @@ def lop():
         -np.pi/2, 
         md.mps.add(ManParm(
             md.mps.next_free_name("roll_"), 
-            Combination([[np.pi, -np.pi]]), 0
+            Combination([[np.pi], [-np.pi]]), 0
         ))
     )
     md.add_loop(np.pi*3/4)

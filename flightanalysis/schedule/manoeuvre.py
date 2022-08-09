@@ -2,7 +2,7 @@ from geometry import Transformation
 from flightanalysis.state import State
 from flightanalysis.schedule.elements import Loop, Line, StallTurn, Snap, Spin, get_rates, El, Elements
 from flightanalysis.schedule.figure_rules import IMAC, rules, Rules
-from typing import List
+from typing import List, Union
 import numpy as np
 import pandas as pd
 
@@ -11,10 +11,18 @@ _els = {c.__name__: c for c in El.__subclasses__()}
 
 
 class Manoeuvre():
-    def __init__(self, entry_line: Line, elements: Elements, uid: str = None):
+    def __init__(self, entry_line: Line, elements: Union[Elements, list], uid: str = None):
         self.entry_line = entry_line
-        self.elements = elements  
+        self.elements = elements if isinstance(elements, Elements) else Elements.from_list(elements)
         self.uid = uid
+    
+    @staticmethod
+    def from_dict(data):
+        return Manoeuvre(
+            Line.from_dict(data["entry_line"]),
+            Elements.from_dicts(data["elements"]),
+            data["uid"]
+        )
 
     @staticmethod
     def from_all_elements(els: List[El]):

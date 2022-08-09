@@ -14,6 +14,16 @@ class Snap(El):
         self.direction = direction
         self.rate = rate
 
+    def to_dict(self):
+        return dict(
+            kind=self.__class__.__name__,
+            rolls=self.rolls,
+            rate=self.rate,
+            direction=self.direction,
+            speed=self.speed,
+            uid=self.uid
+        )
+
     @property
     def length(self):
         return self.create_template(Transformation()).pos.x[-1]  

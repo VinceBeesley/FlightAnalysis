@@ -19,6 +19,13 @@ class Schedule():
         else:
             self.manoeuvres = manoeuvres
 
+    def to_dict(self):
+        return {"manoeuvres": [m.to_dict() for m in self.manoeuvres]}
+
+    @staticmethod
+    def from_dict(self, data):
+        return Schedule([Manoeuvre.from_dict(d) for d in data])
+
     def __getattr__(self, name):
         if name in self.manoeuvres:
             return self.manoeuvres[name]
@@ -27,7 +34,7 @@ class Schedule():
         return list(self.manoeuvres.values())[key]
 
     def __iter__(self):
-        for man in self.values():
+        for man in self.manoeuvres.values():
             yield man
 
     def create_template(self, itrans: Transformation) -> State:
@@ -39,7 +46,7 @@ class Schedule():
         """
         templates = []
 
-        for manoeuvre in self.manoeuvres.values():
+        for manoeuvre in self:
             itrans = itrans if len(templates) ==0 else templates[-1][-1].transform
             templates.append(manoeuvre.create_template(itrans))
             

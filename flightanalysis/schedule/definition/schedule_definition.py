@@ -3,7 +3,7 @@ from flightanalysis import State
 from typing import Dict
 from geometry import Transformation
 from flightanalysis import Schedule
-
+from flightanalysis import Line, Loop, Snap, Spin, StallTurn
 
 class SchedDef:
     def __init__(self, name, mds: Dict[str, ManDef]=None):
@@ -12,6 +12,10 @@ class SchedDef:
     
     def __getitem__(self, key) -> ManDef:
         return list(self.mds.values())[key]
+
+    def __iter__(self):
+        for man in self.mds:
+            yield man
 
     def add(self, md: ManDef):
         self.mds[md.info.short_name] = md
@@ -22,7 +26,7 @@ class SchedDef:
 
     def create_schedule(self, depth: float, wind: float) -> Schedule:
         return Schedule(
-            {name: m.create(depth, wind) for name, m in self.mds.items()}
+            {name: m.create(m.info.initial_transform(depth, wind)) for name, m in self.mds.items()}
         )      
     
     def create_template(self,depth:float=170, wind:int=-1):
@@ -40,3 +44,9 @@ class SchedDef:
             templates.append(man.create_template(itrans))
             mans.append(man)
         return Schedule(mans), State.stack(templates)
+
+    def create_el_matched_template(self, intended: Schedule):
+        
+        for md, man in zip(self, intended):
+            if isinstance(man, Line):
+                pass
