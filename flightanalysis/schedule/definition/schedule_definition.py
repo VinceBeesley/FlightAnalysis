@@ -14,7 +14,7 @@ class SchedDef:
         return list(self.mds.values())[key]
 
     def __iter__(self):
-        for man in self.mds:
+        for man in self.mds.values():
             yield man
 
     def add(self, md: ManDef):
@@ -46,7 +46,10 @@ class SchedDef:
         return Schedule(mans), State.stack(templates)
 
     def create_el_matched_template(self, intended: Schedule):
-        
         for md, man in zip(self, intended):
             if isinstance(man, Line):
                 pass
+
+    def update_defaults(self, sched: Schedule):
+        for md, man in zip(self, sched):
+            md.mps.update_defaults(man)

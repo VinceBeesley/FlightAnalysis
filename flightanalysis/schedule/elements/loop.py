@@ -82,7 +82,7 @@ class Loop(El):
 
         return self.set_parms(
             radius=calc_R(*center).mean(),
-            roll=np.sign(flown.rvel.mean().x) * abs(self.roll)
+            roll=np.sign(flown.rvel.mean().x[0]) * abs(self.roll)
         )
     
 

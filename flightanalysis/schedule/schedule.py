@@ -13,11 +13,11 @@ from flightanalysis.schedule.figure_rules import Categories
 
 
 class Schedule():
-    def __init__(self,manoeuvres: Dict[str, Manoeuvre]):
-        if isinstance(manoeuvres, list): 
-            self.manoeuvres = {m.uid: m for m in manoeuvres}
+    def __init__(self,mans: Dict[str, Manoeuvre]):
+        if isinstance(mans, list): 
+            self.manoeuvres = {m.uid: m for m in mans}
         else:
-            self.manoeuvres = manoeuvres
+            self.manoeuvres = mans
 
     def to_dict(self):
         return {"manoeuvres": [m.to_dict() for m in self.manoeuvres]}

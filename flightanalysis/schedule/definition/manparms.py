@@ -7,8 +7,42 @@ from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn, 
 from flightanalysis.schedule.manoeuvre import Manoeuvre
 from flightanalysis.criteria.comparison import *
 from flightanalysis.criteria.local import Combination, AngleCrit
-
+from flightanalysis import State
 from functools import partial
+
+
+class MPOpp:
+    def __init__(self, a, b, opp:str):
+        assert opp in ["+", "-", "*", "/"]
+        self.a = a
+        self.b = b
+        self.opp = opp
+
+    def __call__(self, mps):
+        return {
+            '+': self.get_vf[self.a](mps) + self.get_vf[self.b](mps),
+            '-': self.get_vf[self.a](mps) - self.get_vf[self.b](mps),
+            '*': self.get_vf[self.a](mps) * self.get_vf[self.b](mps),
+            '/': self.get_vf[self.a](mps) / self.get_vf[self.b](mps)
+        }[self.opp]
+
+    def get_vf(self, arg):
+        if isinstance(arg, str):
+            return lambda mps: mps[self.a].value
+        elif isinstance(arg, self.__class__):
+            return lambda mps: arg(mps)
+        elif isinstance(arg, Number):
+            return lambda mps: arg
+
+    def _argcheck(self, arg):
+        if isinstance(arg, ManParm):
+            return arg.name
+        else:
+            return arg
+        
+    def __str__(self):
+        return f"({str(self.a)}{self.opp}{str(self.b)})"
+
 
 
 class ManParm:
@@ -32,8 +66,7 @@ class ManParm:
         
         self.collectors = [] if collectors is None else collectors
         self.n = len(self.criteria.desired[0]) if isinstance(self.criteria, Combination) else None
-
-        
+    
     def append(self, collector: Union[Callable, List[Callable]]):
         if isinstance(collector, Callable):
             self.collectors.append(collector)    
@@ -89,6 +122,7 @@ class ManParms:
     def __getattr__(self, name):
         if name in self.parms:
             return self.parms[name]
+
 
     @staticmethod
     def from_list(mps: List[ManParm]):
@@ -146,6 +180,28 @@ class ManParms:
         else:
             return f"{prefix}{i}"
 
+    def __iter__(self):
+        for mp in self.parms.values():
+            yield mp
+
+    def update_defaults(self, intended: Manoeuvre):
+        """Pull the parameters from a manoeuvre object and update the defaults of self based on the result of 
+        the collectors.
+
+        Args:
+            intended (Manoeuvre): Usually a Manoeuvre that has been resized based on an alingned state
+        """
+
+        for mp in self:
+            flown_parm = mp.collect(intended.all_elements)
+            if len(flown_parm) >0:
+                if isinstance(mp.criteria, Combination):
+                    default = mp.criteria.check_option(flown_parm)
+                else:
+                    default = np.mean(flown_parm)
+                mp.default = default
+            
+                
 
 class MPValue:
     def __init__(self, value, minval, maxval, slope):

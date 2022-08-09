@@ -36,14 +36,8 @@ intended = p23.match_intention(aligned)
 
 
 #correct the intended inter element parameters to make a corrected shcedule and template
-for i in range(17):
-    for mp in p23_def[i].mps.parms.values(): 
-        flown_parm = mp.collect(intended[i].all_elements)
-        if len(flown_parm) >0:
-            if isinstance(mp.criteria, Combination):
-                mp.default = mp.criteria.check_option(flown_parm)
-            else:
-                mp.default = np.mean(flown_parm)
+p23_def.update_defaults(intended)
+
 p23_corr, corrected_template = p23_def.create_template(flown.pos.y.mean(), wind)
 
 
@@ -56,10 +50,14 @@ for mcor, mfl in zip(p23_corr, intended):
         if isinstance(ecor, Line):
             nels.append(efl.set_parms(roll=abs(efl.roll) * np.sign(ecor.roll)))
         elif isinstance(ecor, Loop):
-            nels.append(efl.set_parms(roll=abs(efl.roll) * np.sign(ecor.roll)))
-            nels.append(efl.set_parms(roll=abs(efl.angle) * np.sign(ecor.angle)))
+            nels.append(efl.set_parms(
+                roll=abs(efl.roll) * np.sign(ecor.roll),
+                angle=abs(efl.angle) * np.sign(ecor.angle)
+            ))
+            
+            
         elif isinstance(ecor, Snap):
-            nels.append(efl.set_parms(roll=abs(efl.rolls) * np.sign(ecor.rolls)))
+            nels.append(efl.set_parms(rolls=abs(efl.rolls) * np.sign(ecor.rolls)))
         else:
             nels.append(efl.set_parms())
     nmans.append(Manoeuvre.from_all_elements(nels))

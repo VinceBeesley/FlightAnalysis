@@ -64,7 +64,7 @@ class ManDef:
 
         #Create a template, at zero
         template = self._create().create_template(Transformation(
-            Point(0,itrans.pos.y[0],0),
+            Point(0,0,0),
             Euler(self.info.start.o.roll_angle(), 0, 0)
         ))
           
@@ -73,14 +73,15 @@ class ManDef:
             case Position.CENTRE:
                 man_start_x = -(max(template.pos.x) + min(template.pos.x))/2  # distance from start to centre
             case Position.END:
-                box_edge = np.tan(np.radians(60)) * template.pos.y #x location of box edge at every point 
-                man_start_x = min(box_edge - template.pos.x)
+                box_edge = np.tan(np.radians(60)) * (np.abs(template.pos.y) + itrans.pos.y[0]) #x location of box edge at every point
+                #TODO this should be rotated not absoluted 
+                man_start_x = min(box_edge - template.pos.x) 
         
-        #subtract the itrans
-        l_req =man_start_x - itrans.translation.x[0] * heading
-
-        return ElDef.line(f"entry_{self.info.short_name}", self.mps.speed, l_req, 0)
-
+        return ElDef.line(
+            f"entry_{self.info.short_name}", 
+            self.mps.speed, 
+            max(man_start_x - itrans.translation.x[0] * heading, 30), 
+            0)
 
     def create(self, itrans=None, depth=None, wind=None) -> Manoeuvre:
         """Create the manoeuvre based on the default values in self.mps.

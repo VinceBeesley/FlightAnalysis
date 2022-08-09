@@ -98,9 +98,9 @@ class ManInfo:
     def initial_position(self, depth: float, wind: int) -> Transformation: 
         return Point(
             {
-                Position.CENTRE: {
-                    Direction.UPWIND: -depth * np.tan(np.radians(60)),
-                    Direction.DOWNWIND: depth * np.tan(np.radians(60))
+                Position.CENTRE: wind * {
+                    Direction.UPWIND: depth * np.tan(np.radians(60)),
+                    Direction.DOWNWIND: -depth * np.tan(np.radians(60))
                 }[self.start.d],
                 Position.END: 0.0
             }[self.position],

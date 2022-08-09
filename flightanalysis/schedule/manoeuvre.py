@@ -25,8 +25,8 @@ class Manoeuvre():
         )
 
     @staticmethod
-    def from_all_elements(els: List[El]):
-        return Manoeuvre(els[0], els[1:])
+    def from_all_elements(uid:str, els: List[El]):
+        return Manoeuvre(els[0], els[1:], uid)
 
     @property
     def all_elements(self):

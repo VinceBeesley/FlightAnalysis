@@ -1,7 +1,7 @@
 from flightanalysis.schedule.definition.maninfo import *
 import numpy as np
 from pytest import fixture
-
+from geometry import PX
 
 def minf(position, direction):
     return ManInfo("test", "t", 1, position, 
@@ -20,3 +20,8 @@ def test_initial_position():
     assert np.sign(minf(Position.CENTRE, Direction.UPWIND).initial_position(170, -1).x[0]) == -1
     assert np.sign(minf(Position.CENTRE, Direction.DOWNWIND).initial_position(170, -1).x[0]) == 1
     assert minf(Position.END, Direction.DOWNWIND).initial_position(170, -1).x[0] == 0
+
+
+def test_intitial_orientation():
+    assert BoxLocation(Height.BTM,Direction.UPWIND, Orientation.UPRIGHT ).initial_rotation(1).transform_point(PX(1)).x[0] == -1
+    assert BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT).initial_rotation(-1).transform_point(PX(1)).x[0] == 1
