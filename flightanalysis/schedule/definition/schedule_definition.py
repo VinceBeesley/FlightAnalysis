@@ -1,40 +1,28 @@
 from . import ManDef, ManInfo, ManParms
 from flightanalysis import State
-from typing import Dict
+from typing import Dict, Tuple
 from geometry import Transformation
 from flightanalysis import Schedule
 from flightanalysis import Line, Loop, Snap, Spin, StallTurn
+from flightanalysis.base.collection import Collection
 
-class SchedDef:
-    def __init__(self, name, mds: Dict[str, ManDef]=None):
-        self.name = name
-        self.mds = {} if mds is None else mds
-    
-    def __getitem__(self, key) -> ManDef:
-        return list(self.mds.values())[key]
 
-    def __iter__(self):
-        for man in self.mds.values():
-            yield man
-
-    def add(self, md: ManDef):
-        self.mds[md.info.short_name] = md
-        return md
-
+class SchedDef(Collection):
+    VType=ManDef
     def add_new_manoeuvre(self, info: ManInfo, defaults=None):
         return self.add(ManDef(info,defaults))
 
     def create_schedule(self, depth: float, wind: float) -> Schedule:
         return Schedule(
-            {name: m.create(m.info.initial_transform(depth, wind)) for name, m in self.mds.items()}
+            {m.uid: m.create(m.info.initial_transform(depth, wind)) for m in self}
         )      
     
-    def create_template(self,depth:float=170, wind:int=-1):
+    def create_template(self,depth:float=170, wind:int=-1) -> Tuple[Schedule, State]:
         templates = []
-        ipos = list(self.mds.values())[0].info.initial_position(depth,wind)
+        ipos = self[0].info.initial_position(depth,wind)
         
         mans = []
-        for md in self.mds.values():
+        for md in self:
 
             itrans=Transformation(
                 ipos if len(templates) == 0 else templates[-1][-1].pos,
@@ -51,5 +39,7 @@ class SchedDef:
                 pass
 
     def update_defaults(self, sched: Schedule):
+        # TODO need to consider the entry line
         for md, man in zip(self, sched):
             md.mps.update_defaults(man)
+

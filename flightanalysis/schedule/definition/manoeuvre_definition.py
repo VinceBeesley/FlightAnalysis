@@ -22,7 +22,7 @@ import pandas as pd
 from numbers import Number
 from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn, El, Elements
 from flightanalysis.schedule.manoeuvre import Manoeuvre
-from flightanalysis.schedule.definition.maninfo import ManInfo
+from flightanalysis.schedule.definition.manoeuvre_info import ManInfo
 from flightanalysis.criteria.comparison import Comparison, f3a_speed, f3a_radius, f3a_length, f3a_roll_rate, f3a_free
 from flightanalysis.criteria.local import Combination
 from geometry import Transformation, Euler, Point, P0
@@ -43,6 +43,10 @@ class ManDef:
         self.info: ManInfo = info
         self.mps: ManParms = ManParms.create_defaults_f3a() if mps is None else mps
         self.eds: ElDefs = ElDefs() if eds is None else eds
+
+    @property
+    def uid(self):
+        return self.info.short_name
 
     def create_entry_line(self, itrans: Transformation=None) -> ElDef:
         """Create a line definition connecting Transformation to the start of this manoeuvre.
@@ -94,14 +98,14 @@ class ManDef:
             self.create_entry_line(
                 self.info.initial_transform(depth, wind) if itrans is None else itrans
             )(self.mps),
-            Elements.from_list([ed(self.mps) for ed in self.eds]), 
+            Elements([ed(self.mps) for ed in self.eds]), 
             uid=self.info.short_name
         )
 
     def _create(self) -> Manoeuvre:
         return Manoeuvre(
             None,
-            Elements.from_list([ed(self.mps) for ed in self.eds]), 
+            Elements([ed(self.mps) for ed in self.eds]), 
             uid=self.info.name
         )
 
@@ -188,7 +192,7 @@ class ManDef:
         criteria=f3a_length
     ):
         return self.add_and_pad_els(
-            ElDefs.from_list([ElDef.snap(
+            ElDefs([ElDef.snap(
                 self.eds.get_new_name(),
                 self.mps.speed if s is None else s, 
                 self.mps.snap_rate if rate is None else rate,

@@ -163,8 +163,11 @@ def iSp():
             Position.CENTRE,
             BoxLocation(Height.TOP, Direction.UPWIND, Orientation.INVERTED),
             BoxLocation(Height.BTM)
+        ),
+        ManParms.create_defaults_f3a(
+            speed=ManParm("speed", f3a_free, 30.0)
         )
-        )
+    )
 
     md.add_spin([[1.5], [-1.5]])
     md.add_line()
@@ -198,7 +201,7 @@ def hB2(option: int=0):
 
     md.add_loop(np.pi/2)
     md.add_and_pad_els(
-        ElDefs.from_list([ElDef.roll(
+        ElDefs([ElDef.roll(
             md.eds.get_new_name(),
             md.mps.speed,
             md.mps.partial_roll_rate,
@@ -207,7 +210,7 @@ def hB2(option: int=0):
     )
     md.add_loop(np.pi)
     md.add_and_pad_els(
-        ElDefs.from_list([ElDef.roll(
+        ElDefs([ElDef.roll(
             md.eds.get_new_name(),
             md.mps.speed,
             md.mps.partial_roll_rate,
@@ -277,7 +280,10 @@ def M(option:int=1):
             BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),
             BoxLocation(Height.BTM)
         ),
-        ManParms.create_defaults_f3a(line_length=150.0)
+        ManParms.create_defaults_f3a(
+            line_length=150.0,
+            speed=ManParm("speed", f3a_free, 30.0)
+        )
     )
 
     ropts = md.mps.add(ManParm("roll_option", Combination(
@@ -289,7 +295,7 @@ def M(option:int=1):
 
     md.add_loop(np.pi/2)
     md.add_and_pad_els(
-        ElDefs.from_list([ElDef.roll(
+        ElDefs([ElDef.roll(
             md.eds.get_new_name(),
             md.mps.speed,
             md.mps.partial_roll_rate,
@@ -302,7 +308,7 @@ def M(option:int=1):
     md.add_line()
     md.add_stallturn()
     md.add_and_pad_els(
-        ElDefs.from_list([ElDef.roll(
+        ElDefs([ElDef.roll(
             md.eds.get_new_name(),
             md.mps.speed,
             md.mps.partial_roll_rate,
@@ -333,7 +339,7 @@ def fTrn(option:int=1):
 
     md.add_loop(np.pi/4)
     md.add_and_pad_els(
-        ElDefs.from_list([ElDef.roll(
+        ElDefs([ElDef.roll(
             md.eds.get_new_name(),
             md.mps.speed,
             md.mps.partial_roll_rate,
@@ -342,7 +348,7 @@ def fTrn(option:int=1):
     )
     md.add_loop(-np.pi)
     md.add_and_pad_els(
-        ElDefs.from_list([ElDef.roll(
+        ElDefs([ElDef.roll(
             md.eds.get_new_name(),
             md.mps.speed,
             md.mps.partial_roll_rate,
@@ -425,7 +431,7 @@ def lop():
 p23funcs = [tHat,hSqL,hB,hSqLC,upL,h8L,rollc,pImm,iSp,hB2,rEt,sqL,M,fTrn,trgle,sFin,lop]
 
 def create_p23(wind=-1) -> SchedDef:
-    sd =  SchedDef("P23")
+    sd =  SchedDef()
       
 
     for mfunc in p23funcs:
@@ -438,22 +444,9 @@ def create_p23(wind=-1) -> SchedDef:
 
 
 if __name__ == "__main__":
+     
     p23 = create_p23()
-
-
-#    for mfunc in p23funcs:
-#        md = mfunc()
-#
-#        man = md.create()
-#        itrans = md.info.initial_transform(170, 1)
-#        eld = md.create_entry_line(itrans)
-#        el = eld(md.mps)
-#        et = el.create_template(itrans)
-#        template = man.create_template(et[-1].transform)
-#        
-        
-
     from flightplotting import plotsec, plotdtw
-    template = p23.create_template()
+    sched, template = p23.create_template()
     plotsec(template, nmodels=0).show()
     pass

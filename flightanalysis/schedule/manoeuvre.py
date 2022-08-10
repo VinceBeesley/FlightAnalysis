@@ -13,7 +13,7 @@ _els = {c.__name__: c for c in El.__subclasses__()}
 class Manoeuvre():
     def __init__(self, entry_line: Line, elements: Union[Elements, list], uid: str = None):
         self.entry_line = entry_line
-        self.elements = elements if isinstance(elements, Elements) else Elements.from_list(elements)
+        self.elements = elements if isinstance(elements, Elements) else Elements(elements)
         self.uid = uid
     
     @staticmethod
@@ -30,7 +30,7 @@ class Manoeuvre():
 
     @property
     def all_elements(self):
-        return Elements.from_list([self.entry_line, *self.elements.to_list()]) if not self.entry_line is None else self.elements
+        return Elements([self.entry_line, *self.elements.to_list()]) if not self.entry_line is None else self.elements
 
     def create_template(self, transform: Transformation) -> State:
         itrans = transform
@@ -60,10 +60,14 @@ class Manoeuvre():
                 print(str(ex))
                 raise Exception("Error Creating Template")
 
-        return Manoeuvre(elms[0], Elements.from_list(elms[1:]), self.uid), transform
-
-
+        return Manoeuvre(elms[0], Elements(elms[1:]), self.uid), transform
 
     def match_rates(self, rates):
         new_elms = [elm.match_axis_rate(rates[elm.__class__], rates["speed"]) for elm in self.elements]
         return self.replace_elms(new_elms)
+
+    def copy_directions(self, other):
+        return Manoeuvre.from_all_elements(
+            self.uid, 
+            [es.copy_direction(eo) for es, eo in zip(self.all_elements, other.all_elements)]
+        )

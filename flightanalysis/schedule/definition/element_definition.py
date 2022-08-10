@@ -11,7 +11,7 @@ from inspect import getfullargspec
 from functools import partial
 from . import ManParm, ManParms, _a
 from copy import deepcopy
-
+from flightanalysis.base.collection import Collection
 
 class ElDef:
     """This class creates a function to build an element (Loop, Line, Snap, Spin, Stallturn)
@@ -142,30 +142,15 @@ class ElDef:
     def id(self):
         return int(self.name.split("_")[1])
 
-class ElDefs:
+class ElDefs(Collection):
+    VType=ElDef
+    uid="name"
     """This class wraps a dict of ElDefs, which would generally be used sequentially to build a manoeuvre.
     It provides attribute access to the ElDefs based on their names. 
     """
-    def __init__(self, edefs: Dict[str, ElDef]=None):
-        self.edefs = {} if edefs is None else edefs
-
-    def __getattr__(self, name):
-        if name in self.edefs:
-            return self.edefs[name]
-
-    @staticmethod
-    def from_list(edfs: List[ElDef]):
-        return ElDefs({ed.name: ed for ed in edfs})
-
-    def __iter__(self):
-        for ed in self.edefs.values():
-            yield ed
-
-    def __getitem__(self, name):
-        return list(self.edefs.values())[name]
 
     def get_new_name(self):
-        new_id = 0 if len(self.edefs) == 0 else list(self.edefs.values())[-1].id + 1
+        new_id = 0 if len(self.data) == 0 else list(self.data.values())[-1].id + 1
         return f"e_{new_id}"
 
     def add(self, ed: Union[ElDef, List[ElDef]]) -> Union[ElDef, List[ElDef]]:
@@ -178,7 +163,7 @@ class ElDefs:
             Union[ElDef, List[ElDef]]: The ElDef or list of ElDefs added
         """
         if isinstance(ed, ElDef):
-            self.edefs[ed.name] = ed
+            self.data[ed.name] = ed
             return ed
         else:
             return [self.add(e) for e in ed]
@@ -206,15 +191,19 @@ class ElDefs:
             
         return eds
 
-    def builder_list(self, name):
+    def builder_list(self, name:str) ->List[Callable]:
+        """A list of the functions that return the requested parameter when constructing the elements from the mps"""
         return [e.pfuncs[name] for e in self if name in e.pfuncs]
 
-    def builder_sum(self, name):
+    def builder_sum(self, name:str) -> Callable:
+        """A function to return the sum of the requested parameter used when constructing the elements from the mps"""
         return lambda mps : sum(b(mps) for b in self.builder_list(name))
 
-    def collector_list(self, name):
+    def collector_list(self, name: str) -> List[Callable]:
+        """A list of the functions that return the requested parameter from an elements collection"""
         return [e.collectors[name] for e in self if name in e.collectors]
 
-    def collector_sum(self, name):
+    def collector_sum(self, name) -> Callable:
+        """A function that returns the sum of the requested parameter from an elements collection"""
         return lambda els : sum(c(els) for c in self.collector_list(name))
     

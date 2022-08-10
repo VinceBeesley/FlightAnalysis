@@ -2,8 +2,8 @@
 from typing import Callable
 from numbers import Number
 
-from .maninfo import ManInfo, BoxLocation, Orientation, Direction, Height, Position
-from .manparms import ManParm, ManParms, MPValue
+from .manoeuvre_info import ManInfo, BoxLocation, Orientation, Direction, Height, Position
+from .manoeuvre_parameters import ManParm, ManParms, MPValue
 
 def _a(arg):
     if isinstance(arg, Callable): 
@@ -13,9 +13,9 @@ def _a(arg):
     elif isinstance(arg, Number):
         return lambda mps: arg
 
-from .eldefs import ElDef, ElDefs
+from .element_definition import ElDef, ElDefs
 
-from .mandef import ManDef
+from .manoeuvre_definition import ManDef
 
 
 from .schedule_definition import SchedDef

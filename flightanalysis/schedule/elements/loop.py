@@ -92,6 +92,11 @@ class Loop(El):
         
         return subsections, elms
 
+    def copy_direction(self, other):
+        return self.set_parms(
+            roll=abs(self.roll) * np.sign(other.roll),
+            angle=abs(self.angle) * np.sign(other.angle)
+        )
 
 def KELoop(*args, **kwargs):
     return Loop(*args, ke=True, **kwargs)

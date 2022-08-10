@@ -44,34 +44,15 @@ els = {c.__name__.lower(): c for c in El.__subclasses__()}
 El.from_name = lambda name: els[name.lower()]
 
 from .constructors import *
+from flightanalysis.base.collection import Collection
 
-class Elements:
-    def __init__(self, els: Union[Dict[str, El], List[El]]):
-        self.els=els if isinstance(els, dict) else {el.uid: el for el in els}
 
-    def __getattr__(self, name):
-        return self.els[name]
-
-    def __iter__(self):
-        for el in self.els.values():
-            yield el
-    
-    def __getitem__(self, value):
-        return list(self.els.values())[value]
-
-    def to_list(self):
-        return list(self.els.values())
-
-    @staticmethod
-    def from_list(els):
-        return Elements({el.uid: el for el in els})
-
+class Elements(Collection):
+    VType=El
     def get_parameter_from_element(self, element_name: str, parameter_name: str):
-        return getattr(self.els[element_name], parameter_name)  
+        return getattr(self.data[element_name], parameter_name)  
     
     @staticmethod
     def from_dicts(data):
         return Elements([els[d["kind"]](**{k: v for k, v in d.items() if not k=="kind"}) for d in data])
 
-    def to_dicts(self):
-        return [e.to_dict() for e in self]

@@ -5,37 +5,15 @@ from flightanalysis.state import State
 from flightanalysis.schedule.elements import get_rates, Line
 import numpy as np
 from flightanalysis.schedule.figure_rules import Categories
-
+from flightanalysis.base.collection import Collection
 
 # TODO it would be better if the list index of each manoeuvre corresponded with the uid. This is not possible because takeoff is not included as a manoeuvre. 
 # TODO perhaps include takeoff in the list as manoeuvre 0 and add it when reading from the json, use a constructor rather than __init__ when creating from python
 # TODO this will cause a problem when creating templates, as some data must (probably) be created for the takeoff, which will bugger up the entry_x_offset and dtw alignment (if its a straight line)
 
 
-class Schedule():
-    def __init__(self,mans: Dict[str, Manoeuvre]):
-        if isinstance(mans, list): 
-            self.manoeuvres = {m.uid: m for m in mans}
-        else:
-            self.manoeuvres = mans
-
-    def to_dict(self):
-        return {"manoeuvres": [m.to_dict() for m in self.manoeuvres]}
-
-    @staticmethod
-    def from_dict(self, data):
-        return Schedule([Manoeuvre.from_dict(d) for d in data])
-
-    def __getattr__(self, name):
-        if name in self.manoeuvres:
-            return self.manoeuvres[name]
-
-    def __getitem__(self, key:int):
-        return list(self.manoeuvres.values())[key]
-
-    def __iter__(self):
-        for man in self.manoeuvres.values():
-            yield man
+class Schedule(Collection):
+    VType = Manoeuvre
 
     def create_template(self, itrans: Transformation) -> State:
         """Create labelled template flight data
@@ -68,14 +46,14 @@ class Schedule():
         )
 
         _mans = []
-        for man in self.manoeuvres.values():
+        for man in self:
             man, transform = man.match_intention(transform, man.get_data(alinged))
             _mans.append(man)
 
         return Schedule(_mans)
 
     def correct_intention(self):
-        return self.replace_manoeuvres([man.fix_intention() for man in self.manoeuvres])
+        return self.replace_manoeuvres([man.fix_intention() for man in self])
 
     def create_matched_template(self, alinged: State) -> State:
         """This will go through all the manoeuvres in a labelled State and create a template with
@@ -85,7 +63,7 @@ class Schedule():
         iatt = self.create_iatt(alinged[0].direction()[0])
 
         templates = []
-        for manoeuvre in self.manoeuvres:
+        for manoeuvre in self:
             transform = Transformation(
                 manoeuvre.get_data(alinged)[0].pos,
                 iatt
@@ -104,7 +82,7 @@ class Schedule():
         iatt = self.create_iatt(alinged[0].direction()[0])
 
         templates = []
-        for manoeuvre in self.manoeuvres:
+        for manoeuvre in self:
             mtemps = []
             for elm in manoeuvre.elements:
                 transform = Transformation(
@@ -123,7 +101,7 @@ class Schedule():
         measure the rates and return a scaled template for each based on the rates"""
         iatt = self.create_iatt(alinged[0].direction)
         templates = []
-        for man in self.manoeuvres:
+        for man in self:
             flown = man.get_data(alinged)
             rates = get_rates(flown)
             transform = Transformation(
@@ -152,9 +130,11 @@ class Schedule():
 
         labelled = [State(takeoff).label(manoeuvre=0)]
         
-        for split_man, man in zip(splitter[1:], self.manoeuvres):
+        for split_man, man in zip(splitter[1:], self):
             start, stop = int(split_man["start"]), int(split_man["stop"])
             labelled.append(man.label(State(flown.data.iloc[start:stop+2])))
 
         return State.stack(labelled)
 
+    def copy_directions(self, other):
+        return Schedule([ms.copy_directions(mo) for ms, mo in zip(self, other)])

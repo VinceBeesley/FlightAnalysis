@@ -1,11 +1,11 @@
 import numpy as np
 import pandas as pd
 from flightanalysis.state import State
-from geometry import Point, Quaternion, Transformation, PX
+from geometry import Point, Quaternion, Transformation, PX, Q0
 
 
 
-def transform_state(st: State, transform: Transformation) -> State:
+def move(st: State, transform: Transformation) -> State:
     return State.from_constructs(
         time=st.time,
         pos=transform.point(st.pos),
@@ -15,6 +15,10 @@ def transform_state(st: State, transform: Transformation) -> State:
         acc=transform.rotate(st.acc),
         racc=transform.rotate(st.racc),
     )
+
+def relocate(st:State, start_pos: Point) -> State:
+    offset = start_pos - st.pos[0]
+    return st.move(Transformation(offset, Q0()))
 
 def superimpose_angles(st: State, angles: Point, reference:str="body"): 
     assert reference in ["body", "world"]

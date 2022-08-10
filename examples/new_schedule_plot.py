@@ -9,7 +9,7 @@ itrans = Transformation(
     Point(0, 170, 50), 
     Euler(np.pi,0,np.pi)
 )
-man = p23_def.mds["fTrn"].create(itrans)
+man = p23_def.fTrn.create(itrans)
 template=man.create_template(itrans)
 from flightplotting import plotsec
 

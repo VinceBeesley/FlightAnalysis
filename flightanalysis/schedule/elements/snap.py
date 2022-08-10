@@ -81,3 +81,9 @@ class Snap(El):
     @property
     def length(self):
         return self.create_template(Transformation())[-1].pos.x[-1]
+
+    def copy_direction(self, other):
+        return self.set_parms(
+            rolls=abs(self.rolls) * np.sign(other.rolls),
+            direction = other.direction
+        )

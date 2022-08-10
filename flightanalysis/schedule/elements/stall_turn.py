@@ -42,4 +42,7 @@ class StallTurn(El):
             yaw_rate=flown.r.max(), 
         )
 
-
+    def copy_direction(self, other):
+        return self.set_parms(
+            yaw_rate=abs(self.yaw_rate) * np.sign(other.yaw_rate)
+        )

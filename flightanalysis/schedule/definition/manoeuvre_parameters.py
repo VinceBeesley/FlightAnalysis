@@ -9,7 +9,7 @@ from flightanalysis.criteria.comparison import *
 from flightanalysis.criteria.local import Combination, AngleCrit
 from flightanalysis import State
 from functools import partial
-
+from flightanalysis.base.collection import Collection
 
 class MPOpp:
     def __init__(self, a, b, opp:str):
@@ -101,9 +101,9 @@ class ManParm:
             Callable: function to get the default value for this manparm from the mps collection
         """
         if isinstance(self.criteria, Comparison) or isinstance(self.criteria, AngleCrit):
-            return lambda mps: mps.parms[self.name].value 
+            return lambda mps: mps.data[self.name].value 
         elif isinstance(self.criteria, Combination):
-            return lambda mps: mps.parms[self.name].value[id] 
+            return lambda mps: mps.data[self.name].value[id] 
             #return partial(
             #   lambda mps, i: mps.parms[self.name].value[i], 
             #   i=id
@@ -112,25 +112,9 @@ class ManParm:
             raise Exception("Cant create a valuefunc in this case")
         
 
-class ManParms:
-    """This class wraps around a dict of ManParm. it provides attribute access to items based on their
-    names and a constructer from a list of them (as the names are internal)
-    """
-    def __init__(self, parms:Dict[str, ManParm]={}):
-        self.parms = parms
-    
-    def __getattr__(self, name):
-        if name in self.parms:
-            return self.parms[name]
-
-
-    @staticmethod
-    def from_list(mps: List[ManParm]):
-        return ManParms({mp.name: mp for mp in mps})
-
-    def add(self, parm):
-        self.parms[parm.name] = parm
-        return parm
+class ManParms(Collection):
+    VType=ManParm
+    uid="name"
 
     def collect(self, manoeuvre: Manoeuvre) -> Dict[str, float]:
         """Collect the comparison downgrades for each manparm for a given manoeuvre.
@@ -141,7 +125,7 @@ class ManParms:
         Returns:
             Dict[str, float]: The sum of downgrades for each ManParm
         """
-        return {key: mp.get_downgrades(manoeuvre.all_elements) for key, mp in self.parms.items() if not isinstance(mp.criteria, Combination)}
+        return {mp.name: mp.get_downgrades(manoeuvre.all_elements) for mp in self if not isinstance(mp.criteria, Combination)}
     
     def append_collectors(self, colls: Dict[str, Callable]):
         """Append each of a dict of collector methods to the relevant ManParm
@@ -150,11 +134,11 @@ class ManParms:
             colls (Dict[str, Callable]): dict of parmname: collector method
         """
         for mp, col in colls.items():
-            self.parms[mp].append(col)
+            self.data[mp].append(col)
 
     @staticmethod
     def create_defaults_f3a(**kwargs):
-        mps = ManParms.from_list([
+        mps = ManParms([
             ManParm("speed", f3a_speed, 30.0),
             ManParm("loop_radius", f3a_radius, 55.0),
             ManParm("line_length", f3a_length, 130.0),
@@ -165,24 +149,12 @@ class ManParms:
             ManParm("stallturn_rate", f3a_roll_rate, 2*np.pi),
             ManParm("spin_rate", f3a_roll_rate, 2*np.pi),
         ])
-
-        for k, v in kwargs.items():
-            if isinstance(v, ManParm):
-                mps.parms[v.name] = v
-            elif isinstance(v, Number):
-                mps.parms[k].default = v
+        for k,v in kwargs.items():
+            if isinstance(v, Number):
+                mps.data[k].default = v
+            elif isinstance(v, ManParm):
+                mps.data[k] = v
         return mps
-
-    def next_free_name(self, prefix: str):
-        i=0
-        while f"{prefix}{i}" in self.parms:
-            i+=1
-        else:
-            return f"{prefix}{i}"
-
-    def __iter__(self):
-        for mp in self.parms.values():
-            yield mp
 
     def update_defaults(self, intended: Manoeuvre):
         """Pull the parameters from a manoeuvre object and update the defaults of self based on the result of 

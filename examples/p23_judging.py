@@ -34,37 +34,14 @@ dist, aligned = State.align(flown, template)
 #update the schedule to match the flight
 intended = p23.match_intention(aligned)
 
-
 #correct the intended inter element parameters to make a corrected shcedule and template
 p23_def.update_defaults(intended)
-
-p23_corr, corrected_template = p23_def.create_template(flown.pos.y.mean(), wind)
-
+corrected, corrected_template = p23_def.create_template(flown.pos.y.mean(), wind)
 
 #correct the roll directions in the intended template
-#TODO this should be part of the match intention method?
-nmans = []
-for mcor, mfl in zip(p23_corr, intended):
-    nels=[]
-    for ecor, efl in zip(mcor.all_elements, mfl.all_elements):
-        if isinstance(ecor, Line):
-            nels.append(efl.set_parms(roll=abs(efl.roll) * np.sign(ecor.roll)))
-        elif isinstance(ecor, Loop):
-            nels.append(efl.set_parms(
-                roll=abs(efl.roll) * np.sign(ecor.roll),
-                angle=abs(efl.angle) * np.sign(ecor.angle)
-            ))
-            
-            
-        elif isinstance(ecor, Snap):
-            nels.append(efl.set_parms(rolls=abs(efl.rolls) * np.sign(ecor.rolls)))
-        else:
-            nels.append(efl.set_parms())
-    nmans.append(Manoeuvre.from_all_elements(nels))
+intended = intended.copy_directions(corrected)
 
-intended_sched = Schedule(nmans)
-
-intended_template = intended_sched.create_template(Transformation(
+intended_template = intended.create_template(Transformation(
     aligned[0].pos,
     aligned[0].att.closest_principal()
 ))

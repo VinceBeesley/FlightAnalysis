@@ -88,3 +88,9 @@ class Spin(El):
             opp_turns=0.0,
             rate = rate
         )
+
+    def copy_direction(self, other):
+        return self.set_parms(
+            turns=abs(self.turns) * np.sign(other.turns),
+            opp_turns=abs(self.opp_turns) * np.sign(other.opp_turns),
+        )
