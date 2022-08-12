@@ -30,7 +30,7 @@ class Schedule(Collection):
             
         return State.stack(templates)
 
-    def match_intention(self, alinged: State):
+    def match_intention(self, itrans:Transformation, alinged: State):
         """resize every element of the schedule to best fit the corresponding element in a labelled State
 
         Args:
@@ -39,15 +39,12 @@ class Schedule(Collection):
         Returns:
             Schedule: new schedule with all the elements resized
         """
-
-        transform = Transformation(
-            alinged[0].pos,
-            alinged[0].att.closest_principal()
-        )
-
         _mans = []
-        for man in self:
-            man, transform = man.match_intention(transform, man.get_data(alinged))
+        for i, man in enumerate(self):
+            man, transform = man.match_intention(
+                transform if i>0 else Transformation(alinged[0].pos,itrans.att), 
+                man.get_data(alinged)
+            )
             _mans.append(man)
 
         return Schedule(_mans)

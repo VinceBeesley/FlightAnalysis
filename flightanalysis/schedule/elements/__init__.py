@@ -1,6 +1,7 @@
 from flightanalysis.state import State
 from typing import Dict, Union
 
+
 class El:   
     parameters = ["speed"]
 
@@ -33,15 +34,22 @@ class El:
         return new_inst
 
 
+
 from .line import Line
 from .loop import Loop
 from .snap import Snap
 from .spin import Spin
 from .stall_turn import StallTurn
 
-els = {c.__name__.lower(): c for c in El.__subclasses__()}
+els = {c.__name__: c for c in El.__subclasses__()}
 
 El.from_name = lambda name: els[name.lower()]
+
+def from_dict(data):
+    kind = data.pop("kind")
+    return els[kind](**data)
+
+El.from_dict = staticmethod(from_dict)
 
 from .constructors import *
 from flightanalysis.base.collection import Collection
@@ -54,5 +62,13 @@ class Elements(Collection):
     
     @staticmethod
     def from_dicts(data):
-        return Elements([els[d["kind"]](**{k: v for k, v in d.items() if not k=="kind"}) for d in data])
+        return Elements([El.from_dict(d) for d in data])
 
+
+class IntraElementAnalysis:
+    def __init__(self, el: El, flown: State, template: State):
+        self.el = el
+        self.flown = flown
+        self.template = template
+
+    

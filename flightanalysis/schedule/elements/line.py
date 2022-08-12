@@ -58,13 +58,9 @@ class Line(El):
             return self.set_parms()
 
     def match_intention(self, transform: Transformation, flown: State):
-        length = abs(
-            (flown[-1].pos - flown[0].pos).scalar_projection(
-                transform.rotate(PX())
-            )[0]
-        )
+        jit = flown.judging_itrans(transform)
         return self.set_parms(
-            length=length,
+            length=jit.att.transform_point(flown.pos - jit.pos).x[-1],
             roll=np.sign(np.mean(flown.rvel.x)) * abs(self.roll),
             speed=np.mean(flown.u)
         )

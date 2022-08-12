@@ -1,4 +1,4 @@
-from geometry import Transformation
+from geometry import Transformation, Quaternion, Coord, P0, PX, PY, PZ
 from flightanalysis.state import State
 from flightanalysis.schedule.elements import Loop, Line, StallTurn, Snap, Spin, get_rates, El, Elements
 from flightanalysis.schedule.figure_rules import IMAC, rules, Rules
@@ -45,12 +45,17 @@ class Manoeuvre():
         return State(sec.data.loc[sec.data.manoeuvre == self.uid])
 
     def match_intention(self, transform: Transformation, flown: State):
-        """Create a new manoeuvre with all the elements scaled to match the corresponding flown element"""
+        """Create a new manoeuvre with all the elements scaled to match the corresponding 
+        flown element"""
+
         elms = []
         flown = self.get_data(flown)
+
         for elm in self.all_elements:
-            edata=elm.get_data(flown)
-            elms.append(elm.match_intention(transform, edata))
+            elms.append(elm.match_intention(
+                transform, 
+                elm.get_data(flown)
+            ))
             try:
                 transform = elms[-1].create_template(
                     transform

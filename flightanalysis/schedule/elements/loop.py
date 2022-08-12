@@ -54,35 +54,47 @@ class Loop(El):
         state = State.from_transform(
             transform, 
             vel=PX(self.speed),
-            rvel=PZ(self.angle / duration) if self.ke else PY(self.angle / duration) 
+            rvel=PZ(self.angle / duration) if self.ke else PY(self.angle / duration)
         ).extrapolate(duration)
         
         return self._add_rolls(state, self.roll)
 
+    def corresponding_template(self, itrans: Transformation, aligned: State):
+        c = self.centre(itrans)
+
+
+    def centre(self, itrans: Transformation) -> Point:
+        centre_direction = PY if self.ke else PZ
+        return itrans.pos + itrans.att.transform_point(centre_direction(self.radius * np.sign(self.angle)))
+
+    def loop_coord(self, itrans: Transformation) -> Coord:
+        pass
+
     def match_axis_rate(self, pitch_rate: float):
         return self.set_parms(radius=self.speed / pitch_rate)
 
-    def match_intention(self, transform: Transformation, flown: State):
-        
-        pos = Transformation(-transform.translation, transform.rotation.inverse()).point(flown.pos)
+
+    def match_intention(self, itrans: Transformation, flown: State):      
+        jit = flown.judging_itrans(itrans)
+        pos = jit.att.transform_point(flown.pos - jit.pos)
 
         if self.ke:
             x, y = pos.x, pos.y
         else:
             x, y = pos.x, pos.z
-
-        # TODO this does not constrain the starting point
-        def calc_R(xc, yc): return np.sqrt((x-xc)**2 + (y-yc)**2)
+            
+        calc_R = lambda x, y, xc, yc: np.sqrt((x-xc)**2 + (y-yc)**2)
 
         def f_2(c):
-            Ri = calc_R(*c)
-            return Ri - Ri.mean()
+            return calc_R(x, y, *c) - calc_R(x[0], y[0], *c)
 
         center, ier = optimize.leastsq(f_2, (np.mean(x), np.mean(y)))
 
         return self.set_parms(
-            radius=calc_R(*center).mean(),
-            roll=np.sign(flown.rvel.mean().x[0]) * abs(self.roll)
+            radius=calc_R(x[0], y[0],*center).mean(),
+            roll=abs(self.roll) * np.sign(np.mean(flown.rvel.x)),
+            angle=abs(self.angle) * np.sign(np.sign(np.mean(flown.rvel.y))),
+            speed=np.mean(flown.u)
         )
     
 
@@ -98,6 +110,10 @@ class Loop(El):
             angle=abs(self.angle) * np.sign(other.angle)
         )
 
+
+
+
 def KELoop(*args, **kwargs):
     return Loop(*args, ke=True, **kwargs)
     
+

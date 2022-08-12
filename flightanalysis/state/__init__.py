@@ -46,8 +46,9 @@ State.body_to_wind = body_to_wind
 State.judging_to_wind = judging_to_wind
 State.wind_to_body = wind_to_body
 #
-from .tools.measurements import direction, inverted, upright
+from .tools.measurements import direction, inverted, upright, judging_itrans
 #
 State.direction = direction
 State.inverted = inverted
 State.upright = upright
+State.judging_itrans = judging_itrans
