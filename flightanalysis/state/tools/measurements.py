@@ -25,7 +25,7 @@ def judging_itrans(self: State, template_itrans: Transformation):
         Quaternion.from_rotation_matrix(
             Coord.from_xy(
                 P0(), 
-                self.att[0].transform_point(self.vel[0]),
+                self.att[0].transform_point(-self.vel[0]),
                 template_itrans.att.transform_point(PY()) 
             ).rotation_matrix()
         )

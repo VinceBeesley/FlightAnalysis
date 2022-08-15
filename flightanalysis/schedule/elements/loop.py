@@ -65,7 +65,7 @@ class Loop(El):
 
     def centre(self, itrans: Transformation) -> Point:
         centre_direction = PY if self.ke else PZ
-        return itrans.pos + itrans.att.transform_point(centre_direction(self.radius * np.sign(self.angle)))
+        return itrans.pos + itrans.att.transform_point(-centre_direction(self.radius * np.sign(self.angle)))
 
     def loop_coord(self, itrans: Transformation) -> Coord:
         pass
