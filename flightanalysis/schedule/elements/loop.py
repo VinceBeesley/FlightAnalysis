@@ -63,12 +63,26 @@ class Loop(El):
         c = self.centre(itrans)
 
 
+    def centre_direction(self):
+        return PY if self.ke else PZ
+    
+    def normal_direction(self):
+        return PZ if self.ke else PY
+
     def centre(self, itrans: Transformation) -> Point:
-        centre_direction = PY if self.ke else PZ
-        return itrans.pos + itrans.att.transform_point(-centre_direction(self.radius * np.sign(self.angle)))
+        return itrans.pos + itrans.att.inverse().transform_point(self.centre_direction()(self.radius * np.sign(self.angle)))
 
     def loop_coord(self, itrans: Transformation) -> Coord:
-        pass
+        centre =self.centre(itrans)   
+
+
+        loop_normal_vector = itrans.att.inverse().transform_point(
+            self.normal_direction()(np.sign(self.angle))
+        )
+
+
+        return Coord.from_zx(centre, loop_normal_vector, itrans.pos - centre)
+
 
     def match_axis_rate(self, pitch_rate: float):
         return self.set_parms(radius=self.speed / pitch_rate)
