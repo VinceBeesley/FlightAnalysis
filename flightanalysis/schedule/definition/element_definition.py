@@ -1,17 +1,12 @@
 import enum
-from typing import List, Dict, Callable, Union
+from typing import List, Callable, Union
 import numpy as np
-import pandas as pd
-from numbers import Number
 from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn, El, Elements
-from flightanalysis.schedule.manoeuvre import Manoeuvre
-from flightanalysis.criteria.comparison import Comparison
-from flightanalysis.criteria.combination import Combination
 from inspect import getfullargspec
 from functools import partial
 from . import ManParm, ManParms, _a
-from copy import deepcopy
 from flightanalysis.base.collection import Collection
+
 
 class ElDef:
     """This class creates a function to build an element (Loop, Line, Snap, Spin, Stallturn)

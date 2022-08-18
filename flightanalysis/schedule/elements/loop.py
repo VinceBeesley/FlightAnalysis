@@ -4,7 +4,9 @@ from geometry import Transformation, Coord, Point, Quaternion, PX, PY, PZ
 from flightanalysis.state import State
 from flightanalysis.base.table import Time
 from scipy import optimize
-from flightanalysis.criteria.continuous import Continuous, ContinuousResult, intra_f3a_angle, intra_f3a_radius, intra_f3a_speed
+from flightanalysis.criteria import (
+    Continuous, ContinuousResult, intra_f3a_angle, intra_f3a_radius, intra_f3a_speed
+)
 from flightanalysis.criteria import Results
 from . import El
 

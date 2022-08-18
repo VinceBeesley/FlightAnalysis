@@ -1,15 +1,8 @@
 from flightanalysis.data.p23 import create_p23
-from flightanalysis.schedule.definition import SchedDef
-from flightanalysis.schedule import Schedule, Manoeuvre
 from flightdata import Flight
 from flightanalysis import State, Box
-from flightplotting import plotsec, plotdtw
-from flightanalysis.criteria.combination import Combination 
-import numpy as np
-from flightanalysis import Line, Loop, Spin, StallTurn, Snap
 from geometry import Transformation
-from json import dump
-from flightanalysis.schedule.definition import ManParms, ManDef, ElDef, ElDefs
+
 
 #parse a flight, cutoff takeoff and landing
 flown = State.from_flight(
@@ -32,7 +25,7 @@ dist, aligned = State.align(flown, template)
 
 #plotdtw(aligned, list(p23.manoeuvres.values())).show()
 #update the schedule to match the flight
-intended = p23.match_intention(aligned)
+intended = p23.match_intention(template[0].transform, aligned)
 
 #correct the intended inter element parameters to make a corrected shcedule and template
 p23_def.update_defaults(intended)

@@ -2,8 +2,7 @@
 from flightplotting import plotsec
 from flightanalysis.schedule.definition import *
 from flightanalysis.schedule.elements import *
-from flightanalysis.criteria.comparison import *
-from flightanalysis.criteria.combination import *
+from flightanalysis.criteria import *
 
 
 
@@ -162,7 +161,7 @@ def iSp():
             BoxLocation(Height.BTM)
         ),
         ManParms.create_defaults_f3a(
-            speed=ManParm("speed", f3a_free, 30.0)
+            speed=ManParm("speed", inter_free, 30.0)
         )
     )
 
@@ -279,7 +278,7 @@ def M(option:int=1):
         ),
         ManParms.create_defaults_f3a(
             line_length=150.0,
-            speed=ManParm("speed", f3a_free, 30.0)
+            speed=ManParm("speed", inter_free, 30.0)
         )
     )
 

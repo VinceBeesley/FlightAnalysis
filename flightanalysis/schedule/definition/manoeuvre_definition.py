@@ -18,13 +18,10 @@ TODO Define a serialisation format
 import enum
 from typing import List, Dict, Callable, Union, Tuple
 import numpy as np
-import pandas as pd
-from numbers import Number
 from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn, El, Elements
 from flightanalysis.schedule.manoeuvre import Manoeuvre
 from flightanalysis.schedule.definition.manoeuvre_info import ManInfo
-from flightanalysis.criteria.comparison import Comparison, f3a_speed, f3a_radius, f3a_length, f3a_roll_rate, f3a_free
-from flightanalysis.criteria.combination import Combination
+from flightanalysis.criteria import Comparison, inter_f3a_length, Combination
 from geometry import Transformation, Euler, Point, P0
 from functools import partial
 from scipy.optimize import minimize
@@ -189,7 +186,7 @@ class ManDef:
         s=None,
         rate=None,
         l=None,
-        criteria=f3a_length
+        criteria=inter_f3a_length
     ):
         return self.add_and_pad_els(
             ElDefs([ElDef.snap(
@@ -231,7 +228,7 @@ class ManDef:
             s
         )
 
-    def add_simple_roll(self, rolls:str, s=None, l=None, rates=None, pause=None, criteria=f3a_length):
+    def add_simple_roll(self, rolls:str, s=None, l=None, rates=None, pause=None, criteria=inter_f3a_length):
         self.add_padded_roll_combo(
             self.mps.add(
                 ManParm(
@@ -261,7 +258,7 @@ class ManDef:
         s: Union[ManParm, Callable]=None,
         l: Union[ManParm, Callable] = None,
         pause: Union[ManParm, Callable] = None,
-        criteria=f3a_length
+        criteria=inter_f3a_length
     ):
 
         roll_els = ElDefs.create_roll_combo(
@@ -295,7 +292,7 @@ class ManDef:
 
 
 
-    def add_and_pad_els(self, eds: ElDefs, l=None, s=None, criteria=f3a_length):
+    def add_and_pad_els(self, eds: ElDefs, l=None, s=None, criteria=inter_f3a_length):
         """Add an elements collection to this manoeuvre and pad it so that it sits between two
         lines of equal length so that the total length is equal to l. 
         also creates a ManParm to collect and score the two padding lines lengths.

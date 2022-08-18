@@ -1,7 +1,6 @@
 from flightanalysis.state import State
 from flightanalysis.flightline import Box
-from flightanalysis.schedule import Schedule, get_schedule, Categories
-from flightanalysis.schedule.elements import get_rates
+from flightanalysis.schedule import Schedule
 from flightdata import Flight
 from typing import Union, IO
 from json import loads, load

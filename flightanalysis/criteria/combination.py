@@ -7,7 +7,7 @@ from . import Result
 
 
 class Combination:
-    """Handles a series of anglecrit assessments.
+    """Handles a series of criteria assessments.
     for example a number of rolls in an element. 
     """
     def __init__(self, desired: List[List[Number]], criteria=None):

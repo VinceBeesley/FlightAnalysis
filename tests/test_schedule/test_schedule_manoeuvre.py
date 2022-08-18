@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import unittest
-from flightanalysis.schedule import Manoeuvre, Schedule, get_schedule
+from flightanalysis.schedule import Manoeuvre, Schedule
 from flightanalysis.state import State
 
 from flightanalysis.schedule.elements import Line, Loop

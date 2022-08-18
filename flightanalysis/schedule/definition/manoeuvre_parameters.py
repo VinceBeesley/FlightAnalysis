@@ -5,8 +5,7 @@ import pandas as pd
 from numbers import Number
 from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn, El, Elements
 from flightanalysis.schedule.manoeuvre import Manoeuvre
-from flightanalysis.criteria.comparison import *
-from flightanalysis.criteria.combination import Combination, AngleCrit
+from flightanalysis.criteria import *
 from flightanalysis import State
 from functools import partial
 from flightanalysis.base.collection import Collection
@@ -49,7 +48,7 @@ class ManParm:
     """This class represents a parameter that can be used to characterise the geometry of a manoeuvre.
     For example, the loop diameters, line lengths, roll direction. 
     """
-    def __init__(self, name:str, criteria: Union[Comparison, Combination], default=None, collectors: List[Callable]=None):
+    def __init__(self, name:str, criteria: Union[Criteria, Comparison, Combination], default=None, collectors: List[Callable]=None):
         """Construct a ManParm
 
         Args:
@@ -75,14 +74,14 @@ class ManParm:
                 self.append(coll)
 
     def collect(self, els):
-        return [collector(els) for collector in self.collectors]
+        return np.array([collector(els) for collector in self.collectors])
 
     def get_downgrades(self, els):
-        return self.criteria(*self.collect(els))
+        return self.criteria(self.name, self.collect(els))
 
     @property
     def value(self):
-        if isinstance(self.criteria, Comparison) or isinstance(self.criteria, AngleCrit):
+        if isinstance(self.criteria, Comparison):
             return self.default
         elif isinstance(self.criteria, Combination):
             return self.criteria[self.default]
@@ -100,7 +99,7 @@ class ManParm:
         Returns:
             Callable: function to get the default value for this manparm from the mps collection
         """
-        if isinstance(self.criteria, Comparison) or isinstance(self.criteria, AngleCrit):
+        if isinstance(self.criteria, Comparison) or isinstance(self.criteria, Criteria):
             return lambda mps: mps.data[self.name].value 
         elif isinstance(self.criteria, Combination):
             return lambda mps: mps.data[self.name].value[id] 
@@ -139,15 +138,15 @@ class ManParms(Collection):
     @staticmethod
     def create_defaults_f3a(**kwargs):
         mps = ManParms([
-            ManParm("speed", f3a_speed, 30.0),
-            ManParm("loop_radius", f3a_radius, 55.0),
-            ManParm("line_length", f3a_length, 130.0),
-            ManParm("point_length", f3a_length, 10.0),
-            ManParm("continuous_roll_rate", f3a_roll_rate, np.pi/2),
-            ManParm("partial_roll_rate", f3a_roll_rate, np.pi/2),
-            ManParm("snap_rate", f3a_roll_rate, 4*np.pi),
-            ManParm("stallturn_rate", f3a_roll_rate, 2*np.pi),
-            ManParm("spin_rate", f3a_roll_rate, 2*np.pi),
+            ManParm("speed", inter_f3a_speed, 30.0),
+            ManParm("loop_radius", inter_f3a_radius, 55.0),
+            ManParm("line_length", inter_f3a_length, 130.0),
+            ManParm("point_length", inter_f3a_length, 10.0),
+            ManParm("continuous_roll_rate", inter_f3a_roll_rate, np.pi/2),
+            ManParm("partial_roll_rate", inter_f3a_roll_rate, np.pi/2),
+            ManParm("snap_rate", inter_f3a_roll_rate, 4*np.pi),
+            ManParm("stallturn_rate", inter_f3a_roll_rate, 2*np.pi),
+            ManParm("spin_rate", inter_f3a_roll_rate, 2*np.pi),
         ])
         for k,v in kwargs.items():
             if isinstance(v, Number):
