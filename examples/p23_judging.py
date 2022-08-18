@@ -4,7 +4,7 @@ from flightanalysis.schedule import Schedule, Manoeuvre
 from flightdata import Flight
 from flightanalysis import State, Box
 from flightplotting import plotsec, plotdtw
-from flightanalysis.criteria.local import Combination 
+from flightanalysis.criteria.combination import Combination 
 import numpy as np
 from flightanalysis import Line, Loop, Spin, StallTurn, Snap
 from geometry import Transformation

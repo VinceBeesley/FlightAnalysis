@@ -8,7 +8,7 @@ from pytest import fixture
 from flightanalysis.schedule.definition import *
 from flightanalysis.schedule.elements import *
 from flightanalysis.criteria.comparison import *
-from flightanalysis.criteria.local import *
+from flightanalysis.criteria.combination import *
 
 col0, col1, col2 = st.columns([1,3,1])
 

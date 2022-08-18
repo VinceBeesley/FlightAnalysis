@@ -17,16 +17,17 @@ def inverted(self):
 def upright(self):
     return not inverted(self)
 
+
 def judging_itrans(self: State, template_itrans: Transformation):
     """The judging initial transform has its X axis in the states velocity vector and
-    its wings aligned with the templates"""
+    its wings aligned with the template"""
     return Transformation(
         self.pos[0], 
         Quaternion.from_rotation_matrix(
             Coord.from_xy(
                 P0(), 
-                self.att[0].transform_point(-self.vel[0]),
+                self.att[0].transform_point(self.vel[0]),
                 template_itrans.att.transform_point(PY()) 
             ).rotation_matrix()
-        )
+        ).inverse()
     )

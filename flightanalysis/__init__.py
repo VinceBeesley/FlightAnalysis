@@ -11,14 +11,9 @@ from .schedule import (
     Line,
     Snap,
     Spin,
-    StallTurn,
-    Categories, 
-    rules,
-    get_schedule
+    StallTurn
 )
 #
-from .fc_json import FCJson
-
 
 from .analysis import Analysis, fit_wind
 ##

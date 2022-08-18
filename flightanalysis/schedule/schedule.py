@@ -1,10 +1,7 @@
 from . import Manoeuvre
-from typing import List, Dict
-from geometry import Point, Quaternion, Transformation, Euler, PX, PY, PZ
+from geometry import Transformation
 from flightanalysis.state import State
-from flightanalysis.schedule.elements import get_rates, Line
 import numpy as np
-from flightanalysis.schedule.figure_rules import Categories
 from flightanalysis.base.collection import Collection
 
 # TODO it would be better if the list index of each manoeuvre corresponded with the uid. This is not possible because takeoff is not included as a manoeuvre. 
@@ -55,8 +52,7 @@ class Schedule(Collection):
     def create_matched_template(self, alinged: State) -> State:
         """This will go through all the manoeuvres in a labelled State and create a template with
          only the initial position and speed of each matched"""
-        rates = get_rates(alinged)
-
+        
         iatt = self.create_iatt(alinged[0].direction()[0])
 
         templates = []
@@ -66,7 +62,8 @@ class Schedule(Collection):
                 iatt
             )
             templates.append(manoeuvre.create_template(
-                transform, rates["speed"]))
+                transform, np.mean(abs(alinged.vel))
+            ))
             iatt = templates[-1][-1].att
 
         return State.stack(templates)
@@ -74,7 +71,6 @@ class Schedule(Collection):
     def create_elm_matched_template(self, alinged: State) -> State:
         """This will go through all the elements in a labelled State and create a template 
         with the initial position and speed of each matched"""
-        rates = get_rates(alinged)
 
         iatt = self.create_iatt(alinged[0].direction()[0])
 
@@ -86,7 +82,7 @@ class Schedule(Collection):
                     elm.get_data(alinged)[0].pos,
                     iatt
                 )
-                mtemps.append(elm.create_template(transform, rates["speed"]))
+                mtemps.append(elm.create_template(transform, np.mean(abs(alinged.vel))))
                 iatt = mtemps[-1][-1].att
             
             templates.append(manoeuvre.label(State.stack(mtemps)))
@@ -100,14 +96,14 @@ class Schedule(Collection):
         templates = []
         for man in self:
             flown = man.get_data(alinged)
-            rates = get_rates(flown)
+
             transform = Transformation(
                 flown[0].pos,
                 iatt
             )
             templates.append(
-                man.scale(rates["distance"] * np.tan(np.radians(60)))
-                .create_template(transform, rates["speed"])
+                man.scale(np.mean(alinged.y) * np.tan(np.radians(60)))
+                .create_template(transform, np.mean(abs(alinged.vel)))
             )
             iatt = templates[-1][-1].att
         return templates

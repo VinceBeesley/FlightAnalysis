@@ -1,5 +1,5 @@
+import numpy as np
 from flightanalysis.state import State
-from typing import Dict, Union
 
 
 class El:   
@@ -51,7 +51,7 @@ def from_dict(data):
 
 El.from_dict = staticmethod(from_dict)
 
-from .constructors import *
+
 from flightanalysis.base.collection import Collection
 
 
@@ -65,10 +65,3 @@ class Elements(Collection):
         return Elements([El.from_dict(d) for d in data])
 
 
-class IntraElementAnalysis:
-    def __init__(self, el: El, flown: State, template: State):
-        self.el = el
-        self.flown = flown
-        self.template = template
-
-    

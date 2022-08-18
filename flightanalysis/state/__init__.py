@@ -23,10 +23,12 @@ from .tools.transformers import (
     superimpose_roll, 
     smooth_rotation, 
     move, 
+    move_back,
     relocate
 )
 #
 State.move = move
+State.move_back = move_back
 State.relocate = relocate
 State.superimpose_angles = superimpose_angles
 State.superimpose_rotation = superimpose_rotation

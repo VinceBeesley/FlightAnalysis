@@ -24,7 +24,7 @@ from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn, 
 from flightanalysis.schedule.manoeuvre import Manoeuvre
 from flightanalysis.schedule.definition.manoeuvre_info import ManInfo
 from flightanalysis.criteria.comparison import Comparison, f3a_speed, f3a_radius, f3a_length, f3a_roll_rate, f3a_free
-from flightanalysis.criteria.local import Combination
+from flightanalysis.criteria.combination import Combination
 from geometry import Transformation, Euler, Point, P0
 from functools import partial
 from scipy.optimize import minimize

@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from flightanalysis.state import State
-from geometry import Point, Quaternion, Transformation, PX, Q0
+from geometry import Point, Quaternion, Transformation, PX, Q0, P0
 
 
 
@@ -10,11 +10,16 @@ def move(st: State, transform: Transformation) -> State:
         time=st.time,
         pos=transform.point(st.pos),
         att=transform.rotate(st.att),
-        vel=transform.rotate(st.vel),
-        rvel=transform.rotate(st.rvel),
-        acc=transform.rotate(st.acc),
-        racc=transform.rotate(st.racc),
+        vel=st.vel,
+        rvel=st.rvel,
+        acc=st.acc,
+        racc=st.racc,
     )
+
+def move_back(st:State, transform:Transformation) -> State:
+    st = move(st, Transformation(-transform.pos, Q0()))
+    return move(st, Transformation(P0(), transform.att.inverse()))
+
 
 def relocate(st:State, start_pos: Point) -> State:
     offset = start_pos - st.pos[0]

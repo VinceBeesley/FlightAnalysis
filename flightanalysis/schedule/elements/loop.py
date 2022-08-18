@@ -1,13 +1,15 @@
 import numpy as np
+import pandas as pd
 from geometry import Transformation, Coord, Point, Quaternion, PX, PY, PZ
 from flightanalysis.state import State
 from flightanalysis.base.table import Time
 from scipy import optimize
-
+from flightanalysis.criteria.continuous import Continuous, ContinuousResults, ContinuousResult, intra_f3a_angle, intra_f3a_radius, intra_f3a_speed
 from . import El
 
 class Loop(El):
     parameters = El.parameters + "radius,angle,roll,ke,rate".split(",")
+
     def __init__(self, speed: float, radius: float, angle: float, roll:float=0.0, ke: bool = False, uid: str=None):
         super().__init__(uid, speed)
         assert not radius == 0 and not angle == 0
@@ -62,27 +64,74 @@ class Loop(El):
     def corresponding_template(self, itrans: Transformation, aligned: State):
         c = self.centre(itrans)
 
+    @property
+    def centre_vector(self) -> Point:
+        """Return the body frame vector from the start of the loop to the centre"""
+        cv= PY if self.ke else PZ
+        return cv(self.radius * np.sign(self.angle))
 
-    def centre_direction(self):
-        return PY if self.ke else PZ
-    
-    def normal_direction(self):
-        return PZ if self.ke else PY
+    @property
+    def normal_direction(self) -> Point:
+        """Return the loop normal direction vector in the loop coord. The model moves around this
+        in the positive direction (right handed screw rule)."""
+        nd = PZ if self.ke else PY
+        return nd(np.sign(self.angle))
 
     def centre(self, itrans: Transformation) -> Point:
-        return itrans.pos + itrans.att.inverse().transform_point(self.centre_direction()(self.radius * np.sign(self.angle)))
+        """return the position of the centre of the loop given the transformation
+        to the first State in the loop"""
+        return itrans.pos - itrans.att.transform_point(self.centre_vector)
 
-    def loop_coord(self, itrans: Transformation) -> Coord:
+    def coord(self, itrans: Transformation) -> Coord:
+        """Create the loop coordinate frame
+        origin on loop centre,
+        X axis towards start of radius,
+        Z axis normal"""
         centre =self.centre(itrans)   
 
-
         loop_normal_vector = itrans.att.inverse().transform_point(
-            self.normal_direction()(np.sign(self.angle))
+            self.normal_direction
         )
-
 
         return Coord.from_zx(centre, loop_normal_vector, itrans.pos - centre)
 
+
+    def measure_radial_position(self, flown:State):
+        """The radial position in radians given a state in the loop coordinate frame"""
+        return np.arctan2(flown.pos.y, flown.pos.x)
+
+    def measure_radius(self, flown:State):
+        """The radius in m given a state in the loop coordinate frame"""
+        return abs(flown.pos * Point(1,1,0))
+
+    def measure_track(self, flown: State):
+        """The track in radians (lateral direction error) given a state in the loop coordinate frame"""
+        lc_vels = flown.att.transform_point(flown.vel) 
+        return np.arcsin(lc_vels.z/abs(lc_vels) )
+
+    def measure_roll_angle(self, flown: State):
+        """The roll error given a state in the loop coordinate frame"""
+        roll_vector = flown.att.inverse().transform_point(PZ(1))
+        return np.arctan2(roll_vector.z, roll_vector.y)
+
+    def setup_analysis_state(self, flown: State, template:State):
+        """Change the reference coordinate frame for a flown loop element to the
+        loop coord"""   
+        return flown.move_back(Transformation.from_coord(self.coord(
+            Transformation(flown.pos[0], template.att[0])
+        )))
+
+
+    def score(self, flown: State):
+        radpos = self.measure_radial_position(flown)
+        ms = lambda data: pd.Series(data, index=radpos)
+        return ContinuousResults(dict(
+            radius = intra_f3a_radius(ms(self.measure_radius(flown))),
+            roll_angle = intra_f3a_angle(ms(self.measure_roll_angle(flown))),
+            track = intra_f3a_angle(ms(self.measure_track(flown))),
+            speed = intra_f3a_angle(ms(abs(flown.vel))),
+            exit = intra_f3a_angle.lookup(np.degrees())
+        ))
 
     def match_axis_rate(self, pitch_rate: float):
         return self.set_parms(radius=self.speed / pitch_rate)

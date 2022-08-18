@@ -10,15 +10,19 @@ class Comparison:
         self.initial_value = initial_value
 
     def lookup(self,value):
-        return self.levels[:abs(value)].iloc[-1]
-
+        try:
+            return self.levels[:abs(value)].iloc[-1]
+        except IndexError:
+            raise ValueError(f"The requested ratio of {value} is not present in levels {self.levels}")
     def compare(self, v1, v2):
         if v1 is None:
             return 0
         if v1==0 or v2 == 0:
             return 0
-        return self.lookup(max(v1, v2) / min(v1,v2))
-
+        try:
+            return self.lookup(max(v1, v2) / min(v1,v2))
+        except ValueError as ex:
+            raise ValueError(f"Failed to compare {v1} to {v2}: {str(ex)}")
     def __call__(self, *values):
         if len(values) == 0:
             return []

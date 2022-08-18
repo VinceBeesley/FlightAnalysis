@@ -1,7 +1,6 @@
 from geometry import Transformation, Quaternion, Coord, P0, PX, PY, PZ
 from flightanalysis.state import State
-from flightanalysis.schedule.elements import Loop, Line, StallTurn, Snap, Spin, get_rates, El, Elements
-from flightanalysis.schedule.figure_rules import IMAC, rules, Rules
+from flightanalysis.schedule.elements import Loop, Line, StallTurn, Snap, Spin, El, Elements
 from typing import List, Union
 import numpy as np
 import pandas as pd

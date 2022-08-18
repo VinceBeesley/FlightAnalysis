@@ -6,7 +6,7 @@ from numbers import Number
 from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn, El, Elements
 from flightanalysis.schedule.manoeuvre import Manoeuvre
 from flightanalysis.criteria.comparison import *
-from flightanalysis.criteria.local import Combination, AngleCrit
+from flightanalysis.criteria.combination import Combination, AngleCrit
 from flightanalysis import State
 from functools import partial
 from flightanalysis.base.collection import Collection

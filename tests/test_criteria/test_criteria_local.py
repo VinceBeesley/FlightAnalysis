@@ -1,6 +1,6 @@
 from pytest import fixture
 import numpy as np
-from flightanalysis.criteria.local import Combination, angle_f3a, AngleCrit
+from flightanalysis.criteria.combination import Combination, angle_f3a, AngleCrit
 
 
 
