@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 from typing import Callable
 from flightanalysis.base.collection import Collection
+from . import Result, Criteria
 
-f3a_angle = lambda error: error/15
 
 
 def get_peak_locs(arr, rev=False):
@@ -23,33 +23,25 @@ def downgradeable_values(arr):
     return np.abs(peaks) - np.abs(troughs)
 
 
-class ContinuousResult:
-    def __init__(self, peaks: pd.Series, troughs: pd.Series, errors: np.ndarray, downgrades: np.ndarray):
+class ContinuousResult(Result):
+    def __init__(self, name:str, peaks: pd.Series, troughs: pd.Series, errors: np.ndarray, downgrades: np.ndarray):
         self.peaks = peaks
         self.troughs = troughs
-        self.errors = errors
-        self.downgrades = downgrades
-        self.value = sum(self.downgrades)
-        self.downgrade = np.trunc(self.value * 2) / 2
+        super().__init__(name, errors, downgrades)
 
 
-class ContinuousResults(Collection):
-    def downgrade(self):
-        return sum([cr.downgrade for cr in self])
-
-
-
-class Continuous:
+class Continuous(Criteria):
     def __init__(self,  lookup: Callable, preprocess: Callable): 
         self.lookup = lookup
         self.preprocess = preprocess
 
-    def __call__(self, data: pd.Series):
+    def __call__(self, name, data: pd.Series):
         pdata = self.preprocess(data)
         peak_locs = get_peak_locs(pdata)
         trough_locs = get_peak_locs(pdata, True)
         errors = abs(pdata[peak_locs].to_numpy()) - abs(pdata[trough_locs].to_numpy())
         return ContinuousResult(
+            name,
             data[peak_locs],
             data[trough_locs],
             errors,
@@ -57,6 +49,3 @@ class Continuous:
         )
 
 
-intra_f3a_angle = Continuous(lambda x: x/15, lambda x: np.degrees(x))
-intra_f3a_radius = Continuous(lambda x : (1 - 1/(x+1)) * 4, lambda x: (x / x[0] - 1) )
-intra_f3a_speed = Continuous(lambda x : (1 - 1/(x+1)), lambda x: (x / x[0] - 1) )

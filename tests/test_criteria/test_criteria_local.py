@@ -1,13 +1,13 @@
 from pytest import fixture
 import numpy as np
-from flightanalysis.criteria.combination import Combination, angle_f3a, AngleCrit
+from flightanalysis.criteria import Combination, f3a_angle
 
 
 
 
 def test_anglecrit_call():
     np.testing.assert_array_equal(
-        angle_f3a(*list(np.radians([10, 1, 30]))),
+        f3a_angle(*list(np.radians([10, 1, 30]))),
         [1, 0, 2]
     )
 

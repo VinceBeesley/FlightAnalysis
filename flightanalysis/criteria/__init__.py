@@ -1,16 +1,18 @@
 import numpy as np
 import pandas as pd
-from typing import List, Dict
+from typing import List, Dict, Callable
+from .results import Result, Results
+
+f3a_radius = lambda x : (1 - 1/(x+1)) * 4
+f3a_angle = lambda x: x/15
+f3a_speed = lambda x : (1 - 1/(x+1))
+imac_angle = lambda x: x/10
 
 
-dgs = np.linspace(0.5, 10, 20)
-f3aangles = np.linspace(2.5, 145, 20)
-imacangles = np.linspace(2.5, 97.5, 20)
-
-class AngleCrit:
+class Criteria:
     """This class creates a function to return scores for a set of angle errors. 
     """
-    def __init__(self, levels: pd.Series, moduli=None):
+    def __init__(self, lookup: Callable, preprocess=Callable):
         """build an anglecrit
 
         Args:
@@ -18,21 +20,14 @@ class AngleCrit:
             moduli (float, optional): perform error % moduli on the errors before comparison, None if
                                         you don't want this
         """
-        self.levels = levels
-        self.moduli = moduli
+        self.lookup = lookup
+        self.preprocess = preprocess
     
-    def get_score(self, error):
-        if self.moduli:
-            error = error % self.moduli
-        return self.levels[:abs(error)].iloc[-1]
 
-    def __call__(self, *errors) -> List[float]:
-        """get a list of scores for the errors.
-
-        Returns:
-            List[float]: the scores
-        """
-        return [self.get_score(error) for error in errors]
+    def __call__(self, name: str, data: np.ndarray) -> List[float]:
+        """get a Result object for a set of errors."""
+        pdata = self.preprocess(data)
+        return Result(name,data,self.lookup(pdata))
 
     @property
     def degrees(self):
@@ -40,12 +35,16 @@ class AngleCrit:
 
     @staticmethod
     def build(scores, angles, moduli=None):
-        return AngleCrit(pd.concat([pd.Series([0], [0]), pd.Series(scores, np.radians(angles))]), moduli)
+        return Criteria(pd.concat([pd.Series([0], [0]), pd.Series(scores, np.radians(angles))]), moduli)
 
 
-angle_f3a = AngleCrit.build(dgs,f3aangles, 2 * np.pi)
-rotation_f3a = AngleCrit.build(dgs,f3aangles)
-angle_imac = AngleCrit.build(dgs,imacangles, 2 * np.pi)
-rotation_imac = AngleCrit.build(dgs,imacangles)
-angle_free = AngleCrit(pd.Series({0.0:0.0}))
+basic_angle_f3a = Criteria(f3a_angle, lambda x : np.abs(x % 2* np.pi))
+
+from .continuous import Continuous
+
+intra_f3a_angle = Continuous(lambda x: x/15, lambda x: np.degrees(x))
+intra_f3a_radius = Continuous(lambda x : (1 - 1/(x+1)) * 4, lambda x: (x / x[0] - 1) )
+intra_f3a_speed = Continuous(lambda x : (1 - 1/(x+1)), lambda x: (x / x[0] - 1) )
+
+from .combination import Combination
 

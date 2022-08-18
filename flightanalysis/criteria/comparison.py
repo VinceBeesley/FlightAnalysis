@@ -1,17 +1,17 @@
 
 import numpy as np
 import pandas as pd
-
+from . import Criteria
 
 
 class Comparison:
-    def __init__(self, levels: pd.Series, initial_value=None):
-        self.levels = levels
+    def __init__(self, criteria: Criteria, initial_value=None):
+        self.criteria = criteria
         self.initial_value = initial_value
 
     def lookup(self,value):
         try:
-            return self.levels[:abs(value)].iloc[-1]
+            return self.criteria(value)
         except IndexError:
             raise ValueError(f"The requested ratio of {value} is not present in levels {self.levels}")
             

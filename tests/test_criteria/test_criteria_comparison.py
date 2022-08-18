@@ -1,4 +1,4 @@
-from flightanalysis.criteria.comparison import f3a_radius
+from flightanalysis.criteria import f3a_angle, f3a_radius
 import numpy as np
 
 

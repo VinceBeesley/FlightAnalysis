@@ -4,7 +4,8 @@ from geometry import Transformation, Coord, Point, Quaternion, PX, PY, PZ
 from flightanalysis.state import State
 from flightanalysis.base.table import Time
 from scipy import optimize
-from flightanalysis.criteria.continuous import Continuous, ContinuousResults, ContinuousResult, intra_f3a_angle, intra_f3a_radius, intra_f3a_speed
+from flightanalysis.criteria.continuous import Continuous, ContinuousResult, intra_f3a_angle, intra_f3a_radius, intra_f3a_speed
+from flightanalysis.criteria import Results
 from . import El
 
 class Loop(El):
@@ -125,7 +126,7 @@ class Loop(El):
     def score(self, flown: State):
         radpos = self.measure_radial_position(flown)
         ms = lambda data: pd.Series(data, index=radpos)
-        return ContinuousResults(dict(
+        return Results(dict(
             radius = intra_f3a_radius(ms(self.measure_radius(flown))),
             roll_angle = intra_f3a_angle(ms(self.measure_roll_angle(flown))),
             track = intra_f3a_angle(ms(self.measure_track(flown))),

@@ -2,9 +2,7 @@ import numpy as np
 import pandas as pd
 from typing import Union, List
 from numbers import Number
-from . import dgs, f3aangles, imacangles, AngleCrit
-
-
+from . import Result
 
 
 
@@ -12,24 +10,29 @@ class Combination:
     """Handles a series of anglecrit assessments.
     for example a number of rolls in an element. 
     """
-    def __init__(self, desired: List[List[Number]], criteria=angle_free):
-        self.desired = desired
-        self.criteria = criteria
+    def __init__(self, desired: List[List[Number]], criteria=None):
+        self.desired = np.array(desired)
+        self.criteria = lambda x : 0.0 if criteria is None else criteria
         
-    def __getitem__(self, value):
+    def __getitem__(self, value: int):
         return self.desired[value]
 
-    def get_errors(self, *values):
-        return np.array(self.desired) - np.array(values)
+    def get_errors(self, values: np.ndarray):
+        """get the error between values and desired for all the options"""
+        return self.desired - np.array(values)
 
-    def get_option_error(self, option, *values):
-        return np.array(values) - np.array(self.desired[option])
+    def get_option_error(self, option: int, values: np.ndarray) -> np.ndarray:
+        """The difference between the values and a given option"""
+        return np.array(values) - self.desired[option]
 
-    def check_option(self, *values):
-        return np.sum(np.abs(self.get_errors(*values)), axis=1).argmin()
+    def check_option(self, values):
+        """Given a set of values, return the option id which gives the least error"""
+        return np.sum(np.abs(self.get_errors(values)), axis=1).argmin()
 
-    def __call__(self, *values):
-        return self.criteria(*list(self.get_option_error(self.check_option(*values), *values)))
+    def __call__(self, name: str, values):
+        dgs = self.criteria(self.get_option_error(self.check_option(values), values))
+        return Result(name, values, dgs)
+
 
     @staticmethod
     def rolllist(rolls, reversable=True):
