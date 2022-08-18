@@ -14,6 +14,7 @@ class Comparison:
             return self.levels[:abs(value)].iloc[-1]
         except IndexError:
             raise ValueError(f"The requested ratio of {value} is not present in levels {self.levels}")
+            
     def compare(self, v1, v2):
         if v1 is None:
             return 0
