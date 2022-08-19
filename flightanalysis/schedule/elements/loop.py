@@ -128,13 +128,13 @@ class Loop(El):
     def score(self, flown: State):
         radpos = self.measure_radial_position(flown)
         ms = lambda data: pd.Series(data, index=radpos)
-        return Results(dict(
-            radius = intra_f3a_radius(ms(self.measure_radius(flown))),
-            roll_angle = intra_f3a_angle(ms(self.measure_roll_angle(flown))),
-            track = intra_f3a_angle(ms(self.measure_track(flown))),
-            speed = intra_f3a_angle(ms(abs(flown.vel))),
-            exit = intra_f3a_angle.lookup(np.degrees())
-        ))
+        return Results([
+            intra_f3a_radius("radius", ms(self.measure_radius(flown))),
+            intra_f3a_angle("roll_angle", ms(self.measure_roll_angle(flown))),
+            intra_f3a_angle("track", ms(self.measure_track(flown))),
+            intra_f3a_speed("speed", ms(abs(flown.vel))),
+            #intra_f3a_angle("exit", lookup(np.degrees())
+        ])
 
     def match_axis_rate(self, pitch_rate: float):
         return self.set_parms(radius=self.speed / pitch_rate)
