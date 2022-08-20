@@ -117,12 +117,7 @@ class Loop(El):
         roll_vector = flown.att.inverse().transform_point(PZ(1))
         return np.arctan2(roll_vector.z, roll_vector.y)
 
-    def setup_analysis_state(self, flown: State, template:State):
-        """Change the reference coordinate frame for a flown loop element to the
-        loop coord"""   
-        return flown.move_back(Transformation.from_coord(self.coord(
-            Transformation(flown.pos[0], template.att[0])
-        )))
+
 
 
     def score(self, flown: State):

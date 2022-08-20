@@ -1,5 +1,6 @@
 import numpy as np
 from flightanalysis.state import State
+from geometry import Transformation
 
 
 class El:   
@@ -33,6 +34,12 @@ class El:
             setattr(new_inst, key, value)
         return new_inst
 
+    def setup_analysis_state(self, flown: State, template:State):
+        """Change the reference coordinate frame for a flown loop element to the
+        loop coord"""   
+        return flown.move_back(Transformation.from_coord(self.coord(
+            Transformation(flown.pos[0], template.att[0])
+        )))
 
 
 from .line import Line

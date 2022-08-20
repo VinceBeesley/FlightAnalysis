@@ -72,6 +72,13 @@ class Line(El):
     def copy_direction(self, other):
         return self.set_parms(roll=abs(self.roll) * np.sign(other.roll))
 
+
+    def measure_track(self, flown: State, template:State):
+        
+        pass
+
+    
+
 def lineid(uid: int, speed: float, length: float, roll:float=0):
     return Line(speed, length, roll, uid)
     
