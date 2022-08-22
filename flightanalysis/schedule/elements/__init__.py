@@ -37,9 +37,9 @@ class El:
     def setup_analysis_state(self, flown: State, template:State):
         """Change the reference coordinate frame for a flown loop element to the
         loop coord"""   
-        return flown.move_back(Transformation.from_coord(self.coord(
-            Transformation(flown.pos[0], template.att[0])
-        )))
+        return flown.move_back(Transformation.from_coord(self.coord(template)))
+
+
 
 
 from .line import Line

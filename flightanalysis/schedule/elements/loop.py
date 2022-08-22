@@ -85,11 +85,12 @@ class Loop(El):
         to the first State in the loop"""
         return itrans.pos - itrans.att.transform_point(self.centre_vector)
 
-    def coord(self, itrans: Transformation) -> Coord:
-        """Create the loop coordinate frame
+    def coord(self, template: State) -> Coord:
+        """Create the loop coordinate frame. Assumes inital position is in the same as flown
         origin on loop centre,
         X axis towards start of radius,
         Z axis normal"""
+        itrans = template[0].transform
         centre =self.centre(itrans)   
 
         loop_normal_vector = itrans.att.inverse().transform_point(
@@ -116,8 +117,6 @@ class Loop(El):
         """The roll error given a state in the loop coordinate frame"""
         roll_vector = flown.att.inverse().transform_point(PZ(1))
         return np.arctan2(roll_vector.z, roll_vector.y)
-
-
 
 
     def score(self, flown: State):

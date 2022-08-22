@@ -1,6 +1,6 @@
 
 import numpy as np
-from geometry import Transformation, Point, PX
+from geometry import Transformation, Point, PX, PY, PZ, Coord
 from flightanalysis.base.table import Time
 from flightanalysis.state import State
 from enum import Enum
@@ -72,10 +72,28 @@ class Line(El):
     def copy_direction(self, other):
         return self.set_parms(roll=abs(self.roll) * np.sign(other.roll))
 
+    def coord(self, template: State) -> Coord:
+        """Create the line coordinate frame. 
+        Origin on start point, X axis in velocity vector
+        if the x_vector is in the xz plane then the z vector is world y,
+        #otherwise the Z vector is world X
+        """
+        x_vector = template[0].att.transform_point(PX(1))
+        z_vector = PY(1.0) if abs(x_vector.y[0]) < 0.1 else PX(1.0)
+        return Coord.from_zx(template[0].pos, z_vector, x_vector)
 
-    def measure_track(self, flown: State, template:State):
-        
-        pass
+    def measure_ip_track(self, flown: State):
+        vels = flown.att.transform_point(flown.vel) 
+        return np.arcsin(vels.z/abs(vels) ) 
+
+    def measure_op_track(self, flown: State):
+        vels = flown.att.transform_point(flown.vel) 
+        return np.arcsin(vels.y/abs(vels) ) 
+
+
+    def measure_roll_angle(self, flown: State):
+        roll_vector = flown.att.inverse().transform_point(PZ(1))
+        return np.arctan2(roll_vector.z, roll_vector.y)
 
     
 
