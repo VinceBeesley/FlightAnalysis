@@ -82,18 +82,18 @@ class Line(El):
         z_vector = PY(1.0) if abs(x_vector.y[0]) < 0.1 else PX(1.0)
         return Coord.from_zx(template[0].pos, z_vector, x_vector)
 
-    def measure_ip_track(self, flown: State):
+    def measure_ip_track(self, flown: State, template:State):
         vels = flown.att.transform_point(flown.vel) 
         return np.arcsin(vels.z/abs(vels) ) 
 
-    def measure_op_track(self, flown: State):
+    def measure_op_track(self, flown: State, template:State):
         vels = flown.att.transform_point(flown.vel) 
         return np.arcsin(vels.y/abs(vels) ) 
 
-
-    def measure_roll_angle(self, flown: State):
-        roll_vector = flown.att.inverse().transform_point(PZ(1))
-        return np.arctan2(roll_vector.z, roll_vector.y)
+    def measure_roll_angle(self, flown: State, template:State):
+        #We just check start and end, because the middle is covered by roll rate.
+        roll_vectors = flown.att.inverse().transform_point(PZ(1))
+        return np.arctan2(roll_vectors.z, roll_vectors.y)
 
     
 

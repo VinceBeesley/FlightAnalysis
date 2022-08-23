@@ -100,32 +100,31 @@ class Loop(El):
         return Coord.from_zx(centre, loop_normal_vector, itrans.pos - centre)
 
 
-    def measure_radial_position(self, flown:State):
+    def measure_radial_position(self, flown:State, template:State):
         """The radial position in radians given a state in the loop coordinate frame"""
         return np.arctan2(flown.pos.y, flown.pos.x)
 
-    def measure_radius(self, flown:State):
+    def measure_radius(self, flown:State, template:State):
         """The radius in m given a state in the loop coordinate frame"""
         return abs(flown.pos * Point(1,1,0))
 
-    def measure_track(self, flown: State):
+    def measure_track(self, flown: State, template:State):
         """The track in radians (lateral direction error) given a state in the loop coordinate frame"""
         lc_vels = flown.att.transform_point(flown.vel) 
         return np.arcsin(lc_vels.z/abs(lc_vels) )
 
-    def measure_roll_angle(self, flown: State):
+    def measure_roll_angle(self, flown: State, template:State):
         """The roll error given a state in the loop coordinate frame"""
         roll_vector = flown.att.inverse().transform_point(PZ(1))
         return np.arctan2(roll_vector.z, roll_vector.y)
 
-
-    def score(self, flown: State):
-        radpos = self.measure_radial_position(flown)
+    def score(self, flown: State, template:State):
+        radpos = self.measure_radial_position(flown, template)
         ms = lambda data: pd.Series(data, index=radpos)
         return Results([
-            intra_f3a_radius("radius", ms(self.measure_radius(flown))),
-            intra_f3a_angle("roll_angle", ms(self.measure_roll_angle(flown))),
-            intra_f3a_angle("track", ms(self.measure_track(flown))),
+            intra_f3a_radius("radius", ms(self.measure_radius(flown, template))),
+            intra_f3a_angle("roll_angle", ms(self.measure_roll_angle(flown, template))),
+            intra_f3a_angle("track", ms(self.measure_track(flown, template))),
             intra_f3a_speed("speed", ms(abs(flown.vel))),
             #intra_f3a_angle("exit", lookup(np.degrees())
         ])
