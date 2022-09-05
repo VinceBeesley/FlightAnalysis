@@ -5,7 +5,7 @@ from flightanalysis.state import State
 from flightanalysis.base.table import Time
 from scipy import optimize
 from flightanalysis.criteria import (
-    Continuous, ContinuousResult, intra_f3a_angle, intra_f3a_radius, intra_f3a_speed
+    Continuous, ContinuousResult, intra_f3a_angle, intra_f3a_radius, intra_f3a_speed, basic_angle_f3a
 )
 from flightanalysis.criteria import Results
 from . import El
@@ -118,6 +118,12 @@ class Loop(El):
         roll_vector = flown.att.inverse().transform_point(PZ(1))
         return np.arctan2(roll_vector.z, roll_vector.y)
 
+    def measure_end_angle(self, flown: State, template:State):
+        template_vels = template.att.transform_point(template.vel) * Point(1,1,0)
+        flown_vels = flown.att.transform_point(flown.vel) * Point(1,1,0)
+
+        return Point.angle_between(template_vels[-1], flown_vels[-1])
+
     def score(self, flown: State, template:State):
         radpos = self.measure_radial_position(flown, template)
         ms = lambda data: pd.Series(data, index=radpos)
@@ -126,7 +132,7 @@ class Loop(El):
             intra_f3a_angle("roll_angle", ms(self.measure_roll_angle(flown, template))),
             intra_f3a_angle("track", ms(self.measure_track(flown, template))),
             intra_f3a_speed("speed", ms(abs(flown.vel))),
-            #intra_f3a_angle("exit", lookup(np.degrees())
+            basic_angle_f3a("exit", self.measure_end_angle(flown, template))
         ])
 
     def match_axis_rate(self, pitch_rate: float):

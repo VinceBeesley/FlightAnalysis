@@ -14,28 +14,27 @@ hard_zero = lambda x: 0 if x==0 else 10
 free = lambda x: 0
 
 class Criteria:
-    """This class creates a function to return scores for a set of errors. 
+    """This class creates a function to return a result for a set of errors. 
     """
-    def __init__(self, lookup: Callable, preprocess=Callable):
-        """build an anglecrit
-
-        Args:
-            levels (pd.Series): a pd.series index on error, values are the scores to give
-            moduli (float, optional): perform error % moduli on the errors before comparison, None if
-                                        you don't want this
+    def __init__(self, lookup: Callable, preprocess: Callable=None):
         """
-        self.lookup = lookup
-        self.preprocess = preprocess
+        Args:
+            lookup (Callable): a function that returns a score for a given error
+            preprocess (Callable, optional): A function to apply to the input value to return the error.
+        """
+        self.lookup = lookup        
+        if preprocess is None:
+            self.preprocess = lambda x: x
+        else:
+            self.preprocess = preprocess
     
-
     def __call__(self, name: str, data: np.ndarray) -> List[float]:
         """get a Result object for a set of errors."""
         pdata = self.preprocess(data)
         return Result(name,data,self.lookup(pdata))
 
 
-basic_angle_f3a = Criteria(f3a_angle, lambda x : np.abs(x % 2* np.pi))
-
+basic_angle_f3a = Criteria(f3a_angle, lambda x : np.abs(np.degrees(x) % (2 * np.pi)))
 
 from .continuous import Continuous, ContinuousResult
 

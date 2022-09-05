@@ -82,6 +82,7 @@ class Line(El):
         z_vector = PY(1.0) if abs(x_vector.y[0]) < 0.1 else PX(1.0)
         return Coord.from_zx(template[0].pos, z_vector, x_vector)
 
+    
     def measure_ip_track(self, flown: State, template:State):
         vels = flown.att.transform_point(flown.vel) 
         return np.arcsin(vels.z/abs(vels) ) 

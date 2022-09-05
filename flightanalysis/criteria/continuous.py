@@ -31,9 +31,8 @@ class ContinuousResult(Result):
 
 
 class Continuous(Criteria):
-    def __init__(self,  lookup: Callable, preprocess: Callable): 
-        self.lookup = lookup
-        self.preprocess = preprocess
+    def __init__(self,  lookup: Callable, preprocess: Callable=None): 
+        super().__init__(lookup, preprocess)
 
     def __call__(self, name, data: pd.Series):
         pdata = self.preprocess(data)
