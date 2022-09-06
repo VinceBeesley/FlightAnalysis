@@ -39,8 +39,9 @@ basic_angle_f3a = Criteria(f3a_angle, lambda x : np.abs(np.degrees(x) % (2 * np.
 from .continuous import Continuous, ContinuousResult
 
 intra_f3a_angle = Continuous(f3a_angle, lambda x: np.degrees(x))
-intra_f3a_radius = Continuous(f3a_radius, lambda x: (x / x[0] - 1) )
-intra_f3a_speed = Continuous(f3a_speed, lambda x: (x / x[0] - 1) )
+intra_f3a_radius = Continuous(f3a_radius, lambda x: (x / x.iloc[0] - 1) )
+intra_f3a_speed = Continuous(f3a_speed, lambda x: (x / x.iloc[0] - 1) )
+intra_f3a_roll_rate = Continuous(f3a_roll_rate, lambda x: np.degrees(x))
 
 from .comparison import Comparison
 

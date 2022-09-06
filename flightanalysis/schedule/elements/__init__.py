@@ -1,6 +1,7 @@
 import numpy as np
+import pandas as pd
 from flightanalysis.state import State
-from geometry import Transformation
+from geometry import Transformation, PZ, Point
 
 
 class El:   
@@ -35,9 +36,44 @@ class El:
         return new_inst
 
     def setup_analysis_state(self, flown: State, template:State):
-        """Change the reference coordinate frame for a flown loop element to the
-        loop coord"""   
+        """Change the reference coordinate frame for a flown element to the
+        elements coord"""   
         return flown.move_back(Transformation.from_coord(self.coord(template)))
+
+    def measure_end_roll_angle(self, flown: State, template:State):
+        return np.array([self.measure_roll_angle(flown, template)[-1]])
+
+    def measure_ip_track(self, flown: State, template:State):
+        vels = flown.att.transform_point(flown.vel) 
+        return np.arcsin(vels.z/abs(vels) ) 
+
+    def measure_op_track(self, flown: State, template:State):
+        vels = flown.att.transform_point(flown.vel) 
+        return np.arcsin(vels.y/abs(vels) ) 
+
+    def measure_roll_rate(self, flown: State, template:State):
+        return flown.p
+
+    def measure_roll_angle(self, flown: State, template:State):
+        """The roll error given a state in the loop coordinate frame"""
+        roll_vector = flown.att.inverse().transform_point(PZ(1))
+        return np.arctan2(roll_vector.z, roll_vector.y)
+
+    def measure_length(self, flown: State, template:State):
+        return np.cumsum(abs(flown.vel) * flown.dt)
+
+    def measure_ratio(self, flown: State, template:State):
+        return flown.x / flown.x[-1]
+
+    def measure_roll_angle_error(self, flown: State, template:State):
+        fl_angles = self.measure_roll_angle(flown, template)
+        tp_angles = self.measure_roll_angle(template, template)
+        return fl_angles - self.measure_ratio(flown, template) * (tp_angles[-1] - tp_angles[0])
+
+    def score_series_builder(self, flown, template):
+        length = self.measure_length(flown, template)
+        return lambda data: pd.Series(data, index=length)
+
 
 
 

@@ -5,6 +5,7 @@ from flightanalysis.base.table import Time
 from flightanalysis.state import State
 from enum import Enum
 from . import El
+from flightanalysis.criteria import *
 
 
 class Line(El):
@@ -81,23 +82,15 @@ class Line(El):
         x_vector = template[0].att.transform_point(PX(1))
         z_vector = PY(1.0) if abs(x_vector.y[0]) < 0.1 else PX(1.0)
         return Coord.from_zx(template[0].pos, z_vector, x_vector)
+   
+    def score(self, flown: State, template:State):
+        ms = self.score_series_builder(flown, template)
+        return Results([
+            intra_f3a_roll_rate("roll_rate", ms(self.measure_roll_rate(flown, template))),
+            intra_f3a_angle("ip_track", ms(self.measure_ip_track(flown, template))),
+            intra_f3a_angle("op_track", ms(self.measure_op_track(flown, template))),
+            intra_f3a_speed("speed", ms(abs(flown.vel))),
+            basic_angle_f3a("exit_roll", self.measure_end_roll_angle(flown, template))
+        ])
 
-    
-    def measure_ip_track(self, flown: State, template:State):
-        vels = flown.att.transform_point(flown.vel) 
-        return np.arcsin(vels.z/abs(vels) ) 
-
-    def measure_op_track(self, flown: State, template:State):
-        vels = flown.att.transform_point(flown.vel) 
-        return np.arcsin(vels.y/abs(vels) ) 
-
-    def measure_roll_angle(self, flown: State, template:State):
-        #We just check start and end, because the middle is covered by roll rate.
-        roll_vectors = flown.att.inverse().transform_point(PZ(1))
-        return np.arctan2(roll_vectors.z, roll_vectors.y)
-
-    
-
-def lineid(uid: int, speed: float, length: float, roll:float=0):
-    return Line(speed, length, roll, uid)
-    
+        

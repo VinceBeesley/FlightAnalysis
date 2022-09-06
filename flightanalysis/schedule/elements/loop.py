@@ -4,9 +4,7 @@ from geometry import Transformation, Coord, Point, Quaternion, PX, PY, PZ
 from flightanalysis.state import State
 from flightanalysis.base.table import Time
 from scipy import optimize
-from flightanalysis.criteria import (
-    Continuous, ContinuousResult, intra_f3a_angle, intra_f3a_radius, intra_f3a_speed, basic_angle_f3a
-)
+from flightanalysis.criteria import *
 from flightanalysis.criteria import Results
 from . import El
 
@@ -99,45 +97,38 @@ class Loop(El):
 
         return Coord.from_zx(centre, loop_normal_vector, itrans.pos - centre)
 
-
     def measure_radial_position(self, flown:State, template:State):
         """The radial position in radians given a state in the loop coordinate frame"""
         return np.arctan2(flown.pos.y, flown.pos.x)
 
+    def measure_ratio(self, flown: State, template:State):
+        rpos = self.measure_radial_position(flown, template)
+        return rpos / rpos[-1]
+
     def measure_radius(self, flown:State, template:State):
         """The radius in m given a state in the loop coordinate frame"""
         return abs(flown.pos * Point(1,1,0))
-
-    def measure_track(self, flown: State, template:State):
-        """The track in radians (lateral direction error) given a state in the loop coordinate frame"""
-        lc_vels = flown.att.transform_point(flown.vel) 
-        return np.arcsin(lc_vels.z/abs(lc_vels) )
-
-    def measure_roll_angle(self, flown: State, template:State):
-        """The roll error given a state in the loop coordinate frame"""
-        roll_vector = flown.att.inverse().transform_point(PZ(1))
-        return np.arctan2(roll_vector.z, roll_vector.y)
-
+   
     def measure_end_angle(self, flown: State, template:State):
         template_vels = template.att.transform_point(template.vel) * Point(1,1,0)
         flown_vels = flown.att.transform_point(flown.vel) * Point(1,1,0)
-
         return Point.angle_between(template_vels[-1], flown_vels[-1])
 
     def score(self, flown: State, template:State):
-        radpos = self.measure_radial_position(flown, template)
-        ms = lambda data: pd.Series(data, index=radpos)
+        length = self.measure_length(flown, template)
+        ms = lambda data: pd.Series(data, index=length)
+        
         return Results([
             intra_f3a_radius("radius", ms(self.measure_radius(flown, template))),
-            intra_f3a_angle("roll_angle", ms(self.measure_roll_angle(flown, template))),
-            intra_f3a_angle("track", ms(self.measure_track(flown, template))),
+            intra_f3a_angle("roll_angle", ms(self.measure_roll_angle_error(flown, template))),
+            intra_f3a_angle("track", ms(self.measure_ip_track(flown, template))),
             intra_f3a_speed("speed", ms(abs(flown.vel))),
-            basic_angle_f3a("exit", self.measure_end_angle(flown, template))
+            basic_angle_f3a("exit_angle", self.measure_end_angle(flown, template)),
+            basic_angle_f3a("exit_roll", self.measure_end_roll_angle(flown, template))
         ])
 
     def match_axis_rate(self, pitch_rate: float):
         return self.set_parms(radius=self.speed / pitch_rate)
-
 
     def match_intention(self, itrans: Transformation, flown: State):      
         jit = flown.judging_itrans(itrans)
