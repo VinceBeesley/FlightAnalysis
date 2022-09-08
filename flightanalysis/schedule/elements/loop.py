@@ -5,11 +5,22 @@ from flightanalysis.state import State
 from flightanalysis.base.table import Time
 from scipy import optimize
 from flightanalysis.criteria import *
-from flightanalysis.criteria import Results
-from . import El
+from . import El, DownGrades, DownGrade
+
 
 class Loop(El):
     parameters = El.parameters + "radius,angle,roll,ke,rate".split(",")
+
+    intra_scoring = DownGrades([
+        DownGrade("speed", "measure_speed", intra_f3a_speed),
+        DownGrade("radius", "measure_radius", intra_f3a_radius),
+        DownGrade("roll_angle", "measure_roll_angle_error", intra_f3a_angle),
+        DownGrade("track", "measure_ip_track", intra_f3a_angle)
+    ])
+
+    exit_scoring = ([
+        DownGrade("angle", "measure_end_angle", basic_angle_f3a),
+    ])
 
     def __init__(self, speed: float, radius: float, angle: float, roll:float=0.0, ke: bool = False, uid: str=None):
         super().__init__(uid, speed)
@@ -113,19 +124,6 @@ class Loop(El):
         template_vels = template.att.transform_point(template.vel) * Point(1,1,0)
         flown_vels = flown.att.transform_point(flown.vel) * Point(1,1,0)
         return Point.angle_between(template_vels[-1], flown_vels[-1])
-
-    def score(self, flown: State, template:State):
-        length = self.measure_length(flown, template)
-        ms = lambda data: pd.Series(data, index=length)
-        
-        return Results([
-            intra_f3a_radius("radius", ms(self.measure_radius(flown, template))),
-            intra_f3a_angle("roll_angle", ms(self.measure_roll_angle_error(flown, template))),
-            intra_f3a_angle("track", ms(self.measure_ip_track(flown, template))),
-            intra_f3a_speed("speed", ms(abs(flown.vel))),
-            basic_angle_f3a("exit_angle", self.measure_end_angle(flown, template)),
-            basic_angle_f3a("exit_roll", self.measure_end_roll_angle(flown, template))
-        ])
 
     def match_axis_rate(self, pitch_rate: float):
         return self.set_parms(radius=self.speed / pitch_rate)

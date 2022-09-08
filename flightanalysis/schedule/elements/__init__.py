@@ -1,11 +1,47 @@
+from telnetlib import DO
 import numpy as np
 import pandas as pd
 from flightanalysis.state import State
 from geometry import Transformation, PZ, Point
+from json import load
+from flightanalysis.criteria import *
+from flightanalysis.base.collection import Collection
+
+
+class DownGrade:
+    def __init__(self, name, measurement, criteria):
+        self.name = name
+        self.measurement = measurement
+        self.criteria = criteria
+
+    def measure(self, el, flown, template):
+        return getattr(el, self.measurement)(flown, template)
+    
+    def apply(self, el, flown, template):
+        return self.criteria(self.name, self.measure(el, flown, template))
+
+
+class DownGrades(Collection):
+    VType = DownGrade
+    uid = "name"
+
+    def measuredf(self, el, fl, tp):
+        intra_measurements = {es.name: es.measure(el, fl, tp) for es in el.intra_scoring }
+
+        return pd.DataFrame(
+            np.array(list(intra_measurements.values())).T, 
+            columns=list(intra_measurements.keys()),
+            index = el.measure_length(fl, tp)
+        )
+    
+    def dgs(self, mdf: pd.DataFrame):
+        return Results([es.criteria(es.name, mdf[es.name]) for es in self])
 
 
 class El:   
     parameters = ["speed"]
+    intra_scoring = DownGrades([])
+    exit_scoring = DownGrades([])
 
     def __init__(self, uid: str, speed: float):        
         self.uid = uid
@@ -70,11 +106,23 @@ class El:
         tp_angles = self.measure_roll_angle(template, template)
         return fl_angles - self.measure_ratio(flown, template) * (tp_angles[-1] - tp_angles[0])
 
-    def score_series_builder(self, flown, template):
-        length = self.measure_length(flown, template)
-        return lambda data: pd.Series(data, index=length)
+    def measure_speed(self, flown, template):
+        return abs(flown.vel)
 
+    def score_series_builder(self, index):
+        return lambda data: pd.Series(data, index=index)
 
+    def intra_measurements(self, flown, template):
+        pass
+
+    def intra_score(self, flown: State, template:State):
+        ms = self.score_series_builder(self.measure_length(flown, template))
+
+        res = []
+        for es in self.__class__.intra_scoring:
+            res.append(es.criteria(es.name, ms(getattr(self, es.measurement)(flown, template))))
+        
+        return res
 
 
 
@@ -94,6 +142,11 @@ def from_dict(data):
 
 El.from_dict = staticmethod(from_dict)
 
+def from_json(file):
+    with open(file, "r") as f:
+        return El.from_dict(load(f))
+
+El.from_json = from_json
 
 from flightanalysis.base.collection import Collection
 
