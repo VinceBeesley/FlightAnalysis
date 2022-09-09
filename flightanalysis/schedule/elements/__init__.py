@@ -2,7 +2,7 @@ from telnetlib import DO
 import numpy as np
 import pandas as pd
 from flightanalysis.state import State
-from geometry import Transformation, PZ, Point
+from geometry import Transformation, PZ, Point, angle_diff
 from json import load
 from flightanalysis.criteria import *
 from flightanalysis.base.collection import Collection
@@ -88,12 +88,17 @@ class El:
         return np.arcsin(vels.y/abs(vels) ) 
 
     def measure_roll_rate(self, flown: State, template:State):
-        return flown.p
+        return flown.p 
 
     def measure_roll_angle(self, flown: State, template:State):
-        """The roll error given a state in the loop coordinate frame"""
+        """The roll angle given a state in the loop coordinate frame"""
         roll_vector = flown.att.inverse().transform_point(PZ(1))
-        return np.arctan2(roll_vector.z, roll_vector.y)
+        return np.unwrap(np.arctan2(roll_vector.z, roll_vector.y))
+
+    def measure_eq_tp_roll_angle(self, flown, template):
+        tp_angles = self.measure_roll_angle(template, template)
+        
+        return self.measure_ratio(flown, template) * (tp_angles[-1] - tp_angles[0]) + tp_angles[0]
 
     def measure_length(self, flown: State, template:State):
         return np.cumsum(abs(flown.vel) * flown.dt)
@@ -102,9 +107,10 @@ class El:
         return flown.x / flown.x[-1]
 
     def measure_roll_angle_error(self, flown: State, template:State):
-        fl_angles = self.measure_roll_angle(flown, template)
-        tp_angles = self.measure_roll_angle(template, template)
-        return fl_angles - self.measure_ratio(flown, template) * (tp_angles[-1] - tp_angles[0])
+        fl_angles = self.measure_roll_angle(flown, template) 
+        tp_angles = self.measure_eq_tp_roll_angle(flown, template)
+        return angle_diff(fl_angles, tp_angles)
+        
 
     def measure_speed(self, flown, template):
         return abs(flown.vel)

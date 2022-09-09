@@ -4,12 +4,21 @@ from geometry import Transformation, Point, PX, PY, PZ, Coord
 from flightanalysis.base.table import Time
 from flightanalysis.state import State
 from enum import Enum
-from . import El
+from . import El, DownGrades, DownGrade
 from flightanalysis.criteria import *
 
 
 class Line(El):
     parameters = El.parameters + "length,roll,rate".split(",")
+
+    intra_scoring = DownGrades([
+        DownGrade("speed", "measure_speed", intra_f3a_speed),
+        DownGrade("ip_track", "measure_ip_track", intra_f3a_angle),
+        DownGrade("op_track", "measure_op_track", intra_f3a_angle),
+        DownGrade("roll_angle", "measure_roll_angle_error", intra_f3a_angle),
+    ])
+
+
     def __init__(self, speed, length, roll=0, uid:str=None):
         super().__init__(uid, speed)
         self.length = length
@@ -83,14 +92,5 @@ class Line(El):
         z_vector = PY(1.0) if abs(x_vector.y[0]) < 0.1 else PX(1.0)
         return Coord.from_zx(template[0].pos, z_vector, x_vector)
    
-    def score(self, flown: State, template:State):
-        ms = self.score_series_builder(flown, template)
-        return Results([
-            intra_f3a_roll_rate("roll_rate", ms(self.measure_roll_rate(flown, template))),
-            intra_f3a_angle("ip_track", ms(self.measure_ip_track(flown, template))),
-            intra_f3a_angle("op_track", ms(self.measure_op_track(flown, template))),
-            intra_f3a_speed("speed", ms(abs(flown.vel))),
-            basic_angle_f3a("exit_roll", self.measure_end_roll_angle(flown, template))
-        ])
 
         
