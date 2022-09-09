@@ -20,4 +20,14 @@ class Results(Collection):
         return sum([cr.downgrade for cr in self])
 
     def downgrade_summary(self):
-        return {r.name: r.downgrades for r in self}
+        return {r.name: r.downgrades for r in self if len(r.downgrades > 0)}
+
+    def downgrade_df(self):
+        dgs = self.downgrade_summary()
+        if len(dgs) == 0:
+            return pd.DataFrame()
+        max_len = max([len(v) for v in dgs.values()])
+        extend = lambda vals: [vals[i] if i < len(vals) else "" for i in range(max_len)]
+        return pd.DataFrame.from_dict({k:extend(v) for k,v in dgs.items()})
+
+

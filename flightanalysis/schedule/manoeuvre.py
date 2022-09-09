@@ -1,6 +1,6 @@
 from geometry import Transformation, Quaternion, Coord, P0, PX, PY, PZ
 from flightanalysis.state import State
-from flightanalysis.schedule.elements import Loop, Line, StallTurn, Snap, Spin, El, Elements
+from flightanalysis.schedule.elements import *
 from typing import List, Union
 import numpy as np
 import pandas as pd
@@ -74,4 +74,15 @@ class Manoeuvre():
         return Manoeuvre.from_all_elements(
             self.uid, 
             [es.copy_direction(eo) for es, eo in zip(self.all_elements, other.all_elements)]
+        )
+
+    def analyse(self, flown: State, template: State):
+        return ElementsResults(
+            [
+                ElResults(
+                    el, 
+                    el.analyse(el.get_data(flown), el.get_data(template))
+                ) 
+                for el in self.elements
+            ]
         )

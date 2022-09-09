@@ -118,18 +118,14 @@ class El:
     def score_series_builder(self, index):
         return lambda data: pd.Series(data, index=index)
 
-    def intra_measurements(self, flown, template):
-        pass
-
     def intra_score(self, flown: State, template:State):
-        ms = self.score_series_builder(self.measure_length(flown, template))
+        mdf = self.intra_scoring.measuredf(self, flown, template)
+        return self.intra_scoring.dgs(mdf)
 
-        res = []
-        for es in self.__class__.intra_scoring:
-            res.append(es.criteria(es.name, ms(getattr(self, es.measurement)(flown, template))))
-        
-        return res
-
+    def analyse(self, flown:State, template:State):
+        fl =  self.setup_analysis_state(flown, template)
+        tp =  self.setup_analysis_state(template, template)
+        return self.intra_score(fl, tp)
 
 
 from .line import Line
@@ -167,3 +163,26 @@ class Elements(Collection):
         return Elements([El.from_dict(d) for d in data])
 
 
+class ElResults(El):
+    def __init__(self, el: El, results:Results):
+        self.el = el
+        self.results = results
+    
+    @property
+    def uid(self):
+        return self.el.uid
+
+    
+
+class ElementsResults(Collection):
+    VType=ElResults
+
+    def downgrade(self):
+        return sum(er.results.downgrade() for er in self)
+    
+    def downgrade_list(self):
+        return [er.results.downgrade() for er in self]
+    
+
+
+    

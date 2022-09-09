@@ -18,7 +18,7 @@ class Comparison:
             
     def __call__(self, name, data):
         if len(data) == 0:
-            return []
+            return Result(name, np.array([]), np.array([]))
         cval = data[0] if self.initial_value is None else self.initial_value
         data = np.concatenate([np.array([cval]), data])
         ratios = data[1:] / data[:-1] - 1
