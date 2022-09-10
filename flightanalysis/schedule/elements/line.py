@@ -71,7 +71,7 @@ class Line(El):
         jit = flown.judging_itrans(transform)
         return self.set_parms(
             length=jit.att.inverse().transform_point(flown.pos - jit.pos).x[-1],
-            roll=np.sign(np.mean(flown.rvel.x)) * abs(self.roll),
+            roll=np.sign(np.mean(flown.p)) * abs(self.roll),
             speed=np.mean(flown.u)
         )
 

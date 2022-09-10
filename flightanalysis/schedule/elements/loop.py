@@ -102,7 +102,7 @@ class Loop(El):
         itrans = template[0].transform
         centre =self.centre(itrans)   
 
-        loop_normal_vector = itrans.att.inverse().transform_point(
+        loop_normal_vector = itrans.att.transform_point(
             self.normal_direction
         )
 
