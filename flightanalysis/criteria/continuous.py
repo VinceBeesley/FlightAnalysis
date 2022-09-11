@@ -24,27 +24,33 @@ def downgradeable_values(arr):
 
 
 class ContinuousResult(Result):
-    def __init__(self, name:str, peaks: pd.Series, troughs: pd.Series, errors: np.ndarray, downgrades: np.ndarray):
-        self.peaks = peaks
-        self.troughs = troughs
-        super().__init__(name, errors, downgrades)
+    """Continous criteria return two error values, one some of difference in positive direction, the other negative
+    The downgrades from each of these are truncated before being summed. 
+    The remainder goes into a carry over value, which may be added to the downgrade a subsequent continuos criteria.
+    """
+    def __init__(self, name:str, errors:np.ndarray, downgrades: np.ndarray):
+        self.carry_over = downgrades % 0.5
+        super().__init__(name, errors, np.trunc(downgrades * 2) / 2)
 
 
 class Continuous(Criteria):
     def __init__(self,  lookup: Callable, preprocess: Callable=None): 
         super().__init__(lookup, preprocess)
 
-    def __call__(self, name, data: pd.Series):
+    def __call__(self, name, data: pd.Series, carry_over: np.ndarray= None):
         pdata = self.preprocess(data)
         peak_locs = get_peak_locs(pdata)
         trough_locs = get_peak_locs(pdata, True)
-        errors = abs(pdata[peak_locs].to_numpy()) - abs(pdata[trough_locs].to_numpy())
+
+        mistakes = pdata[peak_locs].to_numpy() - pdata[trough_locs].to_numpy()
+
+        errors = np.array([np.sum(mistakes[mistakes > 0]), -np.sum(mistakes[mistakes < 0])])
+        downgrades = self.lookup(errors) + (carry_over if carry_over is not None else np.zeros(2, dtype=float))
+
         return ContinuousResult(
             name,
-            data[peak_locs],
-            data[trough_locs],
-            errors,
-            self.lookup(errors)
+            errors,  
+            downgrades 
         )
 
 

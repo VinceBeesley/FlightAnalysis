@@ -118,11 +118,13 @@ class El:
     def score_series_builder(self, index):
         return lambda data: pd.Series(data, index=index)
 
-    def intra_score(self, flown: State, template:State):
+    def intra_score(self, flown: State, template:State, previous: Result=None) -> Results:
+        """The previous argument allows the scoring to pick up carry over (less than 0.5 mark errors) 
+        from the last element if there was one"""
         mdf = self.intra_scoring.measuredf(self, flown, template)
         return self.intra_scoring.dgs(mdf)
 
-    def analyse(self, flown:State, template:State):
+    def analyse(self, flown:State, template:State, previous: Result=None) -> Results:
         fl =  self.setup_analysis_state(flown, template)
         tp =  self.setup_analysis_state(template, template)
         return self.intra_score(fl, tp)

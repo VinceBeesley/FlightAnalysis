@@ -77,12 +77,9 @@ class Manoeuvre():
         )
 
     def analyse(self, flown: State, template: State):
-        return ElementsResults(
-            [
-                ElResults(
-                    el, 
-                    el.analyse(el.get_data(flown), el.get_data(template))
-                ) 
-                for el in self.elements
-            ]
-        )
+        ers = []
+        for el in self.elements:
+            fl = el.get_data(flown)
+            tp = el.get_data(template).relocate(fl.pos[0])
+            ers.append(ElResults(el, el.analyse(fl, tp)))
+        return ElementsResults(ers)

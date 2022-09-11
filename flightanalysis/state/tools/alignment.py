@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 
 
-def align(flown, template, radius=5, white=False, weights = Point(1,1,1)) -> State:
+def align(flown, template, radius=5, mirror=True, white=False, weights = Point(1,1,1)) -> State:
     """Perform a temporal alignment between two sections. return the flown section with labels 
     copied from the template along the warped path
 
@@ -22,8 +22,9 @@ def align(flown, template, radius=5, white=False, weights = Point(1,1,1)) -> Sta
         warnings.filterwarnings("ignore", message="Some columns have standard deviation zero. ")
 
     def get_brv(brv):
-        brv.data[:,0] = abs(brv.data[:,0])
-        brv.data[:,2] = abs(brv.data[:,2])
+        if mirror:
+            brv.data[:,0] = abs(brv.data[:,0])
+            brv.data[:,2] = abs(brv.data[:,2])
 
         if white:
             brv = brv.whiten()
