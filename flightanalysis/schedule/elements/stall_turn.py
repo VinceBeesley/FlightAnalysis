@@ -20,6 +20,9 @@ class StallTurn(El):
             uid=self.uid
         )
 
+    def describe(self):
+        return f"stallturn, yaw rate = {self.yaw_rate}"
+
     def scale(self, factor):
         return self.set_parms()
 
