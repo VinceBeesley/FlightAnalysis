@@ -21,6 +21,8 @@ class Line(El):
 
     def __init__(self, speed, length, roll=0, uid:str=None):
         super().__init__(uid, speed)
+        if length < 0:
+            raise ValueError("Cannot create line with negative length")
         self.length = length
         self.roll = roll
     

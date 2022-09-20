@@ -45,6 +45,8 @@ class El:
 
     def __init__(self, uid: str, speed: float):        
         self.uid = uid
+        if speed < 0:
+            raise ValueError("negative speeds are not allowed")
         self.speed = speed
 
     def get_data(self, sec: State):
