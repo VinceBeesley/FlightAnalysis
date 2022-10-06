@@ -25,6 +25,11 @@ class Spin(El):
             uid=self.uid
         )
 
+    def describe(self):
+        opp = "" if self.opp_turns is 0 else f", {self.opp_turns} opposite, "
+        return f"{self.turns} turn spin,{opp} rate={self.rate}"
+
+
     def scale(self, factor):
         return self.set_parms(rate=self.rate / factor)
 

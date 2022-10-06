@@ -102,8 +102,11 @@ class Box(object):
 
     @staticmethod
     def from_f3a_zone(file_path: str):
-        with open(file_path, "r") as f:
-            lines = f.read().splitlines()
+        if hasattr(file_path, "read"):
+            lines = file_path.read().splitlines()
+        else:
+            with open(file_path, "r") as f:
+                lines = f.read().splitlines()
         return Box.from_points(
             lines[1],
             GPS(float(lines[2]), float(lines[3])),

@@ -24,6 +24,10 @@ class Snap(El):
             uid=self.uid
         )
 
+    def describe(self):
+        d1 = "positive" if self.direction==1 else "negative"
+        return f"{self.rolls} {d1} snap, rate={self.rate}"
+
     @property
     def length(self):
         return self.create_template(Transformation()).pos.x[-1]  

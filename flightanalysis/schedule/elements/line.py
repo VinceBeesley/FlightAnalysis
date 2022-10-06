@@ -24,6 +24,10 @@ class Line(El):
         self.length = length
         self.roll = roll
     
+    def describe(self):
+        d1 = "line" if self.roll==0 else f"{self.roll} roll"
+        return f"{d1}, length = {self.length} m"
+
     def to_dict(self):
         return dict(
             kind=self.__class__.__name__,

@@ -30,6 +30,10 @@ class Loop(El):
         self.roll = roll
         self.ke = ke
 
+    def describe(self):
+        d1 = "loop" if self.roll==0 else f"rolling loop"
+        return f"{d1}, radius = {self.radius} m, rolls = {self.roll}"
+
     def to_dict(self):
         return dict(
             kind=self.__class__.__name__,
