@@ -27,7 +27,7 @@ class Results(Collection):
         if len(dgs) == 0:
             return pd.DataFrame()
         max_len = max([len(v) for v in dgs.values()])
-        extend = lambda vals: [vals[i] if i < len(vals) else "" for i in range(max_len)]
+        extend = lambda vals: [vals[i] if i < len(vals) else 0.0 for i in range(max_len)]
         return pd.DataFrame.from_dict({k:extend(v) for k,v in dgs.items()})
 
 

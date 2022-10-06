@@ -9,6 +9,8 @@ from flightanalysis.criteria import *
 from flightanalysis import State
 from functools import partial
 from flightanalysis.base.collection import Collection
+from numbers import Number
+
 
 class MPOpp:
     def __init__(self, a, b, opp:str):
@@ -19,10 +21,10 @@ class MPOpp:
 
     def __call__(self, mps):
         return {
-            '+': self.get_vf[self.a](mps) + self.get_vf[self.b](mps),
-            '-': self.get_vf[self.a](mps) - self.get_vf[self.b](mps),
-            '*': self.get_vf[self.a](mps) * self.get_vf[self.b](mps),
-            '/': self.get_vf[self.a](mps) / self.get_vf[self.b](mps)
+            '+': self.get_vf(self.a)(mps) + self.get_vf(self.b)(mps),
+            '-': self.get_vf(self.a)(mps) - self.get_vf(self.b)(mps),
+            '*': self.get_vf(self.a)(mps) * self.get_vf(self.b)(mps),
+            '/': self.get_vf(self.a)(mps) / self.get_vf(self.b)(mps)
         }[self.opp]
 
     def get_vf(self, arg):
@@ -32,6 +34,8 @@ class MPOpp:
             return lambda mps: arg(mps)
         elif isinstance(arg, Number):
             return lambda mps: arg
+        elif isinstance(arg, ManParm):
+            return lambda mps: arg.value
 
     def _argcheck(self, arg):
         if isinstance(arg, ManParm):
@@ -109,7 +113,21 @@ class ManParm:
             # )
         else:
             raise Exception("Cant create a valuefunc in this case")
-        
+    
+    def __add__(self, other):
+        return MPOpp(self, other, "+")
+
+    def __mul__(self, other):
+        return MPOpp(self, other, "*")
+    
+    def __sub__(self, other):
+        return MPOpp(self, other, "-")
+
+    def __div__(self, other):
+        return MPOpp(self, other, "/")
+
+    def __str__(self):
+        return self.name
 
 class ManParms(Collection):
     VType=ManParm

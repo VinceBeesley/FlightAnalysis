@@ -26,7 +26,7 @@ class DownGrades(Collection):
     uid = "name"
 
     def measuredf(self, el, fl, tp):
-        intra_measurements = {es.name: es.measure(el, fl, tp) for es in el.intra_scoring }
+        intra_measurements = {es.name: es.measure(el, fl, tp) for es in self}
 
         return pd.DataFrame(
             np.array(list(intra_measurements.values())).T, 
