@@ -15,7 +15,7 @@ class ElDef:
     The eldef also contains a set of collectors. These are a dict of str:callable pairs
     that collect the relevant parameter for this element from an Elements collection.
     """
-    def __init__(self, name, Kind, pfuncs: dict):
+    def __init__(self, name, Kind, props: dict):
         """ElDef Constructor
 
         Args:
@@ -26,7 +26,7 @@ class ElDef:
         """
         self.name = name
         self.Kind = Kind
-        self.pfuncs = pfuncs
+        self.props = props
 
         
         self.collectors = {}
@@ -41,18 +41,15 @@ class ElDef:
     def __call__(self, mps: ManParms) -> El:
         kwargs = {}
         args = getfullargspec(self.Kind.__init__).args
-        for pname, pfunc in self.pfuncs.items():
+        for pname, prop in self.props.items():
             # only use the parameter if it is actually needed to create the element
             if pname in args: 
-                kwargs[pname] = pfunc(mps)
+                kwargs[pname] = prop(mps) if callable(prop) else prop
+
         return self.Kind(uid=self.name, **kwargs) 
     
     def build(name, Kind, **kwargs):
-        ed = ElDef(
-            name, 
-            Kind, 
-            {k: _a(v) for k, v in kwargs.items()}
-        )
+        ed = ElDef(name, Kind, kwargs)
         
         for key, value in kwargs.items():
             if isinstance(value, ManParm):
@@ -90,7 +87,7 @@ class ElDef:
         ed = ElDef.line(
             name, 
             s,
-            lambda mps: abs(_a(angle)(mps)) * _a(s)(mps) / _a(rate)(mps),  
+            angle * s / rate,  
             angle
         )
         if isinstance(rate, ManParm):
@@ -136,6 +133,7 @@ class ElDef:
     @property
     def id(self):
         return int(self.name.split("_")[1])
+
 
 class ElDefs(Collection):
     VType=ElDef

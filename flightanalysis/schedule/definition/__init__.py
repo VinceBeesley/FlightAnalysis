@@ -3,7 +3,7 @@ from typing import Callable
 from numbers import Number
 
 from .manoeuvre_info import ManInfo, BoxLocation, Orientation, Direction, Height, Position
-from .manoeuvre_parameters import ManParm, ManParms, MPValue
+from .manoeuvre_parameters import ManParm, ManParms, MPValue, MPOpp
 
 def _a(arg):
     if isinstance(arg, Callable): 
@@ -16,7 +16,6 @@ def _a(arg):
 from .element_definition import ElDef, ElDefs
 
 from .manoeuvre_definition import ManDef
-
 
 from .schedule_definition import SchedDef
 
