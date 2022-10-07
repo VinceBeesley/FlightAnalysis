@@ -96,10 +96,6 @@ class ElDef:
 
     @staticmethod
     def snap(name: str, s, rate, roll, direction):
-        #The only way to work out the length of the snap is to create a template
-        #and measure it, as it is a bit complicated and not used in the constructor. 
-        # Therefore we bodge an extra pfunc onto the ElDef to do this. The pfuncs 
-        # are only used if they are needed so it doesn't give an argument error.
         return ElDef.build(
             name,
             Snap,
@@ -107,7 +103,7 @@ class ElDef:
             rolls=roll,
             direction=direction,
             rate=rate,
-            length=lambda mps: Snap(_a(s)(mps), _a(roll)(mps), _a(rate)(mps), 1, "temp").length
+            length=s * 2 * np.pi * (2 * Snap.break_angle + abs(roll)) / rate
         )
 
     @staticmethod

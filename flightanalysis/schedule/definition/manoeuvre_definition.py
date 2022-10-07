@@ -45,6 +45,15 @@ class ManDef:
     def uid(self):
         return self.info.short_name
 
+    def dump(self) -> str:
+        minfo = self.info.dump()
+        
+
+    @staticmethod
+    def parse(inp: str):
+        pass
+
+
     def create_entry_line(self, itrans: Transformation=None) -> ElDef:
         """Create a line definition connecting Transformation to the start of this manoeuvre.
 

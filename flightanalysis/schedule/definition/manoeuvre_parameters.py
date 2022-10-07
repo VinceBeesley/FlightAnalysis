@@ -12,41 +12,114 @@ from flightanalysis.base.collection import Collection
 from numbers import Number
 
 
-class MPOpp:
+class MPO:
+    def get_vf(self, arg):
+        if isinstance(arg, str):
+            return lambda mps: mps[self.a].value
+        elif isinstance(arg, MPO):
+            return lambda mps: arg(mps)
+        elif isinstance(arg, Number):
+            return lambda mps: arg
+        elif isinstance(arg, ManParm):
+            return lambda mps: arg.value    
+
+    def __abs__(self):
+        return MPfun(self, "abs")
+
+    def __add__(self, other):
+        return MPOpp(self, other, "+")
+
+    def __radd__(self, other):
+        return MPOpp(other, self, "+")
+
+    def __mul__(self, other):
+        return MPOpp(self, other, "*")
+
+    def __rmul__(self, other):
+        return MPOpp(other, self, "*")
+
+    def __sub__(self, other):
+        return MPOpp(self, other, "-")
+
+    def __rsub__(self, other):
+        return MPOpp(other, self, "-")
+
+    def __div__(self, other):
+        return MPOpp(self, other, "/")
+
+    def __rdiv__(self, other):
+        return MPOpp(other, self, "/")
+
+
+class MPOpp(MPO):
+    """This class facilitates various ManParm opperations and their serialisation"""
+    opps = ["+", "-", "*", "/"]
     def __init__(self, a, b, opp:str):
-        assert opp in ["+", "-", "*", "/"]
+        assert opp in MPOpp.opps
         self.a = a
         self.b = b
         self.opp = opp
 
     def __call__(self, mps):
-        return {
-            '+': self.get_vf(self.a)(mps) + self.get_vf(self.b)(mps),
-            '-': self.get_vf(self.a)(mps) - self.get_vf(self.b)(mps),
-            '*': self.get_vf(self.a)(mps) * self.get_vf(self.b)(mps),
-            '/': self.get_vf(self.a)(mps) / self.get_vf(self.b)(mps)
-        }[self.opp]
+        if self.opp == "+":
+            return self.get_vf(self.a)(mps) + self.get_vf(self.b)(mps)
+        elif self.opp == "-":
+            return self.get_vf(self.a)(mps) - self.get_vf(self.b)(mps)
+        elif self.opp == "*":
+            return self.get_vf(self.a)(mps) * self.get_vf(self.b)(mps)
+        elif self.opp == "/":
+            return self.get_vf(self.a)(mps) / self.get_vf(self.b)(mps)
 
-    def get_vf(self, arg):
-        if isinstance(arg, str):
-            return lambda mps: mps[self.a].value
-        elif isinstance(arg, self.__class__):
-            return lambda mps: arg(mps)
-        elif isinstance(arg, Number):
-            return lambda mps: arg
-        elif isinstance(arg, ManParm):
-            return lambda mps: arg.value
-
-    def _argcheck(self, arg):
-        if isinstance(arg, ManParm):
-            return arg.name
-        else:
-            return arg
-        
     def __str__(self):
         return f"({str(self.a)}{self.opp}{str(self.b)})"
 
+    @staticmethod
+    def parse(inp:str, mps):
+        if inp[0] == "(" and inp[-1] == ")":
+            bcount = 0
+            for i, l in enumerate(inp):
+                bcount += 1 if l=="(" else 0
+                bcount -=1 if l==")" else 0
+            
+                if bcount == 1 and l in MPOpp.opps:
+                    return MPOpp(
+                        ManParm.parse(inp[1:i], mps),
+                        ManParm.parse(inp[i+1:-1], mps),
+                        l
+                    )
+                    
+        raise ValueError(f"cannot read an MPOpp from the outside of {inp}")
 
+
+
+class MPfun(MPO):
+    """This class facilitates various functions that operate on ManParms and their serialisation"""
+    funs = ["abs"]
+    def __init__(self, a, opp: str):
+        assert opp in MPfun.funs
+        self.a = a
+        self.opp = opp
+
+    def __call__(self, mps):
+        return {
+            'abs': abs(self.get_vf(self.a)(mps))
+        }[self.opp]
+    
+    def __str__(self):
+        return f"{self.opp}({str(self.a)})"
+
+    @staticmethod 
+    def parse(inp: str, mps):
+        for fun in MPfun.funs:
+            if len(fun) >= len(inp) -2:
+                continue
+            if fun == inp[:len(fun)]:
+                return MPfun(
+                    ManParm.parse(inp[len(fun)+1:-1], mps), 
+                    fun
+                )
+        raise ValueError(f"cannot read an MPfun from the outside of {inp}")
+            
 
 class ManParm:
     """This class represents a parameter that can be used to characterise the geometry of a manoeuvre.
@@ -117,17 +190,48 @@ class ManParm:
     def __add__(self, other):
         return MPOpp(self, other, "+")
 
+    def __radd__(self, other):
+        return MPOpp(other, self, "+")
+
     def __mul__(self, other):
         return MPOpp(self, other, "*")
-    
+
+    def __rmul__(self, other):
+        return MPOpp(other, self, "*")
+
     def __sub__(self, other):
         return MPOpp(self, other, "-")
+
+    def __rsub__(self, other):
+        return MPOpp(other, self, "-")
 
     def __div__(self, other):
         return MPOpp(self, other, "/")
 
+    def __rdiv__(self, other):
+        return MPOpp(other, self, "/")
+
     def __str__(self):
         return self.name
+
+    def __abs__(self):
+        return MPfun(self, "abs")
+    
+    @staticmethod
+    def parse(inp, mps):
+        """Parse a manparm or a MPO from a string"""
+        for test in [
+            lambda inp, mps : MPfun.parse(inp, mps),
+            lambda inp, mps : MPOpp.parse(inp, mps),
+            lambda inp, mps : float(inp)
+        ]: 
+            try: 
+                return test(inp.strip(" "), mps)
+            except ValueError:
+                pass
+        else:
+            return mps[inp]
+
 
 class ManParms(Collection):
     VType=ManParm
