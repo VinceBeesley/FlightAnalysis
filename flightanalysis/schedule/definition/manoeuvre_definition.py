@@ -45,14 +45,19 @@ class ManDef:
     def uid(self):
         return self.info.short_name
 
-    def dump(self) -> str:
-        minfo = self.info.dump()
-        
+    def to_dict(self):
+        return dict(
+            info = self.info.to_dict(),
+            mps = self.mps.to_dict(),
+            eds = self.eds.to_dict()
+        )
 
     @staticmethod
-    def parse(inp: str):
-        pass
-
+    def from_dict(data: dict):
+        info = ManInfo.from_dict(data["info"])
+        mps = ManParms.from_dict(data["mps"])
+        eds = ElDefs.from_dict(data["eds"], mps)
+        return ManDef(info, mps, eds)
 
     def create_entry_line(self, itrans: Transformation=None) -> ElDef:
         """Create a line definition connecting Transformation to the start of this manoeuvre.
@@ -117,11 +122,11 @@ class ManDef:
 
     def add_loop(
         self,
-        angle: Union[float, ManParm, Callable],
-        roll: Union[float, ManParm, Callable]=0.0,
+        angle: Union[float, ManParm],
+        roll: Union[float, ManParm]=0.0,
         ke: bool=False,
-        s: Union[ManParm, Callable]=None,
-        r: Union[ManParm, Callable]=None
+        s: Union[float, ManParm]=None,
+        r: Union[float, ManParm]=None
     ) -> ElDef:
         
         self.eds.add(ElDef.loop(
@@ -135,9 +140,9 @@ class ManDef:
 
     def add_line(
         self,
-        roll: Union[float, ManParm, Callable]=0.0,
-        s: Union[ManParm, Callable]=None,
-        l: Union[ManParm, Callable]=None
+        roll: Union[float, ManParm]=0.0,
+        s: Union[ManParm, float]=None,
+        l: Union[ManParm, float]=None
     ) -> ElDef:
         
         self.eds.add(ElDef.line(
@@ -157,10 +162,10 @@ class ManDef:
 
     def add_snap(
         self,
-        roll: Union[float, ManParm, Callable],
-        direction: Union[int, ManParm, Callable],
-        rate: Union[float, ManParm, Callable]=None,
-        s: Union[ManParm, Callable]=None
+        roll: Union[float, ManParm],
+        direction: Union[int, ManParm],
+        rate: Union[float, ManParm]=None,
+        s: Union[ManParm, float]=None
     ) -> ElDef:
         return self.eds.add(ElDef.snap(
             self.eds.get_new_name(),
@@ -173,7 +178,7 @@ class ManDef:
     def add_spin(
         self,
         turns: List[List[float]],
-        rate: Union[float, ManParm, Callable]=None
+        rate: Union[float, ManParm]=None
     ):
         turns = self.mps.add(ManParm(
             self.mps.next_free_name("spins_"),
@@ -183,8 +188,8 @@ class ManDef:
         return self.eds.add(ElDef.spin(
             self.eds.get_new_name(),
             20,
-            turns.valuefunc(0),
-            turns.valuefunc(1) if turns.n == 2 else 0,
+            turns[0],
+            turns[1] if turns.n == 2 else 0,
             self.mps.spin_rate if rate is None else rate
         ))
 
@@ -209,7 +214,7 @@ class ManDef:
                 )),
                 self.mps.add(ManParm(
                     self.mps.next_free_name("snapdirection_"),
-                    Combination([[1], [-1]] if direction is None else [[direction]]),
+                    Combination([[1], [-1]] if direction is None else Combination([[direction]])),
                     0
                 )) 
             )]), l, s, criteria
@@ -264,9 +269,9 @@ class ManDef:
         self, 
         rolls: ManParm, 
         rates: List[ManParm] = None,
-        s: Union[ManParm, Callable]=None,
-        l: Union[ManParm, Callable] = None,
-        pause: Union[ManParm, Callable] = None,
+        s: ManParm=None,
+        l: ManParm = None,
+        pause: ManParm = None,
         criteria=inter_f3a_length
     ):
 
@@ -319,7 +324,8 @@ class ManDef:
         l = self.mps.line_length if l is None else l
         s = self.mps.speed if s is None else s
         
-        pad_length = lambda mps: 0.5 * (_a(l)(mps) - eds.builder_sum("length")(mps))
+        pad_length = 0.5 * (l - sum([ed.props["length"] for ed in eds]))
+        #pad_length = lambda mps: 0.5 * (_a(l)(mps) - eds.builder_sum("length")(mps))
         
         e1 = self.eds.add(ElDef.line(f"e_{eds[0].id}_0", s, pad_length, 0))
         e2 = self.eds.add([ed for ed in eds])

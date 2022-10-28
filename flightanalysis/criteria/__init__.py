@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from typing import List, Dict, Callable
 from .results import Result, Results
+import inspect
 
 #These functions return scores for an error
 f3a_radius = lambda x : (1 - 1/(x+1)) * 4
@@ -33,6 +34,17 @@ class Criteria:
         pdata = self.preprocess(data)
         return Result(name,data,self.lookup(pdata))
 
+    def to_dict(self):
+        return dict(
+            kind = self.__class__.__name__,
+            lookup = inspect.get_source_lines(self.lookup)[0][0],
+            preprocess = inspect.get_source_lines(self.preprocess)[0][0]
+        )
+
+    @staticmethod
+    def from_dict(data:dict):
+        return Criteria(eval(data["lookup"]),eval(data["preprocess"]))
+
 
 basic_angle_f3a = Criteria(f3a_angle, lambda x : np.abs(np.degrees(x) % (2 * np.pi)))
 
@@ -53,3 +65,10 @@ inter_free = Comparison(free, None)
 
 
 from .combination import Combination
+
+
+criterias = [Criteria, Continuous, Combination, Comparison]
+
+def from_dict(data):
+    return {c.__class__.name: c.from_dict(data) for c in criterias}[data["kind"]]
+        

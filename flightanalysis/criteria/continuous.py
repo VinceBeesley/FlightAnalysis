@@ -3,8 +3,7 @@ import pandas as pd
 from typing import Callable
 from flightanalysis.base.collection import Collection
 from . import Result, Criteria
-
-
+import inspect
 
 def get_peak_locs(arr, rev=False):
     increasing = np.sign(np.diff(np.abs(arr)))>0
@@ -53,4 +52,13 @@ class Continuous(Criteria):
             downgrades 
         )
 
+    def to_dict(self):
+        return dict(
+            kind = self.__class__.__name__,
+            lookup = inspect.get_source_lines(self.lookup)[0][0],
+            preprocess = inspect.get_source_lines(self.preprocess)[0][0]
+        )
 
+    @staticmethod
+    def from_dict(data:dict):
+        return Continuous(eval(data["lookup"]),eval(data["preprocess"]))

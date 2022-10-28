@@ -10,14 +10,14 @@ from flightanalysis import State
 from functools import partial
 from flightanalysis.base.collection import Collection
 from numbers import Number
-
+from . import Collector, Collectors
 
 class MPO:
     def get_vf(self, arg):
         if isinstance(arg, str):
             return lambda mps: mps[self.a].value
         elif isinstance(arg, MPO):
-            return lambda mps: arg(mps)
+            return arg
         elif isinstance(arg, Number):
             return lambda mps: arg
         elif isinstance(arg, ManParm):
@@ -49,6 +49,9 @@ class MPO:
 
     def __rdiv__(self, other):
         return MPOpp(other, self, "/")
+
+    def __abs__(self):
+        return MPfun(self, "abs")
 
 
 class MPOpp(MPO):
@@ -119,20 +122,49 @@ class MPfun(MPO):
                     fun
                 )
         raise ValueError(f"cannot read an MPfun from the outside of {inp}")
-            
+
+
+class MPItem(MPO):
+    """This class creates an MPO that returns a single item from a combination ManParm"""
+    def __init__(self, a, item:int): 
+        self.a = a
+        self.item = item
+
+    def __call__(self, mps):
+        return self.a.valuefunc(self.item)(mps)
+    
+    def __str__(self):
+        return f"{self.a.name}[{self.item}]"
+
+    @staticmethod
+    def parse(inp: str, mps):
+        contents = inp.split("[")
+        if not len(contents) == 2:
+            raise ValueError
+        return MPItem(ManParm.parse(contents[0]), int(contents[1][:-1]))
+
+    def __abs__(self):
+        return MPfun(self, "abs")
+
 
 class ManParm:
     """This class represents a parameter that can be used to characterise the geometry of a manoeuvre.
     For example, the loop diameters, line lengths, roll direction. 
     """
-    def __init__(self, name:str, criteria: Union[Criteria, Comparison, Combination], default=None, collectors: List[Callable]=None):
+    def __init__(
+        self, 
+        name:str, 
+        criteria: Union[Criteria, Comparison, Combination], 
+        default=None, 
+        collectors:Collectors=None
+    ):
         """Construct a ManParm
 
         Args:
             name (str): a short name, must work as an attribute so no spaces or funny characters
             criteria (Comparison): The comparison criteria function to be used when judging this parameter
             default (float): A default value (or default option if specified in criteria)
-            collector (Callable): a list of functions that will pull values for this parameter from an Elements 
+            collectors (Callable): a list of functions that will pull values for this parameter from an Elements 
                 collection. If the manoeuvre was flown correctly these should all be the same. The resulting list 
                 can be passed through the criteria (Comparison callable) to calculate a downgrade.
         """
@@ -140,9 +172,26 @@ class ManParm:
         self.criteria = criteria
         self.default = default
         
-        self.collectors = [] if collectors is None else collectors
+        self.collectors = Collectors() if collectors is None else collectors
         self.n = len(self.criteria.desired[0]) if isinstance(self.criteria, Combination) else None
+
+    def to_dict(self):
+        return dict(
+            name = self.name,
+            criteria = self.criteria.to_dict(),
+            default = self.default,
+            collectors = self.collectors.to_dict()
+        )
     
+    @staticmethod
+    def from_dict(data: dict):
+        return ManParm(
+            name = data["name"],
+            criteria = criteria_from_dict(data["criteria"]),
+            default = data["default"],
+            collectors = Collectors.from_dict(data["collectors"])
+        )
+
     def append(self, collector: Union[Callable, List[Callable]]):
         if isinstance(collector, Callable):
             self.collectors.append(collector)    
@@ -205,10 +254,10 @@ class ManParm:
     def __rsub__(self, other):
         return MPOpp(other, self, "-")
 
-    def __div__(self, other):
+    def __truediv__(self, other):
         return MPOpp(self, other, "/")
 
-    def __rdiv__(self, other):
+    def __rtruediv__(self, other):
         return MPOpp(other, self, "/")
 
     def __str__(self):
@@ -217,12 +266,16 @@ class ManParm:
     def __abs__(self):
         return MPfun(self, "abs")
     
+    def __getitem__(self, i):
+        return MPItem(self, i)
+
     @staticmethod
     def parse(inp, mps):
         """Parse a manparm or a MPO from a string"""
         for test in [
             lambda inp, mps : MPfun.parse(inp, mps),
             lambda inp, mps : MPOpp.parse(inp, mps),
+            lambda inp, mps : MPItem.parse(inp, mps),
             lambda inp, mps : float(inp)
         ]: 
             try: 

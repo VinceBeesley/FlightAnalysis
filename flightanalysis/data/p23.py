@@ -201,7 +201,7 @@ def hB2(option: int=0):
             md.eds.get_new_name(),
             md.mps.speed,
             md.mps.partial_roll_rate,
-            ropts.valuefunc(0)
+            ropts[0]
         )])
     )
     md.add_loop(np.pi)
@@ -210,7 +210,7 @@ def hB2(option: int=0):
             md.eds.get_new_name(),
             md.mps.speed,
             md.mps.partial_roll_rate,
-            ropts.valuefunc(1)
+            ropts[1]
         )])
     )
     md.add_loop(-np.pi/2)
@@ -242,7 +242,7 @@ def rEt():
             [md.mps.partial_roll_rate, md.mps.partial_roll_rate],
             md.mps.point_length
         ),
-        l=lambda mps: 2 * mps.loop_radius.value
+        l=2 * md.mps.loop_radius
     )
     md.add_loop(7*np.pi/4)
     md.add_simple_roll("2x4")
@@ -295,7 +295,7 @@ def M(option:int=1):
             md.eds.get_new_name(),
             md.mps.speed,
             md.mps.partial_roll_rate,
-            ropts.valuefunc(0)
+            ropts[0]
         )])
     )
     md.add_stallturn()
@@ -308,7 +308,7 @@ def M(option:int=1):
             md.eds.get_new_name(),
             md.mps.speed,
             md.mps.partial_roll_rate,
-            ropts.valuefunc(1)
+            ropts[1]
         )])
     )
     md.add_loop(np.pi/2)
@@ -339,7 +339,7 @@ def fTrn(option:int=1):
             md.eds.get_new_name(),
             md.mps.speed,
             md.mps.partial_roll_rate,
-            ropts.valuefunc(0)
+            ropts[0]
         )])
     )
     md.add_loop(-np.pi)
@@ -348,7 +348,7 @@ def fTrn(option:int=1):
             md.eds.get_new_name(),
             md.mps.speed,
             md.mps.partial_roll_rate,
-            ropts.valuefunc(1)
+            ropts[1]
         )])
     )
     md.add_loop(np.pi/4)

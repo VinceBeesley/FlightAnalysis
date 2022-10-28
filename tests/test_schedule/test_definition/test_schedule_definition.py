@@ -22,7 +22,7 @@ def vline():
 
     p1 = md.add_loop(-np.pi/2)
     p2 = md.add_simple_roll("1/2")
-    p3=md.add_loop(np.pi/2)
+    p3 = md.add_loop(np.pi/2)
     
     return md
 
@@ -36,13 +36,5 @@ def test_create(man):
     
 def test_collect(vline, man):
     downgrades = vline.mps.collect(man)
-    assert np.all(np.array(downgrades["speed"])==0)
+    assert np.all(downgrades.speed.downgrades==0)
  
-
-def test_pickle(vline, man):
-    
-    vlpk = pickle.dumps(vline)
-    
-    vline2 = pickle.loads(vlpk)
-    downgrades = vline2.mps.collect(man)
-    assert np.all(np.array(downgrades["speed"])==0)

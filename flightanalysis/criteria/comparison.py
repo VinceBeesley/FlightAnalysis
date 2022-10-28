@@ -28,4 +28,18 @@ class Comparison:
             self.lookup(np.abs(ratios))
         )
 
+    def to_dict(self):
+        return dict(
+            kind = self.__class__.__name__,
+            criteria = self.criteria.to_dict(),
+            initial_value = self.initial_value
+        )
 
+    @staticmethod
+    def from_dict(data:dict):
+        return Comparison(
+            Criteria.from_dict(data["criteria"]),
+            initial_value = data["initial_value"]
+        )
+
+    

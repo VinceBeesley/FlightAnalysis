@@ -12,18 +12,22 @@ def test_mp_opp_mp(mps):
     mpopp = mps.loop_radius + mps.line_length
 
     assert isinstance(mpopp, MPOpp)
-
     assert str(mpopp) == "(loop_radius+line_length)"
-
     assert mpopp(mps) == mps.loop_radius.value + mps.line_length.value
+
+
+def test_mp_opp_mp_div(mps):
+    mpopp = mps.loop_radius / mps.line_length
+    assert isinstance(mpopp, MPOpp)
+    assert str(mpopp) == "(loop_radius/line_length)"
+    assert mpopp(mps) == mps.loop_radius.value / mps.line_length.value
+
 
 def test_mp_opp_mpopp(mps):
     mpopp = mps.loop_radius + (mps.line_length * mps.loop_radius)
 
     assert str(mpopp) == "(loop_radius+(line_length*loop_radius))"
-
     assert mpopp(mps) == mps.loop_radius.value + (mps.loop_radius.value * mps.line_length.value)
-
 
 
 def test_mp_opp_float(mps):
