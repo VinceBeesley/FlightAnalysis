@@ -4,7 +4,7 @@ from flightanalysis.schedule.definition import *
 from flightanalysis.schedule.elements import *
 from flightanalysis.criteria.comparison import *
 from flightanalysis import Manoeuvre
-
+from flightanalysis.data.p23 import *
 
 import dill as pickle
 
@@ -55,3 +55,11 @@ def test_to_from_dict(vline):
     downgrades = vl2.mps.collect(man)
 
     assert np.all(downgrades.speed.downgrades==0)
+
+
+@fixture(scope="session")
+def ulsnap():
+    return upL()
+
+def test_upl(ulsnap):
+    pass

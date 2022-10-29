@@ -203,6 +203,8 @@ class ManDef:
         l=None,
         criteria=inter_f3a_length
     ):
+        # TODO think about passing a combination here. to cover snap combos
+        # 
         return self.add_and_pad_els(
             ElDefs([ElDef.snap(
                 self.eds.get_new_name(),
@@ -212,13 +214,16 @@ class ManDef:
                     self.mps.next_free_name("snaproll_"),
                     Combination(roll), 
                     0
-                )),
+                ))[0],
                 self.mps.add(ManParm(
                     self.mps.next_free_name("snapdirection_"),
                     Combination([[1], [-1]] if direction is None else Combination([[direction]])),
                     0
-                )) 
-            )]), l, s, criteria
+                ))[0] 
+            )]), 
+            self.mps.line_length if l is None else l, 
+            self.mps.speed if s is None else s, 
+            criteria
         )
 
     def add_simple_snap(

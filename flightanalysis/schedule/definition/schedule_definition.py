@@ -12,6 +12,7 @@ class SchedDef(Collection):
     def add_new_manoeuvre(self, info: ManInfo, defaults=None):
         return self.add(ManDef(info,defaults))
 
+    
     def create_schedule(self, depth: float, wind: float) -> Schedule:
         return Schedule(
             {m.uid: m.create(m.info.initial_transform(depth, wind)) for m in self}
