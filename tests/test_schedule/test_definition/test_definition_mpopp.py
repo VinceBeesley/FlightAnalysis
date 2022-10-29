@@ -1,6 +1,6 @@
 from pytest import fixture
 
-from flightanalysis.schedule.definition.manoeuvre_parameters import *
+from flightanalysis.schedule.definition import *
 
 
 @fixture
@@ -8,17 +8,21 @@ def mps():
     return ManParms.create_defaults_f3a()
 
 
+def test_number_opp(mps):
+    assert (mps.loop_radius + 10)(mps) == mps.loop_radius.value + 10
+    assert (10 + mps.loop_radius)(mps) == mps.loop_radius.value + 10
+
 def test_mp_opp_mp(mps):
     mpopp = mps.loop_radius + mps.line_length
 
-    assert isinstance(mpopp, MPOpp)
-    assert str(mpopp) == "(loop_radius+line_length)"
+    assert isinstance(mpopp, Opp)
+    
     assert mpopp(mps) == mps.loop_radius.value + mps.line_length.value
-
+    assert str(mpopp) == "(loop_radius+line_length)"
 
 def test_mp_opp_mp_div(mps):
     mpopp = mps.loop_radius / mps.line_length
-    assert isinstance(mpopp, MPOpp)
+    assert isinstance(mpopp, Opp)
     assert str(mpopp) == "(loop_radius/line_length)"
     assert mpopp(mps) == mps.loop_radius.value / mps.line_length.value
 
@@ -65,3 +69,8 @@ def test_parse_combo(mps):
 
     assert str(mpo) == str(mpo2)
     assert mpo2(mps) == mpo(mps)
+
+
+def test_mpopp_sum(mps):
+    mpo = 170 - sum([mps.line_length + mps.loop_radius for _ in range(3)])
+    assert mpo(mps) == -385

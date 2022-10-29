@@ -45,7 +45,7 @@ class Collection:
         return cls([cls.VType.from_dict(v) for v in vals.values()])
     
     def add(self, v):
-        assert isinstance(v, self.__class__.VType)
+        #assert isinstance(v, self.__class__.VType)
         self.data[getattr(v, self.uid)] = v
         return v
 
@@ -55,3 +55,5 @@ class Collection:
             i+=1
         else:
             return f"{prefix}{i}"
+
+    

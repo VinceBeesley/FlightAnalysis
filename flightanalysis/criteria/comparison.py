@@ -1,11 +1,12 @@
 
 import numpy as np
 import pandas as pd
-from . import Criteria, Result
-
+from . import Result
+from typing import Callable
+import inspect
 
 class Comparison:
-    def __init__(self, criteria: Criteria, initial_value=None):
+    def __init__(self, criteria: Callable, initial_value=None):
         self.criteria = criteria
         self.initial_value = initial_value
 
@@ -31,14 +32,14 @@ class Comparison:
     def to_dict(self):
         return dict(
             kind = self.__class__.__name__,
-            criteria = self.criteria.to_dict(),
+            criteria = inspect.getsourcelines(self.criteria)[0][0].split("=")[1].strip(),
             initial_value = self.initial_value
         )
 
     @staticmethod
     def from_dict(data:dict):
         return Comparison(
-            Criteria.from_dict(data["criteria"]),
+            eval(data["criteria"]),
             initial_value = data["initial_value"]
         )
 

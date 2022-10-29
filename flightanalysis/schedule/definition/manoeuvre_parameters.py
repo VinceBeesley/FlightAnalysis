@@ -10,151 +10,18 @@ from flightanalysis import State
 from functools import partial
 from flightanalysis.base.collection import Collection
 from numbers import Number
-from . import Collector, Collectors
-
-class MPO:
-    def get_vf(self, arg):
-        if isinstance(arg, str):
-            return lambda mps: mps[self.a].value
-        elif isinstance(arg, MPO):
-            return arg
-        elif isinstance(arg, Number):
-            return lambda mps: arg
-        elif isinstance(arg, ManParm):
-            return lambda mps: arg.value    
-
-    def __abs__(self):
-        return MPfun(self, "abs")
-
-    def __add__(self, other):
-        return MPOpp(self, other, "+")
-
-    def __radd__(self, other):
-        return MPOpp(other, self, "+")
-
-    def __mul__(self, other):
-        return MPOpp(self, other, "*")
-
-    def __rmul__(self, other):
-        return MPOpp(other, self, "*")
-
-    def __sub__(self, other):
-        return MPOpp(self, other, "-")
-
-    def __rsub__(self, other):
-        return MPOpp(other, self, "-")
-
-    def __div__(self, other):
-        return MPOpp(self, other, "/")
-
-    def __rdiv__(self, other):
-        return MPOpp(other, self, "/")
-
-    def __abs__(self):
-        return MPfun(self, "abs")
-
-
-class MPOpp(MPO):
-    """This class facilitates various ManParm opperations and their serialisation"""
-    opps = ["+", "-", "*", "/"]
-    def __init__(self, a, b, opp:str):
-        assert opp in MPOpp.opps
-        self.a = a
-        self.b = b
-        self.opp = opp
-
-    def __call__(self, mps):
-        if self.opp == "+":
-            return self.get_vf(self.a)(mps) + self.get_vf(self.b)(mps)
-        elif self.opp == "-":
-            return self.get_vf(self.a)(mps) - self.get_vf(self.b)(mps)
-        elif self.opp == "*":
-            return self.get_vf(self.a)(mps) * self.get_vf(self.b)(mps)
-        elif self.opp == "/":
-            return self.get_vf(self.a)(mps) / self.get_vf(self.b)(mps)
-
-    def __str__(self):
-        return f"({str(self.a)}{self.opp}{str(self.b)})"
-
-    @staticmethod
-    def parse(inp:str, mps):
-        if inp[0] == "(" and inp[-1] == ")":
-            bcount = 0
-            for i, l in enumerate(inp):
-                bcount += 1 if l=="(" else 0
-                bcount -=1 if l==")" else 0
-            
-                if bcount == 1 and l in MPOpp.opps:
-                    return MPOpp(
-                        ManParm.parse(inp[1:i], mps),
-                        ManParm.parse(inp[i+1:-1], mps),
-                        l
-                    )
-                    
-        raise ValueError(f"cannot read an MPOpp from the outside of {inp}")
+from . import Collector, Collectors, MathOpp, FunOpp, ItemOpp, Opp
 
 
 
-class MPfun(MPO):
-    """This class facilitates various functions that operate on ManParms and their serialisation"""
-    funs = ["abs"]
-    def __init__(self, a, opp: str):
-        assert opp in MPfun.funs
-        self.a = a
-        self.opp = opp
-
-    def __call__(self, mps):
-        return {
-            'abs': abs(self.get_vf(self.a)(mps))
-        }[self.opp]
-    
-    def __str__(self):
-        return f"{self.opp}({str(self.a)})"
-
-    @staticmethod 
-    def parse(inp: str, mps):
-        for fun in MPfun.funs:
-            if len(fun) >= len(inp) -2:
-                continue
-            if fun == inp[:len(fun)]:
-                return MPfun(
-                    ManParm.parse(inp[len(fun)+1:-1], mps), 
-                    fun
-                )
-        raise ValueError(f"cannot read an MPfun from the outside of {inp}")
-
-
-class MPItem(MPO):
-    """This class creates an MPO that returns a single item from a combination ManParm"""
-    def __init__(self, a, item:int): 
-        self.a = a
-        self.item = item
-
-    def __call__(self, mps):
-        return self.a.valuefunc(self.item)(mps)
-    
-    def __str__(self):
-        return f"{self.a.name}[{self.item}]"
-
-    @staticmethod
-    def parse(inp: str, mps):
-        contents = inp.split("[")
-        if not len(contents) == 2:
-            raise ValueError
-        return MPItem(ManParm.parse(contents[0]), int(contents[1][:-1]))
-
-    def __abs__(self):
-        return MPfun(self, "abs")
-
-
-class ManParm:
+class ManParm(Opp):
     """This class represents a parameter that can be used to characterise the geometry of a manoeuvre.
     For example, the loop diameters, line lengths, roll direction. 
     """
     def __init__(
         self, 
         name:str, 
-        criteria: Union[Criteria, Comparison, Combination], 
+        criteria: Union[Single, Comparison, Combination], 
         default=None, 
         collectors:Collectors=None
     ):
@@ -173,6 +40,7 @@ class ManParm:
         self.default = default
         
         self.collectors = Collectors() if collectors is None else collectors
+        assert isinstance(self.collectors,Collectors)
         self.n = len(self.criteria.desired[0]) if isinstance(self.criteria, Combination) else None
 
     def to_dict(self):
@@ -180,7 +48,7 @@ class ManParm:
             name = self.name,
             criteria = self.criteria.to_dict(),
             default = self.default,
-            collectors = self.collectors.to_dict()
+            collectors = self.collectors.to_list()
         )
     
     @staticmethod
@@ -189,15 +57,17 @@ class ManParm:
             name = data["name"],
             criteria = criteria_from_dict(data["criteria"]),
             default = data["default"],
-            collectors = Collectors.from_dict(data["collectors"])
+            collectors = Collectors.from_list(data["collectors"])
         )
 
-    def append(self, collector: Union[Callable, List[Callable]]):
-        if isinstance(collector, Callable):
-            self.collectors.append(collector)    
-        else:
+    def append(self, collector: Union[Opp, Collector, Collectors]):
+        if isinstance(collector, Opp) or isinstance(collector, Collector):
+            self.collectors.add(collector)    
+        elif isinstance(collector, Collectors):
             for coll in collector:
                 self.append(coll)
+        else:
+            raise ValueError(f"expected a Collector or Collectors not {collector.__class__.__name__}")
 
     def collect(self, els):
         return np.array([collector(els) for collector in self.collectors])
@@ -225,65 +95,16 @@ class ManParm:
         Returns:
             Callable: function to get the default value for this manparm from the mps collection
         """
-        if isinstance(self.criteria, Comparison) or isinstance(self.criteria, Criteria):
+        if isinstance(self.criteria, Comparison) or isinstance(self.criteria, Single):
             return lambda mps: mps.data[self.name].value 
         elif isinstance(self.criteria, Combination):
             return lambda mps: mps.data[self.name].value[id] 
-            #return partial(
-            #   lambda mps, i: mps.parms[self.name].value[i], 
-            #   i=id
-            # )
         else:
             raise Exception("Cant create a valuefunc in this case")
     
-    def __add__(self, other):
-        return MPOpp(self, other, "+")
-
-    def __radd__(self, other):
-        return MPOpp(other, self, "+")
-
-    def __mul__(self, other):
-        return MPOpp(self, other, "*")
-
-    def __rmul__(self, other):
-        return MPOpp(other, self, "*")
-
-    def __sub__(self, other):
-        return MPOpp(self, other, "-")
-
-    def __rsub__(self, other):
-        return MPOpp(other, self, "-")
-
-    def __truediv__(self, other):
-        return MPOpp(self, other, "/")
-
-    def __rtruediv__(self, other):
-        return MPOpp(other, self, "/")
-
-    def __str__(self):
-        return self.name
-
-    def __abs__(self):
-        return MPfun(self, "abs")
-    
     def __getitem__(self, i):
-        return MPItem(self, i)
+        return ItemOpp(self, i)
 
-    @staticmethod
-    def parse(inp, mps):
-        """Parse a manparm or a MPO from a string"""
-        for test in [
-            lambda inp, mps : MPfun.parse(inp, mps),
-            lambda inp, mps : MPOpp.parse(inp, mps),
-            lambda inp, mps : MPItem.parse(inp, mps),
-            lambda inp, mps : float(inp)
-        ]: 
-            try: 
-                return test(inp.strip(" "), mps)
-            except ValueError:
-                pass
-        else:
-            return mps[inp]
 
 
 class ManParms(Collection):

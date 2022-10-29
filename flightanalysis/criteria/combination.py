@@ -37,7 +37,7 @@ class Combination:
         return dict(
             kind = self.__class__.__name__,
             desired = list(self.desired),
-            criteria = inspect.get_source_lines(self.criteria)[0][0]
+            criteria = inspect.getsourcelines(self.criteria)[0][0].split("=")[1].strip()
         )
 
     @staticmethod

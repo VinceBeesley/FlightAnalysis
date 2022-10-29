@@ -38,3 +38,20 @@ def test_collect(vline, man):
     downgrades = vline.mps.collect(man)
     assert np.all(downgrades.speed.downgrades==0)
  
+
+def test_to_from_dict(vline):
+    
+    
+    vld = vline.to_dict()
+
+    vl2 = ManDef.from_dict(vld)#
+
+
+    assert isinstance(vld, dict)
+    assert isinstance(vl2, ManDef)
+    
+
+    man = vl2.create(vl2.info.initial_transform(170,1))
+    downgrades = vl2.mps.collect(man)
+
+    assert np.all(downgrades.speed.downgrades==0)

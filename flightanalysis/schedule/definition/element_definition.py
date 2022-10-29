@@ -4,7 +4,7 @@ import numpy as np
 from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn, El, Elements
 from inspect import getfullargspec
 from functools import partial
-from . import ManParm, ManParms, _a, MPO
+from . import ManParm, ManParms, _a, Opp
 from flightanalysis.base.collection import Collection
 from numbers import Number
 from . import Collector, Collectors
@@ -17,18 +17,21 @@ class ElDef:
     The eldef also contains a set of collectors. These are a dict of str:callable pairs
     that collect the relevant parameter for this element from an Elements collection.
     """
-    def __init__(self, name, Kind, props: Dict[str, Union[Number, ManParm, MPO]]):
+    def __init__(self, name, Kind, props: Dict[str, Union[Number, Opp]]):
         """ElDef Constructor
 
         Args:
             name (_type_): the name of the Eldef, must be unique and work as an attribute
             Kind (_type_): the class of the element (Loop, Line etc)
-            props (dict): The element property generators (Number, ManParm, MPO)
+            props (dict): The element property generators (Number, Opp)
         """
         self.name = name
         self.Kind = Kind
         self.props = props       
         self.collectors = Collectors.from_eldef(self)
+
+    def get_collector(self, name):
+        return self.collectors[f"{self.name}.{name}"]
 
     def to_dict(self):
         return dict(
@@ -60,7 +63,7 @@ class ElDef:
         
         for key, value in kwargs.items():
             if isinstance(value, ManParm):
-                value.append(ed.collectors[key])
+                value.append(ed.get_collector(key))
             
         return ed
 
@@ -98,7 +101,7 @@ class ElDef:
             angle
         )
         if isinstance(rate, ManParm):
-            rate.append(ed.collectors["rate"])
+            rate.append(ed.get_collector("rate"))
         return ed
 
     @staticmethod
@@ -110,7 +113,7 @@ class ElDef:
             rolls=roll,
             direction=direction,
             rate=rate,
-            length=s * 2 * np.pi * (2 * Snap.break_angle + abs(roll)) / rate
+            length=s * 2 * np.pi * (abs(roll) + 2 * Snap.break_angle) / rate
         )
 
     @staticmethod
@@ -184,7 +187,7 @@ class ElDefs(Collection):
                 rolls[i]
             ))
 
-            rolls.append(new_roll.collectors["roll"])
+            rolls.append(new_roll.get_collector("roll"))
             
             if i < rolls.n - 1 and np.sign(rolls.value[i]) == np.sign(rolls.value[i+1]):
                 eds.add(ElDef.line(
@@ -204,7 +207,7 @@ class ElDefs(Collection):
 
     def collector_list(self, name: str) -> List[Callable]:
         """A list of the functions that return the requested parameter from an elements collection"""
-        return [e.collectors[name] for e in self if name in e.collectors]
+        return [e.get_collector(name) for e in self if f"{e.name}.{name}" in e.collectors]
 
     def collector_sum(self, name) -> Callable:
         """A function that returns the sum of the requested parameter from an elements collection"""

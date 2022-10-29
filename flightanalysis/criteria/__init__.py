@@ -1,8 +1,9 @@
+from argparse import ArgumentTypeError
 import numpy as np
 import pandas as pd
 from typing import List, Dict, Callable
 from .results import Result, Results
-import inspect
+
 
 #These functions return scores for an error
 f3a_radius = lambda x : (1 - 1/(x+1)) * 4
@@ -14,39 +15,9 @@ imac_angle = lambda x: x/10
 hard_zero = lambda x: 0 if x==0 else 10
 free = lambda x: 0
 
-class Criteria:
-    """This class creates a function to return a result for a set of errors. 
-    """
-    def __init__(self, lookup: Callable, preprocess: Callable=None):
-        """
-        Args:
-            lookup (Callable): a function that returns a score for a given error
-            preprocess (Callable, optional): A function to apply to the input value to return the error.
-        """
-        self.lookup = lookup        
-        if preprocess is None:
-            self.preprocess = lambda x: x
-        else:
-            self.preprocess = preprocess
-    
-    def __call__(self, name: str, data: np.ndarray) -> List[float]:
-        """get a Result object for a set of errors."""
-        pdata = self.preprocess(data)
-        return Result(name,data,self.lookup(pdata))
+from .single import Single
 
-    def to_dict(self):
-        return dict(
-            kind = self.__class__.__name__,
-            lookup = inspect.get_source_lines(self.lookup)[0][0],
-            preprocess = inspect.get_source_lines(self.preprocess)[0][0]
-        )
-
-    @staticmethod
-    def from_dict(data:dict):
-        return Criteria(eval(data["lookup"]),eval(data["preprocess"]))
-
-
-basic_angle_f3a = Criteria(f3a_angle, lambda x : np.abs(np.degrees(x) % (2 * np.pi)))
+basic_angle_f3a = Single(f3a_angle, lambda x : np.abs(np.degrees(x) % (2 * np.pi)))
 
 from .continuous import Continuous, ContinuousResult
 
@@ -63,12 +34,13 @@ inter_f3a_length = Comparison(f3a_length, None)
 inter_f3a_roll_rate = Comparison(f3a_roll_rate, None)
 inter_free = Comparison(free, None)
 
-
 from .combination import Combination
 
+criteria = [Single, Continuous, Combination, Comparison]
 
-criterias = [Criteria, Continuous, Combination, Comparison]
-
-def from_dict(data):
-    return {c.__class__.name: c.from_dict(data) for c in criterias}[data["kind"]]
+def criteria_from_dict(data):
+    for crit in criteria:
+        if crit.__name__ == data["kind"]:
+            return crit.from_dict(data)
+    raise ValueError("unknown criteria")
         

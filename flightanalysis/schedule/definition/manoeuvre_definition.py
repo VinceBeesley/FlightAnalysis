@@ -21,6 +21,7 @@ import numpy as np
 from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn, El, Elements
 from flightanalysis.schedule.manoeuvre import Manoeuvre
 from flightanalysis.schedule.definition.manoeuvre_info import ManInfo
+from flightanalysis.schedule.definition.collectors import Collectors
 from flightanalysis.criteria import Comparison, inter_f3a_length, Combination
 from geometry import Transformation, Euler, Point, P0
 from functools import partial
@@ -331,11 +332,15 @@ class ManDef:
         e2 = self.eds.add([ed for ed in eds])
         e3 = self.eds.add(ElDef.line(f"e_{eds[0].id}_2", s, pad_length, 0))
 
-        self.mps.add(ManParm(f"{name}_pad_length", criteria, None, [
-                     e1.collectors["length"], e3.collectors["length"]]))
+        self.mps.add(ManParm(
+            f"{name}_pad_length", 
+            criteria, 
+            None, 
+            Collectors([e1.get_collector("length"), e3.get_collector("length")])
+        ))
         
         if isinstance(l, ManParm):
-            l.append(lambda els: sum([e.collectors["length"](els) for e in [e1] + e2 + [e3]]))
+            l.append(sum([e.get_collector("length") for e in [e1] + e2 + [e3]]))
         
         return [e1] + e2 + [e3]
 

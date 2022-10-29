@@ -367,7 +367,7 @@ def trgle():
     )
 
     e1 = md.add_roll_combo([np.pi])
-    bline_length = lambda mps: mps.line_length.value * np.cos(np.pi/4) - 0.5*e1[0].pfuncs["length"](mps)
+    bline_length = md.mps.line_length.value * np.cos(np.pi/4) - 0.5*e1[0].props["length"]
     md.add_line(l=bline_length)
     md.add_loop(-np.pi*3/4)
     md.add_simple_roll("2x4")

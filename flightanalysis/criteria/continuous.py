@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from typing import Callable
 from flightanalysis.base.collection import Collection
-from . import Result, Criteria
+from . import Result
 import inspect
 
 def get_peak_locs(arr, rev=False):
@@ -32,11 +32,15 @@ class ContinuousResult(Result):
         super().__init__(name, errors, np.trunc(downgrades * 2) / 2)
 
 
-class Continuous(Criteria):
+class Continuous:
     def __init__(self,  lookup: Callable, preprocess: Callable=None): 
-        super().__init__(lookup, preprocess)
+        self.lookup = lookup
+        if preprocess is None:
+            self.preprocess = lambda x: x
+        else:
+            self.preprocess = preprocess
 
-    def __call__(self, name, data: pd.Series, carry_over: np.ndarray= None):
+    def __call__(self, name, data: pd.Series, carry_over: np.ndarray=None):
         pdata = self.preprocess(data)
         peak_locs = get_peak_locs(pdata)
         trough_locs = get_peak_locs(pdata, True)
@@ -55,8 +59,8 @@ class Continuous(Criteria):
     def to_dict(self):
         return dict(
             kind = self.__class__.__name__,
-            lookup = inspect.get_source_lines(self.lookup)[0][0],
-            preprocess = inspect.get_source_lines(self.preprocess)[0][0]
+            lookup = inspect.getsourcelines(self.criteria)[0][0].split("=")[1].strip(),
+            preprocess = inspect.getsourcelines(self.criteria)[0][0].split("=")[1].strip()
         )
 
     @staticmethod
