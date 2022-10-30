@@ -58,7 +58,10 @@ Inter Element Judging Process
 To be described later but it is already implemented in the ManDef
 
 """
+
+
+
 from .elements import Loop, Line, Snap, Spin, StallTurn
 from .manoeuvre import Manoeuvre
 from .schedule import Schedule
-
+from .definition import *

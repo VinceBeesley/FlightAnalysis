@@ -2,8 +2,8 @@ from . import ManDef, ManInfo, ManParms
 from flightanalysis import State
 from typing import Dict, Tuple
 from geometry import Transformation
-from flightanalysis import Schedule
-from flightanalysis import Line, Loop, Snap, Spin, StallTurn
+from flightanalysis.schedule.schedule import Schedule
+from flightanalysis.schedule.elements import Line, Loop, Snap, Spin, StallTurn
 from flightanalysis.base.collection import Collection
 
 

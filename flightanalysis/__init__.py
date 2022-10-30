@@ -4,15 +4,7 @@ from .environment import Environment, WindModelBuilder, WindModel
 from .controls import Controls, Surfaces, Channels
 
 
-from .schedule import (
-    Schedule,
-    Manoeuvre,
-    Loop,
-    Line,
-    Snap,
-    Spin,
-    StallTurn
-)
+from .schedule import *
 #
 
 from .analysis import Analysis, fit_wind

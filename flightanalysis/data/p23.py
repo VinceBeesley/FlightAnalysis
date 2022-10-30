@@ -9,13 +9,12 @@ from flightanalysis.criteria import *
 def tHat():
     md = ManDef(
         ManInfo(
-            "Top Hat", 
-            "tHat", 
-            4,
-            Position.CENTRE,
-            BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),
-            BoxLocation(Height.BTM)
-    ))
+            "Top Hat", "tHat", k=4, position=Position.CENTRE, 
+            start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),
+            end=BoxLocation(Height.BTM)
+        ),
+        ManParms.create_defaults_f3a()
+    )
 
     md.add_loop(np.pi/2)
     md.add_simple_roll("2x4")
