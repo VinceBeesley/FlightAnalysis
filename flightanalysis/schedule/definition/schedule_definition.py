@@ -2,8 +2,8 @@ from . import ManDef, ManInfo, ManParms
 from flightanalysis import State
 from typing import Dict, Tuple
 from geometry import Transformation
-from flightanalysis import Schedule
-from flightanalysis import Line, Loop, Snap, Spin, StallTurn
+from flightanalysis.schedule.schedule import Schedule
+from flightanalysis.schedule.elements import Line, Loop, Snap, Spin, StallTurn
 from flightanalysis.base.collection import Collection
 
 
@@ -12,6 +12,7 @@ class SchedDef(Collection):
     def add_new_manoeuvre(self, info: ManInfo, defaults=None):
         return self.add(ManDef(info,defaults))
 
+    
     def create_schedule(self, depth: float, wind: float) -> Schedule:
         return Schedule(
             {m.uid: m.create(m.info.initial_transform(depth, wind)) for m in self}
@@ -43,3 +44,5 @@ class SchedDef(Collection):
         for md, man in zip(self, sched):
             md.mps.update_defaults(man)
 
+
+    

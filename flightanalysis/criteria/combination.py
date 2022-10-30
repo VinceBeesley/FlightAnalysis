@@ -3,7 +3,7 @@ import pandas as pd
 from typing import Union, List
 from numbers import Number
 from . import Result
-
+import inspect
 
 
 class Combination:
@@ -33,6 +33,19 @@ class Combination:
         dgs = self.criteria(self.get_option_error(self.check_option(values), values))
         return Result(name, values, dgs)
 
+    def to_dict(self):
+        return dict(
+            kind = self.__class__.__name__,
+            desired = list(self.desired),
+            criteria = inspect.getsourcelines(self.criteria)[0][0].split("=")[1].strip()
+        )
+
+    @staticmethod
+    def from_dict(data:dict):
+        return Combination(
+            desired = np.array(data["desired"]),
+            criteria = eval(data["criteria"])
+        )
 
     @staticmethod
     def rolllist(rolls, reversable=True):

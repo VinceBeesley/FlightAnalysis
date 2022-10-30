@@ -9,53 +9,29 @@ from flightanalysis.criteria import *
 from flightanalysis import State
 from functools import partial
 from flightanalysis.base.collection import Collection
-
-class MPOpp:
-    def __init__(self, a, b, opp:str):
-        assert opp in ["+", "-", "*", "/"]
-        self.a = a
-        self.b = b
-        self.opp = opp
-
-    def __call__(self, mps):
-        return {
-            '+': self.get_vf[self.a](mps) + self.get_vf[self.b](mps),
-            '-': self.get_vf[self.a](mps) - self.get_vf[self.b](mps),
-            '*': self.get_vf[self.a](mps) * self.get_vf[self.b](mps),
-            '/': self.get_vf[self.a](mps) / self.get_vf[self.b](mps)
-        }[self.opp]
-
-    def get_vf(self, arg):
-        if isinstance(arg, str):
-            return lambda mps: mps[self.a].value
-        elif isinstance(arg, self.__class__):
-            return lambda mps: arg(mps)
-        elif isinstance(arg, Number):
-            return lambda mps: arg
-
-    def _argcheck(self, arg):
-        if isinstance(arg, ManParm):
-            return arg.name
-        else:
-            return arg
-        
-    def __str__(self):
-        return f"({str(self.a)}{self.opp}{str(self.b)})"
+from numbers import Number
+from . import Collector, Collectors, MathOpp, FunOpp, ItemOpp, Opp
 
 
 
-class ManParm:
+class ManParm(Opp):
     """This class represents a parameter that can be used to characterise the geometry of a manoeuvre.
     For example, the loop diameters, line lengths, roll direction. 
     """
-    def __init__(self, name:str, criteria: Union[Criteria, Comparison, Combination], default=None, collectors: List[Callable]=None):
+    def __init__(
+        self, 
+        name:str, 
+        criteria: Union[Single, Comparison, Combination], 
+        default=None, 
+        collectors:Collectors=None
+    ):
         """Construct a ManParm
 
         Args:
             name (str): a short name, must work as an attribute so no spaces or funny characters
             criteria (Comparison): The comparison criteria function to be used when judging this parameter
             default (float): A default value (or default option if specified in criteria)
-            collector (Callable): a list of functions that will pull values for this parameter from an Elements 
+            collectors (Callable): a list of functions that will pull values for this parameter from an Elements 
                 collection. If the manoeuvre was flown correctly these should all be the same. The resulting list 
                 can be passed through the criteria (Comparison callable) to calculate a downgrade.
         """
@@ -63,15 +39,35 @@ class ManParm:
         self.criteria = criteria
         self.default = default
         
-        self.collectors = [] if collectors is None else collectors
+        self.collectors = Collectors() if collectors is None else collectors
+        assert isinstance(self.collectors,Collectors)
         self.n = len(self.criteria.desired[0]) if isinstance(self.criteria, Combination) else None
+
+    def to_dict(self):
+        return dict(
+            name = self.name,
+            criteria = self.criteria.to_dict(),
+            default = self.default,
+            collectors = self.collectors.to_list()
+        )
     
-    def append(self, collector: Union[Callable, List[Callable]]):
-        if isinstance(collector, Callable):
-            self.collectors.append(collector)    
-        else:
+    @staticmethod
+    def from_dict(data: dict):
+        return ManParm(
+            name = data["name"],
+            criteria = criteria_from_dict(data["criteria"]),
+            default = data["default"],
+            collectors = Collectors.from_list(data["collectors"])
+        )
+
+    def append(self, collector: Union[Opp, Collector, Collectors]):
+        if isinstance(collector, Opp) or isinstance(collector, Collector):
+            self.collectors.add(collector)    
+        elif isinstance(collector, Collectors):
             for coll in collector:
                 self.append(coll)
+        else:
+            raise ValueError(f"expected a Collector or Collectors not {collector.__class__.__name__}")
 
     def collect(self, els):
         return np.array([collector(els) for collector in self.collectors])
@@ -99,17 +95,17 @@ class ManParm:
         Returns:
             Callable: function to get the default value for this manparm from the mps collection
         """
-        if isinstance(self.criteria, Comparison) or isinstance(self.criteria, Criteria):
+        if isinstance(self.criteria, Comparison) or isinstance(self.criteria, Single):
             return lambda mps: mps.data[self.name].value 
         elif isinstance(self.criteria, Combination):
             return lambda mps: mps.data[self.name].value[id] 
-            #return partial(
-            #   lambda mps, i: mps.parms[self.name].value[i], 
-            #   i=id
-            # )
         else:
             raise Exception("Cant create a valuefunc in this case")
-        
+    
+    def __getitem__(self, i):
+        return ItemOpp(self, i)
+
+
 
 class ManParms(Collection):
     VType=ManParm

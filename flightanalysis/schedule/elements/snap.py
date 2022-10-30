@@ -8,6 +8,7 @@ from . import El, Line
 #TODO default rate is set for box size of 2m, this is misleading. When scaled to 170m distance it is about right.
 class Snap(El):
     parameters = El.parameters + "rolls,direction,rate,length".split(",")
+    break_angle = np.radians(10)
     def __init__(self, speed:float, rolls: float, rate:float, direction:int=1, uid: str=None):
         super().__init__(uid, speed)
         self.rolls = rolls
@@ -28,18 +29,17 @@ class Snap(El):
         d1 = "positive" if self.direction==1 else "negative"
         return f"{self.rolls} {d1} snap, rate={self.rate}"
 
-    @property
-    def length(self):
-        return self.create_template(Transformation()).pos.x[-1]  
+    @staticmethod
+    def length(speed, rolls, rate):
+        return speed * 2 * np.pi * (2 * Snap.break_angle + abs(rolls)) / rate
 
     def scale(self, factor):
-        return self.set_parms(rate=self.rate/factor)
+        return self.set_parms(rate=self.rate/factor)        
 
     def create_template(self, transform: Transformation) -> State: 
         """Generate a section representing a snap roll, this is compared to a real snap in examples/snap_rolls.ipynb"""
         
         break_angle = np.radians(10)
-
         pitch_rate = self.rate
         
         pitch_break = State.from_transform(

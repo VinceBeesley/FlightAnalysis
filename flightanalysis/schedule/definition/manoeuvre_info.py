@@ -58,6 +58,7 @@ class Position(Enum):
     END=1
 
 
+
 class BoxLocation():
     def __init__(
         self, 
@@ -74,6 +75,21 @@ class BoxLocation():
             self.o.roll_angle(),
             0.0,
             np.pi*(-self.d.get_direction(wind) + 1) / 2 
+        )
+
+    def to_dict(self):
+        return dict(
+            h = self.h.name,
+            d = self.d.name,
+            o = self.o.name
+        )
+    
+    @staticmethod
+    def from_dict(data):
+        return BoxLocation(
+            Height[data["h"]],
+            Direction[data["d"]],
+            Orientation[data["o"]]
         )
 
 class ManInfo:
@@ -108,7 +124,7 @@ class ManInfo:
             self.start.h.calculate(depth)
         )
 
-    def initial_transform(self, depth, wind) -> Transformation:
+    def initial_transform(self, depth: float, wind: int) -> Transformation:
         """The default initial position. For a centre manoeuvre this is the box edge, for an end manoeuvre it is the centre
 
         Args:
@@ -121,4 +137,24 @@ class ManInfo:
         return Transformation(self.initial_position(depth, wind), self.start.initial_rotation(wind))
 
 
-    
+    def to_dict(self):
+        return dict(
+            name=self.name,
+            short_name = self.short_name,
+            k=self.k,
+            position = self.position.name,
+            start = self.start.to_dict(),
+            end = self.end.to_dict()
+        )
+
+    @staticmethod
+    def from_dict(inp: dict):
+        return ManInfo(
+            inp["name"],
+            inp["short_name"],
+            inp["k"],
+            Position[inp["position"]],
+            BoxLocation.from_dict(inp["start"]),
+            BoxLocation.from_dict(inp["end"])
+        )
+        

@@ -33,12 +33,19 @@ class Collection:
     def to_dicts(self) -> List[dict]:
         return [v.to_dict() for v in self.data]
 
+    def to_dict(self) -> Dict[str, dict]:
+        return {k: v.to_dict() for k, v in self.data.items()}
+
     @classmethod
     def from_dicts(cls, vals: List[dict]):
-        return cls([cls.VType.from_dict(**v) for v in vals])
+        return cls([cls.VType.from_dict(**v) for v in vals])    
+
+    @classmethod
+    def from_dict(cls, vals: Dict[str, dict]):
+        return cls([cls.VType.from_dict(v) for v in vals.values()])
     
     def add(self, v):
-        assert isinstance(v, self.__class__.VType)
+        #assert isinstance(v, self.__class__.VType)
         self.data[getattr(v, self.uid)] = v
         return v
 
@@ -48,3 +55,5 @@ class Collection:
             i+=1
         else:
             return f"{prefix}{i}"
+
+    

@@ -4,7 +4,7 @@ from flightanalysis.schedule.definition import *
 from flightanalysis.schedule.elements import *
 from flightanalysis.criteria.comparison import *
 from flightanalysis import Manoeuvre
-
+from flightanalysis.data.p23 import *
 
 import dill as pickle
 
@@ -22,7 +22,7 @@ def vline():
 
     p1 = md.add_loop(-np.pi/2)
     p2 = md.add_simple_roll("1/2")
-    p3=md.add_loop(np.pi/2)
+    p3 = md.add_loop(np.pi/2)
     
     return md
 
@@ -36,13 +36,30 @@ def test_create(man):
     
 def test_collect(vline, man):
     downgrades = vline.mps.collect(man)
-    assert np.all(np.array(downgrades["speed"])==0)
+    assert np.all(downgrades.speed.downgrades==0)
  
 
-def test_pickle(vline, man):
+def test_to_from_dict(vline):
     
-    vlpk = pickle.dumps(vline)
     
-    vline2 = pickle.loads(vlpk)
-    downgrades = vline2.mps.collect(man)
-    assert np.all(np.array(downgrades["speed"])==0)
+    vld = vline.to_dict()
+
+    vl2 = ManDef.from_dict(vld)#
+
+
+    assert isinstance(vld, dict)
+    assert isinstance(vl2, ManDef)
+    
+
+    man = vl2.create(vl2.info.initial_transform(170,1))
+    downgrades = vl2.mps.collect(man)
+
+    assert np.all(downgrades.speed.downgrades==0)
+
+
+@fixture(scope="session")
+def ulsnap():
+    return upL()
+
+def test_upl(ulsnap):
+    pass

@@ -26,7 +26,7 @@ class DownGrades(Collection):
     uid = "name"
 
     def measuredf(self, el, fl, tp):
-        intra_measurements = {es.name: es.measure(el, fl, tp) for es in el.intra_scoring }
+        intra_measurements = {es.name: es.measure(el, fl, tp) for es in self}
 
         return pd.DataFrame(
             np.array(list(intra_measurements.values())).T, 
@@ -138,7 +138,7 @@ from .snap import Snap
 from .spin import Spin
 from .stall_turn import StallTurn
 
-els = {c.__name__: c for c in El.__subclasses__()}
+els = {c.__name__.lower(): c for c in El.__subclasses__()}
 
 El.from_name = lambda name: els[name.lower()]
 
