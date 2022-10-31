@@ -40,8 +40,8 @@ class Manoeuvre():
         
         return State.stack(templates).label(manoeuvre=self.uid)
 
-    def get_data(self, sec: State):
-        return State(sec.data.loc[sec.data.manoeuvre == self.uid])
+    def get_data(self, st: State):
+        return st.get_manoeuvre(self.uid)
 
     def match_intention(self, transform: Transformation, flown: State):
         """Create a new manoeuvre with all the elements scaled to match the corresponding 

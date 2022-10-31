@@ -49,8 +49,8 @@ class El:
             raise ValueError("negative speeds are not allowed")
         self.speed = speed
 
-    def get_data(self, sec: State):
-        return State(sec.data.loc[sec.data.element == self.uid])
+    def get_data(self, st: State):
+        return st.get_element(self.uid)
 
     def _add_rolls(self, el: State, roll: float) -> State:
         if not roll == 0:

@@ -5,6 +5,7 @@ from scipy.spatial.distance import euclidean
 from flightanalysis.state import State
 import numpy as np
 import pandas as pd
+from typing import List
 
 
 def align(flown, template, radius=5, mirror=True, white=False, weights = Point(1,1,1)) -> State:
@@ -62,4 +63,45 @@ def copy_labels(template, flown, path) -> State:
 
     return State(flown.data.reset_index(drop=True).join(mans).set_index("t", drop=False))
 
+
+def splitter_labels(self: State, mans: List[dict]) -> State:
+        """label the manoeuvres in a State based on the flight coach splitter information
+
+        TODO this assumes the state only contains the dataset contained in the json
+
+        Args:
+            mans (list): the mans field of a flight coach json
+
+        Returns:
+            State: State with labelled manoeuvres
+        """
+
+        takeoff = self.data.iloc[0:int(mans[0]["stop"])+1]
+
+        labels = [mans[0]["name"]]
+        labelled = [State(takeoff).label(manoeuvre=labels[0])]
+        
+        for split_man in mans[1:]:
+            
+            while split_man["name"] in labels:
+                split_man["name"] = split_man["name"] + "2"
+
+            labelled.append(
+                State(
+                    self.data.iloc[int(split_man["start"]):int(split_man["stop"])+1]
+                ).label(manoeuvre=split_man["name"])
+            )
+            labels.append(split_man["name"])
+
+        return State.stack(labelled)
+
+
+def get_manoeuvre(self: State, manoeuvre_name: str):
+    return State(self.data.loc[self.data.manoeuvre == manoeuvre_name])
+
+def get_element(self: State, element_name: str):
+    return State(self.data.loc[self.data.element == element_name]) 
+
+def get_element_from_manoeuvre(self: State, manoeuvre_name: str, element_name: str):
+    return self.get_manoeuvre(manoeuvre_name).get_element(element_name)
 

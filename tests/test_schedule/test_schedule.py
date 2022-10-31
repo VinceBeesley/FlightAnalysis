@@ -2,7 +2,7 @@ import unittest
 from flightanalysis.schedule import Schedule
 from flightanalysis.state import State
 from json import load
-from flightanalysis.fc_json import FCJson
+from flightanalysis.fc_json import parse_fcj
 from flightdata import Flight
 
 from pytest import approx, fixture, mark

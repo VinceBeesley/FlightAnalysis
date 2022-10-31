@@ -1605,10 +1605,10 @@
             }
         }
     },
-    "rollc": {
+    "rollC": {
         "info": {
             "name": "Roll Combo",
-            "short_name": "rollc",
+            "short_name": "rollC",
             "k": 4,
             "position": "CENTRE",
             "start": {
@@ -4220,10 +4220,10 @@
             }
         }
     },
-    "lop": {
+    "loop": {
         "info": {
             "name": "Loop",
-            "short_name": "lop",
+            "short_name": "loop",
             "k": 3,
             "position": "CENTRE",
             "start": {

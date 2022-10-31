@@ -113,6 +113,15 @@ class Box(object):
             GPS(float(lines[4]), float(lines[5]))
         )
 
+    @staticmethod
+    def from_fcjson_parmameters(data: dict):
+        return Box.from_points(
+            "FCJ_box",
+            GPS(float(data['pilotLat']), float(data['pilotLng'])),
+            GPS(float(data['centerLat']), float(data['centerLng']))
+        )
+
+
 class FlightLine(object):
     '''class to define where the flight line is in relation to the raw input data
     It contains two coordinate frames (generally used for reference / debugging only) and two transformations, 

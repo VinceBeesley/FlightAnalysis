@@ -108,26 +108,5 @@ class Schedule(Collection):
             iatt = templates[-1][-1].att
         return templates
 
-    def label_from_splitter(self, flown: State, splitter: list) -> State:
-        """label the manoeuvres in a State based on the flight coach splitter information
-
-        Args:
-            flown (State): State read from the flight coach json
-            splitter (list): the mans field of a flight coach json
-
-        Returns:
-            State: State with labelled manoeuvres
-        """
-
-        takeoff = flown.data.iloc[0:int(splitter[0]["stop"])+2]
-
-        labelled = [State(takeoff).label(manoeuvre=0)]
-        
-        for split_man, man in zip(splitter[1:], self):
-            start, stop = int(split_man["start"]), int(split_man["stop"])
-            labelled.append(man.label(State(flown.data.iloc[start:stop+2])))
-
-        return State.stack(labelled)
-
     def copy_directions(self, other):
         return Schedule([ms.copy_directions(mo) for ms, mo in zip(self, other)])

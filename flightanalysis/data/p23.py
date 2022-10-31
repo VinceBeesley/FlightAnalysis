@@ -117,11 +117,11 @@ def h8L():
     md.add_loop(-np.pi/4)
     return md
 
-def rollc():
+def rollC():
     md = ManDef(
         ManInfo(
             "Roll Combo", 
-            "rollc", 
+            "rollC", 
             4,
             Position.CENTRE,
             BoxLocation(Height.BTM, Direction.DOWNWIND, Orientation.INVERTED),
@@ -398,11 +398,11 @@ def sFin():
     return md
 
 
-def lop():
+def loop():
     md = ManDef(
         ManInfo(
             "Loop", 
-            "lop", 
+            "loop", 
             3,
             Position.CENTRE,
             BoxLocation(Height.BTM, Direction.UPWIND, Orientation.INVERTED),
@@ -423,7 +423,7 @@ def lop():
     md.add_loop(np.pi*3/4)
     return md
 
-p23funcs = [tHat,hSqL,hB,hSqLC,upL,h8L,rollc,pImm,iSp,hB2,rEt,sqL,M,fTrn,trgle,sFin,lop]
+p23funcs = [tHat,hSqL,hB,hSqLC,upL,h8L,rollC,pImm,iSp,hB2,rEt,sqL,M,fTrn,trgle,sFin,loop]
 
 def create_p23(wind=-1) -> SchedDef:
     sd =  SchedDef()
