@@ -1,4 +1,5 @@
 import pytest
+from pytest import fixture
 from flightanalysis.fc_json import FCJson
 from flightanalysis.flightline import Box
 from flightanalysis.state import  State
@@ -10,11 +11,10 @@ import pandas as pd
 from flightdata import Flight, Fields
 
 
-@pytest.fixture
+@fixture(scope="session")
 def fcjson():
-    with open("tests/test_inputs/manual_F3A_P21_21_09_24_00000052.json", 'r') as f:
+    with open("tests/test_inputs/fcjson/manual_F3A_P23_22_08_23_00000055_1.json", 'r') as f:
         return load(f)
-
 
     
 def test_parse_fc_json(fcjson):

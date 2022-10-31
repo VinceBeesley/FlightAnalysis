@@ -1,4 +1,4 @@
-from flightanalysis import Analysis, WindModelBuilder, WindModel, fit_wind
+from flightanalysis.aircraft_analysis import Analysis, WindModelBuilder, WindModel, fit_wind
 
 
 def test_fit_wind(st):

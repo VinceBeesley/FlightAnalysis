@@ -5,6 +5,8 @@ from geometry import Transformation
 from flightanalysis.schedule.schedule import Schedule
 from flightanalysis.schedule.elements import Line, Loop, Snap, Spin, StallTurn
 from flightanalysis.base.collection import Collection
+from json import dump, load
+from flightanalysis.base.numpy_encoder import NumpyEncoder
 
 
 class SchedDef(Collection):
@@ -44,5 +46,13 @@ class SchedDef(Collection):
         for md, man in zip(self, sched):
             md.mps.update_defaults(man)
 
+    def to_json(self, file: str) -> str:
+        with open(file, "w") as f:
+            dump(self.to_dict(), f, cls=NumpyEncoder)
+        return file
 
-    
+    @staticmethod
+    def from_json(file:str):
+        with open(file, "r") as f:
+            return SchedDef.from_dict(load(f))
+        

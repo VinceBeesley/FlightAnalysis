@@ -1,1356 +1,4395 @@
 {
-    "name": "P23",
-    "category": "F3A",
-    "entry": "upright",
-    "entry_x_offset": -1,
-    "entry_z_offset": 0.1,
-    "manoeuvres": [
-        {
-            "name": "tophat",
+    "tHat": {
+        "info": {
+            "name": "Top Hat",
+            "short_name": "tHat",
             "k": 4,
-            "elements": [
-                {
-                    "type": "Line",
-                    "uid": 1,
-                    "length": 0.5,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 2,
-                    "loops": -0.25,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 6,
-                    "length": 0.1,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 3,
-                    "length": 0.075,
-                    "rolls": 0.25,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 4,
-                    "length": 0.05,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 5,
-                    "length": 0.075,
-                    "rolls": 0.25,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 7,
-                    "length": 0.1,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 8,
-                    "loops": -0.25,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 10,
-                    "length": 0.125,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 9,
-                    "length": 0.15,
-                    "rolls": 0.5,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 11,
-                    "length": 0.125,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 12,
-                    "loops": 0.25,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 16,
-                    "length": 0.1,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 13,
-                    "length": 0.075,
-                    "rolls": 0.25,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 14,
-                    "length": 0.05,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 15,
-                    "length": 0.075,
-                    "rolls": 0.25,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 17,
-                    "length": 0.1,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 18,
-                    "loops": 0.25,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                }
-            ],
-            "rule": "F3ACentre",
-            "uid": 1
+            "position": "CENTRE",
+            "start": {
+                "h": "BTM",
+                "d": "UPWIND",
+                "o": "UPRIGHT"
+            },
+            "end": {
+                "h": "BTM",
+                "d": "DRIVEN",
+                "o": "DRIVEN"
+            }
         },
-        {
-            "name": "hsq",
-            "k": 2,
-            "elements": [
-                {
-                    "type": "Line",
-                    "uid": 19,
-                    "length": 0.2,
-                    "rolls": 0.0,
-                    "l_tag": true
+        "mps": {
+            "speed": {
+                "name": "speed",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
                 },
-                {
-                    "type": "Loop",
-                    "uid": 20,
-                    "loops": 0.25,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
+                "default": 30.0,
+                "collectors": [
+                    "e_0.speed",
+                    "e_1_1_1.speed",
+                    "e_1_1_1_pause.speed",
+                    "e_1_1_2.speed",
+                    "e_1_0.speed",
+                    "e_1_2.speed",
+                    "e_2.speed",
+                    "e_3_1_1.speed",
+                    "e_3_0.speed",
+                    "e_3_2.speed",
+                    "e_4.speed",
+                    "e_5_1_1.speed",
+                    "e_5_1_1_pause.speed",
+                    "e_5_1_2.speed",
+                    "e_5_0.speed",
+                    "e_5_2.speed",
+                    "e_6.speed"
+                ]
+            },
+            "loop_radius": {
+                "name": "loop_radius",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
                 },
-                {
-                    "type": "Line",
-                    "uid": 22,
-                    "length": 0.22499999999999998,
-                    "rolls": 0.0,
-                    "l_tag": true
+                "default": 55.0,
+                "collectors": [
+                    "e_0.radius",
+                    "e_2.radius",
+                    "e_4.radius",
+                    "e_6.radius"
+                ]
+            },
+            "line_length": {
+                "name": "line_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
                 },
-                {
-                    "type": "Line",
-                    "uid": 21,
-                    "length": 0.15,
-                    "rolls": 0.5,
-                    "l_tag": true
+                "default": 130.0,
+                "collectors": [
+                    "(((((0+e_1_0.length)+e_1_1_1.length)+e_1_1_1_pause.length)+e_1_1_2.length)+e_1_2.length)",
+                    "(((((0+e_5_0.length)+e_5_1_1.length)+e_5_1_1_pause.length)+e_5_1_2.length)+e_5_2.length)"
+                ]
+            },
+            "point_length": {
+                "name": "point_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
                 },
-                {
-                    "type": "Line",
-                    "uid": 23,
-                    "length": 0.22499999999999998,
-                    "rolls": 0.0,
-                    "l_tag": true
+                "default": 10.0,
+                "collectors": [
+                    "e_1_1_1_pause.length",
+                    "e_5_1_1_pause.length"
+                ]
+            },
+            "continuous_roll_rate": {
+                "name": "continuous_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
                 },
-                {
-                    "type": "Loop",
-                    "uid": 24,
-                    "loops": -0.25,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                }
-            ],
-            "rule": "F3AEnd",
-            "uid": 2
+                "default": 1.5707963267948966,
+                "collectors": []
+            },
+            "partial_roll_rate": {
+                "name": "partial_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": [
+                    "e_1_1_1.rate",
+                    "e_1_1_2.rate",
+                    "e_3_1_1.rate",
+                    "e_5_1_1.rate",
+                    "e_5_1_2.rate"
+                ]
+            },
+            "snap_rate": {
+                "name": "snap_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 12.566370614359172,
+                "collectors": []
+            },
+            "stallturn_rate": {
+                "name": "stallturn_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "spin_rate": {
+                "name": "spin_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "roll_0": {
+                "name": "roll_0",
+                "criteria": {
+                    "kind": "Combination",
+                    "desired": [
+                        [
+                            1.5707963267948966,
+                            1.5707963267948966
+                        ],
+                        [
+                            -1.5707963267948966,
+                            -1.5707963267948966
+                        ]
+                    ],
+                    "criteria": "lambda x : 0.0 if criteria is None else criteria"
+                },
+                "default": 0,
+                "collectors": [
+                    "e_1_1_1.roll",
+                    "e_1_1_2.roll"
+                ]
+            },
+            "e_1_pad_length": {
+                "name": "e_1_pad_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": null,
+                "collectors": [
+                    "e_1_0.length",
+                    "e_1_2.length"
+                ]
+            },
+            "roll_1": {
+                "name": "roll_1",
+                "criteria": {
+                    "kind": "Combination",
+                    "desired": [
+                        [
+                            3.141592653589793
+                        ],
+                        [
+                            -3.141592653589793
+                        ]
+                    ],
+                    "criteria": "lambda x : 0.0 if criteria is None else criteria"
+                },
+                "default": 0,
+                "collectors": [
+                    "e_3_1_1.roll"
+                ]
+            },
+            "e_3_pad_length": {
+                "name": "e_3_pad_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": null,
+                "collectors": [
+                    "e_3_0.length",
+                    "e_3_2.length"
+                ]
+            },
+            "roll_2": {
+                "name": "roll_2",
+                "criteria": {
+                    "kind": "Combination",
+                    "desired": [
+                        [
+                            1.5707963267948966,
+                            1.5707963267948966
+                        ],
+                        [
+                            -1.5707963267948966,
+                            -1.5707963267948966
+                        ]
+                    ],
+                    "criteria": "lambda x : 0.0 if criteria is None else criteria"
+                },
+                "default": 0,
+                "collectors": [
+                    "e_5_1_1.roll",
+                    "e_5_1_2.roll"
+                ]
+            },
+            "e_5_pad_length": {
+                "name": "e_5_pad_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": null,
+                "collectors": [
+                    "e_5_0.length",
+                    "e_5_2.length"
+                ]
+            }
         },
-        {
-            "name": "hump",
-            "k": 4,
-            "elements": [
-                {
-                    "type": "Line",
-                    "uid": 25,
-                    "length": 0.7,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 26,
-                    "loops": -0.25,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 28,
-                    "length": 0.15,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 27,
-                    "length": 0.3,
-                    "rolls": -1.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 29,
-                    "length": 0.15,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 30,
-                    "loops": -0.5,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 32,
-                    "length": 0.22499999999999998,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 31,
-                    "length": 0.15,
-                    "rolls": 0.5,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 33,
-                    "length": 0.22499999999999998,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 34,
-                    "loops": 0.25,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
+        "eds": {
+            "e_0": {
+                "name": "e_0",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "1.5707963267948966",
+                    "roll": "0.0",
+                    "ke": "False"
                 }
-            ],
-            "rule": "F3ACentre",
-            "uid": 3
-        },
-        {
-            "name": "hsc",
-            "k": 3,
-            "elements": [
-                {
-                    "type": "Line",
-                    "uid": 35,
-                    "length": 0.5,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 36,
-                    "loops": 0.125,
-                    "diameter": 0.4,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 38,
-                    "length": 0.10177669529663687,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 37,
-                    "length": 0.15,
-                    "rolls": 0.5,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 39,
-                    "length": 0.10177669529663687,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 40,
-                    "loops": -0.25,
-                    "diameter": 0.4,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 42,
-                    "length": 0.10177669529663687,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 41,
-                    "length": 0.15,
-                    "rolls": 0.5,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 43,
-                    "length": 0.10177669529663687,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 44,
-                    "loops": 0.125,
-                    "diameter": 0.4,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
+            },
+            "e_1_0": {
+                "name": "e_1_0",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(((0+((abs(roll_0[0])*speed)/partial_roll_rate))+point_length)+((abs(roll_0[1])*speed)/partial_roll_rate))))",
+                    "roll": "0"
                 }
-            ],
-            "rule": "F3AEnd",
-            "uid": 4
-        },
-        {
-            "name": "u45",
-            "k": 5,
-            "elements": [
-                {
-                    "type": "Line",
-                    "uid": 45,
-                    "length": 0.07378332134514629,
-                    "rolls": 0.0,
-                    "l_tag": 0.0
-                },
-                {
-                    "type": "Loop",
-                    "uid": 46,
-                    "loops": 0.125,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 47,
-                    "length": 0.40392444263558536,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Snap",
-                    "uid": 48,
-                    "rolls": 1.5,
-                    "negative": true,
-                    "l_tag": true,
-                    "rate": 3400
-                },
-                {
-                    "type": "Line",
-                    "uid": 49,
-                    "length": 0.40392444263558536,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 50,
-                    "loops": 0.125,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
+            },
+            "e_1_1_1": {
+                "name": "e_1_1_1",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_0[0])*speed)/partial_roll_rate)",
+                    "roll": "roll_0[0]"
                 }
-            ],
-            "rule": "F3ACentre",
-            "uid": 5
-        },
-        {
-            "name": "h8l",
-            "k": 3,
-            "elements": [
-                {
-                    "type": "Line",
-                    "uid": 51,
-                    "length": 0.28024080245320504,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 52,
-                    "loops": 0.125,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 53,
-                    "length": 0.1785,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 54,
-                    "loops": 0.125,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 55,
-                    "length": 0.1785,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 56,
-                    "loops": 0.125,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 57,
-                    "length": 0.1785,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 58,
-                    "loops": 0.125,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
+            },
+            "e_1_1_1_pause": {
+                "name": "e_1_1_1_pause",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "point_length",
+                    "roll": "0"
                 }
-            ],
-            "rule": "F3AEnd",
-            "uid": 6
-        },
-        {
-            "name": "rc",
-            "k": 4,
-            "elements": [
-                {
-                    "type": "Line",
-                    "uid": 59,
-                    "length": 0.25,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 60,
-                    "length": 0.2,
-                    "rolls": 0.5,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 61,
-                    "length": 0.05,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 62,
-                    "length": 0.2,
-                    "rolls": 0.5,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 63,
-                    "length": 0.2,
-                    "rolls": -0.5,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 64,
-                    "length": 0.05,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 65,
-                    "length": 0.2,
-                    "rolls": -0.5,
-                    "l_tag": 0.0
+            },
+            "e_1_1_2": {
+                "name": "e_1_1_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_0[1])*speed)/partial_roll_rate)",
+                    "roll": "roll_0[1]"
                 }
-            ],
-            "rule": "F3ACentre",
-            "uid": 7
-        },
-        {
-            "name": "imm",
-            "k": 2,
-            "elements": [
-                {
-                    "type": "Line",
-                    "uid": 66,
-                    "length": 0.15,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 67,
-                    "loops": 0.5,
-                    "diameter": 0.697365440327093,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 68,
-                    "length": 0.2,
-                    "rolls": 0.5,
-                    "l_tag": true
+            },
+            "e_1_2": {
+                "name": "e_1_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(((0+((abs(roll_0[0])*speed)/partial_roll_rate))+point_length)+((abs(roll_0[1])*speed)/partial_roll_rate))))",
+                    "roll": "0"
                 }
-            ],
-            "rule": "F3AEnd",
-            "uid": 8
-        },
-        {
-            "name": "spin",
-            "k": 4,
-            "elements": [
-                {
-                    "type": "Line",
-                    "uid": 69,
-                    "length": 0.3646215070293733,
-                    "rolls": 0.0,
-                    "l_tag": 0.0
-                },
-                {
-                    "type": "Spin",
-                    "uid": 70,
-                    "turns": 2.5,
-                    "opp_turns": 0.0,
-                    "rate": 700
-                },
-                {
-                    "type": "Line",
-                    "uid": 71,
-                    "length": 0.2196,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 72,
-                    "loops": -0.25,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
+            },
+            "e_2": {
+                "name": "e_2",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "1.5707963267948966",
+                    "roll": "0.0",
+                    "ke": "False"
                 }
-            ],
-            "rule": "F3ACentre",
-            "uid": 9
-        },
-        {
-            "name": "hB",
-            "k": 3,
-            "elements": [
-                {
-                    "type": "Line",
-                    "uid": 74,
-                    "length": 0.35,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 75,
-                    "loops": -0.25,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 77,
-                    "length": 0.175,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 76,
-                    "length": 0.15,
-                    "rolls": 0.5,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 78,
-                    "length": 0.175,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 79,
-                    "loops": -0.5,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 81,
-                    "length": 0.175,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 80,
-                    "length": 0.15,
-                    "rolls": 0.5,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 82,
-                    "length": 0.175,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 83,
-                    "loops": 0.25,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
+            },
+            "e_3_0": {
+                "name": "e_3_0",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(100-(0+((abs(roll_1[0])*speed)/partial_roll_rate))))",
+                    "roll": "0"
                 }
-            ],
-            "rule": "F3AEnd",
-            "uid": 10
-        },
-        {
-            "name": "Et",
-            "k": 4,
-            "elements": [
-                {
-                    "type": "Line",
-                    "uid": 84,
-                    "length": 0.3428932188134527,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 85,
-                    "loops": 0.125,
-                    "diameter": 0.5,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 88,
-                    "length": 0.1,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 86,
-                    "length": 0.15,
-                    "rolls": 0.5,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 87,
-                    "length": 0.15,
-                    "rolls": -0.5,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 89,
-                    "length": 0.1,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 90,
-                    "loops": -0.875,
-                    "diameter": 0.5,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 94,
-                    "length": 0.04999999999999999,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 91,
-                    "length": 0.075,
-                    "rolls": 0.25,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 92,
-                    "length": 0.05,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 93,
-                    "length": 0.075,
-                    "rolls": 0.25,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 95,
-                    "length": 0.04999999999999999,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 96,
-                    "loops": 0.25,
-                    "diameter": 0.5,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
+            },
+            "e_3_1_1": {
+                "name": "e_3_1_1",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_1[0])*speed)/partial_roll_rate)",
+                    "roll": "roll_1[0]"
                 }
-            ],
-            "rule": "F3ACentre",
-            "uid": 11
-        },
-        {
-            "name": "hsq2",
-            "k": 2,
-            "elements": [
-                {
-                    "type": "Line",
-                    "uid": 97,
-                    "length": 0.35,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 98,
-                    "loops": 0.25,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 100,
-                    "length": 0.175,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 99,
-                    "length": 0.15,
-                    "rolls": 0.5,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 101,
-                    "length": 0.175,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 102,
-                    "loops": -0.25,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
+            },
+            "e_3_2": {
+                "name": "e_3_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(100-(0+((abs(roll_1[0])*speed)/partial_roll_rate))))",
+                    "roll": "0"
                 }
-            ],
-            "rule": "F3AEnd",
-            "uid": 12
-        },
-        {
-            "name": "figM",
-            "k": 5,
-            "elements": [
-                {
-                    "type": "Line",
-                    "uid": 103,
-                    "length": 0.45,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 104,
-                    "loops": -0.25,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 106,
-                    "length": 0.1375,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 105,
-                    "length": 0.22499999999999998,
-                    "rolls": -0.75,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 107,
-                    "length": 0.1375,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "StallTurn",
-                    "uid": 108,
-                    "yaw_rate": 3.0
-                },
-                {
-                    "type": "Line",
-                    "uid": 109,
-                    "length": 0.5,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 110,
-                    "loops": 0.5,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 111,
-                    "length": 0.5,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "StallTurn",
-                    "uid": 112,
-                    "yaw_rate": 3.0
-                },
-                {
-                    "type": "Line",
-                    "uid": 114,
-                    "length": 0.1375,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 113,
-                    "length": 0.22499999999999998,
-                    "rolls": -0.75,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 115,
-                    "length": 0.1375,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 116,
-                    "loops": -0.25,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
+            },
+            "e_4": {
+                "name": "e_4",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "-1.5707963267948966",
+                    "roll": "0.0",
+                    "ke": "False"
                 }
-            ],
-            "rule": "F3ACentre",
-            "uid": 13
-        },
-        {
-            "name": "fight",
-            "k": 2,
-            "elements": [
-                {
-                    "type": "Line",
-                    "uid": 117,
-                    "length": 0.2,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 118,
-                    "loops": -0.125,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 120,
-                    "length": 0.1625,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 119,
-                    "length": 0.075,
-                    "rolls": -0.25,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 121,
-                    "length": 0.1625,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 122,
-                    "loops": 0.5,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 124,
-                    "length": 0.1625,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 123,
-                    "length": 0.075,
-                    "rolls": 0.25,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 125,
-                    "length": 0.1625,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 126,
-                    "loops": -0.125,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
+            },
+            "e_5_0": {
+                "name": "e_5_0",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(((0+((abs(roll_2[0])*speed)/partial_roll_rate))+point_length)+((abs(roll_2[1])*speed)/partial_roll_rate))))",
+                    "roll": "0"
                 }
-            ],
-            "rule": "F3AEndB",
-            "uid": 14
-        },
-        {
-            "name": "tri",
-            "k": 2,
-            "elements": [
-                {
-                    "type": "Line",
-                    "uid": 127,
-                    "length": 0.25,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 128,
-                    "length": 0.2,
-                    "rolls": 0.5,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 129,
-                    "length": 0.3,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 130,
-                    "loops": 0.375,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 134,
-                    "length": 0.182842712474619,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 131,
-                    "length": 0.075,
-                    "rolls": 0.25,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 132,
-                    "length": 0.05,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 133,
-                    "length": 0.075,
-                    "rolls": 0.25,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 135,
-                    "length": 0.182842712474619,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 136,
-                    "loops": -0.25,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 140,
-                    "length": 0.182842712474619,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 137,
-                    "length": 0.075,
-                    "rolls": 0.25,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 138,
-                    "length": 0.05,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 139,
-                    "length": 0.075,
-                    "rolls": 0.25,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 141,
-                    "length": 0.182842712474619,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 142,
-                    "loops": 0.375,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 143,
-                    "length": 0.3,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 144,
-                    "length": 0.2,
-                    "rolls": 0.5,
-                    "l_tag": true
+            },
+            "e_5_1_1": {
+                "name": "e_5_1_1",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_2[0])*speed)/partial_roll_rate)",
+                    "roll": "roll_2[0]"
                 }
-            ],
-            "rule": "F3ACentre",
-            "uid": 15
-        },
-        {
-            "name": "shark",
-            "k": 2,
-            "elements": [
-                {
-                    "type": "Line",
-                    "uid": 145,
-                    "length": 0.75,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 146,
-                    "loops": -0.25,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 148,
-                    "length": 0.05,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 147,
-                    "length": 0.15,
-                    "rolls": 0.5,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 149,
-                    "length": 0.05,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 150,
-                    "loops": 0.375,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 154,
-                    "length": 0.22677669529663688,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 151,
-                    "length": 0.075,
-                    "rolls": 0.25,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 152,
-                    "length": 0.05,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 153,
-                    "length": 0.075,
-                    "rolls": 0.25,
-                    "l_tag": true
-                },
-                {
-                    "type": "Line",
-                    "uid": 155,
-                    "length": 0.22677669529663688,
-                    "rolls": 0.0,
-                    "l_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 156,
-                    "loops": 0.125,
-                    "diameter": 0.3,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
+            },
+            "e_5_1_1_pause": {
+                "name": "e_5_1_1_pause",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "point_length",
+                    "roll": "0"
                 }
-            ],
-            "rule": "F3AEndB",
-            "uid": 16
-        },
-        {
-            "name": "loop",
-            "k": 2,
-            "elements": [
-                {
-                    "type": "Line",
-                    "uid": 157,
-                    "length": 0.17573593128807238,
-                    "rolls": 0.0,
-                    "l_tag": 0.0
-                },
-                {
-                    "type": "Loop",
-                    "uid": 158,
-                    "loops": 0.375,
-                    "diameter": 0.9,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 159,
-                    "loops": 0.25,
-                    "diameter": 0.9,
-                    "rolls": 0.5,
-                    "ke": false,
-                    "r_tag": true
-                },
-                {
-                    "type": "Loop",
-                    "uid": 160,
-                    "loops": -0.375,
-                    "diameter": 0.9,
-                    "rolls": 0.0,
-                    "ke": false,
-                    "r_tag": true
+            },
+            "e_5_1_2": {
+                "name": "e_5_1_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_2[1])*speed)/partial_roll_rate)",
+                    "roll": "roll_2[1]"
                 }
-            ],
-            "rule": "F3ACentre",
-            "uid": 17
-        },
-        {
-            "name": "Landing",
-            "k": 1,
-            "elements": [
-                {
-                    "type": "Line",
-                    "uid": 161,
-                    "length": 0.5,
-                    "rolls": 0,
-                    "l_tag": true
+            },
+            "e_5_2": {
+                "name": "e_5_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(((0+((abs(roll_2[0])*speed)/partial_roll_rate))+point_length)+((abs(roll_2[1])*speed)/partial_roll_rate))))",
+                    "roll": "0"
                 }
-            ],
-            "rule": "IMAC",
-            "uid": 18
+            },
+            "e_6": {
+                "name": "e_6",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "-1.5707963267948966",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            }
         }
-    ]
+    },
+    "hSqL": {
+        "info": {
+            "name": "Half Square Loop",
+            "short_name": "hSqL",
+            "k": 2,
+            "position": "END",
+            "start": {
+                "h": "BTM",
+                "d": "UPWIND",
+                "o": "INVERTED"
+            },
+            "end": {
+                "h": "TOP",
+                "d": "DRIVEN",
+                "o": "DRIVEN"
+            }
+        },
+        "mps": {
+            "speed": {
+                "name": "speed",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 30.0,
+                "collectors": [
+                    "e_0.speed",
+                    "e_1_1_1.speed",
+                    "e_1_0.speed",
+                    "e_1_2.speed",
+                    "e_2.speed"
+                ]
+            },
+            "loop_radius": {
+                "name": "loop_radius",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 55.0,
+                "collectors": [
+                    "e_0.radius",
+                    "e_2.radius"
+                ]
+            },
+            "line_length": {
+                "name": "line_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 130.0,
+                "collectors": [
+                    "(((0+e_1_0.length)+e_1_1_1.length)+e_1_2.length)"
+                ]
+            },
+            "point_length": {
+                "name": "point_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 10.0,
+                "collectors": []
+            },
+            "continuous_roll_rate": {
+                "name": "continuous_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": []
+            },
+            "partial_roll_rate": {
+                "name": "partial_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": [
+                    "e_1_1_1.rate"
+                ]
+            },
+            "snap_rate": {
+                "name": "snap_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 12.566370614359172,
+                "collectors": []
+            },
+            "stallturn_rate": {
+                "name": "stallturn_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "spin_rate": {
+                "name": "spin_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "roll_0": {
+                "name": "roll_0",
+                "criteria": {
+                    "kind": "Combination",
+                    "desired": [
+                        [
+                            3.141592653589793
+                        ],
+                        [
+                            -3.141592653589793
+                        ]
+                    ],
+                    "criteria": "lambda x : 0.0 if criteria is None else criteria"
+                },
+                "default": 0,
+                "collectors": [
+                    "e_1_1_1.roll"
+                ]
+            },
+            "e_1_pad_length": {
+                "name": "e_1_pad_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": null,
+                "collectors": [
+                    "e_1_0.length",
+                    "e_1_2.length"
+                ]
+            }
+        },
+        "eds": {
+            "e_0": {
+                "name": "e_0",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "-1.5707963267948966",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            },
+            "e_1_0": {
+                "name": "e_1_0",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(0+((abs(roll_0[0])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_1_1_1": {
+                "name": "e_1_1_1",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_0[0])*speed)/partial_roll_rate)",
+                    "roll": "roll_0[0]"
+                }
+            },
+            "e_1_2": {
+                "name": "e_1_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(0+((abs(roll_0[0])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_2": {
+                "name": "e_2",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "1.5707963267948966",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            }
+        }
+    },
+    "hB": {
+        "info": {
+            "name": "Humpty Bump",
+            "short_name": "hB",
+            "k": 4,
+            "position": "CENTRE",
+            "start": {
+                "h": "TOP",
+                "d": "DOWNWIND",
+                "o": "INVERTED"
+            },
+            "end": {
+                "h": "TOP",
+                "d": "DRIVEN",
+                "o": "DRIVEN"
+            }
+        },
+        "mps": {
+            "speed": {
+                "name": "speed",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 30.0,
+                "collectors": [
+                    "e_0.speed",
+                    "e_1_1_1.speed",
+                    "e_1_0.speed",
+                    "e_1_2.speed",
+                    "e_2.speed",
+                    "e_3_1_1.speed",
+                    "e_3_0.speed",
+                    "e_3_2.speed",
+                    "e_4.speed"
+                ]
+            },
+            "loop_radius": {
+                "name": "loop_radius",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 55.0,
+                "collectors": [
+                    "e_0.radius",
+                    "e_2.radius",
+                    "e_4.radius"
+                ]
+            },
+            "line_length": {
+                "name": "line_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 130.0,
+                "collectors": [
+                    "(((0+e_1_0.length)+e_1_1_1.length)+e_1_2.length)",
+                    "(((0+e_3_0.length)+e_3_1_1.length)+e_3_2.length)"
+                ]
+            },
+            "point_length": {
+                "name": "point_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 10.0,
+                "collectors": []
+            },
+            "continuous_roll_rate": {
+                "name": "continuous_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": [
+                    "e_1_1_1.rate"
+                ]
+            },
+            "partial_roll_rate": {
+                "name": "partial_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": [
+                    "e_3_1_1.rate"
+                ]
+            },
+            "snap_rate": {
+                "name": "snap_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 12.566370614359172,
+                "collectors": []
+            },
+            "stallturn_rate": {
+                "name": "stallturn_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "spin_rate": {
+                "name": "spin_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "roll_0": {
+                "name": "roll_0",
+                "criteria": {
+                    "kind": "Combination",
+                    "desired": [
+                        [
+                            6.283185307179586
+                        ],
+                        [
+                            -6.283185307179586
+                        ]
+                    ],
+                    "criteria": "lambda x : 0.0 if criteria is None else criteria"
+                },
+                "default": 0,
+                "collectors": [
+                    "e_1_1_1.roll"
+                ]
+            },
+            "e_1_pad_length": {
+                "name": "e_1_pad_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": null,
+                "collectors": [
+                    "e_1_0.length",
+                    "e_1_2.length"
+                ]
+            },
+            "roll_1": {
+                "name": "roll_1",
+                "criteria": {
+                    "kind": "Combination",
+                    "desired": [
+                        [
+                            3.141592653589793
+                        ],
+                        [
+                            -3.141592653589793
+                        ]
+                    ],
+                    "criteria": "lambda x : 0.0 if criteria is None else criteria"
+                },
+                "default": 0,
+                "collectors": [
+                    "e_3_1_1.roll"
+                ]
+            },
+            "e_3_pad_length": {
+                "name": "e_3_pad_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": null,
+                "collectors": [
+                    "e_3_0.length",
+                    "e_3_2.length"
+                ]
+            }
+        },
+        "eds": {
+            "e_0": {
+                "name": "e_0",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "1.5707963267948966",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            },
+            "e_1_0": {
+                "name": "e_1_0",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(0+((abs(roll_0[0])*speed)/continuous_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_1_1_1": {
+                "name": "e_1_1_1",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_0[0])*speed)/continuous_roll_rate)",
+                    "roll": "roll_0[0]"
+                }
+            },
+            "e_1_2": {
+                "name": "e_1_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(0+((abs(roll_0[0])*speed)/continuous_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_2": {
+                "name": "e_2",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "3.141592653589793",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            },
+            "e_3_0": {
+                "name": "e_3_0",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(0+((abs(roll_1[0])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_3_1_1": {
+                "name": "e_3_1_1",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_1[0])*speed)/partial_roll_rate)",
+                    "roll": "roll_1[0]"
+                }
+            },
+            "e_3_2": {
+                "name": "e_3_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(0+((abs(roll_1[0])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_4": {
+                "name": "e_4",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "-1.5707963267948966",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            }
+        }
+    },
+    "hSqLC": {
+        "info": {
+            "name": "Half Square on Corner",
+            "short_name": "hSqLC",
+            "k": 3,
+            "position": "END",
+            "start": {
+                "h": "TOP",
+                "d": "DOWNWIND",
+                "o": "UPRIGHT"
+            },
+            "end": {
+                "h": "BTM",
+                "d": "DRIVEN",
+                "o": "DRIVEN"
+            }
+        },
+        "mps": {
+            "speed": {
+                "name": "speed",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 30.0,
+                "collectors": [
+                    "e_0.speed",
+                    "e_1_1_1.speed",
+                    "e_1_0.speed",
+                    "e_1_2.speed",
+                    "e_2.speed",
+                    "e_3_1_1.speed",
+                    "e_3_0.speed",
+                    "e_3_2.speed",
+                    "e_4.speed"
+                ]
+            },
+            "loop_radius": {
+                "name": "loop_radius",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 55.0,
+                "collectors": [
+                    "e_0.radius",
+                    "e_2.radius",
+                    "e_4.radius"
+                ]
+            },
+            "line_length": {
+                "name": "line_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 91.92388155425118,
+                "collectors": [
+                    "(((0+e_1_0.length)+e_1_1_1.length)+e_1_2.length)",
+                    "(((0+e_3_0.length)+e_3_1_1.length)+e_3_2.length)"
+                ]
+            },
+            "point_length": {
+                "name": "point_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 10.0,
+                "collectors": []
+            },
+            "continuous_roll_rate": {
+                "name": "continuous_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": []
+            },
+            "partial_roll_rate": {
+                "name": "partial_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": [
+                    "e_1_1_1.rate",
+                    "e_3_1_1.rate"
+                ]
+            },
+            "snap_rate": {
+                "name": "snap_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 12.566370614359172,
+                "collectors": []
+            },
+            "stallturn_rate": {
+                "name": "stallturn_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "spin_rate": {
+                "name": "spin_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "roll_0": {
+                "name": "roll_0",
+                "criteria": {
+                    "kind": "Combination",
+                    "desired": [
+                        [
+                            3.141592653589793
+                        ],
+                        [
+                            -3.141592653589793
+                        ]
+                    ],
+                    "criteria": "lambda x : 0.0 if criteria is None else criteria"
+                },
+                "default": 0,
+                "collectors": [
+                    "e_1_1_1.roll"
+                ]
+            },
+            "e_1_pad_length": {
+                "name": "e_1_pad_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": null,
+                "collectors": [
+                    "e_1_0.length",
+                    "e_1_2.length"
+                ]
+            },
+            "roll_1": {
+                "name": "roll_1",
+                "criteria": {
+                    "kind": "Combination",
+                    "desired": [
+                        [
+                            3.141592653589793
+                        ],
+                        [
+                            -3.141592653589793
+                        ]
+                    ],
+                    "criteria": "lambda x : 0.0 if criteria is None else criteria"
+                },
+                "default": 0,
+                "collectors": [
+                    "e_3_1_1.roll"
+                ]
+            },
+            "e_3_pad_length": {
+                "name": "e_3_pad_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": null,
+                "collectors": [
+                    "e_3_0.length",
+                    "e_3_2.length"
+                ]
+            }
+        },
+        "eds": {
+            "e_0": {
+                "name": "e_0",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "-0.7853981633974483",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            },
+            "e_1_0": {
+                "name": "e_1_0",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(0+((abs(roll_0[0])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_1_1_1": {
+                "name": "e_1_1_1",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_0[0])*speed)/partial_roll_rate)",
+                    "roll": "roll_0[0]"
+                }
+            },
+            "e_1_2": {
+                "name": "e_1_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(0+((abs(roll_0[0])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_2": {
+                "name": "e_2",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "1.5707963267948966",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            },
+            "e_3_0": {
+                "name": "e_3_0",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(0+((abs(roll_1[0])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_3_1_1": {
+                "name": "e_3_1_1",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_1[0])*speed)/partial_roll_rate)",
+                    "roll": "roll_1[0]"
+                }
+            },
+            "e_3_2": {
+                "name": "e_3_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(0+((abs(roll_1[0])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_4": {
+                "name": "e_4",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "-0.7853981633974483",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            }
+        }
+    },
+    "upL": {
+        "info": {
+            "name": "45 Upline Snaps",
+            "short_name": "upL",
+            "k": 5,
+            "position": "CENTRE",
+            "start": {
+                "h": "BTM",
+                "d": "UPWIND",
+                "o": "INVERTED"
+            },
+            "end": {
+                "h": "TOP",
+                "d": "DRIVEN",
+                "o": "DRIVEN"
+            }
+        },
+        "mps": {
+            "speed": {
+                "name": "speed",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 30.0,
+                "collectors": [
+                    "e_0.speed",
+                    "e_1.speed",
+                    "e_1_0.speed",
+                    "e_1_2.speed",
+                    "e_2.speed"
+                ]
+            },
+            "loop_radius": {
+                "name": "loop_radius",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 55.0,
+                "collectors": [
+                    "e_0.radius",
+                    "e_2.radius"
+                ]
+            },
+            "line_length": {
+                "name": "line_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 293.84776310850236,
+                "collectors": [
+                    "(((0+e_1_0.length)+e_1.length)+e_1_2.length)"
+                ]
+            },
+            "point_length": {
+                "name": "point_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 10.0,
+                "collectors": []
+            },
+            "continuous_roll_rate": {
+                "name": "continuous_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": []
+            },
+            "partial_roll_rate": {
+                "name": "partial_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": []
+            },
+            "snap_rate": {
+                "name": "snap_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 12.566370614359172,
+                "collectors": [
+                    "e_1.rate"
+                ]
+            },
+            "stallturn_rate": {
+                "name": "stallturn_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "spin_rate": {
+                "name": "spin_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "snaproll_0": {
+                "name": "snaproll_0",
+                "criteria": {
+                    "kind": "Combination",
+                    "desired": [
+                        [
+                            1.5
+                        ],
+                        [
+                            -1.5
+                        ]
+                    ],
+                    "criteria": "lambda x : 0.0 if criteria is None else criteria"
+                },
+                "default": 0,
+                "collectors": []
+            },
+            "snapdirection_0": {
+                "name": "snapdirection_0",
+                "criteria": {
+                    "kind": "Combination",
+                    "desired": [
+                        [
+                            1
+                        ],
+                        [
+                            -1
+                        ]
+                    ],
+                    "criteria": "lambda x : 0.0 if criteria is None else criteria"
+                },
+                "default": 0,
+                "collectors": []
+            },
+            "e_1_pad_length": {
+                "name": "e_1_pad_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": null,
+                "collectors": [
+                    "e_1_0.length",
+                    "e_1_2.length"
+                ]
+            }
+        },
+        "eds": {
+            "e_0": {
+                "name": "e_0",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "-0.7853981633974483",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            },
+            "e_1_0": {
+                "name": "e_1_0",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(0+((((speed*2)*3.141592653589793)*(abs(snaproll_0[0])+0.3490658503988659))/snap_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_1": {
+                "name": "e_1",
+                "Kind": "Snap",
+                "props": {
+                    "speed": "speed",
+                    "rolls": "snaproll_0[0]",
+                    "direction": "snapdirection_0[0]",
+                    "rate": "snap_rate",
+                    "length": "((((speed*2)*3.141592653589793)*(abs(snaproll_0[0])+0.3490658503988659))/snap_rate)"
+                }
+            },
+            "e_1_2": {
+                "name": "e_1_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(0+((((speed*2)*3.141592653589793)*(abs(snaproll_0[0])+0.3490658503988659))/snap_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_2": {
+                "name": "e_2",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "-0.7853981633974483",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            }
+        }
+    },
+    "h8L": {
+        "info": {
+            "name": "Half 8 Sided Loop",
+            "short_name": "h8L",
+            "k": 3,
+            "position": "END",
+            "start": {
+                "h": "TOP",
+                "d": "UPWIND",
+                "o": "UPRIGHT"
+            },
+            "end": {
+                "h": "BTM",
+                "d": "DRIVEN",
+                "o": "DRIVEN"
+            }
+        },
+        "mps": {
+            "speed": {
+                "name": "speed",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 30.0,
+                "collectors": [
+                    "e_0.speed",
+                    "e_1.speed",
+                    "e_2.speed",
+                    "e_3.speed",
+                    "e_4.speed",
+                    "e_5.speed",
+                    "e_6.speed"
+                ]
+            },
+            "loop_radius": {
+                "name": "loop_radius",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 55.0,
+                "collectors": [
+                    "e_0.radius",
+                    "e_2.radius",
+                    "e_4.radius",
+                    "e_6.radius"
+                ]
+            },
+            "line_length": {
+                "name": "line_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 50,
+                "collectors": [
+                    "e_1.length",
+                    "e_3.length",
+                    "e_5.length"
+                ]
+            },
+            "point_length": {
+                "name": "point_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 10.0,
+                "collectors": []
+            },
+            "continuous_roll_rate": {
+                "name": "continuous_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": []
+            },
+            "partial_roll_rate": {
+                "name": "partial_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": []
+            },
+            "snap_rate": {
+                "name": "snap_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 12.566370614359172,
+                "collectors": []
+            },
+            "stallturn_rate": {
+                "name": "stallturn_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "spin_rate": {
+                "name": "spin_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            }
+        },
+        "eds": {
+            "e_0": {
+                "name": "e_0",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "-0.7853981633974483",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            },
+            "e_1": {
+                "name": "e_1",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "line_length",
+                    "roll": "0.0"
+                }
+            },
+            "e_2": {
+                "name": "e_2",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "-0.7853981633974483",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            },
+            "e_3": {
+                "name": "e_3",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "line_length",
+                    "roll": "0.0"
+                }
+            },
+            "e_4": {
+                "name": "e_4",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "-0.7853981633974483",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            },
+            "e_5": {
+                "name": "e_5",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "line_length",
+                    "roll": "0.0"
+                }
+            },
+            "e_6": {
+                "name": "e_6",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "-0.7853981633974483",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            }
+        }
+    },
+    "rollc": {
+        "info": {
+            "name": "Roll Combo",
+            "short_name": "rollc",
+            "k": 4,
+            "position": "CENTRE",
+            "start": {
+                "h": "BTM",
+                "d": "DOWNWIND",
+                "o": "INVERTED"
+            },
+            "end": {
+                "h": "BTM",
+                "d": "DRIVEN",
+                "o": "DRIVEN"
+            }
+        },
+        "mps": {
+            "speed": {
+                "name": "speed",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 30.0,
+                "collectors": [
+                    "e_0_1.speed",
+                    "e_0_1_pause.speed",
+                    "e_0_2.speed",
+                    "e_0_3.speed",
+                    "e_0_3_pause.speed",
+                    "e_0_4.speed"
+                ]
+            },
+            "loop_radius": {
+                "name": "loop_radius",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 55.0,
+                "collectors": []
+            },
+            "line_length": {
+                "name": "line_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 130.0,
+                "collectors": []
+            },
+            "point_length": {
+                "name": "point_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 10.0,
+                "collectors": [
+                    "e_0_1_pause.length",
+                    "e_0_3_pause.length"
+                ]
+            },
+            "continuous_roll_rate": {
+                "name": "continuous_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": []
+            },
+            "partial_roll_rate": {
+                "name": "partial_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": [
+                    "e_0_1.rate",
+                    "e_0_2.rate",
+                    "e_0_3.rate",
+                    "e_0_4.rate"
+                ]
+            },
+            "snap_rate": {
+                "name": "snap_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 12.566370614359172,
+                "collectors": []
+            },
+            "stallturn_rate": {
+                "name": "stallturn_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "spin_rate": {
+                "name": "spin_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "roll_combo": {
+                "name": "roll_combo",
+                "criteria": {
+                    "kind": "Combination",
+                    "desired": [
+                        [
+                            3.141592653589793,
+                            3.141592653589793,
+                            -3.141592653589793,
+                            -3.141592653589793
+                        ],
+                        [
+                            -3.141592653589793,
+                            -3.141592653589793,
+                            3.141592653589793,
+                            3.141592653589793
+                        ]
+                    ],
+                    "criteria": "lambda x : 0.0 if criteria is None else criteria"
+                },
+                "default": 0,
+                "collectors": [
+                    "e_0_1.roll",
+                    "e_0_2.roll",
+                    "e_0_3.roll",
+                    "e_0_4.roll"
+                ]
+            }
+        },
+        "eds": {
+            "e_0_1": {
+                "name": "e_0_1",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_combo[0])*speed)/partial_roll_rate)",
+                    "roll": "roll_combo[0]"
+                }
+            },
+            "e_0_1_pause": {
+                "name": "e_0_1_pause",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "point_length",
+                    "roll": "0"
+                }
+            },
+            "e_0_2": {
+                "name": "e_0_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_combo[1])*speed)/partial_roll_rate)",
+                    "roll": "roll_combo[1]"
+                }
+            },
+            "e_0_3": {
+                "name": "e_0_3",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_combo[2])*speed)/partial_roll_rate)",
+                    "roll": "roll_combo[2]"
+                }
+            },
+            "e_0_3_pause": {
+                "name": "e_0_3_pause",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "point_length",
+                    "roll": "0"
+                }
+            },
+            "e_0_4": {
+                "name": "e_0_4",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_combo[3])*speed)/partial_roll_rate)",
+                    "roll": "roll_combo[3]"
+                }
+            }
+        }
+    },
+    "pImm": {
+        "info": {
+            "name": "Immelman Turn",
+            "short_name": "pImm",
+            "k": 2,
+            "position": "END",
+            "start": {
+                "h": "BTM",
+                "d": "DOWNWIND",
+                "o": "INVERTED"
+            },
+            "end": {
+                "h": "TOP",
+                "d": "DRIVEN",
+                "o": "DRIVEN"
+            }
+        },
+        "mps": {
+            "speed": {
+                "name": "speed",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 30.0,
+                "collectors": [
+                    "e_0.speed",
+                    "e_1_1.speed"
+                ]
+            },
+            "loop_radius": {
+                "name": "loop_radius",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 100,
+                "collectors": [
+                    "e_0.radius"
+                ]
+            },
+            "line_length": {
+                "name": "line_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 130.0,
+                "collectors": []
+            },
+            "point_length": {
+                "name": "point_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 10.0,
+                "collectors": []
+            },
+            "continuous_roll_rate": {
+                "name": "continuous_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": []
+            },
+            "partial_roll_rate": {
+                "name": "partial_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": [
+                    "e_1_1.rate"
+                ]
+            },
+            "snap_rate": {
+                "name": "snap_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 12.566370614359172,
+                "collectors": []
+            },
+            "stallturn_rate": {
+                "name": "stallturn_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "spin_rate": {
+                "name": "spin_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "roll_combo": {
+                "name": "roll_combo",
+                "criteria": {
+                    "kind": "Combination",
+                    "desired": [
+                        [
+                            3.141592653589793
+                        ],
+                        [
+                            -3.141592653589793
+                        ]
+                    ],
+                    "criteria": "lambda x : 0.0 if criteria is None else criteria"
+                },
+                "default": 0,
+                "collectors": [
+                    "e_1_1.roll"
+                ]
+            }
+        },
+        "eds": {
+            "e_0": {
+                "name": "e_0",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "-3.141592653589793",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            },
+            "e_1_1": {
+                "name": "e_1_1",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_combo[0])*speed)/partial_roll_rate)",
+                    "roll": "roll_combo[0]"
+                }
+            }
+        }
+    },
+    "iSp": {
+        "info": {
+            "name": "Inverted Spin",
+            "short_name": "iSp",
+            "k": 4,
+            "position": "CENTRE",
+            "start": {
+                "h": "TOP",
+                "d": "UPWIND",
+                "o": "INVERTED"
+            },
+            "end": {
+                "h": "BTM",
+                "d": "DRIVEN",
+                "o": "DRIVEN"
+            }
+        },
+        "mps": {
+            "speed": {
+                "name": "speed",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x: 0",
+                    "initial_value": null
+                },
+                "default": 30.0,
+                "collectors": [
+                    "e_1.speed",
+                    "e_2.speed"
+                ]
+            },
+            "loop_radius": {
+                "name": "loop_radius",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 55.0,
+                "collectors": [
+                    "e_2.radius"
+                ]
+            },
+            "line_length": {
+                "name": "line_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 130.0,
+                "collectors": [
+                    "e_1.length"
+                ]
+            },
+            "point_length": {
+                "name": "point_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 10.0,
+                "collectors": []
+            },
+            "continuous_roll_rate": {
+                "name": "continuous_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": []
+            },
+            "partial_roll_rate": {
+                "name": "partial_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": []
+            },
+            "snap_rate": {
+                "name": "snap_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 12.566370614359172,
+                "collectors": []
+            },
+            "stallturn_rate": {
+                "name": "stallturn_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "spin_rate": {
+                "name": "spin_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": [
+                    "e_0.rate"
+                ]
+            },
+            "spins_0": {
+                "name": "spins_0",
+                "criteria": {
+                    "kind": "Combination",
+                    "desired": [
+                        [
+                            1.5
+                        ],
+                        [
+                            -1.5
+                        ]
+                    ],
+                    "criteria": "lambda x : 0.0 if criteria is None else criteria"
+                },
+                "default": 0,
+                "collectors": []
+            }
+        },
+        "eds": {
+            "e_0": {
+                "name": "e_0",
+                "Kind": "Spin",
+                "props": {
+                    "speed": "20",
+                    "turns": "spins_0[0]",
+                    "opp_turns": "0",
+                    "rate": "spin_rate"
+                }
+            },
+            "e_1": {
+                "name": "e_1",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "line_length",
+                    "roll": "0.0"
+                }
+            },
+            "e_2": {
+                "name": "e_2",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "1.5707963267948966",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            }
+        }
+    },
+    "hB2": {
+        "info": {
+            "name": "Humpty Bump",
+            "short_name": "hB2",
+            "k": 3,
+            "position": "END",
+            "start": {
+                "h": "BTM",
+                "d": "UPWIND",
+                "o": "UPRIGHT"
+            },
+            "end": {
+                "h": "BTM",
+                "d": "DRIVEN",
+                "o": "DRIVEN"
+            }
+        },
+        "mps": {
+            "speed": {
+                "name": "speed",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 30.0,
+                "collectors": [
+                    "e_0.speed",
+                    "e_1.speed",
+                    "e_1_0.speed",
+                    "e_1_2.speed",
+                    "e_2.speed",
+                    "e_3.speed",
+                    "e_3_0.speed",
+                    "e_3_2.speed",
+                    "e_4.speed"
+                ]
+            },
+            "loop_radius": {
+                "name": "loop_radius",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 55.0,
+                "collectors": [
+                    "e_0.radius",
+                    "e_2.radius",
+                    "e_4.radius"
+                ]
+            },
+            "line_length": {
+                "name": "line_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 130.0,
+                "collectors": [
+                    "(((0+e_1_0.length)+e_1.length)+e_1_2.length)",
+                    "(((0+e_3_0.length)+e_3.length)+e_3_2.length)"
+                ]
+            },
+            "point_length": {
+                "name": "point_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 10.0,
+                "collectors": []
+            },
+            "continuous_roll_rate": {
+                "name": "continuous_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": []
+            },
+            "partial_roll_rate": {
+                "name": "partial_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": [
+                    "e_1.rate",
+                    "e_3.rate"
+                ]
+            },
+            "snap_rate": {
+                "name": "snap_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 12.566370614359172,
+                "collectors": []
+            },
+            "stallturn_rate": {
+                "name": "stallturn_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "spin_rate": {
+                "name": "spin_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "roll_option": {
+                "name": "roll_option",
+                "criteria": {
+                    "kind": "Combination",
+                    "desired": [
+                        [
+                            3.141592653589793,
+                            3.141592653589793
+                        ],
+                        [
+                            3.141592653589793,
+                            -3.141592653589793
+                        ],
+                        [
+                            -3.141592653589793,
+                            3.141592653589793
+                        ],
+                        [
+                            -3.141592653589793,
+                            -3.141592653589793
+                        ],
+                        [
+                            4.71238898038469,
+                            -1.5707963267948966
+                        ],
+                        [
+                            -4.71238898038469,
+                            1.5707963267948966
+                        ]
+                    ],
+                    "criteria": "lambda x : 0.0 if criteria is None else criteria"
+                },
+                "default": 0,
+                "collectors": []
+            },
+            "e_1_pad_length": {
+                "name": "e_1_pad_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": null,
+                "collectors": [
+                    "e_1_0.length",
+                    "e_1_2.length"
+                ]
+            },
+            "e_3_pad_length": {
+                "name": "e_3_pad_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": null,
+                "collectors": [
+                    "e_3_0.length",
+                    "e_3_2.length"
+                ]
+            }
+        },
+        "eds": {
+            "e_0": {
+                "name": "e_0",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "1.5707963267948966",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            },
+            "e_1_0": {
+                "name": "e_1_0",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(0+((abs(roll_option[0])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_1": {
+                "name": "e_1",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_option[0])*speed)/partial_roll_rate)",
+                    "roll": "roll_option[0]"
+                }
+            },
+            "e_1_2": {
+                "name": "e_1_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(0+((abs(roll_option[0])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_2": {
+                "name": "e_2",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "3.141592653589793",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            },
+            "e_3_0": {
+                "name": "e_3_0",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(0+((abs(roll_option[1])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_3": {
+                "name": "e_3",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_option[1])*speed)/partial_roll_rate)",
+                    "roll": "roll_option[1]"
+                }
+            },
+            "e_3_2": {
+                "name": "e_3_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(0+((abs(roll_option[1])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_4": {
+                "name": "e_4",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "-1.5707963267948966",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            }
+        }
+    },
+    "rEt": {
+        "info": {
+            "name": "Reverese Figure Et",
+            "short_name": "rEt",
+            "k": 4,
+            "position": "CENTRE",
+            "start": {
+                "h": "BTM",
+                "d": "DOWNWIND",
+                "o": "INVERTED"
+            },
+            "end": {
+                "h": "TOP",
+                "d": "DRIVEN",
+                "o": "DRIVEN"
+            }
+        },
+        "mps": {
+            "speed": {
+                "name": "speed",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 30.0,
+                "collectors": [
+                    "e_0.speed",
+                    "e_1_1_1.speed",
+                    "e_1_1_2.speed",
+                    "e_1_0.speed",
+                    "e_1_2.speed",
+                    "e_2.speed",
+                    "e_3_1_1.speed",
+                    "e_3_1_1_pause.speed",
+                    "e_3_1_2.speed",
+                    "e_3_0.speed",
+                    "e_3_2.speed",
+                    "e_4.speed"
+                ]
+            },
+            "loop_radius": {
+                "name": "loop_radius",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 70.0,
+                "collectors": [
+                    "e_0.radius",
+                    "e_2.radius",
+                    "e_4.radius"
+                ]
+            },
+            "line_length": {
+                "name": "line_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 100.0,
+                "collectors": [
+                    "(((((0+e_3_0.length)+e_3_1_1.length)+e_3_1_1_pause.length)+e_3_1_2.length)+e_3_2.length)"
+                ]
+            },
+            "point_length": {
+                "name": "point_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 10.0,
+                "collectors": [
+                    "e_3_1_1_pause.length"
+                ]
+            },
+            "continuous_roll_rate": {
+                "name": "continuous_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": []
+            },
+            "partial_roll_rate": {
+                "name": "partial_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": [
+                    "e_1_1_1.rate",
+                    "e_1_1_2.rate",
+                    "e_3_1_1.rate",
+                    "e_3_1_2.rate"
+                ]
+            },
+            "snap_rate": {
+                "name": "snap_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 12.566370614359172,
+                "collectors": []
+            },
+            "stallturn_rate": {
+                "name": "stallturn_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "spin_rate": {
+                "name": "spin_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "roll_0": {
+                "name": "roll_0",
+                "criteria": {
+                    "kind": "Combination",
+                    "desired": [
+                        [
+                            3.141592653589793,
+                            -3.141592653589793
+                        ],
+                        [
+                            -3.141592653589793,
+                            3.141592653589793
+                        ]
+                    ],
+                    "criteria": "lambda x : 0.0 if criteria is None else criteria"
+                },
+                "default": 0,
+                "collectors": [
+                    "e_1_1_1.roll",
+                    "e_1_1_2.roll"
+                ]
+            },
+            "e_1_pad_length": {
+                "name": "e_1_pad_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": null,
+                "collectors": [
+                    "e_1_0.length",
+                    "e_1_2.length"
+                ]
+            },
+            "roll_1": {
+                "name": "roll_1",
+                "criteria": {
+                    "kind": "Combination",
+                    "desired": [
+                        [
+                            1.5707963267948966,
+                            1.5707963267948966
+                        ],
+                        [
+                            -1.5707963267948966,
+                            -1.5707963267948966
+                        ]
+                    ],
+                    "criteria": "lambda x : 0.0 if criteria is None else criteria"
+                },
+                "default": 0,
+                "collectors": [
+                    "e_3_1_1.roll",
+                    "e_3_1_2.roll"
+                ]
+            },
+            "e_3_pad_length": {
+                "name": "e_3_pad_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": null,
+                "collectors": [
+                    "e_3_0.length",
+                    "e_3_2.length"
+                ]
+            }
+        },
+        "eds": {
+            "e_0": {
+                "name": "e_0",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "-0.7853981633974483",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            },
+            "e_1_0": {
+                "name": "e_1_0",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*((2*loop_radius)-((0+((abs(roll_0[0])*speed)/partial_roll_rate))+((abs(roll_0[1])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_1_1_1": {
+                "name": "e_1_1_1",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_0[0])*speed)/partial_roll_rate)",
+                    "roll": "roll_0[0]"
+                }
+            },
+            "e_1_1_2": {
+                "name": "e_1_1_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_0[1])*speed)/partial_roll_rate)",
+                    "roll": "roll_0[1]"
+                }
+            },
+            "e_1_2": {
+                "name": "e_1_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*((2*loop_radius)-((0+((abs(roll_0[0])*speed)/partial_roll_rate))+((abs(roll_0[1])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_2": {
+                "name": "e_2",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "5.497787143782138",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            },
+            "e_3_0": {
+                "name": "e_3_0",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(((0+((abs(roll_1[0])*speed)/partial_roll_rate))+point_length)+((abs(roll_1[1])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_3_1_1": {
+                "name": "e_3_1_1",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_1[0])*speed)/partial_roll_rate)",
+                    "roll": "roll_1[0]"
+                }
+            },
+            "e_3_1_1_pause": {
+                "name": "e_3_1_1_pause",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "point_length",
+                    "roll": "0"
+                }
+            },
+            "e_3_1_2": {
+                "name": "e_3_1_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_1[1])*speed)/partial_roll_rate)",
+                    "roll": "roll_1[1]"
+                }
+            },
+            "e_3_2": {
+                "name": "e_3_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(((0+((abs(roll_1[0])*speed)/partial_roll_rate))+point_length)+((abs(roll_1[1])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_4": {
+                "name": "e_4",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "-1.5707963267948966",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            }
+        }
+    },
+    "sqL": {
+        "info": {
+            "name": "Half Square Loop",
+            "short_name": "sqL",
+            "k": 2,
+            "position": "END",
+            "start": {
+                "h": "TOP",
+                "d": "DOWNWIND",
+                "o": "UPRIGHT"
+            },
+            "end": {
+                "h": "BTM",
+                "d": "DRIVEN",
+                "o": "DRIVEN"
+            }
+        },
+        "mps": {
+            "speed": {
+                "name": "speed",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 30.0,
+                "collectors": [
+                    "e_0.speed",
+                    "e_1_1_1.speed",
+                    "e_1_0.speed",
+                    "e_1_2.speed",
+                    "e_2.speed"
+                ]
+            },
+            "loop_radius": {
+                "name": "loop_radius",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 55.0,
+                "collectors": [
+                    "e_0.radius",
+                    "e_2.radius"
+                ]
+            },
+            "line_length": {
+                "name": "line_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 130.0,
+                "collectors": [
+                    "(((0+e_1_0.length)+e_1_1_1.length)+e_1_2.length)"
+                ]
+            },
+            "point_length": {
+                "name": "point_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 10.0,
+                "collectors": []
+            },
+            "continuous_roll_rate": {
+                "name": "continuous_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": []
+            },
+            "partial_roll_rate": {
+                "name": "partial_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": [
+                    "e_1_1_1.rate"
+                ]
+            },
+            "snap_rate": {
+                "name": "snap_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 12.566370614359172,
+                "collectors": []
+            },
+            "stallturn_rate": {
+                "name": "stallturn_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "spin_rate": {
+                "name": "spin_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "roll_0": {
+                "name": "roll_0",
+                "criteria": {
+                    "kind": "Combination",
+                    "desired": [
+                        [
+                            3.141592653589793
+                        ],
+                        [
+                            -3.141592653589793
+                        ]
+                    ],
+                    "criteria": "lambda x : 0.0 if criteria is None else criteria"
+                },
+                "default": 0,
+                "collectors": [
+                    "e_1_1_1.roll"
+                ]
+            },
+            "e_1_pad_length": {
+                "name": "e_1_pad_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": null,
+                "collectors": [
+                    "e_1_0.length",
+                    "e_1_2.length"
+                ]
+            }
+        },
+        "eds": {
+            "e_0": {
+                "name": "e_0",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "-1.5707963267948966",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            },
+            "e_1_0": {
+                "name": "e_1_0",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(0+((abs(roll_0[0])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_1_1_1": {
+                "name": "e_1_1_1",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_0[0])*speed)/partial_roll_rate)",
+                    "roll": "roll_0[0]"
+                }
+            },
+            "e_1_2": {
+                "name": "e_1_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(0+((abs(roll_0[0])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_2": {
+                "name": "e_2",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "1.5707963267948966",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            }
+        }
+    },
+    "M": {
+        "info": {
+            "name": "Figure M",
+            "short_name": "M",
+            "k": 5,
+            "position": "CENTRE",
+            "start": {
+                "h": "BTM",
+                "d": "UPWIND",
+                "o": "UPRIGHT"
+            },
+            "end": {
+                "h": "BTM",
+                "d": "DRIVEN",
+                "o": "DRIVEN"
+            }
+        },
+        "mps": {
+            "speed": {
+                "name": "speed",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x: 0",
+                    "initial_value": null
+                },
+                "default": 30.0,
+                "collectors": [
+                    "e_0.speed",
+                    "e_1.speed",
+                    "e_1_0.speed",
+                    "e_1_2.speed",
+                    "e_2.speed",
+                    "e_3.speed",
+                    "e_4.speed",
+                    "e_5.speed",
+                    "e_6.speed",
+                    "e_7.speed",
+                    "e_7_0.speed",
+                    "e_7_2.speed",
+                    "e_8.speed"
+                ]
+            },
+            "loop_radius": {
+                "name": "loop_radius",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 55.0,
+                "collectors": [
+                    "e_0.radius",
+                    "e_4.radius",
+                    "e_8.radius"
+                ]
+            },
+            "line_length": {
+                "name": "line_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 150.0,
+                "collectors": [
+                    "(((0+e_1_0.length)+e_1.length)+e_1_2.length)",
+                    "e_3.length",
+                    "e_5.length",
+                    "(((0+e_7_0.length)+e_7.length)+e_7_2.length)"
+                ]
+            },
+            "point_length": {
+                "name": "point_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 10.0,
+                "collectors": []
+            },
+            "continuous_roll_rate": {
+                "name": "continuous_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": []
+            },
+            "partial_roll_rate": {
+                "name": "partial_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": [
+                    "e_1.rate",
+                    "e_7.rate"
+                ]
+            },
+            "snap_rate": {
+                "name": "snap_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 12.566370614359172,
+                "collectors": []
+            },
+            "stallturn_rate": {
+                "name": "stallturn_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": [
+                    "e_2.yaw_rate",
+                    "e_6.yaw_rate"
+                ]
+            },
+            "spin_rate": {
+                "name": "spin_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "roll_option": {
+                "name": "roll_option",
+                "criteria": {
+                    "kind": "Combination",
+                    "desired": [
+                        [
+                            4.71238898038469,
+                            4.71238898038469
+                        ],
+                        [
+                            -4.71238898038469,
+                            -4.71238898038469
+                        ]
+                    ],
+                    "criteria": "lambda x : 0.0 if criteria is None else criteria"
+                },
+                "default": 1,
+                "collectors": []
+            },
+            "e_1_pad_length": {
+                "name": "e_1_pad_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": null,
+                "collectors": [
+                    "e_1_0.length",
+                    "e_1_2.length"
+                ]
+            },
+            "e_7_pad_length": {
+                "name": "e_7_pad_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": null,
+                "collectors": [
+                    "e_7_0.length",
+                    "e_7_2.length"
+                ]
+            }
+        },
+        "eds": {
+            "e_0": {
+                "name": "e_0",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "1.5707963267948966",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            },
+            "e_1_0": {
+                "name": "e_1_0",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(0+((abs(roll_option[0])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_1": {
+                "name": "e_1",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_option[0])*speed)/partial_roll_rate)",
+                    "roll": "roll_option[0]"
+                }
+            },
+            "e_1_2": {
+                "name": "e_1_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(0+((abs(roll_option[0])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_2": {
+                "name": "e_2",
+                "Kind": "StallTurn",
+                "props": {
+                    "speed": "speed",
+                    "yaw_rate": "stallturn_rate"
+                }
+            },
+            "e_3": {
+                "name": "e_3",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "line_length",
+                    "roll": "0.0"
+                }
+            },
+            "e_4": {
+                "name": "e_4",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "-3.141592653589793",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            },
+            "e_5": {
+                "name": "e_5",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "line_length",
+                    "roll": "0.0"
+                }
+            },
+            "e_6": {
+                "name": "e_6",
+                "Kind": "StallTurn",
+                "props": {
+                    "speed": "speed",
+                    "yaw_rate": "stallturn_rate"
+                }
+            },
+            "e_7_0": {
+                "name": "e_7_0",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(0+((abs(roll_option[1])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_7": {
+                "name": "e_7",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_option[1])*speed)/partial_roll_rate)",
+                    "roll": "roll_option[1]"
+                }
+            },
+            "e_7_2": {
+                "name": "e_7_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(0+((abs(roll_option[1])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_8": {
+                "name": "e_8",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "1.5707963267948966",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            }
+        }
+    },
+    "fTrn": {
+        "info": {
+            "name": "Fighter Turn",
+            "short_name": "fTrn",
+            "k": 4,
+            "position": "END",
+            "start": {
+                "h": "BTM",
+                "d": "UPWIND",
+                "o": "UPRIGHT"
+            },
+            "end": {
+                "h": "BTM",
+                "d": "DRIVEN",
+                "o": "DRIVEN"
+            }
+        },
+        "mps": {
+            "speed": {
+                "name": "speed",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 30.0,
+                "collectors": [
+                    "e_0.speed",
+                    "e_1.speed",
+                    "e_1_0.speed",
+                    "e_1_2.speed",
+                    "e_2.speed",
+                    "e_3.speed",
+                    "e_3_0.speed",
+                    "e_3_2.speed",
+                    "e_4.speed"
+                ]
+            },
+            "loop_radius": {
+                "name": "loop_radius",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 55.0,
+                "collectors": [
+                    "e_0.radius",
+                    "e_2.radius",
+                    "e_4.radius"
+                ]
+            },
+            "line_length": {
+                "name": "line_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 130.0,
+                "collectors": [
+                    "(((0+e_1_0.length)+e_1.length)+e_1_2.length)",
+                    "(((0+e_3_0.length)+e_3.length)+e_3_2.length)"
+                ]
+            },
+            "point_length": {
+                "name": "point_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 10.0,
+                "collectors": []
+            },
+            "continuous_roll_rate": {
+                "name": "continuous_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": []
+            },
+            "partial_roll_rate": {
+                "name": "partial_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": [
+                    "e_1.rate",
+                    "e_3.rate"
+                ]
+            },
+            "snap_rate": {
+                "name": "snap_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 12.566370614359172,
+                "collectors": []
+            },
+            "stallturn_rate": {
+                "name": "stallturn_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "spin_rate": {
+                "name": "spin_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "roll_option": {
+                "name": "roll_option",
+                "criteria": {
+                    "kind": "Combination",
+                    "desired": [
+                        [
+                            1.5707963267948966,
+                            -1.5707963267948966
+                        ],
+                        [
+                            -1.5707963267948966,
+                            1.5707963267948966
+                        ]
+                    ],
+                    "criteria": "lambda x : 0.0 if criteria is None else criteria"
+                },
+                "default": 1,
+                "collectors": []
+            },
+            "e_1_pad_length": {
+                "name": "e_1_pad_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": null,
+                "collectors": [
+                    "e_1_0.length",
+                    "e_1_2.length"
+                ]
+            },
+            "e_3_pad_length": {
+                "name": "e_3_pad_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": null,
+                "collectors": [
+                    "e_3_0.length",
+                    "e_3_2.length"
+                ]
+            }
+        },
+        "eds": {
+            "e_0": {
+                "name": "e_0",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "0.7853981633974483",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            },
+            "e_1_0": {
+                "name": "e_1_0",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(0+((abs(roll_option[0])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_1": {
+                "name": "e_1",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_option[0])*speed)/partial_roll_rate)",
+                    "roll": "roll_option[0]"
+                }
+            },
+            "e_1_2": {
+                "name": "e_1_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(0+((abs(roll_option[0])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_2": {
+                "name": "e_2",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "-3.141592653589793",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            },
+            "e_3_0": {
+                "name": "e_3_0",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(0+((abs(roll_option[1])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_3": {
+                "name": "e_3",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_option[1])*speed)/partial_roll_rate)",
+                    "roll": "roll_option[1]"
+                }
+            },
+            "e_3_2": {
+                "name": "e_3_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(0+((abs(roll_option[1])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_4": {
+                "name": "e_4",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "0.7853981633974483",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            }
+        }
+    },
+    "trgle": {
+        "info": {
+            "name": "Triangular Loop",
+            "short_name": "trgle",
+            "k": 3,
+            "position": "CENTRE",
+            "start": {
+                "h": "BTM",
+                "d": "DOWNWIND",
+                "o": "UPRIGHT"
+            },
+            "end": {
+                "h": "BTM",
+                "d": "DRIVEN",
+                "o": "DRIVEN"
+            }
+        },
+        "mps": {
+            "speed": {
+                "name": "speed",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 30.0,
+                "collectors": [
+                    "e_0_1.speed",
+                    "e_1.speed",
+                    "e_2.speed",
+                    "e_3_1_1.speed",
+                    "e_3_1_1_pause.speed",
+                    "e_3_1_2.speed",
+                    "e_3_0.speed",
+                    "e_3_2.speed",
+                    "e_4.speed",
+                    "e_5_1_1.speed",
+                    "e_5_1_1_pause.speed",
+                    "e_5_1_2.speed",
+                    "e_5_0.speed",
+                    "e_5_2.speed",
+                    "e_6.speed",
+                    "e_7.speed",
+                    "e_8_1.speed"
+                ]
+            },
+            "loop_radius": {
+                "name": "loop_radius",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 55.0,
+                "collectors": [
+                    "e_2.radius",
+                    "e_4.radius",
+                    "e_6.radius"
+                ]
+            },
+            "line_length": {
+                "name": "line_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 130.0,
+                "collectors": [
+                    "(((((0+e_3_0.length)+e_3_1_1.length)+e_3_1_1_pause.length)+e_3_1_2.length)+e_3_2.length)",
+                    "(((((0+e_5_0.length)+e_5_1_1.length)+e_5_1_1_pause.length)+e_5_1_2.length)+e_5_2.length)"
+                ]
+            },
+            "point_length": {
+                "name": "point_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 10.0,
+                "collectors": [
+                    "e_3_1_1_pause.length",
+                    "e_5_1_1_pause.length"
+                ]
+            },
+            "continuous_roll_rate": {
+                "name": "continuous_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": []
+            },
+            "partial_roll_rate": {
+                "name": "partial_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": [
+                    "e_0_1.rate",
+                    "e_3_1_1.rate",
+                    "e_3_1_2.rate",
+                    "e_5_1_1.rate",
+                    "e_5_1_2.rate",
+                    "e_8_1.rate"
+                ]
+            },
+            "snap_rate": {
+                "name": "snap_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 12.566370614359172,
+                "collectors": []
+            },
+            "stallturn_rate": {
+                "name": "stallturn_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "spin_rate": {
+                "name": "spin_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "roll_combo": {
+                "name": "roll_combo",
+                "criteria": {
+                    "kind": "Combination",
+                    "desired": [
+                        [
+                            3.141592653589793
+                        ],
+                        [
+                            -3.141592653589793
+                        ]
+                    ],
+                    "criteria": "lambda x : 0.0 if criteria is None else criteria"
+                },
+                "default": 0,
+                "collectors": [
+                    "e_8_1.roll"
+                ]
+            },
+            "roll_0": {
+                "name": "roll_0",
+                "criteria": {
+                    "kind": "Combination",
+                    "desired": [
+                        [
+                            1.5707963267948966,
+                            1.5707963267948966
+                        ],
+                        [
+                            -1.5707963267948966,
+                            -1.5707963267948966
+                        ]
+                    ],
+                    "criteria": "lambda x : 0.0 if criteria is None else criteria"
+                },
+                "default": 0,
+                "collectors": [
+                    "e_3_1_1.roll",
+                    "e_3_1_2.roll"
+                ]
+            },
+            "e_3_pad_length": {
+                "name": "e_3_pad_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": null,
+                "collectors": [
+                    "e_3_0.length",
+                    "e_3_2.length"
+                ]
+            },
+            "roll_1": {
+                "name": "roll_1",
+                "criteria": {
+                    "kind": "Combination",
+                    "desired": [
+                        [
+                            1.5707963267948966,
+                            1.5707963267948966
+                        ],
+                        [
+                            -1.5707963267948966,
+                            -1.5707963267948966
+                        ]
+                    ],
+                    "criteria": "lambda x : 0.0 if criteria is None else criteria"
+                },
+                "default": 0,
+                "collectors": [
+                    "e_5_1_1.roll",
+                    "e_5_1_2.roll"
+                ]
+            },
+            "e_5_pad_length": {
+                "name": "e_5_pad_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": null,
+                "collectors": [
+                    "e_5_0.length",
+                    "e_5_2.length"
+                ]
+            }
+        },
+        "eds": {
+            "e_0_1": {
+                "name": "e_0_1",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_combo[0])*speed)/partial_roll_rate)",
+                    "roll": "roll_combo[0]"
+                }
+            },
+            "e_1": {
+                "name": "e_1",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(91.92388155425118-(0.5*((abs(roll_combo[0])*speed)/partial_roll_rate)))",
+                    "roll": "0.0"
+                }
+            },
+            "e_2": {
+                "name": "e_2",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "-2.356194490192345",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            },
+            "e_3_0": {
+                "name": "e_3_0",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(((0+((abs(roll_0[0])*speed)/partial_roll_rate))+point_length)+((abs(roll_0[1])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_3_1_1": {
+                "name": "e_3_1_1",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_0[0])*speed)/partial_roll_rate)",
+                    "roll": "roll_0[0]"
+                }
+            },
+            "e_3_1_1_pause": {
+                "name": "e_3_1_1_pause",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "point_length",
+                    "roll": "0"
+                }
+            },
+            "e_3_1_2": {
+                "name": "e_3_1_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_0[1])*speed)/partial_roll_rate)",
+                    "roll": "roll_0[1]"
+                }
+            },
+            "e_3_2": {
+                "name": "e_3_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(((0+((abs(roll_0[0])*speed)/partial_roll_rate))+point_length)+((abs(roll_0[1])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_4": {
+                "name": "e_4",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "1.5707963267948966",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            },
+            "e_5_0": {
+                "name": "e_5_0",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(((0+((abs(roll_1[0])*speed)/partial_roll_rate))+point_length)+((abs(roll_1[1])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_5_1_1": {
+                "name": "e_5_1_1",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_1[0])*speed)/partial_roll_rate)",
+                    "roll": "roll_1[0]"
+                }
+            },
+            "e_5_1_1_pause": {
+                "name": "e_5_1_1_pause",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "point_length",
+                    "roll": "0"
+                }
+            },
+            "e_5_1_2": {
+                "name": "e_5_1_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_1[1])*speed)/partial_roll_rate)",
+                    "roll": "roll_1[1]"
+                }
+            },
+            "e_5_2": {
+                "name": "e_5_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(line_length-(((0+((abs(roll_1[0])*speed)/partial_roll_rate))+point_length)+((abs(roll_1[1])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_6": {
+                "name": "e_6",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "-2.356194490192345",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            },
+            "e_7": {
+                "name": "e_7",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(91.92388155425118-(0.5*((abs(roll_combo[0])*speed)/partial_roll_rate)))",
+                    "roll": "0.0"
+                }
+            },
+            "e_8_1": {
+                "name": "e_8_1",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_combo[0])*speed)/partial_roll_rate)",
+                    "roll": "roll_combo[0]"
+                }
+            }
+        }
+    },
+    "sFin": {
+        "info": {
+            "name": "Shark Fin",
+            "short_name": "sFin",
+            "k": 3,
+            "position": "END",
+            "start": {
+                "h": "BTM",
+                "d": "DOWNWIND",
+                "o": "UPRIGHT"
+            },
+            "end": {
+                "h": "BTM",
+                "d": "DRIVEN",
+                "o": "DRIVEN"
+            }
+        },
+        "mps": {
+            "speed": {
+                "name": "speed",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 30.0,
+                "collectors": [
+                    "e_0.speed",
+                    "e_1_1_1.speed",
+                    "e_1_0.speed",
+                    "e_1_2.speed",
+                    "e_2.speed",
+                    "e_3_1_1.speed",
+                    "e_3_1_1_pause.speed",
+                    "e_3_1_2.speed",
+                    "e_3_0.speed",
+                    "e_3_2.speed",
+                    "e_4.speed"
+                ]
+            },
+            "loop_radius": {
+                "name": "loop_radius",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 30.0,
+                "collectors": [
+                    "e_0.radius",
+                    "e_2.radius",
+                    "e_4.radius"
+                ]
+            },
+            "line_length": {
+                "name": "line_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 130.0,
+                "collectors": []
+            },
+            "point_length": {
+                "name": "point_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 10.0,
+                "collectors": [
+                    "e_3_1_1_pause.length"
+                ]
+            },
+            "continuous_roll_rate": {
+                "name": "continuous_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": []
+            },
+            "partial_roll_rate": {
+                "name": "partial_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": [
+                    "e_1_1_1.rate",
+                    "e_3_1_1.rate",
+                    "e_3_1_2.rate"
+                ]
+            },
+            "snap_rate": {
+                "name": "snap_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 12.566370614359172,
+                "collectors": []
+            },
+            "stallturn_rate": {
+                "name": "stallturn_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "spin_rate": {
+                "name": "spin_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "roll_0": {
+                "name": "roll_0",
+                "criteria": {
+                    "kind": "Combination",
+                    "desired": [
+                        [
+                            3.141592653589793
+                        ],
+                        [
+                            -3.141592653589793
+                        ]
+                    ],
+                    "criteria": "lambda x : 0.0 if criteria is None else criteria"
+                },
+                "default": 0,
+                "collectors": [
+                    "e_1_1_1.roll"
+                ]
+            },
+            "e_1_pad_length": {
+                "name": "e_1_pad_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": null,
+                "collectors": [
+                    "e_1_0.length",
+                    "e_1_2.length"
+                ]
+            },
+            "roll_1": {
+                "name": "roll_1",
+                "criteria": {
+                    "kind": "Combination",
+                    "desired": [
+                        [
+                            1.5707963267948966,
+                            1.5707963267948966
+                        ],
+                        [
+                            -1.5707963267948966,
+                            -1.5707963267948966
+                        ]
+                    ],
+                    "criteria": "lambda x : 0.0 if criteria is None else criteria"
+                },
+                "default": 0,
+                "collectors": [
+                    "e_3_1_1.roll",
+                    "e_3_1_2.roll"
+                ]
+            },
+            "e_3_pad_length": {
+                "name": "e_3_pad_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": null,
+                "collectors": [
+                    "e_3_0.length",
+                    "e_3_2.length"
+                ]
+            }
+        },
+        "eds": {
+            "e_0": {
+                "name": "e_0",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "1.5707963267948966",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            },
+            "e_1_0": {
+                "name": "e_1_0",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(80-(0+((abs(roll_0[0])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_1_1_1": {
+                "name": "e_1_1_1",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_0[0])*speed)/partial_roll_rate)",
+                    "roll": "roll_0[0]"
+                }
+            },
+            "e_1_2": {
+                "name": "e_1_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(80-(0+((abs(roll_0[0])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_2": {
+                "name": "e_2",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "-2.356194490192345",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            },
+            "e_3_0": {
+                "name": "e_3_0",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(173.1370849898476-(((0+((abs(roll_1[0])*speed)/partial_roll_rate))+point_length)+((abs(roll_1[1])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_3_1_1": {
+                "name": "e_3_1_1",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_1[0])*speed)/partial_roll_rate)",
+                    "roll": "roll_1[0]"
+                }
+            },
+            "e_3_1_1_pause": {
+                "name": "e_3_1_1_pause",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "point_length",
+                    "roll": "0"
+                }
+            },
+            "e_3_1_2": {
+                "name": "e_3_1_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "((abs(roll_1[1])*speed)/partial_roll_rate)",
+                    "roll": "roll_1[1]"
+                }
+            },
+            "e_3_2": {
+                "name": "e_3_2",
+                "Kind": "Line",
+                "props": {
+                    "speed": "speed",
+                    "length": "(0.5*(173.1370849898476-(((0+((abs(roll_1[0])*speed)/partial_roll_rate))+point_length)+((abs(roll_1[1])*speed)/partial_roll_rate))))",
+                    "roll": "0"
+                }
+            },
+            "e_4": {
+                "name": "e_4",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "-0.7853981633974483",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            }
+        }
+    },
+    "lop": {
+        "info": {
+            "name": "Loop",
+            "short_name": "lop",
+            "k": 3,
+            "position": "CENTRE",
+            "start": {
+                "h": "BTM",
+                "d": "UPWIND",
+                "o": "INVERTED"
+            },
+            "end": {
+                "h": "BTM",
+                "d": "DRIVEN",
+                "o": "DRIVEN"
+            }
+        },
+        "mps": {
+            "speed": {
+                "name": "speed",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 30.0,
+                "collectors": [
+                    "e_0.speed",
+                    "e_1.speed",
+                    "e_2.speed"
+                ]
+            },
+            "loop_radius": {
+                "name": "loop_radius",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 100.0,
+                "collectors": [
+                    "e_0.radius",
+                    "e_1.radius",
+                    "e_2.radius"
+                ]
+            },
+            "line_length": {
+                "name": "line_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 130.0,
+                "collectors": []
+            },
+            "point_length": {
+                "name": "point_length",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1)) * 4",
+                    "initial_value": null
+                },
+                "default": 10.0,
+                "collectors": []
+            },
+            "continuous_roll_rate": {
+                "name": "continuous_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": []
+            },
+            "partial_roll_rate": {
+                "name": "partial_roll_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 1.5707963267948966,
+                "collectors": []
+            },
+            "snap_rate": {
+                "name": "snap_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 12.566370614359172,
+                "collectors": []
+            },
+            "stallturn_rate": {
+                "name": "stallturn_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "spin_rate": {
+                "name": "spin_rate",
+                "criteria": {
+                    "kind": "Comparison",
+                    "criteria": "lambda x : (1 - 1/(x+1))",
+                    "initial_value": null
+                },
+                "default": 6.283185307179586,
+                "collectors": []
+            },
+            "roll_0": {
+                "name": "roll_0",
+                "criteria": {
+                    "kind": "Combination",
+                    "desired": [
+                        [
+                            3.141592653589793
+                        ],
+                        [
+                            -3.141592653589793
+                        ]
+                    ],
+                    "criteria": "lambda x : 0.0 if criteria is None else criteria"
+                },
+                "default": 0,
+                "collectors": [
+                    "e_1.roll"
+                ]
+            }
+        },
+        "eds": {
+            "e_0": {
+                "name": "e_0",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "-2.356194490192345",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            },
+            "e_1": {
+                "name": "e_1",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "-1.5707963267948966",
+                    "roll": "roll_0",
+                    "ke": "False"
+                }
+            },
+            "e_2": {
+                "name": "e_2",
+                "Kind": "Loop",
+                "props": {
+                    "speed": "speed",
+                    "radius": "loop_radius",
+                    "angle": "2.356194490192345",
+                    "roll": "0.0",
+                    "ke": "False"
+                }
+            }
+        }
+    }
 }

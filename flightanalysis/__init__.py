@@ -7,7 +7,6 @@ from .controls import Controls, Surfaces, Channels
 from .schedule import *
 #
 
-from .analysis import Analysis, fit_wind
 ##
 ##
 ##

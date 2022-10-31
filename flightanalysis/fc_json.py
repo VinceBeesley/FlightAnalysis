@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 
 
+
 class FCJson:
     def __init__(self, name: str, flight: Flight, box: Box, sec: State, schedule: Schedule, dists=[]):
         self.name = name
