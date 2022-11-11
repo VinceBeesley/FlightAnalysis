@@ -11,14 +11,6 @@ from flightanalysis.criteria import *
 class Line(El):
     parameters = El.parameters + "length,roll,rate".split(",")
 
-    intra_scoring = DownGrades([
-        DownGrade("speed", "measure_speed", intra_f3a_speed),
-        DownGrade("ip_track", "measure_ip_track", intra_f3a_angle),
-        DownGrade("op_track", "measure_op_track", intra_f3a_angle),
-        DownGrade("roll_angle", "measure_roll_angle_error", intra_f3a_angle),
-    ])
-
-
     def __init__(self, speed, length, roll=0, uid:str=None):
         super().__init__(uid, speed)
         if length < 0:
@@ -26,6 +18,21 @@ class Line(El):
         self.length = length
         self.roll = roll
     
+    @property
+    def intra_scoring(self):
+        _intra_scoring = DownGrades([
+            DownGrade("speed", "measure_speed", intra_f3a_speed),
+            DownGrade("ip_track", "measure_ip_track", intra_f3a_angle),
+            DownGrade("op_track", "measure_op_track", intra_f3a_angle),
+        ])
+
+        if not self.roll == 0:
+            _intra_scoring.add(DownGrade("roll_rate", "measure_roll_rate", intra_f3a_roll_rate))
+            _intra_scoring.add(DownGrade("roll_amount", "measure_end_roll_angle", basic_angle_f3a))
+        else:
+            _intra_scoring.add(DownGrade("roll_angle", "measure_roll_angle_error", intra_f3a_angle))
+        return _intra_scoring
+
     def describe(self):
         d1 = "line" if self.roll==0 else f"{self.roll} roll"
         return f"{d1}, length = {self.length} m"
@@ -88,15 +95,5 @@ class Line(El):
     def copy_direction(self, other):
         return self.set_parms(roll=abs(self.roll) * np.sign(other.roll))
 
-    def coord(self, template: State) -> Coord:
-        """Create the line coordinate frame. 
-        Origin on start point, X axis in velocity vector
-        if the x_vector is in the xz plane then the z vector is world y,
-        #otherwise the Z vector is world X
-        """
-        x_vector = template[0].att.transform_point(PX(1))
-        z_vector = PY(1.0) if abs(x_vector.y[0]) < 0.1 else PX(1.0)
-        return Coord.from_zx(template[0].pos, z_vector, x_vector)
-   
 
         

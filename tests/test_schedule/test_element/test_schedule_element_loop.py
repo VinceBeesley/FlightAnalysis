@@ -73,3 +73,29 @@ def test_match_intention_new(th_e0: State, th_e0_tp:State, th_el: Loop):
     pass
 
 
+
+
+@fixture
+def ql():
+    return Loop(30, 100, np.pi/2, 0)
+
+@fixture
+def ql_tp(ql):
+    return ql.create_template(Transformation.zero())
+
+
+@fixture
+def ql_fl():
+    return Loop(
+        30, 
+        100, 
+        np.pi/2 - np.radians(10), 
+        0
+    ).create_template(Transformation.zero())
+
+def test_intra_scoring(ql, ql_tp, ql_fl):
+    ql_fl = ql.setup_analysis_state(ql_fl, ql_tp)
+    ql_tp = ql.setup_analysis_state(ql_tp, ql_tp)
+    dgs = ql.intra_scoring.apply(ql, ql_fl, ql_tp)
+
+    pass

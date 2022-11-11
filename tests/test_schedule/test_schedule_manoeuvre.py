@@ -11,9 +11,6 @@ import pytest
 from flightanalysis.data.p23 import create_p23
 
 
-
-
-
 def test_create_template(v8: Manoeuvre):
     v8_template = v8.scale(100).create_template(
         Transformation.from_coords(

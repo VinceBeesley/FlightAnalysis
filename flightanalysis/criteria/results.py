@@ -10,14 +10,13 @@ class Result:
         self.errors = errors
         self.downgrades = downgrades
         self.value = sum(self.downgrades)
-        self.downgrade = np.trunc(self.value * 2) / 2
-
+        
 
 class Results(Collection):
     VType = Result
     uid="name"
     def downgrade(self):
-        return sum([cr.downgrade for cr in self])
+        return sum([cr.value for cr in self])
 
     def downgrade_summary(self):
         return {r.name: r.downgrades for r in self if len(r.downgrades > 0)}

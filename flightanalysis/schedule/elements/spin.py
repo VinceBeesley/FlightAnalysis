@@ -1,9 +1,8 @@
 import numpy as np
 from geometry import Transformation, Point, Quaternion, PX, PY, PZ
 from flightanalysis.state import State
-
-    
-from . import El, Loop
+from . import El, Loop, DownGrades, DownGrade
+from flightanalysis.criteria import *
 
 
 class Spin(El):
@@ -14,6 +13,13 @@ class Spin(El):
         self.turns = turns
         self.opp_turns = opp_turns
         self.rate = rate
+
+    @property
+    def intra_scoring(self):
+        return DownGrades([
+            DownGrade("roll_amount", "measure_end_roll_angle", basic_angle_f3a)
+        ])
+
 
     def to_dict(self):
         return dict(

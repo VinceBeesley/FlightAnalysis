@@ -2,7 +2,7 @@ from telnetlib import DO
 import numpy as np
 import pandas as pd
 from flightanalysis.state import State
-from geometry import Transformation, PZ, Point, angle_diff
+from geometry import Transformation, PX, PY, PZ, Point, angle_diff, Coord
 from json import load
 from flightanalysis.criteria import *
 from flightanalysis.base.collection import Collection
@@ -25,24 +25,13 @@ class DownGrades(Collection):
     VType = DownGrade
     uid = "name"
 
-    def measuredf(self, el, fl, tp):
-        intra_measurements = {es.name: es.measure(el, fl, tp) for es in self}
-
-        return pd.DataFrame(
-            np.array(list(intra_measurements.values())).T, 
-            columns=list(intra_measurements.keys()),
-            index = el.measure_length(fl, tp)
-        )
-    
-    def dgs(self, mdf: pd.DataFrame):
-        return Results([es.criteria(es.name, mdf[es.name]) for es in self])
-
+    def apply(self, el, fl, tp):
+        return Results([es.criteria(es.name, es.measure(el, fl, tp)) for es in self])
+       
 
 class El:   
     parameters = ["speed"]
-    intra_scoring = DownGrades([])
-    exit_scoring = DownGrades([])
-
+    
     def __init__(self, uid: str, speed: float):        
         self.uid = uid
         if speed < 0:
@@ -99,7 +88,6 @@ class El:
 
     def measure_eq_tp_roll_angle(self, flown, template):
         tp_angles = self.measure_roll_angle(template, template)
-        
         return self.measure_ratio(flown, template) * (tp_angles[-1] - tp_angles[0]) + tp_angles[0]
 
     def measure_length(self, flown: State, template:State):
@@ -113,23 +101,26 @@ class El:
         tp_angles = self.measure_eq_tp_roll_angle(flown, template)
         return angle_diff(fl_angles, tp_angles)
         
-
     def measure_speed(self, flown, template):
         return abs(flown.vel)
 
     def score_series_builder(self, index):
         return lambda data: pd.Series(data, index=index)
 
-    def intra_score(self, flown: State, template:State, previous: Result=None) -> Results:
-        """The previous argument allows the scoring to pick up carry over (less than 0.5 mark errors) 
-        from the last element if there was one"""
-        mdf = self.intra_scoring.measuredf(self, flown, template)
-        return self.intra_scoring.dgs(mdf)
-
-    def analyse(self, flown:State, template:State, previous: Result=None) -> Results:
+    def analyse(self, flown:State, template:State) -> Results:
         fl =  self.setup_analysis_state(flown, template)
         tp =  self.setup_analysis_state(template, template)
-        return self.intra_score(fl, tp)
+        return self.intra_scoring.apply(self, fl, tp)
+
+    def coord(self, template: State) -> Coord:
+        """Create the coordinate frame. 
+        Origin on start point, X axis in velocity vector
+        if the x_vector is in the xz plane then the z vector is world y,
+        #otherwise the Z vector is world X
+        """
+        x_vector = template[0].att.transform_point(PX(1))
+        z_vector = PY(1.0) if abs(x_vector.y[0]) < 0.1 else PX(1.0)
+        return Coord.from_zx(template[0].pos, z_vector, x_vector)
 
 
 from .line import Line

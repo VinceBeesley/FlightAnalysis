@@ -1,11 +1,11 @@
 import numpy as np
-from geometry import Transformation, Quaternion, Point, Euler, PX, PY, PZ, P0
+from geometry import Transformation, Quaternion, Point, Euler, PX, PY, PZ, P0, Coord
 from flightanalysis.state import State
 from flightanalysis.base.table import Time
-from . import El, Line
+from . import El, Line, DownGrades, DownGrade
+from flightanalysis.criteria import *
 
 
-#TODO default rate is set for box size of 2m, this is misleading. When scaled to 170m distance it is about right.
 class Snap(El):
     parameters = El.parameters + "rolls,direction,rate,length".split(",")
     break_angle = np.radians(10)
@@ -14,6 +14,13 @@ class Snap(El):
         self.rolls = rolls
         self.direction = direction
         self.rate = rate
+
+
+    @property
+    def intra_scoring(self):
+        return DownGrades([
+            DownGrade("roll_amount", "measure_end_roll_angle", basic_angle_f3a)
+        ])
 
     def to_dict(self):
         return dict(
@@ -91,3 +98,6 @@ class Snap(El):
             rolls=abs(self.rolls) * np.sign(other.rolls),
             direction = other.direction
         )
+
+
+   

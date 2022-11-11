@@ -11,17 +11,6 @@ from . import El, DownGrades, DownGrade
 class Loop(El):
     parameters = El.parameters + "radius,angle,roll,ke,rate".split(",")
 
-    intra_scoring = DownGrades([
-        DownGrade("speed", "measure_speed", intra_f3a_speed),
-        DownGrade("radius", "measure_radius", intra_f3a_radius),
-        DownGrade("roll_angle", "measure_roll_angle_error", intra_f3a_angle),
-        DownGrade("track", "measure_ip_track", intra_f3a_angle)
-    ])
-
-    exit_scoring = ([
-        DownGrade("angle", "measure_end_angle", basic_angle_f3a),
-    ])
-
     def __init__(self, speed: float, radius: float, angle: float, roll:float=0.0, ke: bool = False, uid: str=None):
         super().__init__(uid, speed)
         assert not radius == 0 and not angle == 0
@@ -29,6 +18,23 @@ class Loop(El):
         self.radius = radius   
         self.roll = roll
         self.ke = ke
+
+    @property
+    def intra_scoring(self):
+
+        _intra_scoring = DownGrades([
+            DownGrade("speed", "measure_speed", intra_f3a_speed),
+            DownGrade("radius", "measure_radius", intra_f3a_radius),
+            DownGrade("track", "measure_ip_track", intra_f3a_angle),
+            DownGrade("loop_amount", "measure_end_angle", basic_angle_f3a),
+        ])
+
+        if not self.roll == 0:
+            _intra_scoring.add(DownGrade("roll_rate", "measure_roll_rate", intra_f3a_roll_rate))
+            _intra_scoring.add(DownGrade("roll_amount", "measure_end_roll_angle", basic_angle_f3a))
+        else:
+            _intra_scoring.add(DownGrade("roll_angle", "measure_roll_angle_error", intra_f3a_angle))
+        return _intra_scoring
 
     def describe(self):
         d1 = "loop" if self.roll==0 else f"rolling loop"
@@ -125,6 +131,7 @@ class Loop(El):
         return abs(flown.pos * Point(1,1,0))
    
     def measure_end_angle(self, flown: State, template:State):
+        
         template_vels = template.att.transform_point(template.vel) * Point(1,1,0)
         flown_vels = flown.att.transform_point(flown.vel) * Point(1,1,0)
         return Point.angle_between(template_vels[-1], flown_vels[-1])
