@@ -77,7 +77,12 @@ class Manoeuvre():
         )
 
     def analyse(self, flown: State, template: State):
-        ers = []
+        
+        fl=self.entry_line.get_data(flown)
+        tp=self.entry_line.get_data(template).relocate(fl.pos[0])
+        
+        ers = [ElResults(self.entry_line, self.entry_line.analyse_exit(fl, tp))]
+
         for el in self.elements:
             fl = el.get_data(flown)
             tp = el.get_data(template).relocate(fl.pos[0])

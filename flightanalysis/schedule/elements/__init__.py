@@ -77,9 +77,15 @@ class El:
         vels = flown.att.transform_point(flown.vel) 
         return np.arcsin(vels.z/abs(vels) ) 
 
+    def measure_end_ip_track(self, flown, template):
+        return self.measure_ip_track(flown, template)[-1]
+
     def measure_op_track(self, flown: State, template:State):
         vels = flown.att.transform_point(flown.vel) 
         return np.arcsin(vels.y/abs(vels) ) 
+
+    def measure_end_op_track(self, flown, template):
+        return self.measure_op_track(flown, template)[-1]
 
     def measure_roll_rate(self, flown: State, template:State):
         return flown.p 
@@ -115,6 +121,11 @@ class El:
         tp =  self.setup_analysis_state(template, template)
         return self.intra_scoring.apply(self, fl, tp)
 
+    def analyse_exit(self, flown, template) -> Results:
+        fl =  self.setup_analysis_state(flown, template)
+        tp =  self.setup_analysis_state(template, template)
+        return self.exit_scoring.apply(self, fl, tp)
+
     def coord(self, template: State) -> Coord:
         """Create the coordinate frame. 
         Origin on start point, X axis in velocity vector
@@ -125,6 +136,13 @@ class El:
         z_vector = PY(1.0) if abs(x_vector.y[0]) < 0.1 else PX(1.0)
         return Coord.from_zx(template[0].pos, z_vector, x_vector)
 
+    @property
+    def exit_scoring(self):
+        return DownGrades([
+            DownGrade("ip_track", "measure_end_ip_track", basic_angle_f3a),
+            DownGrade("op_track", "measure_end_op_track", basic_angle_f3a),
+            DownGrade("roll_angle", "measure_end_roll_angle", basic_angle_f3a),
+        ])
 
 from .line import Line
 from .loop import Loop
