@@ -22,14 +22,6 @@ def downgradeable_values(arr):
     return np.abs(peaks) - np.abs(troughs)
 
 
-class ContinuousResult(Result):
-    """Continous criteria return two error values, one some of difference in positive direction, the other negative
-    The downgrades from each of these are truncated before being summed. 
-    """
-    def __init__(self, name:str, errors:np.ndarray, downgrades: np.ndarray):
-        super().__init__(name, errors, np.trunc(downgrades * 2) / 2)
-
-
 class Continuous:
     def __init__(self,  lookup: Callable, preprocess: Callable=None): 
         self.lookup = lookup
@@ -48,7 +40,7 @@ class Continuous:
         errors = np.array([np.sum(mistakes[mistakes > 0]), -np.sum(mistakes[mistakes < 0])])
         downgrades = self.lookup(errors)
 
-        return ContinuousResult(
+        return Result(
             name,
             errors,  
             downgrades 
