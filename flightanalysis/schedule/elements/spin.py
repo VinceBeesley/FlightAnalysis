@@ -32,7 +32,7 @@ class Spin(El):
         )
 
     def describe(self):
-        opp = "" if self.opp_turns is 0 else f", {self.opp_turns} opposite, "
+        opp = "" if self.opp_turns == 0 else f", {self.opp_turns} opposite, "
         return f"{self.turns} turn spin,{opp} rate={self.rate}"
 
 

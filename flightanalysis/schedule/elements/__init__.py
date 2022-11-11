@@ -17,6 +17,9 @@ class DownGrade:
     def measure(self, el, flown, template):
         return getattr(el, self.measurement)(flown, template)
     
+    def measure_pp(self, el, flown, template):
+        return self.criteria.preprocess(getattr(el, self.measurement)(flown, template))
+
     def apply(self, el, flown, template):
         return self.criteria(self.name, self.measure(el, flown, template))
 
