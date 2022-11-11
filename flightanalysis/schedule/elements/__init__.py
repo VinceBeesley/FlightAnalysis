@@ -78,14 +78,14 @@ class El:
         return np.arcsin(vels.z/abs(vels) ) 
 
     def measure_end_ip_track(self, flown, template):
-        return self.measure_ip_track(flown, template)[-1]
+        return np.array([self.measure_ip_track(flown, template)[-1]])
 
     def measure_op_track(self, flown: State, template:State):
         vels = flown.att.transform_point(flown.vel) 
         return np.arcsin(vels.y/abs(vels) ) 
 
     def measure_end_op_track(self, flown, template):
-        return self.measure_op_track(flown, template)[-1]
+        return np.array([self.measure_op_track(flown, template)[-1]])
 
     def measure_roll_rate(self, flown: State, template:State):
         return flown.p 
