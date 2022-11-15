@@ -30,8 +30,8 @@ class Continuous:
         else:
             self.preprocess = preprocess
 
-    def __call__(self, name, data: pd.Series):
-        pdata = self.preprocess(data)
+    def __call__(self, name, data: pd.Series, pp: bool=True):
+        pdata = self.preprocess(data) if pp else data
         peak_locs = get_peak_locs(pdata)
         trough_locs = get_peak_locs(pdata, True)
 

@@ -20,9 +20,9 @@ class Single:
         else:
             self.preprocess = preprocess
     
-    def __call__(self, name: str, data: np.ndarray) -> List[float]:
+    def __call__(self, name: str, data: np.ndarray, pp = True) -> List[float]:
         """get a Result object for a set of errors."""
-        pdata = self.preprocess(data)
+        pdata = self.preprocess(data) if pp else data
         return Result(name,data,self.lookup(pdata))
 
     def to_dict(self):
