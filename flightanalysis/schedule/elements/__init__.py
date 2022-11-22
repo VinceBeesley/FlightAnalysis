@@ -26,7 +26,7 @@ class DownGrades(Collection):
     uid = "name"
 
     def apply(self, el, fl, tp):
-        return Results([es.criteria(es.name, es.measure(el, fl, tp)) for es in self])
+        return Results([es.criteria(es.name, es.measure(el, fl, tp), False) for es in self])
        
 
 class El:   
