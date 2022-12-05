@@ -59,7 +59,7 @@ class Loop(El):
     def rate(self):
         return self.roll * self.speed / (self.angle * self.radius)
 
-    def create_template(self, transform: Transformation) -> State:
+    def create_template(self, transform: Transformation, time: Time=None) -> State:
         """generate a template loop State 
 
         Args:
@@ -71,7 +71,7 @@ class Loop(El):
 
         duration = self.radius * abs(self.angle) / self.speed
         axis_rate = self.angle / duration
-        
+                
         if axis_rate == 0:
             raise NotImplementedError()
 
@@ -79,7 +79,9 @@ class Loop(El):
             transform, 
             vel=PX(self.speed),
             rvel=PZ(self.angle / duration) if self.ke else PY(self.angle / duration)
-        ).extrapolate(duration)
+        )
+        
+        state = state.extrapolate(duration) if time is None else state.fill(time.reset_zero().scale(duration))
         
         return self._add_rolls(state, self.roll)
 
@@ -131,7 +133,6 @@ class Loop(El):
         return abs(flown.pos * Point(1,1,0))
    
     def measure_end_angle(self, flown: State, template:State):
-        
         template_vels = template.att.transform_point(template.vel) * Point(1,1,0)
         flown_vels = flown.att.transform_point(flown.vel) * Point(1,1,0)
         return Point.angle_between(template_vels[-1], flown_vels[-1])
@@ -139,14 +140,11 @@ class Loop(El):
     def match_axis_rate(self, pitch_rate: float):
         return self.set_parms(radius=self.speed / pitch_rate)
 
-    def match_intention(self, itrans: Transformation, flown: State):      
+    def match_intention(self, itrans: Transformation, flown: State):
         jit = flown.judging_itrans(itrans)
         pos = jit.att.transform_point(flown.pos - jit.pos)
 
-        if self.ke:
-            x, y = pos.x, pos.y
-        else:
-            x, y = pos.x, pos.z
+        x, y = pos.x, pos.y if self.ke  else pos.x, pos.z
             
         calc_R = lambda x, y, xc, yc: np.sqrt((x-xc)**2 + (y-yc)**2)
 

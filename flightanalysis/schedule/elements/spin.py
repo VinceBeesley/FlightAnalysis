@@ -1,18 +1,20 @@
 import numpy as np
 from geometry import Transformation, Point, Quaternion, PX, PY, PZ
 from flightanalysis.state import State
+from flightanalysis.base.table import Time
 from . import El, Loop, DownGrades, DownGrade
 from flightanalysis.criteria import *
 
 
 class Spin(El):
     _speed_factor = 1 / 10
-    parameters = El.parameters + "turns,opp_turns,rate".split(",")
-    def __init__(self, speed: float, turns: float, opp_turns: float = 0.0, rate:float=700, uid: str=None):
+    parameters = El.parameters + "turns,opp_turns,rate,break_angle".split(",")
+    def __init__(self, speed: float, turns: float, opp_turns: float = 0.0, rate:float=700, break_angle=30, uid: str=None):
         super().__init__(uid, speed)
         self.turns = turns
         self.opp_turns = opp_turns
         self.rate = rate
+        self.break_angle = break_angle
 
     @property
     def intra_scoring(self):
@@ -39,9 +41,22 @@ class Spin(El):
     def scale(self, factor):
         return self.set_parms(rate=self.rate / factor)
 
-    def create_template(self, transform: Transformation):
+    def create_nose_drop(self, transform: Transformation, time:Time=None):
+        _inverted = transform.rotation.is_inverted()[0]
+
+        return Loop(self.speed*0.5, 7.5, np.pi*_inverted/2).create_template(
+            transform, time
+        ).superimpose_rotation(
+            PY(), 
+            -abs(self.break_angle) * _inverted
+        ).label(sub_element="nose_drop")
+
+    def create_autorotation(self, transform: Transformation, time: Time=None):
+        pass
+
+    def create_template(self, transform: Transformation, time: Time=None):
         speed = self.speed * 0.5
-        _inverted = np.sign(transform.rotate(PZ()).z)[0]
+        _inverted = transform.rotation.is_inverted()[0]
         break_angle = np.radians(30) # pitch angle offset from vertical downline
         
         nose_drop = Loop(speed, 7.5, np.pi*_inverted/2).create_template(transform).superimpose_rotation(

@@ -18,6 +18,17 @@ class Time(Base):
             dt = np.array([1/30]) if len(t) == 1 else np.gradient(t)
             return Time(t, dt)
 
+    def scale(self, duration):
+        old_duration = self.t[-1] - self.t[0]
+        sfac = duration / old_duration
+        return Time(
+            self.t[0] + (self.t - self.t[0]) * sfac,
+            self.dt * sfac
+        )
+
+    def reset_zero(self):
+        return Time(self.t - self.t[0], self.dt)
+
 
 def make_time(tab):
     return Time.from_t(tab.t)

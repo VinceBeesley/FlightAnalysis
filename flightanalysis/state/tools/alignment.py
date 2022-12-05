@@ -57,8 +57,10 @@ def copy_labels(template, flown, path) -> State:
     Returns:
         Section: a labelled section
     """
+    keys = [k for k in ["manoeuvre", "element", "sub_element"] if k in template.data.columns()]
+
     mans = pd.DataFrame(path, columns=["template", "flight"]).set_index("template").join(
-            template.data.reset_index(drop=True).loc[:, ["manoeuvre", "element"]]
+            template.data.reset_index(drop=True).loc[:, keys]
         ).groupby(['flight']).last().reset_index().set_index("flight")
 
     return State(flown.data.reset_index(drop=True).join(mans).set_index("t", drop=False))

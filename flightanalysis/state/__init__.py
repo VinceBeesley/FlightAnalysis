@@ -6,12 +6,14 @@ from .state import State
 
 #
 from .tools.builders import (
+    fill,
     extrapolate, 
     from_csv, 
     from_flight, 
     stack
 )
 #
+State.fill = fill
 State.extrapolate = extrapolate
 State.from_csv = staticmethod(from_csv)
 State.from_flight = staticmethod(from_flight)

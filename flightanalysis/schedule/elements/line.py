@@ -55,7 +55,7 @@ class Line(El):
     def rate(self):
         return abs(self.roll) * self.speed / self.length
 
-    def create_template(self, transform: Transformation) -> State:
+    def create_template(self, transform: Transformation, time: Time=None) -> State:
         """contstruct a State representing the judging frame for this line element
 
         Args:
@@ -66,13 +66,17 @@ class Line(El):
         Returns:
             State: [description]
         """
-        sec= State.from_transform(
+        st = State.from_transform(
             transform, 
             time = Time(0, 1/State._construct_freq),
             vel=PX(self.speed)
-        ).extrapolate(duration=self.length / self.speed)
-
-        return self._add_rolls(sec, self.roll)
+        )
+        duration=self.length / self.speed
+        
+        return self._add_rolls(
+            st.extrapolate(duration) if time is None else st.fill(time.reset_zero().scale(duration)), 
+            self.roll
+        )
 
     def match_axis_rate(self, roll_rate: float):
         # roll rate in radians per second

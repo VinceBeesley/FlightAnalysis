@@ -43,32 +43,47 @@ class Snap(El):
     def scale(self, factor):
         return self.set_parms(rate=self.rate/factor)        
 
-    def create_template(self, transform: Transformation) -> State: 
+    def create_template(self, transform: Transformation, time: Time=None) -> State: 
         """Generate a section representing a snap roll, this is compared to a real snap in examples/snap_rolls.ipynb"""
         
         break_angle = np.radians(10)
         pitch_rate = self.rate
         
+
+        break_duration = 2 * np.pi * break_angle / pitch_rate
+        autorotation_duration = 2 * np.pi * abs(self.rolls) / self.rate
+        correction_duration = 2 * np.pi * break_angle / pitch_rate
+
+        total_duration = np.sum([break_duration, autorotation_duration, correction_duration])
+
+        time = time.scale(total_duration)
+
+        def create_time(start, duration):
+            if time is None:
+                npoints = np.max([int(np.ceil(duration * 30)), 3])
+                return Time.from_t(np.linspace(0,duration, npoints))
+            else:
+                return time[(time.t < start+duration) & (time.t > start)]
+
         pitch_break = State.from_transform(
             transform, 
             time = Time(0, 1/State._construct_freq),
             vel=PX(self.speed)
-        ).extrapolate( 
-            2 * np.pi * break_angle / pitch_rate
+        ).fill( 
+            create_time(0, break_duration)
         ).superimpose_rotation(PY(), self.direction * break_angle)
-        
-        
+               
         body_autorotation_axis = Euler(0, self.direction * break_angle, 0).inverse().transform_point(PX())
         
-        autorotation = pitch_break[-1].copy(rvel=P0()).extrapolate(
-            2 * np.pi * abs(self.rolls) / self.rate
+        autorotation = pitch_break[-1].copy(rvel=P0()).fill(
+            create_time(break_duration, autorotation_duration).reset_zero()
         ).superimpose_rotation(
             body_autorotation_axis, 
             2 * np.pi * self.rolls,
         )
 
-        correction = autorotation[-1].copy(rvel=P0()).extrapolate( 
-            2 * np.pi * break_angle / pitch_rate
+        correction = autorotation[-1].copy(rvel=P0()).fill( 
+            create_time(break_duration + autorotation_duration, correction_duration).reset_zero()
         ).superimpose_rotation(PY(), -self.direction * break_angle )
 
         return self._add_rolls(
