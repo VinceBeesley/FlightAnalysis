@@ -41,66 +41,73 @@ class Spin(El):
     def scale(self, factor):
         return self.set_parms(rate=self.rate / factor)
 
-    def create_nose_drop(self, transform: Transformation, time:Time=None):
+    def _create_nose_drop(self, transform: Transformation, flown:State=None):
         _inverted = transform.rotation.is_inverted()[0]
 
-        return Loop(self.speed*0.5, 7.5, np.pi*_inverted/2).create_template(
-            transform, time
+        return Loop(self.speed, 7.5, np.pi*_inverted/2).create_template(
+            transform, flown
         ).superimpose_rotation(
             PY(), 
             -abs(self.break_angle) * _inverted
         ).label(sub_element="nose_drop")
 
-    def create_autorotation(self, transform: Transformation, time: Time=None):
-        pass
-
-    def create_template(self, transform: Transformation, time: Time=None):
-        speed = self.speed * 0.5
-        _inverted = transform.rotation.is_inverted()[0]
-        break_angle = np.radians(30) # pitch angle offset from vertical downline
-        
-        nose_drop = Loop(speed, 7.5, np.pi*_inverted/2).create_template(transform).superimpose_rotation(
-            PY(), 
-            -abs(break_angle) * _inverted
-        ).label(sub_element="nose_drop")
-
-        autorotation = State.extrapolate(
-            nose_drop[-1].copy(rvel=Point.zeros()), 
-            ((abs(self.turns) + abs(self.opp_turns)) * 2*np.pi - 3*np.pi/2) / abs(self.rate)
+    def _create_autorotation(self, transform: Transformation, flown: State=None):
+        return State.from_transform(
+            transform, 
+            vel=transform.att.inverse().transform_point(PZ(self.speed)) 
+        ).fill(
+            self.create_time(
+                ((abs(self.turns) + abs(self.opp_turns)) * 2*np.pi - 3*np.pi/2) / abs(self.rate), 
+                flown
+            )
         ).label(sub_element="autorotation")
 
-        recovery = State.extrapolate(
-            autorotation[-1],
-            abs(np.pi / self.rate),
+    def _create_recovery(self, transform: Transformation, flown: State=None):
+        return State.from_transform(
+            transform, 
+            vel = transform.att.inverse().transform_point(PZ(self.speed)) 
+        ).fill(
+            self.create_time(abs(np.pi / self.rate), flown)
         ).superimpose_rotation(
             PY(), 
-            break_angle * _inverted
+            self.break_angle * transform.rotation.is_inverted()[0]
         ).label(sub_element="recovery")       
+    
+    def create_template(self, transform: Transformation, flown: State=None):
+        snd=None
+        sau=None
+        sre=None
         
-        no_spin = State.stack([nose_drop, autorotation, recovery])
+        if flown is not None:
+            snd = flown.get_subelement("nose_drop")
+            sau = flown.get_subelement("autorotation")
+            sre = flown.get_subelement("recovery")
+
+        nose_drop = self._create_nose_drop(transform, snd)
+        autorotation = self._create_autorotation(nose_drop[-1], sau)
+        correction = self._create_correction(autorotation[-1], sre)
+
+        no_spin = State.stack(nose_drop,autorotation, correction)
         
         if self.opp_turns == 0:
             spin=no_spin.smooth_rotation(Point(0,0,1), 2*np.pi*self.turns, "world", 0.3, 0.05)
         else:
             fwd_spin = no_spin[
-                0:no_spin.duration * self.turns / (abs(self.turns) + abs(self.opp_turns))
+                :no_spin.duration * self.turns / (abs(self.turns) + abs(self.opp_turns))
             ].smooth_rotation(Point(0,0,1), 2*np.pi*self.turns, "world", 0.3, 0.05)
 
             aft_spin = no_spin[
                 no_spin.duration * self.opp_turns / (abs(self.turns) + abs(self.opp_turns)):
-                
             ]
             aft_spin=aft_spin.superimpose_angles(
-                (PZ() * 2 * np.pi * self.turns).tile( 
-                    len(aft_spin.data)
-                ), 
+                (PZ() * 2 * np.pi * self.turns).tile(len(aft_spin.data)), 
                 "world"
             ).smooth_rotation(PZ(), -2*np.pi*self.opp_turns, "world", 0.05, 0.05)
 
             spin = State.stack([fwd_spin, aft_spin])
 
         return self._add_rolls(spin, 0.0)
-
+        
 
     def match_axis_rate(self, spin_rate, speed: float):
         return self.set_parms(rate=spin_rate)

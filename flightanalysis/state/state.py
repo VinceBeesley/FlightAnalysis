@@ -55,7 +55,7 @@ class State(Table):
 
     def from_transform(transform: Transformation, **kwargs):
         if not "time" in kwargs: 
-            kwargs["time"] = Time.from_t(np.linspace(0, 30*len(transform), len(transform)))
+            kwargs["time"] = Time.from_t(np.linspace(0, State._construct_freq*len(transform), len(transform)))
         return State.from_constructs(pos=transform.p, att=transform.q, **kwargs)
 
     def body_to_world(self, pin: Point) -> Point:

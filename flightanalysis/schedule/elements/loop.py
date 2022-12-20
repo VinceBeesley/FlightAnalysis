@@ -59,7 +59,7 @@ class Loop(El):
     def rate(self):
         return self.roll * self.speed / (self.angle * self.radius)
 
-    def create_template(self, transform: Transformation, time: Time=None) -> State:
+    def create_template(self, transform: Transformation, flown: State=None) -> State:
         """generate a template loop State 
 
         Args:
@@ -71,19 +71,17 @@ class Loop(El):
 
         duration = self.radius * abs(self.angle) / self.speed
         axis_rate = self.angle / duration
-                
         if axis_rate == 0:
-            raise NotImplementedError()
-
-        state = State.from_transform(
-            transform, 
-            vel=PX(self.speed),
-            rvel=PZ(self.angle / duration) if self.ke else PY(self.angle / duration)
-        )
-        
-        state = state.extrapolate(duration) if time is None else state.fill(time.reset_zero().scale(duration))
-        
-        return self._add_rolls(state, self.roll)
+            raise NotImplementedError()      
+                
+        return self._add_rolls(
+            State.from_transform(
+                transform, 
+                vel=PX(self.speed),
+                rvel=PZ(self.angle / duration) if self.ke else PY(self.angle / duration)
+            ).fill(self.create_time(duration, flown)), 
+                self.roll
+            )
 
     def corresponding_template(self, itrans: Transformation, aligned: State):
         c = self.centre(itrans)

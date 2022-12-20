@@ -55,7 +55,7 @@ class Line(El):
     def rate(self):
         return abs(self.roll) * self.speed / self.length
 
-    def create_template(self, transform: Transformation, time: Time=None) -> State:
+    def create_template(self, transform: Transformation, flown: State=None) -> State:
         """contstruct a State representing the judging frame for this line element
 
         Args:
@@ -66,15 +66,10 @@ class Line(El):
         Returns:
             State: [description]
         """
-        st = State.from_transform(
-            transform, 
-            time = Time(0, 1/State._construct_freq),
-            vel=PX(self.speed)
-        )
-        duration=self.length / self.speed
-        
         return self._add_rolls(
-            st.extrapolate(duration) if time is None else st.fill(time.reset_zero().scale(duration)), 
+            State.from_transform(transform, vel=PX(self.speed)).fill(
+                self.create_time(self.length / self.speed, flown.time)
+            ), 
             self.roll
         )
 

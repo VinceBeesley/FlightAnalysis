@@ -6,6 +6,7 @@ from geometry import Transformation, PX, PY, PZ, Point, angle_diff, Coord
 from json import load
 from flightanalysis.criteria import *
 from flightanalysis.base.collection import Collection
+from flightanalysis.base.table import Time
 
 
 class DownGrade:
@@ -132,6 +133,12 @@ class El:
         x_vector = template[0].att.transform_point(PX(1))
         z_vector = PY(1.0) if abs(x_vector.y[0]) < 0.1 else PX(1.0)
         return Coord.from_zx(template[0].pos, z_vector, x_vector)
+
+    def create_time(self, duration: float, flown: State=None):
+        if flown is None:
+            return Time.from_t(duration)
+        else:
+            return flown.time.reset_zero().scale(duration)
 
     @property
     def exit_scoring(self):

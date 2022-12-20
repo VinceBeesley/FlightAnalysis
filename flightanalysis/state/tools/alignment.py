@@ -104,6 +104,9 @@ def get_manoeuvre(self: State, manoeuvre_name: str):
 def get_element(self: State, element_name: str):
     return State(self.data.loc[self.data.element == element_name]) 
 
+def get_subelement(self: State, sub_element_name: str):
+    return State(self.data.loc[self.data.sub_element == sub_element_name])
+
 def get_element_from_manoeuvre(self: State, manoeuvre_name: str, element_name: str):
     return self.get_manoeuvre(manoeuvre_name).get_element(element_name)
 
