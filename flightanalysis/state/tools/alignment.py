@@ -57,7 +57,7 @@ def copy_labels(template, flown, path) -> State:
     Returns:
         Section: a labelled section
     """
-    keys = [k for k in ["manoeuvre", "element", "sub_element"] if k in template.data.columns()]
+    keys = [k for k in ["manoeuvre", "element", "sub_element"] if k in template.data.columns]
 
     mans = pd.DataFrame(path, columns=["template", "flight"]).set_index("template").join(
             template.data.reset_index(drop=True).loc[:, keys]
@@ -65,6 +65,8 @@ def copy_labels(template, flown, path) -> State:
 
     return State(flown.data.reset_index(drop=True).join(mans).set_index("t", drop=False))
 
+def remove_labels(st: State):
+    return State(st.data.drop(["manoeuvre", "element", "sub_element"], axis=1, errors="ignore"))
 
 def splitter_labels(self: State, mans: List[dict]) -> State:
         """label the manoeuvres in a State based on the flight coach splitter information
@@ -98,11 +100,15 @@ def splitter_labels(self: State, mans: List[dict]) -> State:
         return State.stack(labelled)
 
 
-def get_manoeuvre(self: State, manoeuvre_name: str):
-    return State(self.data.loc[self.data.manoeuvre == manoeuvre_name])
+def get_manoeuvre(self: State, manoeuvre: str):
+    if manoeuvre.__class__.__name__ == "Manoeuvre":
+        manoeuvre = manoeuvre.uid
+    return State(self.data.loc[self.data.manoeuvre == manoeuvre])
 
-def get_element(self: State, element_name: str):
-    return State(self.data.loc[self.data.element == element_name]) 
+def get_element(self: State, element: str):
+    if "El" in [c.__name__ for c in element.__class__.__bases__]:
+        element = element.uid
+    return State(self.data.loc[self.data.element == element]) 
 
 def get_subelement(self: State, sub_element_name: str):
     return State(self.data.loc[self.data.sub_element == sub_element_name])

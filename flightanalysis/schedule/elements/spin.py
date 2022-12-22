@@ -9,7 +9,7 @@ from flightanalysis.criteria import *
 class Spin(El):
     _speed_factor = 1 / 10
     parameters = El.parameters + "turns,opp_turns,rate,break_angle".split(",")
-    def __init__(self, speed: float, turns: float, opp_turns: float = 0.0, rate:float=700, break_angle=30, uid: str=None):
+    def __init__(self, speed: float, turns: float, opp_turns: float = 0.0, rate:float=2, break_angle=np.radians(30), uid: str=None):
         super().__init__(uid, speed)
         self.turns = turns
         self.opp_turns = opp_turns
@@ -38,9 +38,6 @@ class Spin(El):
         return f"{self.turns} turn spin,{opp} rate={self.rate}"
 
 
-    def scale(self, factor):
-        return self.set_parms(rate=self.rate / factor)
-
     def _create_nose_drop(self, transform: Transformation, flown:State=None):
         _inverted = transform.rotation.is_inverted()[0]
 
@@ -54,9 +51,9 @@ class Spin(El):
     def _create_autorotation(self, transform: Transformation, flown: State=None):
         return State.from_transform(
             transform, 
-            vel=transform.att.inverse().transform_point(PZ(self.speed)) 
+            vel=transform.att.inverse().transform_point(PZ(-self.speed)) 
         ).fill(
-            self.create_time(
+            El.create_time(
                 ((abs(self.turns) + abs(self.opp_turns)) * 2*np.pi - 3*np.pi/2) / abs(self.rate), 
                 flown
             )
@@ -65,9 +62,9 @@ class Spin(El):
     def _create_recovery(self, transform: Transformation, flown: State=None):
         return State.from_transform(
             transform, 
-            vel = transform.att.inverse().transform_point(PZ(self.speed)) 
+            vel = transform.att.inverse().transform_point(PZ(-self.speed)) 
         ).fill(
-            self.create_time(abs(np.pi / self.rate), flown)
+            El.create_time(abs(np.pi / self.rate), flown)
         ).superimpose_rotation(
             PY(), 
             self.break_angle * transform.rotation.is_inverted()[0]
@@ -84,10 +81,10 @@ class Spin(El):
             sre = flown.get_subelement("recovery")
 
         nose_drop = self._create_nose_drop(transform, snd)
-        autorotation = self._create_autorotation(nose_drop[-1], sau)
-        correction = self._create_correction(autorotation[-1], sre)
+        autorotation = self._create_autorotation(nose_drop[-1].transform, sau)
+        correction = self._create_recovery(autorotation[-1].transform, sre)
 
-        no_spin = State.stack(nose_drop,autorotation, correction)
+        no_spin = State.stack([nose_drop,autorotation, correction])
         
         if self.opp_turns == 0:
             spin=no_spin.smooth_rotation(Point(0,0,1), 2*np.pi*self.turns, "world", 0.3, 0.05)

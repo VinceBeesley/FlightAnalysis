@@ -48,9 +48,6 @@ class Line(El):
             uid=self.uid
         )
 
-    def scale(self, factor):
-        return self.set_parms(length=self.length * factor)
-
     @property
     def rate(self):
         return abs(self.roll) * self.speed / self.length
@@ -68,7 +65,7 @@ class Line(El):
         """
         return self._add_rolls(
             State.from_transform(transform, vel=PX(self.speed)).fill(
-                self.create_time(self.length / self.speed, flown.time)
+                El.create_time(self.length / self.speed, flown )
             ), 
             self.roll
         )

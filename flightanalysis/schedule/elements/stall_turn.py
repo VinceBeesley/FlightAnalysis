@@ -30,13 +30,10 @@ class StallTurn(El):
     def describe(self):
         return f"stallturn, yaw rate = {self.yaw_rate}"
 
-    def scale(self, factor):
-        return self.set_parms()
-
-    def create_template(self, transform: Transformation):
+    def create_template(self, transform: Transformation, flown: State=None):
         return self._add_rolls(
-            State.from_transform(transform, vel=Point.zeros()).extrapolate( 
-                np.pi / abs(self.yaw_rate)
+            State.from_transform(transform, vel=Point.zeros()).fill( 
+                El.create_time(np.pi / abs(self.yaw_rate), flown)
             ).superimpose_rotation(
                 PZ(), 
                 np.sign(self.yaw_rate) * np.pi
@@ -49,7 +46,7 @@ class StallTurn(El):
 
     def match_intention(self, transform: Transformation, flown: State):
         return self.set_parms(
-            yaw_rate=flown.r.max(), 
+            yaw_rate=flown.data.r[flown.data.r.abs().idxmax()]
         )
 
     def copy_direction(self, other):

@@ -1,27 +1,27 @@
 import numpy as np
 import pandas as pd
-import unittest
+
 from flightanalysis.schedule import Manoeuvre, Schedule
 from flightanalysis.state import State
 
 from flightanalysis.schedule.elements import Line, Loop
 from geometry import Point, Quaternion, Transformation, Coord
 
-import pytest
-from flightanalysis.data.p23 import create_p23
+from pytest import fixture
+from flightanalysis.data.p23 import *
 
 
-def test_create_template(v8: Manoeuvre):
-    v8_template = v8.scale(100).create_template(
-        Transformation.from_coords(
-            Coord.from_nothing(), Coord.from_nothing()),
-        30.0
-    )
 
-    np.testing.assert_array_almost_equal(
-        v8_template[-1].pos.data[0],
-        [120, 0.0, 0.0]
-    )
+@fixture(scope="session")
+def tophat():
+    return tHat().create()
+
+
+
+def test_create_template(tophat: Manoeuvre):
+    template = tophat.create_template()
+
+    assert isinstance(template, State)
 
     
 def test_get_elm_by_type(v8):

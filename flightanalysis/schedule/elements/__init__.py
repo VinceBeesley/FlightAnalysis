@@ -58,10 +58,13 @@ class El:
         return dict(type=self.__class__.__name__, **self.__dict__)
 
     def set_parms(self, **parms):
-        new_inst = self.__class__(**self.__dict__)
+        kwargs = {k:v for k, v in self.__dict__.items() if not k[0] == "_"}
+
         for key, value in parms.items():
-            setattr(new_inst, key, value)
-        return new_inst
+            if key in kwargs:
+                kwargs[key] = value
+        
+        return self.__class__(**kwargs)
 
     def setup_analysis_state(self, flown: State, template:State):
         """Change the reference coordinate frame for a flown element to the
@@ -134,9 +137,11 @@ class El:
         z_vector = PY(1.0) if abs(x_vector.y[0]) < 0.1 else PX(1.0)
         return Coord.from_zx(template[0].pos, z_vector, x_vector)
 
-    def create_time(self, duration: float, flown: State=None):
+    @staticmethod
+    def create_time(duration: float, flown: State=None):
         if flown is None:
-            return Time.from_t(duration)
+            return Time.from_t(
+                np.linspace(0, duration, int(np.ceil(duration * State._construct_freq))))
         else:
             return flown.time.reset_zero().scale(duration)
 

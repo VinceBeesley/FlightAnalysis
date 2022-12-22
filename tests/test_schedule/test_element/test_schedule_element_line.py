@@ -18,17 +18,6 @@ def test_create_template():
     )
   
 
-def test_match_axis_rate():
-    elm = Line(30, 50, np.pi).match_axis_rate(
-        1.0).create_template(Transformation())
-
-    assert elm.rvel.mean().x[0] == approx(1.0, 10)
-
-    elm = Line(30, 50, -np.pi).scale(100.0).match_axis_rate(
-        1.0).create_template(Transformation())
-
-    assert abs(np.mean(elm.rvel.x)) == approx(1.0, 1)
-
 def test_match_intention():
     # fly a line 20 degrees off the X axis for 100m, with 1 roll to the left
     flown = Line(30, 100, -2*np.pi).create_template(Transformation(

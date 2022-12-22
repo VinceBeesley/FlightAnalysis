@@ -52,7 +52,7 @@ class State(Table):
     def back_transform(self):
         return Transformation(-self.pos, self.att.inverse())
      
-
+    @staticmethod
     def from_transform(transform: Transformation, **kwargs):
         if not "time" in kwargs: 
             kwargs["time"] = Time.from_t(np.linspace(0, State._construct_freq*len(transform), len(transform)))

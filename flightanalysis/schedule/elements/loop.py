@@ -79,7 +79,7 @@ class Loop(El):
                 transform, 
                 vel=PX(self.speed),
                 rvel=PZ(self.angle / duration) if self.ke else PY(self.angle / duration)
-            ).fill(self.create_time(duration, flown)), 
+            ).fill(El.create_time(duration, flown)), 
                 self.roll
             )
 
@@ -142,7 +142,7 @@ class Loop(El):
         jit = flown.judging_itrans(itrans)
         pos = jit.att.transform_point(flown.pos - jit.pos)
 
-        x, y = pos.x, pos.y if self.ke  else pos.x, pos.z
+        x, y = (pos.x, pos.y) if self.ke else (pos.x, pos.z)
             
         calc_R = lambda x, y, xc, yc: np.sqrt((x-xc)**2 + (y-yc)**2)
 

@@ -16,6 +16,11 @@ class Snap(El):
         self.rate = rate
         self.break_angle = break_angle
         self.pitch_rate = pitch_rate
+        self._rotation_axis = Euler(
+            0, 
+            self.direction * self.break_angle, 
+            0
+        ).inverse().transform_point(PX())
 
     @property
     def intra_scoring(self):
@@ -49,33 +54,30 @@ class Snap(El):
             transform, 
             vel=PX(self.speed)
         ).fill( 
-            self.create_time(2 * np.pi * self.break_angle / self.pitch_rate, flown)
+            El.create_time(2 * np.pi * self.break_angle / self.pitch_rate, flown)
         ).superimpose_rotation(
             PY(), 
             self.direction * self.break_angle
         )
 
     def _create_autorotation(self, transform: Transformation, flown: State=None) -> State:
+        rotation_axis = Euler(0, self.direction * self.break_angle, 0).inverse().transform_point(PX())
         return State.from_transform(
             transform,
-            vel = transform.att.body_rotate(
-                PY(self.direction * self.break_angle)
-            ).inverse().transform_point(PX(self.speed))
+            vel = self._rotation_axis * self.speed
         ).fill(
-            self.create_time(2 * np.pi * abs(self.rolls) / self.rate, flown).reset_zero()
+            El.create_time(2 * np.pi * abs(self.rolls) / self.rate, flown).reset_zero()
         ).superimpose_rotation(
-            Euler(0, self.direction * self.break_angle, 0).inverse().transform_point(PX()), 
+            self._rotation_axis, 
             2 * np.pi * self.rolls,
         )
 
     def _create_correction(self, transform: Transformation, flown: State=None) -> State:
         return State.from_transform(
             transform,
-            vel = transform.att.body_rotate(
-                PY(self.direction * self.break_angle)
-            ).inverse().transform_point(PX(self.speed))
+            vel = self._rotation_axis * self.speed
         ).fill(
-            self.create_time(2 * np.pi * abs(self.rolls) / self.rate, flown).reset_zero()
+            El.create_time(2 * np.pi * self.break_angle / self.pitch_rate, flown).reset_zero()
         ).superimpose_rotation(
             PY(), 
             -self.direction * self.break_angle
@@ -92,10 +94,10 @@ class Snap(El):
             sco = flown.get_subelement("correction")
         
         pitch_break = self._create_break(transform, sbr).label(sub_element="pitch_break")
-        autorotation = self._create_autorotation(pitch_break[-1], sau).label(sub_element="autorotation")
-        correction = self._create_correction(autorotation[-1], sco).label(sub_element="correction")
+        autorotation = self._create_autorotation(pitch_break[-1].transform, sau).label(sub_element="autorotation")
+        correction = self._create_correction(autorotation[-1].transform, sco).label(sub_element="correction")
 
-        return State.stack(pitch_break, autorotation, correction)
+        return self._add_rolls(State.stack([pitch_break, autorotation, correction]), 0.0)
 
 
     def match_axis_rate(self, snap_rate: float):
