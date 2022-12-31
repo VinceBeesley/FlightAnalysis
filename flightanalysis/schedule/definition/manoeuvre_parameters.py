@@ -142,7 +142,7 @@ class ManParms(Collection):
             ManParm("partial_roll_rate", inter_f3a_roll_rate, np.pi/2),
             ManParm("snap_rate", inter_f3a_roll_rate, 4*np.pi),
             ManParm("stallturn_rate", inter_f3a_roll_rate, 2*np.pi),
-            ManParm("spin_rate", inter_f3a_roll_rate, 2*np.pi),
+            ManParm("spin_rate", inter_f3a_roll_rate, 1.7*np.pi),
         ])
         for k,v in kwargs.items():
             if isinstance(v, Number):

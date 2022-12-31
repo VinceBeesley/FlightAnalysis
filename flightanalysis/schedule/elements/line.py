@@ -6,6 +6,7 @@ from flightanalysis.state import State
 from enum import Enum
 from . import El, DownGrades, DownGrade
 from flightanalysis.criteria import *
+from typing import Union
 
 
 class Line(El):
@@ -52,7 +53,7 @@ class Line(El):
     def rate(self):
         return abs(self.roll) * self.speed / self.length
 
-    def create_template(self, transform: Transformation, flown: State=None) -> State:
+    def create_template(self, istate: Union[State, Transformation], flown: State=None) -> State:
         """contstruct a State representing the judging frame for this line element
 
         Args:
@@ -63,8 +64,10 @@ class Line(El):
         Returns:
             State: [description]
         """
+        istate = El._create_istate(istate, self.speed)
+        
         return self._add_rolls(
-            State.from_transform(transform, vel=PX(self.speed)).fill(
+            istate.fill(
                 El.create_time(self.length / self.speed, flown )
             ), 
             self.roll

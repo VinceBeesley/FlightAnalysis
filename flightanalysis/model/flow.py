@@ -16,10 +16,10 @@ class Attack(Base):
 
 
 class Flow(Table):
-    constructs = Table.constructs + Constructs(dict(
-        aspd = SVar(Point, ["asx", "asy", "asz"], None),
-        flow = SVar(Point, ["alpha", "beta", "q"], None)
-    ))
+    constructs = Table.constructs + Constructs([
+        SVar("aspd", Point, ["asx", "asy", "asz"], None),
+        SVar("flow", Point, ["alpha", "beta", "q"], None)
+    ])
 
     @staticmethod
     def build(body: State, env: Environment):

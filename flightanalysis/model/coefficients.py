@@ -11,10 +11,10 @@ from flightanalysis.model.constants import ACConstants
 
 
 class Coefficients(Table):
-    constructs = Table.constructs + Constructs(dict(
-        force = SVar(Point, ["cx", "cy", "cz"], None),
-        moment = SVar(Point, ["cl", "cm", "cn"], None)
-    ))
+    constructs = Table.constructs + Constructs([
+        SVar("force", Point, ["cx", "cy", "cz"], None),
+        SVar("moment", Point, ["cl", "cm", "cn"], None)
+    ])
 
     @staticmethod
     def build(sec: State, flow: Flow, consts: ACConstants):

@@ -34,9 +34,9 @@ def make_time(tab):
     return Time.from_t(tab.t)
     
 class Table:
-    constructs = Constructs(dict(
-        time = SVar(Time,        ["t", "dt"]               , make_time )
-    ))
+    constructs = Constructs([
+         SVar("time", Time,        ["t", "dt"]               , make_time )
+    ])
 
     def __init__(self, data: pd.DataFrame, fill=True):
         if len(data) == 0:
@@ -105,7 +105,7 @@ class Table:
         df = pd.concat(
             [
                 x.to_pandas(
-                    columns=cls.constructs.data[key].keys, 
+                    columns=cls.constructs[key].keys, 
                     index=kwargs["time"].t
                 ) for key, x in kwargs.items() if not x is None
             ],
@@ -113,9 +113,6 @@ class Table:
         )
 
         return cls(df)
-
-
-
 
     def copy(self, *args,**kwargs):
         kwargs = dict(kwargs, **{list(self.constructs.data.keys())[i]: arg for i, arg in enumerate(args)}) # add the args to the kwargs

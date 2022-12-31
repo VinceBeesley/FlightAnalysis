@@ -1,4 +1,3 @@
-from telnetlib import DO
 import numpy as np
 import pandas as pd
 from flightanalysis.state import State
@@ -7,7 +6,7 @@ from json import load
 from flightanalysis.criteria import *
 from flightanalysis.base.collection import Collection
 from flightanalysis.base.table import Time
-
+from typing import Union
 
 class DownGrade:
     def __init__(self, name, measurement, criteria):
@@ -32,7 +31,7 @@ class DownGrades(Collection):
 
 class El:   
     parameters = ["speed"]
-    
+
     def __init__(self, uid: str, speed: float):        
         self.uid = uid
         if speed < 0:
@@ -65,6 +64,15 @@ class El:
                 kwargs[key] = value
         
         return self.__class__(**kwargs)
+
+    @staticmethod
+    def _create_istate(istate: Union[State, Transformation], speed: float) -> State:
+        if isinstance(istate, Transformation):
+            istate = State.from_transform(istate, vel=PX(speed))
+        vel = PX(speed) if istate.vel.abs()[-1] == 0 else istate[-1].vel.scale(speed)
+        return istate[-1].copy(vel=vel)
+        
+        
 
     def setup_analysis_state(self, flown: State, template:State):
         """Change the reference coordinate frame for a flown element to the

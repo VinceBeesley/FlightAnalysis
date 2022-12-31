@@ -46,7 +46,7 @@ def align(flown, template, radius=5, mirror=True, white=False, weights = Point(1
     return distance, copy_labels(template, flown, path)
 
 
-def copy_labels(template, flown, path) -> State:
+def copy_labels(template, flown, path=None) -> State:
     """Copy the labels from a template section to a flown section along the index warping path
 
     Args:
@@ -58,12 +58,19 @@ def copy_labels(template, flown, path) -> State:
         Section: a labelled section
     """
     keys = [k for k in ["manoeuvre", "element", "sub_element"] if k in template.data.columns]
+    if path is None:
+        return State(
+            pd.concat(
+                [flown.data.reset_index(drop=True), template.data.loc[:,keys].reset_index(drop=True)], 
+                axis=1
+            ).set_index("t", drop=False)
+        )
+    else:
+        mans = pd.DataFrame(path, columns=["template", "flight"]).set_index("template").join(
+                template.data.reset_index(drop=True).loc[:, keys]
+            ).groupby(['flight']).last().reset_index().set_index("flight")
 
-    mans = pd.DataFrame(path, columns=["template", "flight"]).set_index("template").join(
-            template.data.reset_index(drop=True).loc[:, keys]
-        ).groupby(['flight']).last().reset_index().set_index("flight")
-
-    return State(flown.data.reset_index(drop=True).join(mans).set_index("t", drop=False))
+        return State(flown.data.reset_index(drop=True).join(mans).set_index("t", drop=False))
 
 def remove_labels(st: State):
     return State(st.data.drop(["manoeuvre", "element", "sub_element"], axis=1, errors="ignore"))

@@ -6,10 +6,69 @@ from . import El, Loop, DownGrades, DownGrade
 from flightanalysis.criteria import *
 
 
+
+class NoseDrop(El):
+    parameters = El.parameters + "radius,break_angle".split(",")
+    def __init__(self, uid: str, speed: float, radius:float=10, break_angle:float=np.radians(20)):
+        super().__init__(uid, speed)
+        self.radius = radius
+        self.break_angle=break_angle
+
+    def create_template(self, transform: Transformation, flown: State=None):
+        _inverted = transform.rotation.is_inverted()[0]
+
+        return Loop(self.speed, 7.5, np.pi*_inverted/2).create_template(
+            transform, flown
+        ).superimpose_rotation(
+            PY(), 
+            -abs(self.break_angle) * _inverted
+        ).label(sub_element=self.uid)
+
+
+class Autorotation(El):
+    parameters = El.parameters + "length"
+    def __init__(self, uid: str, speed: float, length: float):
+        super().__init__(uid, speed)
+        self.length=length
+    
+    def create_template(self, transform: Transformation, flown: State=None):
+        return State.from_transform(
+            transform, 
+            vel=transform.att.inverse().transform_point(PZ(-self.speed)) 
+        ).fill(
+            El.create_time(
+                self.length / self.speed, 
+                flown
+            )
+        ).label(sub_element=self.uid)
+
+
+class Recovery(El):
+    parameters = El.parameters + "length"
+    def __init__(self, uid: str, speed: float, length:float):
+        super().__init__(uid, speed)
+        self.length = length
+
+    def create_template(self, transform: Transformation, flown: State=None):
+        break_angle = None
+
+        return State.from_transform(
+            transform, 
+            vel = transform.att.inverse().transform_point(PZ(-self.speed)) 
+        ).fill(
+            El.create_time(abs(self.length / self.speed, flown)
+        ).superimpose_rotation(
+            PY(), 
+            self.break_angle * transform.rotation.is_inverted()[0]
+        ).label(sub_element=self.uid)       
+    
+        #TODO create_template needs to take an initial state, not a transformation then recovery can work for snaps too
+    
+
 class Spin(El):
     _speed_factor = 1 / 10
     parameters = El.parameters + "turns,opp_turns,rate,break_angle".split(",")
-    def __init__(self, speed: float, turns: float, opp_turns: float = 0.0, rate:float=2, break_angle=np.radians(30), uid: str=None):
+    def __init__(self, speed: float, turns: float, opp_turns: float = 0.0, rate:float=1.8, break_angle=np.radians(20), uid: str=None):
         super().__init__(uid, speed)
         self.turns = turns
         self.opp_turns = opp_turns
@@ -70,6 +129,7 @@ class Spin(El):
             self.break_angle * transform.rotation.is_inverted()[0]
         ).label(sub_element="recovery")       
     
+
     def create_template(self, transform: Transformation, flown: State=None):
         snd=None
         sau=None
@@ -92,6 +152,8 @@ class Spin(El):
             fwd_spin = no_spin[
                 :no_spin.duration * self.turns / (abs(self.turns) + abs(self.opp_turns))
             ].smooth_rotation(Point(0,0,1), 2*np.pi*self.turns, "world", 0.3, 0.05)
+            
+            fwd_spin.data.loc[fwd_spin.sub_element=="autorotation","sub_element"] == "autorotation_1"
 
             aft_spin = no_spin[
                 no_spin.duration * self.opp_turns / (abs(self.turns) + abs(self.opp_turns)):
@@ -100,6 +162,8 @@ class Spin(El):
                 (PZ() * 2 * np.pi * self.turns).tile(len(aft_spin.data)), 
                 "world"
             ).smooth_rotation(PZ(), -2*np.pi*self.opp_turns, "world", 0.05, 0.05)
+
+            aft_spin.data.loc[aft_spin.data.sub_element=="autorotation","sub_element"] == "autorotation_2"
 
             spin = State.stack([fwd_spin, aft_spin])
 
@@ -111,12 +175,14 @@ class Spin(El):
 
     def match_intention(self, transform: Transformation, flown: State):
         #TODO does not work for reversed spins
-        gbmean = flown.rvel.mean()
-        rate = np.sqrt(gbmean.x[0] ** 2 + gbmean.z[0] ** 2)
+        wrvel = flown.att.transform_point(flown.rvel)
+
+        # Also the direction is not working
         return self.set_parms(
-            turns=np.sign(gbmean.x[0]) * abs(self.turns),
+            speed = flown.vel.x.mean(),
+            turns=np.sign(wrvel.z.mean()) * abs(self.turns),
             opp_turns=0.0,
-            rate = rate
+            rate = np.abs(wrvel.z).max()
         )
 
     def copy_direction(self, other):

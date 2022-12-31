@@ -74,3 +74,9 @@ def test_intended_loop_radius(intended, th_def_mod ):
     assert intended.elements[0].radius == approx(th_def_mod.mps.loop_radius.default, rel=1e-3)
 
 
+
+def test_copy_labels(th_tp):
+    th_fl = th_tp.remove_labels()
+    th_al = State.copy_labels(th_tp, th_fl)
+
+    assert "element" in th_al.data.columns

@@ -4,9 +4,8 @@ from flightanalysis.state import State
 from geometry import Point, Quaternion, Transformation, PX, Q0, P0
 
 
-
 def move(st: State, transform: Transformation) -> State:
-    return State.from_constructs(
+    return st.copy_labels(State.from_constructs(
         time=st.time,
         pos=transform.point(st.pos),
         att=transform.rotate(st.att),
@@ -14,7 +13,7 @@ def move(st: State, transform: Transformation) -> State:
         rvel=st.rvel,
         acc=st.acc,
         racc=st.racc,
-    )
+    ))
 
 def move_back(st:State, transform:Transformation) -> State:
     st = move(st, Transformation(-transform.pos, Q0()))
@@ -27,11 +26,14 @@ def relocate(st:State, start_pos: Point) -> State:
 
 def superimpose_angles(st: State, angles: Point, reference:str="body"): 
     assert reference in ["body", "world"]
-    sec =  State.from_constructs(
-        st.time,
-        st.pos,
-        st.att.rotate(angles) if reference=="world" else st.att.body_rotate(angles)
-    )
+    sec = State.copy_labels(
+        st, 
+        State.from_constructs(
+            st.time,
+            st.pos,
+            st.att.rotate(angles) if reference=="world" else st.att.body_rotate(angles)
+        )
+    ) 
 
     #if "sub_element" in st.data.columns:
      #   sec = sec.append_columns(st.data["sub_element"])

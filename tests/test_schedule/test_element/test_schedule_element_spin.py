@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from pytest import fixture, approx
 
+
 @fixture
 def spin():
     return Spin(30.0, -1)
@@ -37,3 +38,12 @@ def test_create_template(spin):
 
     assert template[-1].att.transform_point(Point(0,0,1)).x== approx(1)
 
+
+@fixture
+def template(spin):
+    return spin.create_template(Transformation())
+
+def test_sub_elements(template):
+    assert np.all(
+        ["nose_drop", "autorotation", "correction"] in template.data.sub_element.unique()
+    )

@@ -6,7 +6,7 @@ from flightanalysis.base.table import Time
 from scipy import optimize
 from flightanalysis.criteria import *
 from . import El, DownGrades, DownGrade
-
+from typing import Union
 
 class Loop(El):
     parameters = El.parameters + "radius,angle,roll,ke,rate".split(",")
@@ -59,8 +59,10 @@ class Loop(El):
     def rate(self):
         return self.roll * self.speed / (self.angle * self.radius)
 
-    def create_template(self, transform: Transformation, flown: State=None) -> State:
-        """generate a template loop State 
+    def create_template(self, istate: Union[State, Transformation], flown: State=None) -> State:
+        """Generate a template loop. 
+        TODO currently works off initial attitude only consider changing to consider initial vel
+        to carry alpha and beta through the loop.
 
         Args:
             transform (Transformation): initial pos and attitude
@@ -68,23 +70,19 @@ class Loop(El):
         Returns:
             [State]: flight data representing the loop
         """
-
         duration = self.radius * abs(self.angle) / self.speed
-        axis_rate = self.angle / duration
-        if axis_rate == 0:
+        
+        if self.angle == 0:
             raise NotImplementedError()      
                 
         return self._add_rolls(
-            State.from_transform(
-                transform, 
-                vel=PX(self.speed),
+            self._create_istate(istate, self.speed).copy(
                 rvel=PZ(self.angle / duration) if self.ke else PY(self.angle / duration)
-            ).fill(El.create_time(duration, flown)), 
-                self.roll
-            )
-
-    def corresponding_template(self, itrans: Transformation, aligned: State):
-        c = self.centre(itrans)
+            ).fill(
+                El.create_time(duration, flown)
+            ), 
+            self.roll
+        )
 
     @property
     def centre_vector(self) -> Point:

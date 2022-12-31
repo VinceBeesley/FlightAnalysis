@@ -11,20 +11,19 @@
 import numpy as np
 import pandas as pd
 from typing import List, Dict, Union
-
+from .collection import Collection
 
 class SVar:
-    def __init__(self, obj, keys=None, builder=None):
+    def __init__(self, name, obj, keys=None, builder=None):
+        self.name = name
         self.obj = obj
         self.keys = obj.cols if keys is None else keys
         self.builder = builder
 
 
-class Constructs:
-    def __init__(self, data: Dict[str, SVar]):
-        self.data = data
-        self.cols = [name for sv in self.data.values() for name in sv.keys]
-
+class Constructs(Collection):
+    VType=SVar
+    uid = "name"
     def subset(self, names: List[str]):
         """get a subset of the constructs"""
         return Constructs({key: value for key, value in self.data.items() if key in names})
@@ -42,9 +41,6 @@ class Constructs:
             key for key, value in self.data.items() 
             if not all(val in vars for val in value.keys)
         ])
-
-    def to_list(self):
-        return list(self.data.values())
 
     def contains(self, names: Union[list, str]) -> bool:
         _names = [names] if isinstance(names, str) else names
