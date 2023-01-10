@@ -40,11 +40,11 @@ class Spin(El):
         return self.set_parms(rate=self.rate / factor)
 
     def create_template(self, transform: Transformation):
-        speed = self.speed * 0.5
+        
         _inverted = np.sign(transform.rotate(PZ()).z)[0]
         break_angle = np.radians(30) # pitch angle offset from vertical downline
         
-        nose_drop = Loop(speed, 7.5, np.pi*_inverted/2).create_template(transform).superimpose_rotation(
+        nose_drop = Loop(self.speed, 7.5, np.pi*_inverted/2).create_template(transform).superimpose_rotation(
             PY(), 
             -abs(break_angle) * _inverted
         ).label(sub_element="nose_drop")

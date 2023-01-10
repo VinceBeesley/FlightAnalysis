@@ -164,7 +164,7 @@ def iSp():
         )
     )
 
-    md.add_spin([[1.5], [-1.5]])
+    md.add_spin([[2.5], [-2.5]])
     md.add_line()
     md.add_loop(np.pi/2)
     return md
