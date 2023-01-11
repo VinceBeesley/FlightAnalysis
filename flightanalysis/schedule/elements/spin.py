@@ -2,71 +2,12 @@ import numpy as np
 from geometry import Transformation, Point, Quaternion, PX, PY, PZ
 from flightanalysis.state import State
 from flightanalysis.base.table import Time
-from . import El, Loop, DownGrades, DownGrade
+from . import El, Loop, DownGrades, DownGrade, Elements
 from flightanalysis.criteria import *
 
 
 
-class NoseDrop(El):
-    parameters = El.parameters + "radius,break_angle".split(",")
-    def __init__(self, uid: str, speed: float, radius:float=10, break_angle:float=np.radians(20)):
-        super().__init__(uid, speed)
-        self.radius = radius
-        self.break_angle=break_angle
-
-    def create_template(self, transform: Transformation, flown: State=None):
-        _inverted = transform.rotation.is_inverted()[0]
-
-        return Loop(self.speed, 7.5, np.pi*_inverted/2).create_template(
-            transform, flown
-        ).superimpose_rotation(
-            PY(), 
-            -abs(self.break_angle) * _inverted
-        ).label(sub_element=self.uid)
-
-
-class Autorotation(El):
-    parameters = El.parameters + "length"
-    def __init__(self, uid: str, speed: float, length: float):
-        super().__init__(uid, speed)
-        self.length=length
-    
-    def create_template(self, transform: Transformation, flown: State=None):
-        return State.from_transform(
-            transform, 
-            vel=transform.att.inverse().transform_point(PZ(-self.speed)) 
-        ).fill(
-            El.create_time(
-                self.length / self.speed, 
-                flown
-            )
-        ).label(sub_element=self.uid)
-
-
-class Recovery(El):
-    parameters = El.parameters + "length"
-    def __init__(self, uid: str, speed: float, length:float):
-        super().__init__(uid, speed)
-        self.length = length
-
-    def create_template(self, transform: Transformation, flown: State=None):
-        break_angle = None
-
-        return State.from_transform(
-            transform, 
-            vel = transform.att.inverse().transform_point(PZ(-self.speed)) 
-        ).fill(
-            El.create_time(abs(self.length / self.speed, flown)
-        ).superimpose_rotation(
-            PY(), 
-            self.break_angle * transform.rotation.is_inverted()[0]
-        ).label(sub_element=self.uid)       
-    
-        #TODO create_template needs to take an initial state, not a transformation then recovery can work for snaps too
-    
-
 class Spin(El):
-    _speed_factor = 1 / 10
     parameters = El.parameters + "turns,opp_turns,rate,break_angle".split(",")
     def __init__(self, speed: float, turns: float, opp_turns: float = 0.0, rate:float=1.8, break_angle=np.radians(20), uid: str=None):
         super().__init__(uid, speed)
@@ -80,7 +21,6 @@ class Spin(El):
         return DownGrades([
             DownGrade("roll_amount", "measure_end_roll_angle", basic_angle_f3a)
         ])
-
 
     def to_dict(self):
         return dict(

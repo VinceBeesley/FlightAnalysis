@@ -57,7 +57,7 @@ class Line(El):
         """contstruct a State representing the judging frame for this line element
 
         Args:
-            transform (Transformation): initial position and orientation
+            istate (Transformation): initial position and orientation
             speed (float): speed in judging frame X axis
             simple (bool, optional): just create the first and last points of the section. Defaults to False.
 
@@ -68,7 +68,7 @@ class Line(El):
         
         return self._add_rolls(
             istate.fill(
-                El.create_time(self.length / self.speed, flown )
+                El.create_time(self.length / self.speed, flown)
             ), 
             self.roll
         )

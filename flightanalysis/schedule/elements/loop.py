@@ -61,11 +61,9 @@ class Loop(El):
 
     def create_template(self, istate: Union[State, Transformation], flown: State=None) -> State:
         """Generate a template loop. 
-        TODO currently works off initial attitude only consider changing to consider initial vel
-        to carry alpha and beta through the loop.
 
         Args:
-            transform (Transformation): initial pos and attitude
+            istate (Transformation): initial pos and attitude, or State
 
         Returns:
             [State]: flight data representing the loop

@@ -62,7 +62,6 @@ def superimpose_roll(st: State, angle: float) -> State:
     return st.superimpose_rotation(PX(), angle)
 
 
-
 def smooth_rotation(st: State, axis: Point, angle: float, reference:str="body", w: float=0.25, w2=0.1):
     """Accelerate for acc_prop * t, flat rate for middle, slow down for acc_prop * t.
 

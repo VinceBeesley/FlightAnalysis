@@ -32,18 +32,22 @@ class DownGrades(Collection):
 class El:   
     parameters = ["speed"]
 
-    def __init__(self, uid: str, speed: float):        
+    def __init__(self, uid: str, speed: float, sub_elements=None):        
         self.uid = uid
         if speed < 0:
             raise ValueError("negative speeds are not allowed")
         self.speed = speed
+        if sub_elements is None:
+            self.sub_elements = Elements([self])
+        else:
+            self.sub_elements = sub_elements
 
     def get_data(self, st: State):
         return st.get_element(self.uid)
 
     def _add_rolls(self, el: State, roll: float) -> State:
         if not roll == 0:
-            el = el.superimpose_roll(roll)
+            el = el.superimpose_rotation(PX(), roll)
         return el.label(element=self.uid)
 
     def __eq__(self, other):
@@ -69,11 +73,9 @@ class El:
     def _create_istate(istate: Union[State, Transformation], speed: float) -> State:
         if isinstance(istate, Transformation):
             istate = State.from_transform(istate, vel=PX(speed))
-        vel = PX(speed) if istate.vel.abs()[-1] == 0 else istate[-1].vel.scale(speed)
+        vel = PX(speed) if abs(istate.vel)[-1] == 0 else istate[-1].vel.scale(speed)
         return istate[-1].copy(vel=vel)
         
-        
-
     def setup_analysis_state(self, flown: State, template:State):
         """Change the reference coordinate frame for a flown element to the
         elements coord"""   
@@ -161,30 +163,8 @@ class El:
             DownGrade("roll_angle", "measure_end_roll_angle", basic_angle_f3a),
         ])
 
-from .line import Line
-from .loop import Loop
-from .snap import Snap
-from .spin import Spin
-from .stall_turn import StallTurn
-
-els = {c.__name__.lower(): c for c in El.__subclasses__()}
-
-El.from_name = lambda name: els[name.lower()]
-
-def from_dict(data):
-    kind = data.pop("kind")
-    return els[kind](**data)
-
-El.from_dict = staticmethod(from_dict)
-
-def from_json(file):
-    with open(file, "r") as f:
-        return El.from_dict(load(f))
-
-El.from_json = from_json
 
 from flightanalysis.base.collection import Collection
-
 
 class Elements(Collection):
     VType=El
@@ -216,6 +196,29 @@ class ElementsResults(Collection):
     def downgrade_list(self):
         return [er.results.downgrade() for er in self]
     
+
+from .line import Line
+from .loop import Loop
+from .snap import Snap
+from .spin import Spin
+from .stall_turn import StallTurn
+from .nose_drop import NoseDrop
+
+els = {c.__name__.lower(): c for c in El.__subclasses__()}
+
+El.from_name = lambda name: els[name.lower()]
+
+def from_dict(data):
+    kind = data.pop("kind")
+    return els[kind](**data)
+
+El.from_dict = staticmethod(from_dict)
+
+def from_json(file):
+    with open(file, "r") as f:
+        return El.from_dict(load(f))
+
+El.from_json = from_json
 
 
     
