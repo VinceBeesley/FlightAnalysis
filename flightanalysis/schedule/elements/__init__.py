@@ -32,15 +32,11 @@ class DownGrades(Collection):
 class El:   
     parameters = ["speed"]
 
-    def __init__(self, uid: str, speed: float, sub_elements=None):        
+    def __init__(self, uid: str, speed: float):        
         self.uid = uid
         if speed < 0:
             raise ValueError("negative speeds are not allowed")
         self.speed = speed
-        if sub_elements is None:
-            self.sub_elements = Elements([self])
-        else:
-            self.sub_elements = sub_elements
 
     def get_data(self, st: State):
         return st.get_element(self.uid)
@@ -55,7 +51,9 @@ class El:
             return False
         if not self.uid == other.uid:
             return False
-        return np.all([getattr(parm, self) == other.getattr(parm, other) for parm in self.__class__.parameters])
+        return np.all([np.isclose(getattr(self, p), getattr(other, p), 0.01) for p in self.__class__.parameters])
+
+    
 
     def to_dict(self):
         return dict(type=self.__class__.__name__, **self.__dict__)
@@ -69,13 +67,7 @@ class El:
         
         return self.__class__(**kwargs)
 
-    @staticmethod
-    def _create_istate(istate: Union[State, Transformation], speed: float) -> State:
-        if isinstance(istate, Transformation):
-            istate = State.from_transform(istate, vel=PX(speed))
-        vel = PX(speed) if abs(istate.vel)[-1] == 0 else istate[-1].vel.scale(speed)
-        return istate[-1].copy(vel=vel)
-        
+
     def setup_analysis_state(self, flown: State, template:State):
         """Change the reference coordinate frame for a flown element to the
         elements coord"""   

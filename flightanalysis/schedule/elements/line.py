@@ -51,10 +51,10 @@ class Line(El):
 
     @property
     def rate(self):
-        return abs(self.roll) * self.speed / self.length
+        return self.roll * self.speed / self.length
 
-    def create_template(self, istate: Union[State, Transformation], flown: State=None) -> State:
-        """contstruct a State representing the judging frame for this line element
+    def create_template(self, istate: State, flown: State=None) -> State:
+        """construct a State representing the judging frame for this line element
 
         Args:
             istate (Transformation): initial position and orientation
@@ -64,10 +64,9 @@ class Line(El):
         Returns:
             State: [description]
         """
-        istate = El._create_istate(istate, self.speed)
         
         return self._add_rolls(
-            istate.fill(
+            istate.copy(vel=istate.vel.scale(self.speed)).fill(
                 El.create_time(self.length / self.speed, flown)
             ), 
             self.roll
@@ -86,7 +85,7 @@ class Line(El):
         return self.set_parms(
             length=jit.att.inverse().transform_point(flown.pos - jit.pos).x[-1],
             roll=np.sign(np.mean(flown.p)) * abs(self.roll),
-            speed=np.mean(flown.u)
+            speed=abs(flown.vel).mean()
         )
 
     @staticmethod

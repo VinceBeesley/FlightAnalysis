@@ -3,7 +3,7 @@
 from flightanalysis.schedule.elements import Loop, El
 from pytest import approx, fixture, mark
 from flightanalysis import State
-from geometry import Transformation, Point, Quaternion, PZ, PX, Euler
+from geometry import Transformation, Point, Quaternion, PZ, PX, Euler, P0
 import numpy as np
 from geometry.testing import assert_almost_equal, assert_equal
 import json 
@@ -15,7 +15,8 @@ def half_loop():
 
 @fixture
 def hl_template(half_loop):
-    return half_loop.create_template(Transformation())
+    return half_loop.create_template(State.from_transform(Transformation(), vel=PX(30)))
+
 
 def test_create_template_final_position(half_loop, hl_template):
     assert_almost_equal(
@@ -31,26 +32,48 @@ def test_create_template_final_attitude(half_loop, hl_template):
     )
 
 
-def test_match_axis_rate(half_loop):
-    elm = half_loop.match_axis_rate(1.0).create_template(Transformation())
-    assert abs(elm.q.mean()) == approx(1, 1e-1)
+def test_match_intention():
 
-@mark.skip
-def test_match_intention(half_loop):
-    #simulate an uncorrected 5 degree roll error
-    flown = half_loop.create_template(
-        Transformation(PX(),Euler(np.radians(5.0), 0.0, 0.0))
-    )
+    el = Loop(30, 100, np.radians(180), np.pi, False)
 
-    intention = half_loop.match_intention(Transformation(), flown)
+    tp = el.create_template(State.from_transform(Transformation(),vel=PX(30))) 
 
-    assert intention.diameter < 100.0
+    att = Euler(0, np.radians(20), 0)
 
-@mark.skip
-def test_to_from_dict():
-    el = Loop(30, 100, np.pi, np.pi, False)
-    el2 = El.from_dict(el.to_dict())
-    assert el.roll == el2.roll
+    fl = el.create_template(State.from_transform(
+        Transformation(P0(), att),
+        vel=att.inverse().transform_point(PX(30))
+    ))
+
+    el_diff = Loop(20, 50, np.radians(180), -np.pi, False)
+
+
+    el2 = el_diff.match_intention(tp[0].transform, fl)
+
+    assert el == el2
+
+def test_match_intention_ke():
+
+    el = Loop(30, 100, np.radians(180), np.pi, True)
+
+    tp = el.create_template(State.from_transform(Transformation(),vel=PX(30))) 
+
+    att = Euler(0, np.radians(20), 0)
+
+    fl = el.create_template(State.from_transform(
+        Transformation(P0(), att),
+        vel=att.inverse().transform_point(PX(30))
+    ))
+
+    el_diff = Loop(20, 50, np.radians(180), -np.pi, True)
+
+
+    el2 = el_diff.match_intention(tp[0].transform, fl)
+
+    assert el == el2
+    
+    assert np.isclose(el2.rate, fl.p.mean(), 0.01)
+
 
 @fixture
 def th_e0()->State:

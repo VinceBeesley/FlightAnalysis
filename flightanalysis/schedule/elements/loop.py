@@ -59,11 +59,11 @@ class Loop(El):
     def rate(self):
         return self.roll * self.speed / (self.angle * self.radius)
 
-    def create_template(self, istate: Union[State, Transformation], flown: State=None) -> State:
+    def create_template(self, istate: State, flown: State=None) -> State:
         """Generate a template loop. 
 
         Args:
-            istate (Transformation): initial pos and attitude, or State
+            istate (State): initial state
 
         Returns:
             [State]: flight data representing the loop
@@ -74,7 +74,8 @@ class Loop(El):
             raise NotImplementedError()      
                 
         return self._add_rolls(
-            self._create_istate(istate, self.speed).copy(
+            istate.copy(
+                vel=istate.vel.scale(self.speed),
                 rvel=PZ(self.angle / duration) if self.ke else PY(self.angle / duration)
             ).fill(
                 El.create_time(duration, flown)
@@ -150,8 +151,8 @@ class Loop(El):
         return self.set_parms(
             radius=calc_R(x[0], y[0],*center).mean(),
             roll=abs(self.roll) * np.sign(np.mean(flown.rvel.x)),
-            angle=abs(self.angle) * np.sign(np.sign(np.mean(flown.rvel.y))),
-            speed=np.mean(flown.u)
+            angle=-abs(self.angle) * np.sign(flown.r.mean() if self.ke else flown.q.mean()),
+            speed=abs(flown.vel).mean()
         )
     
 
