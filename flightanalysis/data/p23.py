@@ -6,7 +6,8 @@ from flightanalysis.criteria import *
 
 
 
-
+#create a class MPDefaults, that specifies default values and their mapping to
+# element constructors, or it could carry the add_loop type methods.
 
 
 
