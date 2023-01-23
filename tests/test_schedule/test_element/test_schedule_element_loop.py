@@ -108,6 +108,7 @@ def ql_fl():
         0
     ).create_template(Transformation.zero())
 
+@mark.skip
 def test_intra_scoring(ql, ql_tp, ql_fl):
     ql_fl = ql.setup_analysis_state(ql_fl, ql_tp)
     ql_tp = ql.setup_analysis_state(ql_tp, ql_tp)

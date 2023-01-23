@@ -195,6 +195,8 @@ from .snap import Snap
 from .spin import Spin
 from .stall_turn import StallTurn
 from .nose_drop import NoseDrop
+from .pitch_break import PitchBreak
+from .recovery import Recovery
 
 els = {c.__name__.lower(): c for c in El.__subclasses__()}
 
