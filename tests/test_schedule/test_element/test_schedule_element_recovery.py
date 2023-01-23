@@ -37,11 +37,3 @@ def test_match_intention(el, elt):
 
     assert el == el3
 
-
-#def test_match_intention(nd, ndt):
-#    nd2 = NoseDrop(15,30,np.radians(25), nd.uid)
-#
-#
-#    nd3 = nd2.match_intention(Transformation(), ndt)
-#
-#    assert nd==nd3

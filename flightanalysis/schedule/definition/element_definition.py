@@ -1,13 +1,14 @@
 import enum
 from typing import List, Callable, Union, Dict
 import numpy as np
-from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn, El, Elements
+from flightanalysis.schedule.elements import *
 from inspect import getfullargspec
 from functools import partial
 from . import ManParm, ManParms, _a, Opp
 from flightanalysis.base.collection import Collection
 from numbers import Number
 from . import Collector, Collectors
+import inspect
 
 
 class ElDef:
@@ -58,7 +59,12 @@ class ElDef:
 
         return self.Kind(uid=self.name, **kwargs) 
     
-    def build(name, Kind, **kwargs):
+    def build(Kind, name, *args, **kwargs):
+        elargs = list(inspect.signature(Kind.__init__).parameters)[1:-1]
+        kwargs = kwargs.copy()
+        for arg, argname in zip(args, elargs[:len(args)] ):
+            kwargs[argname] = arg
+        
         ed = ElDef(name, Kind, kwargs)
         
         for key, value in kwargs.items():
@@ -69,29 +75,7 @@ class ElDef:
 
     def rename(self, new_name):
         return ElDef(new_name, self.Kind, self.pfuncs)
-
-    @staticmethod
-    def loop(name:str, ke, s, r, angle, roll):
-        return ElDef.build(
-            name, 
-            Loop, 
-            speed=s,
-            radius=r,
-            angle=angle,
-            roll=roll,
-            ke=ke
-        )
     
-    @staticmethod
-    def line(name:str, s, l, roll):
-        return ElDef.build(
-            name, 
-            Line, 
-            speed=s,
-            length=l,
-            roll=roll
-        )
-
     @staticmethod
     def roll(name: str, s, rate, angle):
         ed = ElDef.line(
@@ -104,42 +88,9 @@ class ElDef:
             rate.append(ed.get_collector("rate"))
         return ed
 
-    @staticmethod
-    def snap(name: str, s, rate, roll, direction):
-        return ElDef.build(
-            name,
-            Snap,
-            speed=s,
-            rolls=roll,
-            direction=direction,
-            rate=rate,
-            length=s * 2 * np.pi * (abs(roll) + 2 * Snap.break_angle) / rate
-        )
-
-    @staticmethod
-    def spin(name: str, s, turns, opp_turns, rate):
-        return ElDef.build(
-            name,
-            Spin,
-            speed=s,
-            turns=turns,
-            opp_turns=opp_turns,
-            rate=rate
-        )
-
-    @staticmethod
-    def stallturn(name, s, rate):
-        return ElDef.build(
-            name,
-            StallTurn,
-            speed=s,
-            yaw_rate=rate
-        )
-
     @property
     def id(self):
         return int(self.name.split("_")[1])
-
 
 class ElDefs(Collection):
     VType=ElDef
@@ -154,8 +105,8 @@ class ElDefs(Collection):
 
     def to_dict(self):
         return {v.name: v.to_dict() for v in self}
-
-    def get_new_name(self):
+    
+    def get_new_name(self): 
         new_id = 0 if len(self.data) == 0 else list(self.data.values())[-1].id + 1
         return f"e_{new_id}"
 
@@ -213,3 +164,9 @@ class ElDefs(Collection):
         """A function that returns the sum of the requested parameter from an elements collection"""
         return lambda els : sum(c(els) for c in self.collector_list(name))
     
+    @staticmethod
+    def create_snap(name: str, s, rate, roll, break_angle ):
+        eds = ElDefs()
+
+
+        pass

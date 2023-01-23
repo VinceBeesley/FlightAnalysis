@@ -93,7 +93,8 @@ class ManDef:
                 #TODO this should be rotated not absoluted 
                 man_start_x = min(box_edge - template.pos.x) 
         
-        return ElDef.line(
+        return ElDef.build(
+            Line,
             f"entry_{self.info.short_name}", 
             self.mps.speed, 
             max(man_start_x - itrans.translation.x[0] * heading, 30), 
@@ -130,13 +131,13 @@ class ManDef:
         r: Union[float, ManParm]=None
     ) -> ElDef:
         
-        self.eds.add(ElDef.loop(
+        self.eds.add(ElDef.build(Loop,
             self.eds.get_new_name(), 
-            ke,
             self.mps.speed if s is None else s, 
             self.mps.loop_radius if r is None else r, 
             angle, 
-            roll
+            roll,
+            ke
         ))
 
     def add_line(
@@ -146,7 +147,7 @@ class ManDef:
         l: Union[ManParm, float]=None
     ) -> ElDef:
         
-        self.eds.add(ElDef.line(
+        self.eds.add(ElDef.build(Line,
             self.eds.get_new_name(), 
             self.mps.speed if s is None else s, 
             self.mps.line_length if l is None else l, 
@@ -333,9 +334,9 @@ class ManDef:
         pad_length = 0.5 * (l - sum([ed.props["length"] for ed in eds]))
         #pad_length = lambda mps: 0.5 * (_a(l)(mps) - eds.builder_sum("length")(mps))
         
-        e1 = self.eds.add(ElDef.line(f"e_{eds[0].id}_0", s, pad_length, 0))
+        e1 = self.eds.add(ElDef.build(Line,f"e_{eds[0].id}_0", s, pad_length, 0))
         e2 = self.eds.add([ed for ed in eds])
-        e3 = self.eds.add(ElDef.line(f"e_{eds[0].id}_2", s, pad_length, 0))
+        e3 = self.eds.add(ElDef.build(Line,f"e_{eds[0].id}_2", s, pad_length, 0))
 
         self.mps.add(ManParm(
             f"{name}_pad_length", 

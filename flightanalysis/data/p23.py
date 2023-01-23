@@ -6,6 +6,10 @@ from flightanalysis.criteria import *
 
 
 
+
+
+
+
 def tHat():
     md = ManDef(
         ManInfo(

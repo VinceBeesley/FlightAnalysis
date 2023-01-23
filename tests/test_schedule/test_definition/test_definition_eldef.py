@@ -1,7 +1,7 @@
 from pytest import fixture
 import numpy as np
 from flightanalysis.schedule.definition import ElDef, ElDefs, _a
-from flightanalysis.schedule.elements import Loop
+from flightanalysis.schedule.elements import Loop, Line
 from flightanalysis.schedule.definition import ManParm, ManParms
 
 @fixture
@@ -11,13 +11,15 @@ def mps():
 
 @fixture
 def loopdef(mps):
-    return ElDef.loop(
+    return ElDef.build(
+        Loop,
         "test", 
-        False,  
         mps.speed, 
         mps.loop_radius,  
         np.pi/2,
-        0)
+        roll=0,
+        ke=False
+)
     
 
 def test_call(loopdef, mps):
@@ -29,9 +31,9 @@ def test_call(loopdef, mps):
 @fixture
 def eds(mps):
     return ElDefs([
-        ElDef.line("e1", 2*mps.speed, mps.line_length - mps.loop_radius, 0),
-        ElDef.line("e2", mps.speed, 30, 0),
-        ElDef.loop("e3", False, mps.speed, 40, np.pi/2, 0)
+        ElDef.build(Line,"e1", 2*mps.speed, mps.line_length - mps.loop_radius, 0),
+        ElDef.build(Loop,"e2", mps.speed, 30, 0),
+        ElDef.build(Loop, "e3", False, mps.speed, 40, np.pi/2, 0)
     ])
 
 

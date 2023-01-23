@@ -10,7 +10,7 @@ from typing import Union
 class Autorotation(El):
     """much like a line, but rolls happens around the velocity vector,
     rather than the body x axis"""
-    parameters = El.parameters + "length,roll,rate".split(",")
+    parameters = El.parameters + "length,roll,rate,angle".split(",")
     def __init__(self, speed: float, length: float, roll: float, uid: str):
         super().__init__(uid, speed)
         self.length = length
