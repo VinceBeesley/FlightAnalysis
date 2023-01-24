@@ -1,4 +1,5 @@
 import pytest
+from flightanalysis.data import get_schedule_definition
 from pytest import fixture
 from flightanalysis.fc_json import parse_fcj
 from flightanalysis.flightline import Box
@@ -13,9 +14,13 @@ from flightdata import Flight, Fields
 
 @fixture(scope="session")
 def fcjson():
-    with open("tests/test_inputs/fcjson/manual_F3A_P23_22_08_23_00000055_1.json", 'r') as f:
+    with open("tests/test_inputs/manual_F3A_P23_22_08_24_00000057_scores.json", 'r') as f:
         return load(f)
 
+
+def test_get_schedule_definition():
+    p23 = get_schedule_definition("P23")
+    assert isinstance(p23, SchedDef)
     
 def test_parse_fc_json(fcjson):
     st, sd = parse_fcj(fcjson)
@@ -27,7 +32,7 @@ def test_parse_fc_json(fcjson):
         assert manoeuvre.info.short_name in st.data.manoeuvre.unique()
 
     data = pd.DataFrame.from_dict(fcjson['data'])
-    #assert len(data) == len(st.data)
+   # assert len(data) == len(st.data)
 
 
 def test_create_json_mans(fcjson):

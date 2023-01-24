@@ -9,6 +9,8 @@ def parse_fcj(data: dict):
     box = Box.from_fcjson_parmameters(data["parameters"])
     state = State.from_flight(flight, box)
     
+
+    
     return state.splitter_labels(data["mans"]), get_schedule_definition(data["parameters"]["schedule"][1])
 
 #
