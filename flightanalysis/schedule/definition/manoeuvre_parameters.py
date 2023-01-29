@@ -171,11 +171,10 @@ class ManParms(Collection):
                 
 
 class MPValue:
+    """not used except in ManParm default finder experiment"""
     def __init__(self, value, minval, maxval, slope):
         self.value = value
         self.minval = minval
         self.maxval = maxval
         self.slope = slope
-
-
 
