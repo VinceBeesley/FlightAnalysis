@@ -39,8 +39,8 @@ class ManParm(Opp):
         self.criteria = criteria
         self.default = default
         
-        self.collectors = Collectors() if collectors is None else collectors
-        assert isinstance(self.collectors,Collectors)
+        self.collectors = collectors if isinstance(collectors, Collectors) else Collectors()
+ 
         self.n = len(self.criteria.desired[0]) if isinstance(self.criteria, Combination) else None
 
     def to_dict(self):
@@ -169,12 +169,3 @@ class ManParms(Collection):
                 mp.default = default
             
                 
-
-class MPValue:
-    """not used except in ManParm default finder experiment"""
-    def __init__(self, value, minval, maxval, slope):
-        self.value = value
-        self.minval = minval
-        self.maxval = maxval
-        self.slope = slope
-

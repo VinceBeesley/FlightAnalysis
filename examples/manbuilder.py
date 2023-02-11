@@ -1,23 +1,24 @@
 from flightanalysis.schedule import *
 import numpy as np
+from flightanalysis.schedule.definition.manoeuvre_builder import f3amb
 
 
-
-th = F3AMB.create(
+th = f3amb.create(
     ManInfo(
         "Top Hat", "tHat", k=4, position=Position.CENTRE, 
         start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),
         end=BoxLocation(Height.BTM)
     ),
     [
-        F3AMB.el(Loop, np.pi/2),
-        F3AMB.roll("2x4"),
-        F3AMB.el(Loop, np.pi/2),
-        F3AMB.roll("1/2",l=100),
-        F3AMB.el(-np.pi/2),
-        F3AMB.roll("2x4"),
-        F3AMB.el(-np.pi/2)
+        f3amb.loop(np.pi/2),
+        f3amb.roll(0.5),#"2x4"),
+        f3amb.loop(np.pi/2),
+        f3amb.roll(0.5),#"1/2",l=100),
+        f3amb.loop(-np.pi/2),
+        f3amb.roll(0.5),#"2x4"),
+        f3amb.loop(-np.pi/2)
     ]
 )
 
 
+pass

@@ -78,7 +78,8 @@ class ElDef:
     
     @staticmethod
     def roll(name: str, s, rate, angle):
-        ed = ElDef.line(
+        ed = ElDef.build(
+            Line,
             name, 
             s,
             abs(angle) * s / rate,  

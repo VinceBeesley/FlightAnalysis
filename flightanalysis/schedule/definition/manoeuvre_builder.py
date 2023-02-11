@@ -1,18 +1,20 @@
-"""Playing with ways to simpliy all the helper functions in the ManDef class"""
-
 from . import ManDef, ManParm, ManParms, ElDef, ElDefs
 from flightanalysis.schedule.elements import *
 from typing import Dict, List
 from numbers import Number
-
+from functools import partial
+from .element_builders import line, loop, roll
+from copy import deepcopy
 
 class ManoeuvreBuilder():
-    default_mps = ManParms()
-
-    def __init__(self, mps: ManParms, mpmaps:Dict[El, Dict[str: str]]):
+    def __init__(self, mps: ManParms, mpmaps:Dict[str, dict]):
         self.mps = mps
         self.mpmaps = mpmaps
 
+    def __getattr__(self, name):
+        if name in self.mpmaps:
+            return partial(self.el, name)
+    
     def base_parms(self, *kwargs):
         mps = self.defaultmps.deep_copy()
         for k,v in kwargs.items():
@@ -22,17 +24,41 @@ class ManoeuvreBuilder():
                 mps.data[k] = v
         return mps
 
-    def el(self, Kind, *args, **kwargs):
-        pass
-
-    def create(self, maninfo, els):
-        md = ManDef(maninfo, self.default_mps.deepcopy(), els)
+    def el(self, kind, *args, **kwargs):
+        #setup kwargs to pull defaults from mpmaps
+        #returns a function that appends the created elements to a ManDef
         
+        all_kwargs = {}
+        for k, a, in self.mpmaps[kind]["kwargs"].items():
+            all_kwargs[k] = a
+        for k,a in kwargs.items():
+            assert not k in self.mpmaps[kind]["args"]
+            all_kwargs[k]=a
+        for k, a in zip(self.mpmaps[kind]["args"], args):
+            all_kwargs[k] = a
+        
+        def append_el(md: ManDef, func, **kwargs):
+            
+            all_args = func.__init__.__code__.co_varnames if isinstance(func, type) else func.__code__.co_varnames
+            assert set(all_args) == set(kwargs.keys())
+
+            full_kwargs = {md.mps[a] if isinstance(a, str) else a for k, a in kwargs.items()}
+                                      
+            md.eds.add(self.mpmaps[kind]["func"](md.eds.get_new_name(),**full_kwargs))
+                        
+        return partial(append_el, func=self.mpmaps[kind]["func"], **kwargs)
+
+
+    def create(self, maninfo, elmakers):
+        md = ManDef(maninfo, deepcopy(self.mps))
+        for em in elmakers:
+            em(md)
+        return md
+    
 
 
 
-
-F3AMB = ManoeuvreBuilder(
+f3amb = ManoeuvreBuilder(
     ManParms([
         ManParm("speed", inter_f3a_speed, 30.0),
         ManParm("loop_radius", inter_f3a_radius, 55.0),
@@ -44,23 +70,42 @@ F3AMB = ManoeuvreBuilder(
         ManParm("stallturn_rate", inter_f3a_roll_rate, 2*np.pi),
         ManParm("spin_rate", inter_f3a_roll_rate, 1.7*np.pi),
     ]),
-    mpmaps = {
-        Line: {
-            "roll": 0.0,
-            "speed": "speed",
-            "length": "line_length"
-        },
-        Loop: {
-            "angle": None,
-            "roll": 0.0,
-            "ke": False,
-            "speed": "speed",
-            "radius": "loop_radius"
-        },
-        StallTurn: {
-            "speed": 0.0,
-            "yaw_rate": "stallturn_rate"   
-        },
+    mpmaps=dict(
+        line=dict(
+            func=line,
+            args=[],
+            kwargs=dict(
+                roll=0.0,
+                speed="speed",
+                length="line_length"
+            )
+        ),
+        loop=dict(
+            func=loop,
+            args=["angle"],
+            kwargs=dict(
+                roll=0.0,
+                ke=False,
+                speed="speed",
+                radius="loop_radius"   
+            )
+        ),
+        roll=dict(
+            func=roll,
+            args=["angle"],
+            kwargs=dict(
+                speed="speed",
+                rate="partial_roll_rate"
+            )    
+        ),
+        stallturn=dict(
+            func=StallTurn,
+            args=[],
+            kwargs=dict(
+                speed=0.0,
+                yaw_rate="stallturn_rate"   
+            )
+        ),
 
-    }
+    )
 )
