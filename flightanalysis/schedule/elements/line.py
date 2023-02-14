@@ -1,6 +1,6 @@
 
 import numpy as np
-from geometry import Transformation, Point, PX, PY, PZ, Coord
+from geometry import Transformation, Point, P0, PX, PY, PZ, Coord
 from flightanalysis.base.table import Time
 from flightanalysis.state import State
 from enum import Enum
@@ -66,7 +66,7 @@ class Line(El):
         """
         
         return self._add_rolls(
-            istate.copy(vel=istate.vel.scale(self.speed)).fill(
+            istate.copy(vel=istate.vel.scale(self.speed), rvel=P0()).fill(
                 El.create_time(self.length / self.speed, flown)
             ), 
             self.roll

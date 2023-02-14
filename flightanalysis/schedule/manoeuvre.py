@@ -31,12 +31,14 @@ class Manoeuvre():
     def all_elements(self):
         return Elements([self.entry_line, *self.elements.to_list()]) if not self.entry_line is None else self.elements
 
-    def create_template(self, transform: Transformation) -> State:
-        itrans = transform
+    def create_template(self, initial: Union[Transformation, State]) -> State:
+        
+        istate = State.from_transform(initial, vel=PX()) if isinstance(initial, Transformation) else initial
+        
         templates = []
         for i, element in enumerate(self.all_elements):
-            templates.append(element.create_template(itrans))
-            itrans = templates[-1][-1].transform
+            templates.append(element.create_template(istate))
+            istate = templates[-1][-1]
         
         return State.stack(templates).label(manoeuvre=self.uid)
 

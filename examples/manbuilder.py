@@ -11,14 +11,22 @@ th = f3amb.create(
     ),
     [
         f3amb.loop(np.pi/2),
-        f3amb.roll(0.5),#"2x4"),
+        f3amb.roll(np.pi),#"2x4"),
         f3amb.loop(np.pi/2),
-        f3amb.roll(0.5),#"1/2",l=100),
+        f3amb.roll(np.pi),#"1/2",l=100),
         f3amb.loop(-np.pi/2),
-        f3amb.roll(0.5),#"2x4"),
+        f3amb.roll(np.pi),#"2x4"),
         f3amb.loop(-np.pi/2)
     ]
 )
 
 
+it = th.info.initial_transform(170, 1)
+man = th.create(it)
+
+tp = man.create_template(it)
+
+from flightplotting import plotsec
+
+plotsec(tp).show()
 pass

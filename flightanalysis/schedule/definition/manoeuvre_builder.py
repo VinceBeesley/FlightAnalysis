@@ -16,7 +16,7 @@ class ManoeuvreBuilder():
             return partial(self.el, name)
     
     def base_parms(self, *kwargs):
-        mps = self.defaultmps.deep_copy()
+        mps = self.mps.copy()  # this does not work
         for k,v in kwargs.items():
             if isinstance(v, Number):
                 mps.data[k].default = v
@@ -40,22 +40,21 @@ class ManoeuvreBuilder():
         def append_el(md: ManDef, func, **kwargs):
             
             all_args = func.__init__.__code__.co_varnames if isinstance(func, type) else func.__code__.co_varnames
-            assert set(all_args) == set(kwargs.keys())
+            assert set(all_args) - {"name"} == set(kwargs.keys())
 
-            full_kwargs = {md.mps[a] if isinstance(a, str) else a for k, a in kwargs.items()}
+            full_kwargs = {k:md.mps[a] if isinstance(a, str) else a for k, a in kwargs.items()}
                                       
             md.eds.add(self.mpmaps[kind]["func"](md.eds.get_new_name(),**full_kwargs))
                         
-        return partial(append_el, func=self.mpmaps[kind]["func"], **kwargs)
+        return partial(append_el, func=self.mpmaps[kind]["func"], **all_kwargs)
 
 
     def create(self, maninfo, elmakers):
-        md = ManDef(maninfo, deepcopy(self.mps))
+        md = ManDef(maninfo, self.mps.copy())
         for em in elmakers:
             em(md)
         return md
     
-
 
 
 f3amb = ManoeuvreBuilder(

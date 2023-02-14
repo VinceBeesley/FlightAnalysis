@@ -6,7 +6,7 @@ from .operation import Opp, MathOpp, FunOpp, ItemOpp
 from .manoeuvre_info import ManInfo, BoxLocation, Orientation, Direction, Height, Position
 from .collectors import Collector, Collectors
 
-from .manoeuvre_parameters import ManParm, ManParms, MPValue
+from .manoeuvre_parameters import ManParm, ManParms
 
 def _a(arg):
     if isinstance(arg, ManParm):

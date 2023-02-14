@@ -30,6 +30,10 @@ class Collector(Opp):
             pname=self.pname
         )
 
+    def copy(self):
+        return Collector(self.elname, self.pname)
+
+
 class Collectors(Collection):
     VType=Collector
     uid="name"
@@ -54,3 +58,4 @@ class Collectors(Collection):
         for d in data:
             coll.add(Collector.parse(d, coll))
         return coll
+    

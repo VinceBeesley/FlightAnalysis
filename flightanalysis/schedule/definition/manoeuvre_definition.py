@@ -26,7 +26,7 @@ from flightanalysis.criteria import Comparison, inter_f3a_length, Combination
 from geometry import Transformation, Euler, Point, P0
 from functools import partial
 from scipy.optimize import minimize
-from . import ManParm, ManParms, ElDef, ElDefs, _a, MPValue, Position, Direction
+from . import ManParm, ManParms, ElDef, ElDefs, _a, Position, Direction
 from copy import deepcopy
 
 
@@ -59,6 +59,7 @@ class ManDef:
         mps = ManParms.from_dict(data["mps"])
         eds = ElDefs.from_dict(data["eds"], mps)
         return ManDef(info, mps, eds)
+
 
     def create_entry_line(self, itrans: Transformation=None) -> ElDef:
         """Create a line definition connecting Transformation to the start of this manoeuvre.
@@ -350,34 +351,3 @@ class ManDef:
         
         return [e1] + e2 + [e3]
 
-    def default_finder(
-        self, 
-        wind=1, 
-        depth=170, 
-        variables: Dict[str,MPValue]=None
-    ):
-        
-        nmd = deepcopy(self)
-
-        if not variables:
-            variables = dict(
-                loop_radius=MPValue(55, 30, 70, 1),
-                line_length=MPValue(130, 30, 200, 1)
-            )
-
-        itrans = nmd.info.initial_transform(depth, wind)
-        end_h = nmd.info.end.h.calculate(depth)
-
-        def cost_fn(vars):
-            for k, v in zip(variables.keys(), vars):
-                nmd.mps.parms[k].default = v
-            template = nmd.create().create_template(itrans)
-            h_cost = 10 * abs(template[-1].pos.z[0] - end_h)**2
-            v_cost = [v.slope * abs((v.value - nv)) for v, nv in zip(variables.values(), vars)]
-
-            costs = v_cost + [h_cost]
-            print(costs)
-            return sum(costs)
-
-        res = minimize(cost_fn, [v.value for v in variables.values()], tol=1.0)
-        return nmd

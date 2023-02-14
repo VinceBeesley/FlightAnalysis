@@ -105,6 +105,8 @@ class ManParm(Opp):
     def __getitem__(self, i):
         return ItemOpp(self, i)
 
+    def copy(self):
+        return ManParm(self.name, self.criteria, self.default, self.collectors.copy())
 
 
 class ManParms(Collection):

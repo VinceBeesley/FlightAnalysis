@@ -55,4 +55,5 @@ class Collection:
         else:
             return f"{prefix}{i}"
 
-    
+    def copy(self):
+        return self.__class__([v.copy() for v in self])
