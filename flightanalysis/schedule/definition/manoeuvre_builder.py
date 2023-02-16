@@ -43,8 +43,9 @@ class ManoeuvreBuilder():
             assert set(all_args) - {"name"} == set(kwargs.keys())
 
             full_kwargs = {k:md.mps[a] if isinstance(a, str) else a for k, a in kwargs.items()}
-                                      
-            md.eds.add(self.mpmaps[kind]["func"](md.eds.get_new_name(),**full_kwargs))
+            eds, mps = self.mpmaps[kind]["func"](md.eds.get_new_name(),**full_kwargs)            
+            md.eds.add(eds)
+            md.mps.add(mps)
                         
         return partial(append_el, func=self.mpmaps[kind]["func"], **all_kwargs)
 

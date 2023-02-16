@@ -76,19 +76,6 @@ class ElDef:
     def rename(self, new_name):
         return ElDef(new_name, self.Kind, self.pfuncs)
     
-    @staticmethod
-    def roll(name: str, s, rate, angle):
-        ed = ElDef.build(
-            Line,
-            name, 
-            s,
-            abs(angle) * s / rate,  
-            angle
-        )
-        if isinstance(rate, ManParm):
-            rate.append(ed.get_collector("rate"))
-        return ed
-
     @property
     def id(self):
         return int(self.name.split("_")[1])
@@ -126,28 +113,6 @@ class ElDefs(Collection):
         else:
             return [self.add(e) for e in ed]
 
-    @staticmethod
-    def create_roll_combo(name: str, rolls: ManParm, s, rates, pause):
-        eds = ElDefs()
-        
-        for i in range(rolls.n):
-
-            new_roll = eds.add(ElDef.roll(
-                f"{name}_{i+1}",
-                s,
-                rates[i],
-                rolls[i]
-            ))
-
-            rolls.append(new_roll.get_collector("roll"))
-            
-            if i < rolls.n - 1 and np.sign(rolls.value[i]) == np.sign(rolls.value[i+1]):
-                eds.add(ElDef.line(
-                    f"{name}_{i+1}_pause",
-                    s, pause, 0
-                ))
-            
-        return eds
 
     def builder_list(self, name:str) ->List[Callable]:
         """A list of the functions that return the requested parameter when constructing the elements from the mps"""
@@ -165,9 +130,3 @@ class ElDefs(Collection):
         """A function that returns the sum of the requested parameter from an elements collection"""
         return lambda els : sum(c(els) for c in self.collector_list(name))
     
-    @staticmethod
-    def create_snap(name: str, s, rate, roll, break_angle ):
-        eds = ElDefs()
-
-
-        pass

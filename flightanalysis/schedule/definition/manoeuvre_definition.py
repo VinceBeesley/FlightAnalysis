@@ -123,46 +123,6 @@ class ManDef:
             uid=self.info.name
         )
 
-    def add_loop(
-        self,
-        angle: Union[float, ManParm],
-        roll: Union[float, ManParm]=0.0,
-        ke: bool=False,
-        s: Union[float, ManParm]=None,
-        r: Union[float, ManParm]=None
-    ) -> ElDef:
-        
-        self.eds.add(ElDef.build(Loop,
-            self.eds.get_new_name(), 
-            self.mps.speed if s is None else s, 
-            self.mps.loop_radius if r is None else r, 
-            angle, 
-            roll,
-            ke
-        ))
-
-    def add_line(
-        self,
-        roll: Union[float, ManParm]=0.0,
-        s: Union[ManParm, float]=None,
-        l: Union[ManParm, float]=None
-    ) -> ElDef:
-        
-        self.eds.add(ElDef.build(Line,
-            self.eds.get_new_name(), 
-            self.mps.speed if s is None else s, 
-            self.mps.line_length if l is None else l, 
-            roll
-        ))
-
-    def add_stallturn(self, s=None, rate=None) -> ElDef:
-        self.eds.add(ElDef.stallturn(
-            self.eds.get_new_name(),
-            self.mps.speed if s is None else s,
-            self.mps.stallturn_rate if rate is None else rate
-        ))
-
-
     def add_snap(
         self,
         roll: Union[float, ManParm],
