@@ -3,8 +3,8 @@ from flightanalysis.schedule.elements import *
 from typing import Dict, List
 from numbers import Number
 from functools import partial
-from .element_builders import line, loop, roll
-from copy import deepcopy
+from .element_builders import line, loop, f3a_centred_roll
+
 
 class ManoeuvreBuilder():
     def __init__(self, mps: ManParms, mpmaps:Dict[str, dict]):
@@ -39,10 +39,10 @@ class ManoeuvreBuilder():
         
         def append_el(md: ManDef, func, **kwargs):
             
-            all_args = func.__init__.__code__.co_varnames if isinstance(func, type) else func.__code__.co_varnames
-            assert set(all_args) - {"name"} == set(kwargs.keys())
+            #all_args = func.__init__.__code__.co_varnames if isinstance(func, type) else func.__code__.co_varnames
+            #assert set(all_args) - {"name"} == set(kwargs.keys())
 
-            full_kwargs = {k:md.mps[a] if isinstance(a, str) else a for k, a in kwargs.items()}
+            full_kwargs = {k:md.mps[a] if (isinstance(a, str) and a in md.mps.data) else a for k, a in kwargs.items()}
             eds, mps = self.mpmaps[kind]["func"](md.eds.get_new_name(),**full_kwargs)            
             md.eds.add(eds)
             md.mps.add(mps)
@@ -66,6 +66,7 @@ f3amb = ManoeuvreBuilder(
         ManParm("point_length", inter_f3a_length, 10.0),
         ManParm("continuous_roll_rate", inter_f3a_roll_rate, np.pi/2),
         ManParm("partial_roll_rate", inter_f3a_roll_rate, np.pi/2),
+        ManParm("full_roll_rate", inter_f3a_roll_rate, np.pi/2),
         ManParm("snap_rate", inter_f3a_roll_rate, 4*np.pi),
         ManParm("stallturn_rate", inter_f3a_roll_rate, 2*np.pi),
         ManParm("spin_rate", inter_f3a_roll_rate, 1.7*np.pi),
@@ -91,11 +92,15 @@ f3amb = ManoeuvreBuilder(
             )
         ),
         roll=dict(
-            func=roll,
-            args=["angle"],
+            func=f3a_centred_roll,
+            args=["rollstring"],
             kwargs=dict(
+                reversible=True,
                 speed="speed",
-                rate="partial_roll_rate"
+                line_length="line_length",
+                partial_rate="partial_roll_rate",
+                full_rate="full_roll_rate",
+                pause_length="point_length",
             )    
         ),
         stallturn=dict(

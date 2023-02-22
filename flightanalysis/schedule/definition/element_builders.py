@@ -25,7 +25,7 @@ def roll_combo_f3a(name, speed, rolls, partial_rate, full_rate, pause_length) ->
     eds = ElDefs()
     
     last_direction = np.sign(rolls.value[0])
-    for i, r in enumerate(rolls):
+    for i, r in enumerate(rolls.value):
         new_roll = eds.add(roll(
             f"{name}_{i}",
             speed,
@@ -33,13 +33,12 @@ def roll_combo_f3a(name, speed, rolls, partial_rate, full_rate, pause_length) ->
             rolls.value[i]
         ))
 
-        
         if i < rolls.n - 1 and np.sign(rolls.value[i]) == np.sign(rolls.value[i+1]):
             new_pause = eds.add(line(
                 f"{name}_{i+1}_pause",
                 speed, pause_length, 0
             ))
-        
+                
     return eds, ManParms()
 
 
@@ -47,7 +46,24 @@ def pad(speed, line_length, eds: ElDefs):
     
     pad_length = 0.5 * (line_length - eds.collector_sum("length"))
     
-    e1 = line(f"e_{eds[0].id}_0", speed, pad_length, 0)
-    e3 = line(f"e_{eds[0].id}_2", speed, pad_length, 0)
-    return ElDefs([e1] + [ed for ed in eds] + e3), ManParms([pad_length])
+    e1, mps = line(f"e_{eds[0].id}_0", speed, pad_length, 0)
+    e3, mps = line(f"e_{eds[0].id}_2", speed, pad_length, 0)
+    return ElDefs([e1] + [ed for ed in eds] + [e3]), ManParms()
 
+
+def f3a_centred_roll(name, rollstring, speed, line_length, partial_rate, full_rate, pause_length, reversible=True):
+    rolls = ManParm(f"{name}_rolls", Combination.rollcombo(rollstring, True), 0)
+    eds, mps = pad(
+        speed, 
+        line_length, 
+        roll_combo_f3a(
+            name, 
+            speed, 
+            rolls,
+            partial_rate,
+            full_rate,
+            pause_length
+        )[0])
+
+    return eds, mps.add(rolls)
+    

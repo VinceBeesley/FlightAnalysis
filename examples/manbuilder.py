@@ -11,11 +11,11 @@ th = f3amb.create(
     ),
     [
         f3amb.loop(np.pi/2),
-        f3amb.roll(np.pi),#"2x4"),
+        f3amb.roll("2x4"),#),
         f3amb.loop(np.pi/2),
-        f3amb.roll(np.pi),#"1/2",l=100),
+        f3amb.roll("1/2"),#,l=100),
         f3amb.loop(-np.pi/2),
-        f3amb.roll(np.pi),#"2x4"),
+        f3amb.roll("2x4"),#),
         f3amb.loop(-np.pi/2)
     ]
 )

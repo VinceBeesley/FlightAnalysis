@@ -35,14 +35,14 @@ class ManParm(Opp):
                 collection. If the manoeuvre was flown correctly these should all be the same. The resulting list 
                 can be passed through the criteria (Comparison callable) to calculate a downgrade.
         """
-        self.name=name
         self.criteria = criteria
         self.default = default
         
         self.collectors = collectors if isinstance(collectors, Collectors) else Collectors()
  
         self.n = len(self.criteria.desired[0]) if isinstance(self.criteria, Combination) else None
-
+        super().__init__(name)
+        
     def to_dict(self):
         return dict(
             name = self.name,
