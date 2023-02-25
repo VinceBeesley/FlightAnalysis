@@ -1,6 +1,6 @@
 import numpy as np
-from geometry import Transformation, Point, Quaternion, PX, PY, PZ
-from flightanalysis.state import State
+from geometry import Transformation, Point, Quaternion, PX, PY, PZ, P0
+from flightanalysis import State
 from flightanalysis.base.table import Time
 from . import El, Loop, DownGrades, DownGrade, Elements
 from flightanalysis.criteria import *
@@ -25,9 +25,12 @@ class Autorotation(El):
         return self.angle * self.speed / self.length
 
     def create_template(self, istate: State, flown: State=None):
-        return istate.copy(vel=istate.vel.scale(self.speed)).fill(
+        return istate.copy(
+            vel=istate.vel.scale(self.speed),
+            rvel=P0()
+        ).fill(
             El.create_time(self.length / self.speed, flown)
-        ).superimose_rotation(
+        ).superimpose_rotation(
             istate.vel.unit(),
             self.angle
         ).label(element=self.uid)

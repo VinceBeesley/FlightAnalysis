@@ -1,6 +1,7 @@
 from .element_definition import ElDef, ElDefs, ManParm, ManParms
 from flightanalysis.schedule.elements import *
 from flightanalysis.base.collection import Collection
+from flightanalysis.schedule.definition.collectors import Collectors
 
 
 def line(name, speed, length, roll):
@@ -44,26 +45,59 @@ def roll_combo_f3a(name, speed, rolls, partial_rate, full_rate, pause_length) ->
 
 def pad(speed, line_length, eds: ElDefs):
     
-    pad_length = 0.5 * (line_length - eds.collector_sum("length"))
+    pad_length = 0.5 * (line_length - eds.builder_sum("length"))
     
-    e1, mps = line(f"e_{eds[0].id}_0", speed, pad_length, 0)
-    e3, mps = line(f"e_{eds[0].id}_2", speed, pad_length, 0)
-    return ElDefs([e1] + [ed for ed in eds] + [e3]), ManParms()
+    e1, mps = line(f"e_{eds[0].id}_pad1", speed, pad_length, 0)
+    e3, mps = line(f"e_{eds[0].id}_pad2", speed, pad_length, 0)
+    
+    mp = ManParm(
+        f"e_{eds[0].id}_pad_length", 
+        criteria, 
+        None, 
+        Collectors([e1.get_collector("length"), e3.get_collector("length")])
+    )
+    
+    return ElDefs([e1] + [ed for ed in eds] + [e3]), ManParms([mp])
 
+def roll_f3a(name, rolls, speed, partial_rate, full_rate, pause_length, line_length=100, reversible=True, padded=True):
+    if isinstance(rolls, str):
+        _rolls = ManParm(f"{name}_rolls", Combination.rollcombo(rolls, reversible), 0)
+    elif isinstance(rolls, list):
+        _rolls = ManParm(f"{name}_rolls", Combination.rolllist(rolls, reversible), 0) 
+    else:
+        _rolls=rolls
+    
+    if isinstance(_rolls, ManParm):
+        eds, mps = roll_combo_f3a(name, speed, _rolls, partial_rate, full_rate, pause_length)
+    else:
+        eds = ElDefs([roll(f"{name}_roll", speed, partial_rate, _rolls)[0]])
+        
+    if padded:
+        eds, mps = pad(speed, line_length, eds)
 
-def f3a_centred_roll(name, rollstring, speed, line_length, partial_rate, full_rate, pause_length, reversible=True):
-    rolls = ManParm(f"{name}_rolls", Combination.rollcombo(rollstring, True), 0)
-    eds, mps = pad(
-        speed, 
-        line_length, 
-        roll_combo_f3a(
-            name, 
-            speed, 
-            rolls,
-            partial_rate,
-            full_rate,
-            pause_length
-        )[0])
+    return eds, mps.add(_rolls)
 
-    return eds, mps.add(rolls)
+    
+def snap(name, rolls, break_angle, rate, speed, break_rate, line_length=100, padded=True):
+    pitch_break = ElDef.build(PitchBreak, f"{name}_break", speed=speed, 
+                      length=speed * break_angle/break_rate, break_angle=break_angle)
+    autorotation = ElDef.build(Autorotation, f"{name}_autorotation", speed=speed,
+                        length=speed * rolls*2*np.pi/rate, roll=rolls)
+    recovery = ElDef.build(Recovery, f"{name}_recovery", speed=speed,
+                    length=speed * break_angle/break_rate)
+    eds = ElDefs([pitch_break, autorotation, recovery])
+    if padded:
+        return pad(speed, line_length, eds)
+    else:
+        return eds, ManParms()
+        
+
+def spin(name, turns, break_angle, rate, speed, break_rate, reversible):
+    nose_drop = ElDef.build(NoseDrop, f"{name}_break", speed=speed, 
+                      radius=speed * break_angle/break_rate, break_angle=break_angle)
+    autorotation = ElDef.build(Autorotation, f"{name}_autorotation", speed=speed,
+                        length=speed * turns*2*np.pi/rate, roll=turns)
+    recovery = ElDef.build(Recovery, f"{name}_recovery", speed=speed,
+                    length=speed * break_angle/break_rate)
+    return ElDefs([nose_drop, autorotation, recovery]), ManParms()
     

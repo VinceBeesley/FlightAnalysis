@@ -142,8 +142,9 @@ class El:
     @staticmethod
     def create_time(duration: float, flown: State=None):
         if flown is None:
+            n = int(np.ceil(duration * State._construct_freq))
             return Time.from_t(
-                np.linspace(0, duration, int(np.ceil(duration * State._construct_freq))))
+                np.linspace(0, duration, n if n > 1 else n+1))
         else:
             return flown.time.reset_zero().scale(duration)
 

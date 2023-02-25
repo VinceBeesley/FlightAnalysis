@@ -23,6 +23,7 @@ from flightanalysis.schedule.manoeuvre import Manoeuvre
 from flightanalysis.schedule.definition.manoeuvre_info import ManInfo
 from flightanalysis.schedule.definition.collectors import Collectors
 from flightanalysis.criteria import Comparison, inter_f3a_length, Combination
+from flightanalysis import State
 from geometry import Transformation, Euler, Point, P0
 from functools import partial
 from scipy.optimize import minimize
@@ -80,10 +81,11 @@ class ManDef:
         wind = self.info.start.d.get_wind(heading) # is wind in +ve or negative x direction?
 
         #Create a template, at zero
-        template = self._create().create_template(Transformation(
-            Point(0,0,0),
-            Euler(self.info.start.o.roll_angle(), 0, 0)
-        ))
+        template = self._create().create_template(
+            State.from_transform(Transformation(
+                Point(0,0,0),
+                Euler(self.info.start.o.roll_angle(), 0, 0)
+        )))
           
         
         match self.info.position:

@@ -3,7 +3,8 @@ from flightanalysis.schedule.elements import *
 from typing import Dict, List
 from numbers import Number
 from functools import partial
-from .element_builders import line, loop, f3a_centred_roll
+from .element_builders import *
+from numbers import Number
 
 
 class ManoeuvreBuilder():
@@ -38,11 +39,13 @@ class ManoeuvreBuilder():
             all_kwargs[k] = a
         
         def append_el(md: ManDef, func, **kwargs):
+            full_kwargs = {}
+            for k, a in kwargs.items():
+                try:
+                    full_kwargs[k] = ManParm.parse(a, md.mps)
+                except Exception:
+                    full_kwargs[k] = a
             
-            #all_args = func.__init__.__code__.co_varnames if isinstance(func, type) else func.__code__.co_varnames
-            #assert set(all_args) - {"name"} == set(kwargs.keys())
-
-            full_kwargs = {k:md.mps[a] if (isinstance(a, str) and a in md.mps.data) else a for k, a in kwargs.items()}
             eds, mps = self.mpmaps[kind]["func"](md.eds.get_new_name(),**full_kwargs)            
             md.eds.add(eds)
             md.mps.add(mps)
@@ -50,8 +53,14 @@ class ManoeuvreBuilder():
         return partial(append_el, func=self.mpmaps[kind]["func"], **all_kwargs)
 
 
-    def create(self, maninfo, elmakers):
-        md = ManDef(maninfo, self.mps.copy())
+    def create(self, maninfo, elmakers, **kwargs):
+        mps = self.mps.copy()
+        for k, v in kwargs.items():
+            if isinstance(v, ManParm):
+                mps.add(v)
+            elif k in mps.data:
+                mps[k].default=v
+        md = ManDef(maninfo, mps)
         for em in elmakers:
             em(md)
         return md
@@ -92,9 +101,10 @@ f3amb = ManoeuvreBuilder(
             )
         ),
         roll=dict(
-            func=f3a_centred_roll,
-            args=["rollstring"],
+            func=roll_f3a,
+            args=["rolls"],
             kwargs=dict(
+                padded=True,
                 reversible=True,
                 speed="speed",
                 line_length="line_length",
@@ -111,6 +121,29 @@ f3amb = ManoeuvreBuilder(
                 yaw_rate="stallturn_rate"   
             )
         ),
+        snap=dict(
+            func=snap,
+            args=["rolls"],
+            kwargs=dict(
+                speed="speed",
+                break_angle=np.radians(10),
+                rate="snap_rate",
+                break_rate=3*np.pi,
+                line_length="line_length",
+                padded=True
+            )
+        ),
+        spin=dict(
+            func=spin,
+            args=["turns"],
+            kwargs=dict(
+                speed=10,
+                break_angle=np.radians(30),
+                rate="spin_rate",
+                break_rate=6,
+                reversible=True
+            )
+        )
 
     )
 )
