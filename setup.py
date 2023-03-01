@@ -13,14 +13,4 @@ this program. If not, see <http://www.gnu.org/licenses/>.
 
 from setuptools import setup
 
-setup(
-    name='flightanalysis',
-    version='0.0.1',
-    description='module for analysing flight log data',
-    author='Thomas David',
-    author_email='thomasdavid0@gmail.com',
-    packages=['flightanalysis'],
-    include_package_data = True,
-    package_data = {'': ['data/*.json']},
-    install_requires=['numpy', 'pandas', 'flightdata', 'geometry', 'scipy', 'fastdtw'],
-)
+setup()
