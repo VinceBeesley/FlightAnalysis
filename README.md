@@ -1,6 +1,6 @@
 # FlightAnalysis
 
-This package contains tools for analysing flight log data. It is based around the State and Section objects, which handle state information for an instant and a section of time. It also contains tools for constructing template Section and State instances based on serialised aerobatic manoeuvre definitions. Temporal alignments can be performed to automatically label flight data based on these templates. New scaled templates can then be constructed based on measurements taken of the labelled elements. 
+This package contains tools for analysing flight log data. 
 
 The Main Idea
 1. Read the sequence defintion from the serialisation of it (currently schedule/p_21.py)
@@ -18,13 +18,8 @@ The Main Idea
 
 
 # External Dependencies:
-python (3.6+?)
-numpy
-pandas
 scipy
 fastdtw
-
-## This package also depends on other PyFlightCoach packages:
 ardupilot_log_reader
 flightdata
-geometry
+pfc-geometry
