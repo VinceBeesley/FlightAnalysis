@@ -64,9 +64,10 @@ class Line(El):
         Returns:
             State: [description]
         """
-        
+        v = PX(self.speed) if istate.vel == 0 else istate.vel.scale(self.speed)
+             
         return self._add_rolls(
-            istate.copy(vel=istate.vel.scale(self.speed), rvel=P0()).fill(
+            istate.copy(vel=v, rvel=P0()).fill(
                 El.create_time(self.length / self.speed, flown)
             ), 
             self.roll

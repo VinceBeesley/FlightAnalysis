@@ -114,7 +114,7 @@ f3amb = ManoeuvreBuilder(
             )    
         ),
         stallturn=dict(
-            func=StallTurn,
+            func=stallturn,
             args=[],
             kwargs=dict(
                 speed=0.0,
