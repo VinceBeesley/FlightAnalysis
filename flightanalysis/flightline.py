@@ -28,8 +28,6 @@ class Box(object):
         self.pilot_position = pilot_position
         self.heading = heading
 
-
-
     def to_dict(self) -> dict:
         temp = self.__dict__.copy()
         temp["pilot_position"] = self.pilot_position.to_dict()
