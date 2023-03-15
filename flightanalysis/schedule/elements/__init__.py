@@ -1,4 +1,3 @@
-from telnetlib import DO
 import numpy as np
 import pandas as pd
 from flightanalysis.state import State

@@ -103,7 +103,8 @@ class Table:
 
         return cls(df)
 
-
+    def __repr__(self):
+        return f"{self.__class__.__name__} Table, duration = {self.duration}\n{self.data}"
 
 
     def copy(self, *args,**kwargs):
