@@ -65,12 +65,12 @@ class Opp:
 
 
     @staticmethod
-    def parse(inp, coll:Collection):
+    def parse(inp, coll:Collection, name=None):
         """Parse a an Operation from a string"""
         for test in [
-            lambda inp, mps : FunOpp.parse(inp, coll),
-            lambda inp, mps : MathOpp.parse(inp, coll),
-            lambda inp, mps : ItemOpp.parse(inp, coll),
+            lambda inp, mps : FunOpp.parse(inp, coll, name),
+            lambda inp, mps : MathOpp.parse(inp, coll, name),
+            lambda inp, mps : ItemOpp.parse(inp, coll, name),
             lambda inp, mps : float(inp),
             lambda inp, mps : literal_eval(inp)
         ]: 
@@ -85,12 +85,12 @@ class Opp:
 class MathOpp(Opp):
     """This class facilitates various ManParm opperations and their serialisation"""
     opps = ["+", "-", "*", "/"]
-    def __init__(self, a, b, opp:str):
+    def __init__(self, a, b, opp:str, name:str=None):
         assert opp in MathOpp.opps
         self.a = a
         self.b = b
         self.opp = opp
-        super().__init__()
+        super().__init__(name)
 
     def __call__(self, mps):
         if self.opp == "+":
@@ -106,7 +106,7 @@ class MathOpp(Opp):
         return f"({str(self.a)}{self.opp}{str(self.b)})"
 
     @staticmethod
-    def parse(inp:str, coll: Collection):
+    def parse(inp:str, coll: Collection, name:str=None):
         if inp[0] == "(" and inp[-1] == ")":
             bcount = 0
             for i, l in enumerate(inp):
@@ -117,7 +117,8 @@ class MathOpp(Opp):
                     return MathOpp(
                         coll.VType.parse(inp[1:i], coll),
                         coll.VType.parse(inp[i+1:-1], coll),
-                        l
+                        l,
+                        name
                     )
                     
         raise ValueError(f"cannot read an MathOpp from the outside of {inp}")
@@ -127,11 +128,11 @@ class MathOpp(Opp):
 class FunOpp(Opp):
     """This class facilitates various functions that operate on Values and their serialisation"""
     funs = ["abs"]
-    def __init__(self, a, opp: str):
+    def __init__(self, a, opp: str, name: str=None):
         assert opp in FunOpp.funs
         self.a = a
         self.opp = opp
-        super().__init__()
+        super().__init__(name)
 
     def __call__(self, mps):
         return {
@@ -142,24 +143,25 @@ class FunOpp(Opp):
         return f"{self.opp}({str(self.a)})"
 
     @staticmethod 
-    def parse(inp: str, coll: Collection):
+    def parse(inp: str, coll: Collection, name=None):
         for fun in FunOpp.funs:
             if len(fun) >= len(inp) -2:
                 continue
             if fun == inp[:len(fun)]:
                 return FunOpp(
                     coll.VType.parse(inp[len(fun)+1:-1], coll), 
-                    fun
+                    fun,
+                    name
                 )
         raise ValueError(f"cannot read a FunOpp from the outside of {inp}")
 
 
 class ItemOpp(Opp):
     """This class creates an Operation that returns a single item from a combination ManParm"""
-    def __init__(self, a, item:int): 
+    def __init__(self, a, item:int, name:str=None): 
         self.a = a
         self.item = item
-        super().__init__()
+        super().__init__(name)
 
     def __call__(self, mps):
         return self.a.valuefunc(self.item)(mps)
@@ -168,11 +170,15 @@ class ItemOpp(Opp):
         return f"{self.a.name}[{self.item}]"
 
     @staticmethod
-    def parse(inp: str, coll: Collection):
+    def parse(inp: str, coll: Collection, name:str=None):
         contents = inp.split("[")
         if not len(contents) == 2:
             raise ValueError
-        return ItemOpp(coll.VType.parse(contents[0], coll), int(contents[1][:-1]))
+        return ItemOpp(
+            coll.VType.parse(contents[0], coll), 
+            int(contents[1][:-1]), 
+            name
+        )
 
     def __abs__(self):
         return FunOpp(self, "abs")

@@ -58,8 +58,11 @@ class ManoeuvreBuilder():
         for k, v in kwargs.items():
             if isinstance(v, ManParm):
                 mps.add(v)
-            elif k in mps.data:
-                mps[k].default=v
+            elif isinstance(k, str):
+                if k in mps.data:
+                    mps[k].default=v
+                else:
+                    mps.add(ManParm.parse(v, mps, k))
         md = ManDef(maninfo, mps)
         for em in elmakers:
             em(md)

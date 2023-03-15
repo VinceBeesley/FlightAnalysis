@@ -178,15 +178,15 @@ p23_def = SchedDef([
             BoxLocation(Height.BTM)
         ),[
             f3amb.roll("1/2", padded=False),
-            f3amb.line(line_length="((line_length*0.7071067811865476)-((0.5*np.pi)*(speed/rate)))"),
+            f3amb.line(length="roll_gap"),
             f3amb.loop(-np.pi*3/4),
             f3amb.roll("2x4"),
             f3amb.loop(np.pi/2),
             f3amb.roll("2x4"),
             f3amb.loop(-np.pi*3/4),
-            f3amb.line(line_length="((line_length*0.7071067811865476)-((0.5*np.pi)*(speed/rate)))")),
+            f3amb.line(length="roll_gap"),
             f3amb.roll("1/2", padded=False)
-        ]),
+        ], roll_gap="((line_length*0.7071067811865476)-(1.5707963267948966*(speed/partial_roll_rate)))"),
     f3amb.create(ManInfo("Shark Fin", "sFin", 3,Position.END,
             BoxLocation(Height.BTM, Direction.DOWNWIND, Orientation.UPRIGHT),
             BoxLocation(Height.BTM)
