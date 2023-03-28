@@ -81,11 +81,18 @@ def roll_f3a(name, rolls, speed, partial_rate, full_rate, pause_length, line_len
 def snap(name, rolls, break_angle, rate, speed, break_rate, line_length=100, padded=True):
     pitch_break = ElDef.build(PitchBreak, f"{name}_break", speed=speed, 
                       length=speed * break_angle/break_rate, break_angle=break_angle)
+    
     autorotation = ElDef.build(Autorotation, f"{name}_autorotation", speed=speed,
                         length=speed * rolls*2*np.pi/rate, roll=rolls)
+    
+    if isinstance(rate, ManParm):
+        rate.append(autorotation.props["rate"])
+    
     recovery = ElDef.build(Recovery, f"{name}_recovery", speed=speed,
                     length=speed * break_angle/break_rate)
+    
     eds = ElDefs([pitch_break, autorotation, recovery])
+    
     if padded:
         return pad(speed, line_length, eds)
     else:
@@ -93,10 +100,13 @@ def snap(name, rolls, break_angle, rate, speed, break_rate, line_length=100, pad
         
 
 def spin(name, turns, break_angle, rate, speed, break_rate, reversible):
+    
     nose_drop = ElDef.build(NoseDrop, f"{name}_break", speed=speed, 
                       radius=speed * break_angle/break_rate, break_angle=break_angle)
+    
     autorotation = ElDef.build(Autorotation, f"{name}_autorotation", speed=speed,
                         length=speed * turns*2*np.pi/rate, roll=turns)
+            
     recovery = ElDef.build(Recovery, f"{name}_recovery", speed=speed,
                     length=speed * break_angle/break_rate)
     return ElDefs([nose_drop, autorotation, recovery]), ManParms()

@@ -25,6 +25,7 @@ class Autorotation(El):
         return self.angle * self.speed / self.length
 
     def create_template(self, istate: State, flown: State=None):
+        
         return istate.copy(
             vel=istate.vel.scale(self.speed),
             rvel=P0()

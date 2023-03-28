@@ -61,7 +61,7 @@ class ElDef:
     
     def build(Kind, name, *args, **kwargs):
         elargs = list(inspect.signature(Kind.__init__).parameters)[1:-1]
-        kwargs = kwargs.copy()
+        
         for arg, argname in zip(args, elargs[:len(args)] ):
             kwargs[argname] = arg
         
@@ -70,7 +70,7 @@ class ElDef:
         for key, value in kwargs.items():
             if isinstance(value, ManParm):
                 value.append(ed.get_collector(key))
-            
+        
         return ed
 
     def rename(self, new_name):

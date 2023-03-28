@@ -72,10 +72,12 @@ class Loop(El):
         
         if self.angle == 0:
             raise NotImplementedError()      
-                
+        
+        v = PX(self.speed) if istate.vel == 0 else istate.vel.scale(self.speed)
+        
         return self._add_rolls(
             istate.copy(
-                vel=istate.vel.scale(self.speed),
+                vel=v,
                 rvel=PZ(self.angle / duration) if self.ke else PY(self.angle / duration)
             ).fill(
                 El.create_time(duration, flown)
