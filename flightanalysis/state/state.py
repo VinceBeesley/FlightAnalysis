@@ -1,4 +1,4 @@
-from geometry import Point, Quaternion, Transformation, PX, PY, PZ, P0
+from geometry import Point, Quaternion, Transformation, PX, PY, PZ, P0, Q0
 
 import numpy as np
 import pandas as pd
@@ -35,8 +35,8 @@ def make_racc(sec) -> Point:
 
 class State(Table):
     constructs = Table.constructs + Constructs(dict(
-        pos  = SVar(Point,       ["x", "y", "z"]           , None       ), 
-        att  = SVar(Quaternion,  ["rw", "rx", "ry", "rz"]  , None       ),
+        pos  = SVar(Point,       ["x", "y", "z"]           , lambda self: P0(len(self))       ), 
+        att  = SVar(Quaternion,  ["rw", "rx", "ry", "rz"]  , lambda self : Q0(len(self))       ),
         vel  = SVar(Point,       ["u", "v", "w"]           , make_bvel  ),
         rvel = SVar(Point,       ["p", "q", "r"]           , make_rvel ),
         acc  = SVar(Point,       ["du", "dv", "dw"]        , make_bacc  ),
@@ -54,7 +54,8 @@ class State(Table):
      
 
     def from_transform(transform: Transformation, **kwargs): 
-        kwargs["time"] = Time.from_t(np.linspace(0, 30*len(transform), len(transform)))
+        if not "time" in kwargs:
+            kwargs["time"] = Time.from_t(np.linspace(0, 30*len(transform), len(transform)))
         return State.from_constructs(pos=transform.p, att=transform.q, **kwargs)
 
     def body_to_world(self, pin: Point) -> Point:

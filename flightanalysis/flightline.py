@@ -145,6 +145,10 @@ class FlightLine(object):
                                              self.transform_to.rotation.conjugate())
 
     @staticmethod
+    def home():
+        return FlightLine(Coord.from_nothing(), Coord.from_nothing())
+
+    @staticmethod
     def from_box(box: Box, world_home: GPS):
         """Constructor from a Box instance. This method assumes the input data is in the 
         Ardupilot default World frame (NED). It creates the contest frame from the box as described in __init__, 
