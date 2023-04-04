@@ -1,9 +1,12 @@
 from flightanalysis.state.state import State
 from flightanalysis.state.tools.builders import extrapolate, from_flight
+
+from flightanalysis.base.table import Time
 from pytest import approx, fixture, raises
 from geometry import Transformation, PX, PY, P0
 import numpy as np
 from ..conftest import flight, box
+from time import sleep, time
 
 def test_extrapolate_no_rot():
     initial = State.from_transform(
@@ -56,5 +59,17 @@ def state(flight, box):
 
 def test_from_flight(flight, state):
     assert len(state.data) == len(flight.data)
+
+
+def test_stack_singles():
+    start=time()
+    st=State.from_constructs(Time(time(), 0))
+    
+    for _ in range(10):
+        sleep(0.01)
+        st=st.append(State.from_constructs(Time.from_t(0)), "now")
+        
+
+    assert time()-start == approx(st.duration, abs=1e-2)
 
 
