@@ -58,7 +58,7 @@ class Opp:
         return MathOpp(self, other, "/")
 
     def __rtruediv__(self, other):
-        return MathOpp(self, other, "/")
+        return MathOpp(other, self, "/")
 
     def __abs__(self):
         return FunOpp(self, "abs")

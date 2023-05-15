@@ -86,7 +86,7 @@ def snap(name, rolls, break_angle, rate, speed, break_rate, line_length=100, pad
                         length=speed * rolls*2*np.pi/rate, roll=rolls)
     
     if isinstance(rate, ManParm):
-        rate.append(autorotation.props["rate"])
+        rate.append(autorotation.get_collector("rate"))
     
     recovery = ElDef.build(Recovery, f"{name}_recovery", speed=speed,
                     length=speed * break_angle/break_rate)
@@ -105,7 +105,7 @@ def spin(name, turns, break_angle, rate, speed, break_rate, reversible):
                       radius=speed * break_angle/break_rate, break_angle=break_angle)
     
     autorotation = ElDef.build(Autorotation, f"{name}_autorotation", speed=speed,
-                        length=speed * turns*2*np.pi/rate, roll=turns)
+                        length=(2 * np.pi * speed * turns)/rate, roll=turns)
             
     recovery = ElDef.build(Recovery, f"{name}_recovery", speed=speed,
                     length=speed * break_angle/break_rate)
