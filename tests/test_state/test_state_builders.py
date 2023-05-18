@@ -1,9 +1,10 @@
 from flightanalysis.state.state import State
+from flightanalysis.flightline import Box
 from flightanalysis.state.tools.builders import extrapolate, from_flight
-
+from flightdata import Flight
 from flightanalysis.base.table import Time
 from pytest import approx, fixture, raises
-from geometry import Transformation, PX, PY, P0
+from geometry import Transformation, PX, PY, P0, Point
 import numpy as np
 from ..conftest import flight, box
 from time import sleep, time
@@ -73,3 +74,8 @@ def test_stack_singles():
     assert time()-start == approx(st.duration, abs=1e-2)
 
 
+def test_from_fl():
+    fl = Flight.from_csv("tests/test_inputs/00000129.csv")
+    st = State.from_flight(fl, Box.from_initial(fl))
+    
+    assert not np.any(np.isnan(st.pos.data))

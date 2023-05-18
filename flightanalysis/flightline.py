@@ -10,7 +10,7 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see <http://www.gnu.org/licenses/>.
 """
 
-from geometry import GPS, Coord, Point, Transformation, Quaternion, PX, PY, PZ, P0
+from geometry import GPS, Coord, Point, Transformation, Quaternion, PX, PY, PZ, P0, Euler
 from typing import Union
 from flightdata import Flight, Fields
 import numpy as np
@@ -27,6 +27,7 @@ class Box(object):
         self.country=country
         self.pilot_position = pilot_position
         self.heading = heading
+        self.rotation = Euler(0, 0, -self.heading)
 
     def to_dict(self) -> dict:
         temp = self.__dict__.copy()
@@ -63,11 +64,10 @@ class Box(object):
         imu_ready_data = flight.data.loc[flight.imu_ready_time()]
 
         position = GPS(*imu_ready_data[Fields.GLOBALPOSITION.names])
-        heading = Quaternion(
-            *imu_ready_data[Fields.QUATERNION.names]
+        heading = Euler(
+            *imu_ready_data[Fields.ATTITUDE.names]
         ).transform_point(PX())
-        
-        
+
         return Box('origin', position[0], np.arctan2(heading.y, heading.x)[0], "unknown", "unknown")
 
     @staticmethod
@@ -120,6 +120,15 @@ class Box(object):
         )
 
 
+    def gps_to_point(self, gps: GPS) -> Point:
+        pned = gps - self.pilot_position
+        return self.rotation.transform_point(Point(pned.y, pned.x, -pned.z ))
+
+
+#    def point_to_gps(self, pos: Point) -> GPS:
+ #       return self.pilot_position + self.rotation.inverse().transform_point(pos)
+    
+
 class FlightLine(object):
     '''class to define where the flight line is in relation to the raw input data
     It contains two coordinate frames (generally used for reference / debugging only) and two transformations, 
@@ -146,7 +155,8 @@ class FlightLine(object):
 
     @staticmethod
     def home():
-        return FlightLine(Coord.from_nothing(), Coord.from_nothing())
+        """Default home is NWU"""
+        return FlightLine(Coord.from_nothing(), Coord.from_zx(P0(), PZ(-1), PX()))
 
     @staticmethod
     def from_box(box: Box, world_home: GPS):

@@ -2,7 +2,8 @@ import unittest
 
 from flightdata.data import Flight, Fields
 from flightanalysis.flightline import FlightLine, Box
-from geometry import GPS, Point, Quaternion, PX, PY, PZ, P0
+from geometry import GPS, Point, Quaternion, PX, PY, PZ, P0, Euler
+from geometry.testing import assert_almost_equal
 from math import pi, cos, sin
 import numpy as np
 
@@ -171,6 +172,40 @@ def test_from_f3a_zone():
     box = Box.from_f3a_zone("tests/test_inputs/tl_2_box.f3a")
     assert box.pilot_position == GPS(52.5422769, -1.6318313)
     assert np.degrees(box.heading) == approx(75.281, 1e-3)
+
+
+
+def test_box_gps_to_point_north():
+    home = GPS(39, -105)
+    tests = Point.concatenate([
+        PX(10),
+        PY(10),
+        Point(10, 10, 0)
+    ])
+    p = home.offset(tests)
+
+    # Box heading specified in radians from North (clockwise)
+    box = Box('north', home, 0)
+
+    assert_almost_equal(box.gps_to_point(p), tests)
+
+def test_box_gps_to_point_not_north():
+    home = GPS(39, -105)
+    tests = Point.concatenate([
+        PX(10),
+        PY(10),
+        Point(10, 10, 0)
+    ])
+    rot = np.degrees(75)
+    p = home.offset(tests)
+
+    # Box heading specified in radians from North (clockwise)
+    box = Box('north', home, rot)
+
+    assert_almost_equal(box.gps_to_point(p), Euler(0, 0, rot).transform_point(tests))
+
+
+
 
 
 if __name__ == "__main__":

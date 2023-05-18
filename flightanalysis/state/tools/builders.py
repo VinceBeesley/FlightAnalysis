@@ -50,7 +50,8 @@ def from_flight(flight: Union[Flight, str], box:Union[FlightLine, Box, str]) -> 
             ".csv": Flight.from_csv,
             ".BIN": Flight.from_log
         }[Path(flight).suffix](flight)
-
+    if box is None:
+        box = Box.from_initial(flight)
     if isinstance(box, FlightLine):
         return _from_flight(flight, box)
     if isinstance(box, Box):
