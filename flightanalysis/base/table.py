@@ -86,7 +86,11 @@ class Table:
         
         return self.__class__(self.data.loc[sli])
 
+    def slice_raw_t(self, sli):
+        inds = self.data.reset_index().set_index("t")["index"].loc[sli].to_numpy()#set_index("t", drop=False).columns
 
+        return self.__class__(self.data.loc[inds])
+        
     def __iter__(self):
         for ind in list(self.data.index):
             yield self[ind]
