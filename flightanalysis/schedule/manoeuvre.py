@@ -45,7 +45,7 @@ class Manoeuvre():
     def get_data(self, st: State):
         return st.get_manoeuvre(self.uid)
 
-    def match_intention(self, transform: Transformation, flown: State):
+    def match_intention(self, istate: State, flown: State):
         """Create a new manoeuvre with all the elements scaled to match the corresponding 
         flown element"""
 
@@ -54,19 +54,12 @@ class Manoeuvre():
 
         for elm in self.all_elements:
             elms.append(elm.match_intention(
-                transform, 
+                istate.transform, 
                 elm.get_data(flown)
             ))
-            try:
-                transform = elms[-1].create_template(
-                    transform
-                )[-1].transform
-            except Exception as ex:
-                print(f"Error creating template for {elm.__class__.__name__}, {elm.__dict__}")
-                print(str(ex))
-                raise Exception("Error Creating Template")
-
-        return Manoeuvre(elms[0], Elements(elms[1:]), self.uid), transform
+            istate = elms[-1].create_template(istate)[-1]
+        
+        return Manoeuvre(elms[0], Elements(elms[1:]), self.uid), istate
 
     def match_rates(self, rates):
         new_elms = [elm.match_axis_rate(rates[elm.__class__], rates["speed"]) for elm in self.elements]
