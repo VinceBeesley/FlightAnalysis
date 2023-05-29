@@ -1,3 +1,4 @@
+from __future__ import annotations
 import numpy as np
 import pandas as pd
 
@@ -5,7 +6,7 @@ from geometry import Base,  Point, Quaternion, Transformation
 from typing import Union, Dict
 from .constructs import SVar, Constructs
 from numbers import Number
-
+from time import time
 
 class Time(Base):
     cols=["t", "dt"]
@@ -28,6 +29,12 @@ class Time(Base):
 
     def reset_zero(self):
         return Time(self.t - self.t[0], self.dt)
+
+
+    @staticmethod
+    def now():
+        return Time.from_t(time())
+
 
 
 def make_time(tab):
@@ -141,3 +148,22 @@ class Table:
         )
     
 
+    def append(self, other, timeoption:str="dt"):
+
+        if timeoption in ["now", "t"]:
+            t = np.array([time()]) if timeoption == "now" else other.t
+            dt = other.dt
+            dt[0] = t[0] - self.t[-1]
+            new_time = Time(t, dt)
+        elif timeoption == "dt":
+            new_time = Time(other.t + self[-1].t - other[0].t + other[0].dt, other.dt)
+
+        return self.__class__(pd.concat(
+            [
+                self.data, 
+                other.copy(new_time).data
+            ], 
+            axis=0, 
+            ignore_index=True
+        ).set_index("t", drop=False))
+    

@@ -1,4 +1,4 @@
-from geometry import Point, Quaternion, Transformation, PX, PY, PZ, P0
+from geometry import Point, Quaternion, Transformation, PX, PY, PZ, P0, Q0
 
 import numpy as np
 import pandas as pd
@@ -35,14 +35,14 @@ def make_racc(sec) -> Point:
 
 
 class State(Table):
-    constructs = Table.constructs + Constructs([
-        SVar("pos", Point,       ["x", "y", "z"]           , None       ), 
-        SVar("att", Quaternion,  ["rw", "rx", "ry", "rz"]  , None       ),
-        SVar("vel", Point,       ["u", "v", "w"]           , make_bvel  ),
-        SVar("rvel", Point,       ["p", "q", "r"]           , make_rvel ),
-        SVar("acc", Point,       ["du", "dv", "dw"]        , make_bacc  ),
-        SVar("racc", Point,       ["dp", "dq", "dr"]        , make_racc ),
-    ])
+    constructs = Table.constructs + Constructs(dict(
+        pos  = SVar(Point,       ["x", "y", "z"]           , lambda self: P0(len(self))       ), 
+        att  = SVar(Quaternion,  ["rw", "rx", "ry", "rz"]  , lambda self : Q0(len(self))       ),
+        vel  = SVar(Point,       ["u", "v", "w"]           , make_bvel  ),
+        rvel = SVar(Point,       ["p", "q", "r"]           , make_rvel ),
+        acc  = SVar(Point,       ["du", "dv", "dw"]        , make_bacc  ),
+        racc = SVar(Point,       ["dp", "dq", "dr"]        , make_racc ),
+    ))
     _construct_freq = 30
 
     @property
