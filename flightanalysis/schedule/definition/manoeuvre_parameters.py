@@ -37,9 +37,9 @@ class ManParm(Opp):
         """
         self.criteria = criteria
         self.default = default
-        
-        self.collectors = collectors if isinstance(collectors, Collectors) else Collectors()
- 
+        self.collectors = collectors
+        if self.collectors is None:
+            self.collectors = Collectors()
         self.n = len(self.criteria.desired[0]) if isinstance(self.criteria, Combination) else None
         super().__init__(name)
         
@@ -68,6 +68,9 @@ class ManParm(Opp):
                 self.append(coll)
         else:
             raise ValueError(f"expected a Collector or Collectors not {collector.__class__.__name__}")
+
+    def assign(self, id, collector):
+        self.collectors.data[id] = collector
 
     def collect(self, els):
         return np.array([collector(els) for collector in self.collectors])
@@ -108,6 +111,8 @@ class ManParm(Opp):
     def copy(self):
         return ManParm(self.name, self.criteria, self.default, self.collectors.copy())
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({str(self)} = {self.value})"
 
 class ManParms(Collection):
     VType=ManParm
@@ -171,3 +176,6 @@ class ManParms(Collection):
                 mp.default = default
             
                 
+    def remove_unused(self):
+        return ManParms([mp for mp in self if len(mp.collectors) > 0])
+        

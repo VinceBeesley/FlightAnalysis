@@ -4,7 +4,7 @@ import numpy as np
 from flightanalysis.schedule.elements import *
 from inspect import getfullargspec
 from functools import partial
-from . import ManParm, ManParms, _a, Opp
+from . import ManParm, ManParms, _a, Opp, ItemOpp
 from flightanalysis.base.collection import Collection
 from numbers import Number
 from . import Collector, Collectors
@@ -60,8 +60,8 @@ class ElDef:
         return self.Kind(uid=self.name, **kwargs) 
     
     def build(Kind, name, *args, **kwargs):
+        #if *args are passed, tag them onto kwargs
         elargs = list(inspect.signature(Kind.__init__).parameters)[1:-1]
-        
         for arg, argname in zip(args, elargs[:len(args)] ):
             kwargs[argname] = arg
         
@@ -70,6 +70,8 @@ class ElDef:
         for key, value in kwargs.items():
             if isinstance(value, ManParm):
                 value.append(ed.get_collector(key))
+            elif isinstance(value, ItemOpp):
+                value.a.assign(value.item, ed.get_collector(key))
         
         return ed
 

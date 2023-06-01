@@ -145,7 +145,7 @@ class FunOpp(Opp):
     @staticmethod 
     def parse(inp: str, coll: Collection, name=None):
         for fun in FunOpp.funs:
-            if len(fun) >= len(inp) -2:
+            if len(fun) >= len(inp) - 2:
                 continue
             if fun == inp[:len(fun)]:
                 return FunOpp(
@@ -162,7 +162,7 @@ class ItemOpp(Opp):
         self.a = a
         self.item = item
         super().__init__(name)
-
+    
     def __call__(self, mps):
         return self.a.valuefunc(self.item)(mps)
     

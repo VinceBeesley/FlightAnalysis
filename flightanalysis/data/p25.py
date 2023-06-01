@@ -1,4 +1,3 @@
-from flightplotting import plotsec
 from flightanalysis.schedule.definition import *
 from flightanalysis.schedule.elements import *
 from flightanalysis.criteria import *
@@ -12,7 +11,7 @@ p25_def = SchedDef([
             f3amb.loop(np.pi/4),
             f3amb.roll("2x4"),
             f3amb.loop(-np.pi*3/4), 
-            f3amb.roll("1/1",line_length="(line_length*1.4142135623730951)"),  # TODO I want to pass the operation directly, not a string
+            f3amb.roll("1/1",line_length=f3amb.mps.line_length * 1.4142135623730951),
             f3amb.loop(-np.pi*3/4),
             f3amb.roll("2x4"),
             f3amb.loop(np.pi/4)
@@ -126,7 +125,7 @@ p25_def = SchedDef([
             f3amb.loop(np.pi/2),
             f3amb.roll("1/2"),
             f3amb.loop(-np.pi*3/2),
-            f3amb.roll("1/2", line_length="(loop_radius*2)"),
+            f3amb.roll("1/2", line_length=f3amb.mps.loop_radius * 2),
             f3amb.loop(np.pi*3/2),
             f3amb.roll("1/2"),
             f3amb.loop(-np.pi/2),
@@ -137,7 +136,7 @@ p25_def = SchedDef([
             end=BoxLocation(Height.TOP)
         ),[
             f3amb.loop(-np.pi/4),
-            f3amb.roll("1/2", line_length="(line_length*1.414213562373095)"),
+            f3amb.roll("1/2", line_length=f3amb.mps.line_length * 1.414213562373095),
             f3amb.loop(np.pi*5/4),
             f3amb.roll("2x4"),
             f3amb.loop(np.pi/2),
@@ -170,7 +169,7 @@ p25_def = SchedDef([
             end=BoxLocation(Height.TOP)
         ),[
             f3amb.loop(3*np.pi/4),
-            f3amb.snap(1, line_length="((100-(1.5*loop_radius))*1.414213562373095)"),
+            f3amb.snap(1, line_length=((100-(1.5*f3amb.mps.loop_radius))*1.414213562373095)),
             f3amb.loop(-3*np.pi/4),
         ], loop_radius=30),
     f3amb.create(ManInfo(
@@ -190,21 +189,26 @@ p25_def = SchedDef([
             end=BoxLocation(Height.TOP)
         ),[
             f3amb.loop(3*np.pi/4),
-            f3amb.loop(np.pi/4, roll=np.pi/2),
-            f3amb.loop(3*np.pi/4, ke=True),
-            f3amb.loop(np.pi/4, ke=True, roll=np.pi/2),
-        ]),
+            f3amb.loop(np.pi/4, roll="rke_opt[0]"),
+            f3amb.loop("rke_opt[1]", ke=True),
+            f3amb.loop("rke_opt[2]", ke=True, roll="rke_opt[3]"),
+        ],
+        rke_opt=ManParm("rke_opt", 
+            Combination([
+                [np.pi/2, 3*np.pi/4, np.pi/4, np.pi/2], 
+                [-np.pi/2, -3*np.pi/4, -np.pi/4, -np.pi/2]
+        ]), 0))
 ])
 
 
 if __name__ == "__main__":
     p25, template = p25_def.create_template(170, 1)
-    #from flightplotting import plotsec
+    from flightplotting import plotsec
     
-    #plotsec(template, nmodels=100).show()
+    plotsec(template, nmodels=100).show()
 
-    fcj = template.create_fc_json(p25_def, "P25")
+    #fcj = template.create_fc_json(p25_def, "P25")
 
-    from json import dump
-    with open("test.json", "w") as f:
-        dump(fcj, f)
+    #from json import dump
+    #with open("test.json", "w") as f:
+    #    dump(fcj, f)

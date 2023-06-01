@@ -16,29 +16,18 @@ class ManoeuvreBuilder():
         if name in self.mpmaps:
             return partial(self.el, name)
     
-    def base_parms(self, *kwargs):
-        mps = self.mps.copy()  # this does not work
-        for k,v in kwargs.items():
-            if isinstance(v, Number):
-                mps.data[k].default = v
-            elif isinstance(v, ManParm):
-                mps.data[k] = v
-        return mps
-
     def el(self, kind, *args, **kwargs):
         #setup kwargs to pull defaults from mpmaps
         #returns a function that appends the created elements to a ManDef
         
-        all_kwargs = {}
-        for k, a, in self.mpmaps[kind]["kwargs"].items():
-            all_kwargs[k] = a
+        all_kwargs = self.mpmaps[kind]["kwargs"].copy() # take the defaults
         for k,a in kwargs.items():
             assert not k in self.mpmaps[kind]["args"]
-            all_kwargs[k]=a
+            all_kwargs[k]=a  # take the **kwargs if they were specified
         for k, a in zip(self.mpmaps[kind]["args"], args):
-            all_kwargs[k] = a
+            all_kwargs[k] = a  # take the *args
         
-        def append_el(md: ManDef, func, **kwargs):
+        def append_el(md: ManDef, **kwargs):
             full_kwargs = {}
             for k, a in kwargs.items():
                 try:
@@ -50,7 +39,7 @@ class ManoeuvreBuilder():
             md.eds.add(eds)
             md.mps.add(mps)
                         
-        return partial(append_el, func=self.mpmaps[kind]["func"], **all_kwargs)
+        return partial(append_el, **all_kwargs)
 
 
     def create(self, maninfo, elmakers, **kwargs):
@@ -66,6 +55,7 @@ class ManoeuvreBuilder():
         md = ManDef(maninfo, mps)
         for em in elmakers:
             em(md)
+        md.mps = md.mps.remove_unused()
         return md
     
 

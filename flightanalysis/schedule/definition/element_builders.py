@@ -25,9 +25,8 @@ def roll_combo_f3a(name, speed, rolls, partial_rate, full_rate, pause_length) ->
     #part rolls.
     eds = ElDefs()
     
-    last_direction = np.sign(rolls.value[0])
     for i, r in enumerate(rolls.value):
-        new_roll = eds.add(roll(
+        eds.add(roll(
             f"{name}_{i}",
             speed,
             partial_rate if abs(rolls.value[i]) < 1 else full_rate,
@@ -35,7 +34,7 @@ def roll_combo_f3a(name, speed, rolls, partial_rate, full_rate, pause_length) ->
         ))
 
         if i < rolls.n - 1 and np.sign(rolls.value[i]) == np.sign(rolls.value[i+1]):
-            new_pause = eds.add(line(
+            eds.add(line(
                 f"{name}_{i+1}_pause",
                 speed, pause_length, 0
             ))

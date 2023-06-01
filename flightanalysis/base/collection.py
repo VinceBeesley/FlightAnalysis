@@ -1,4 +1,6 @@
 from typing import Dict, List, Union, Any
+import numpy as np
+import pandas as pd
 
 
 class Collection:
@@ -45,7 +47,12 @@ class Collection:
         return cls([cls.VType.from_dict(v) for v in vals.values()])
     
     def add(self, v):
-        self.data[getattr(v, self.uid)] = v
+        if v is None:
+            return self
+        elif isinstance(v, self.VType):
+            self.data[getattr(v, self.uid)] = v
+        elif isinstance(v, self.__class__):
+            return self.__class__(dict(**self.data, **v.data))
         return v
 
     def next_free_name(self, prefix: str):
@@ -57,3 +64,13 @@ class Collection:
 
     def copy(self):
         return self.__class__([v.copy() for v in self])
+    
+    def __str__(self) -> str:
+        return str(pd.Series({k: str(v) for k, v in self.data.items()}))
+    
+    def __repr__(self) -> str:
+        contents = str(pd.Series({k: repr(v) for k, v in self.data.items()}))
+        return f"{self.__class__.__name__}\n{contents}"
+    
+    def __len__(self) -> int:
+        return len(self.data)
