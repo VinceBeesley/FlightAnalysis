@@ -12,7 +12,7 @@ p25_def = SchedDef([
             f3amb.loop(np.pi/4),
             f3amb.roll("2x4"),
             f3amb.loop(-np.pi*3/4), 
-            f3amb.roll("1/1",line_length="(line_length*1.4142135623730951)"),  # TODO why cany I pass the operation directly?
+            f3amb.roll("1/1",line_length="(line_length*1.4142135623730951)"),  # TODO I want to pass the operation directly, not a string
             f3amb.loop(-np.pi*3/4),
             f3amb.roll("2x4"),
             f3amb.loop(np.pi/4)
