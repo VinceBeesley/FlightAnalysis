@@ -25,7 +25,8 @@ class PitchBreak(El):
             self.break_angle
         )
 
-    
+    def describe(self):
+        return "pitch break"
     def match_intention(self, transform: Transformation, flown: State):
         jit = flown.judging_itrans(transform)
 

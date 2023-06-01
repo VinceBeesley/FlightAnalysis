@@ -71,3 +71,7 @@ State.direction = direction
 State.inverted = inverted
 State.upright = upright
 State.judging_itrans = judging_itrans
+
+
+from .tools.dumpers import create_fc_json
+State.create_fc_json = create_fc_json

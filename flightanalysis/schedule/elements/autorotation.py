@@ -23,7 +23,7 @@ class Autorotation(El):
     @property
     def rate(self):
         return self.angle * self.speed / self.length
-
+    
     def create_template(self, istate: State, flown: State=None):
         
         return istate.copy(

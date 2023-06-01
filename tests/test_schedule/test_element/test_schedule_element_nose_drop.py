@@ -1,6 +1,5 @@
 from flightanalysis.schedule.elements import NoseDrop
 from geometry import Transformation, Euler, P0, PX, PY, PZ, Point
-from flightplotting import plotsec
 import numpy as np
 from flightanalysis import State
 from pytest import fixture

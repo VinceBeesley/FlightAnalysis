@@ -1,5 +1,4 @@
 """This file defines a P23 sequence using the ManDef Classes and helper functions."""
-from flightplotting import plotsec
 from flightanalysis.schedule.definition import *
 from flightanalysis.schedule.elements import *
 from flightanalysis.criteria import *
@@ -213,6 +212,8 @@ p23_def = SchedDef([
 ])
 
 if __name__ == "__main__":
+    from flightplotting import plotsec
+
     p23, template = p23_def.create_template(170, 1)
     from flightplotting import plotsec
     

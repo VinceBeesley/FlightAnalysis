@@ -1,6 +1,5 @@
 from geometry import Transformation, Coord, Quaternion, Point
 from flightanalysis.state import State
-from flightanalysis.schedule import Schedule, SchedDef
 import numpy as np
 import pandas as pd
 
@@ -9,7 +8,7 @@ import pandas as pd
 def _create_json_data(self: State) -> pd.DataFrame:
     fcd = pd.DataFrame(columns=["N", "E", "D", "VN", "VE", "VD", "r", "p", "yw", "wN", "wE", "roll", "pitch", "yaw"])
     fcd["N"], fcd["E"], fcd["D"] = self.x, -self.y, -self.z
-    wvels = self.body_to_world(Point(self.bvel))
+    wvels = self.body_to_world(Point(self.vel))
     fcd["VN"], fcd["VE"], fcd["VD"] = wvels.x, -wvels.y, -wvels.z
 
     transform = Transformation.from_coords(
@@ -33,18 +32,18 @@ def _create_json_data(self: State) -> pd.DataFrame:
     return fcd
 
 
-def _create_json_mans(self: State, sdef: SchedDef) -> pd.DataFrame:
+def _create_json_mans(self: State, sdef) -> pd.DataFrame:
     mans = pd.DataFrame(columns=["name", "id", "sp", "wd", "start", "stop", "sel", "background", "k"])
 
     mans["name"] = ["tkoff"] + [man.info.short_name for man in sdef]
     mans["k"] = [0] + [man.info.k for man in sdef]
-    mans["id"] = ["sp_{}".format(i) for i in range(len(sdef) + 1)]
+    mans["id"] = ["sp_{}".format(i) for i in range(len(sdef.data)+1)]
 
     mans["sp"] = list(range(len(sdef.data) + 1))
     
     itsecs = [self.get_manoeuvre(m.info.short_name) for m in sdef] 
 
-    mans["wd"] = [100 * st.duration / self.duration for st in itsecs]
+    mans["wd"] = [0.0] + [100 * st.duration / self.duration for st in itsecs]
     
     dat = self.data.reset_index(drop=True)
 
@@ -52,20 +51,20 @@ def _create_json_mans(self: State, sdef: SchedDef) -> pd.DataFrame:
 
     mans["stop"] = [mans["start"][1] + 1] + [dat.loc[dat.manoeuvre==man.info.short_name].index[-1] + 1 for man in sdef]
         
-    mans["sel"] = np.full(len(sdef) + 1, False)
+    mans["sel"] = np.full(len(sdef.data) + 1, False)
     mans.loc[1,"sel"] = True
-    mans["background"] = np.full(len(sdef) + 1, "")
+    mans["background"] = np.full(len(sdef.data) + 1, "")
 
     return mans
 
 
-def create_fc_json(self: State, sdef: SchedDef, schedule_name: str, schedule_category: str="F3A"):
+def create_fc_json(self: State, sdef, schedule_name: str, schedule_category: str="F3A"):
     fcdata = _create_json_data(self)
     fcmans = _create_json_mans(self, sdef)
     return {
         "version": "1.3",
         "comments": "DO NOT EDIT\n",
-        "name": sdef.info.name,
+        "name": schedule_name,
         "view": {
             "position": {
                 "x": -120,

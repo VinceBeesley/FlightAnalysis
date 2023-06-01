@@ -25,6 +25,9 @@ class Recovery(El):
             -np.arctan2(istate.vel.z, istate.vel.x)[-1]
         )
 
+    def describe(self):
+        return "recovery"
+
     def match_intention(self, transform: Transformation, flown: State):
         jit = flown.judging_itrans(transform)
         return self.set_parms(

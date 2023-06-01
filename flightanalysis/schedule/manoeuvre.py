@@ -83,3 +83,6 @@ class Manoeuvre():
             tp = el.get_data(template).relocate(fl.pos[0])
             ers.append(ElResults(el, el.analyse(fl, tp)))
         return ElementsResults(ers)
+
+    def descriptions(self):
+        return [e.describe() for e in self.elements]

@@ -1,5 +1,5 @@
 from flightanalysis import State, Manoeuvre
-from flightanalysis.data.p23 import create_p23, tHat
+from flightanalysis.data.p23 import p23_def
 from pytest import fixture, approx
 from geometry import Transformation, Euler, P0
 import numpy as np
@@ -8,7 +8,7 @@ from flightanalysis.schedule.definition import *
 
 @fixture
 def th_def() -> ManDef:
-    return tHat()
+    return p23_def[0]
 
 @fixture
 def initial_transform(th_def) -> Transformation:

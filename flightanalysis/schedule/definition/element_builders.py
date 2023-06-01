@@ -60,6 +60,7 @@ def pad(speed, line_length, eds: ElDefs):
     return ElDefs([e1] + [ed for ed in eds] + [e3]), ManParms([mp])
 
 def roll_f3a(name, rolls, speed, partial_rate, full_rate, pause_length, line_length=100, reversible=True, padded=True):
+    
     if isinstance(rolls, str):
         _rolls = ManParm(f"{name}_rolls", Combination.rollcombo(rolls, reversible), 0)
     elif isinstance(rolls, list):

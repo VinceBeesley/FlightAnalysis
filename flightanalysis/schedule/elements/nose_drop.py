@@ -31,6 +31,9 @@ class NoseDrop(El):
             -alpha - abs(self.break_angle) * _inverted
         ).label(element=self.uid)
     
+    def describe(self):
+        return "nose drop"
+
     def match_intention(self, transform: Transformation, flown: State):
         _inverted = 1 if transform.rotation.is_inverted()[0] else -1
         _speed = abs(flown.vel).mean()
