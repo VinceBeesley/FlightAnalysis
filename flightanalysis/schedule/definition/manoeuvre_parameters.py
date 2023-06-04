@@ -114,6 +114,9 @@ class ManParm(Opp):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({str(self)} = {self.value})"
 
+
+
+
 class ManParms(Collection):
     VType=ManParm
     uid="name"

@@ -2,7 +2,7 @@ from .element_definition import ElDef, ElDefs, ManParm, ManParms
 from flightanalysis.schedule.elements import *
 from flightanalysis.base.collection import Collection
 from flightanalysis.schedule.definition.collectors import Collectors
-
+from flightanalysis.schedule.definition import Opp
 
 def line(name, speed, length, roll):
     return ElDef.build(Line, name, speed, length, roll), ManParms()
@@ -55,10 +55,14 @@ def pad(speed, line_length, eds: ElDefs):
         None, 
         Collectors([e1.get_collector("length"), e3.get_collector("length")])
     )
-    
-    return ElDefs([e1] + [ed for ed in eds] + [e3]), ManParms([mp])
+    eds = ElDefs([e1] + [ed for ed in eds] + [e3])
 
-def roll_f3a(name, rolls, speed, partial_rate, full_rate, pause_length, line_length=100, reversible=True, padded=True):
+    if isinstance(line_length, ManParm):
+        line_length.append(eds.collector_sum("length"))
+    
+    return eds, ManParms([mp])
+
+def roll_f3a(name, rolls, speed, partial_rate, full_rate, pause_length, line_length, reversible=True, padded=True):
     
     if isinstance(rolls, str):
         _rolls = ManParm(f"{name}_rolls", Combination.rollcombo(rolls, reversible), 0)
@@ -71,11 +75,13 @@ def roll_f3a(name, rolls, speed, partial_rate, full_rate, pause_length, line_len
         eds, mps = roll_combo_f3a(name, speed, _rolls, partial_rate, full_rate, pause_length)
     else:
         eds = ElDefs([roll(f"{name}_roll", speed, partial_rate, _rolls)[0]])
-        
+        mps = ManParms()
+            
     if padded:
         eds, mps = pad(speed, line_length, eds)
+    
 
-    return eds, mps.add(_rolls)
+    return eds, mps.add(_rolls) 
 
     
 def snap(name, rolls, break_angle, rate, speed, break_rate, line_length=100, padded=True):

@@ -31,6 +31,8 @@ from . import ManParm, ManParms, ElDef, ElDefs, _a, Position, Direction
 from copy import deepcopy
 
 
+
+
 class ManDef:
     """This is a class to define a manoeuvre for template generation and judging.
 
@@ -81,7 +83,8 @@ class ManDef:
         wind = self.info.start.d.get_wind(heading) # is wind in +ve or negative x direction?
 
         #Create a template, at zero
-        template = self._create().create_template(
+        man = self._create()
+        template = man.create_template(
             State.from_transform(Transformation(
                 Point(0,0,0),
                 Euler(self.info.start.o.roll_angle(), 0, 0)
@@ -90,7 +93,10 @@ class ManDef:
         
         match self.info.position:
             case Position.CENTRE:
-                man_start_x = -(max(template.pos.x) + min(template.pos.x))/2  # distance from start to centre
+                if self.info.centre_loc == -1:
+                    man_start_x = -(max(template.pos.x) + min(template.pos.x))/2  # distance from start to centre
+                else:
+                    man_start_x = -man.elements[self.info.centre_loc].get_data(template).pos.x[0]
             case Position.END:
                 box_edge = np.tan(np.radians(60)) * (np.abs(template.pos.y) + itrans.pos.y[0]) #x location of box edge at every point
                 #TODO this should be rotated not absoluted 

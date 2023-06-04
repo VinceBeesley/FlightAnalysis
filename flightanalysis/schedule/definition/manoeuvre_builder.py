@@ -7,6 +7,10 @@ from .element_builders import *
 from numbers import Number
 
 
+class MBTags:
+    CENTRE=0
+
+
 class ManoeuvreBuilder():
     def __init__(self, mps: ManParms, mpmaps:Dict[str, dict]):
         self.mps = mps
@@ -54,7 +58,11 @@ class ManoeuvreBuilder():
                     mps.add(ManParm.parse(v, mps, k))
         md = ManDef(maninfo, mps)
         for em in elmakers:
-            em(md)
+            if isinstance(em, int):
+                if em == MBTags.CENTRE:
+                    md.info.centre_loc = len(md.eds.data)
+            else:
+                em(md)
         md.mps = md.mps.remove_unused()
         return md
     
@@ -65,10 +73,10 @@ f3amb = ManoeuvreBuilder(
         ManParm("speed", inter_f3a_speed, 30.0),
         ManParm("loop_radius", inter_f3a_radius, 55.0),
         ManParm("line_length", inter_f3a_length, 130.0),
-        ManParm("point_length", inter_f3a_length, 10.0),
+        ManParm("point_length", inter_f3a_length, 20.0),
         ManParm("continuous_roll_rate", inter_f3a_roll_rate, np.pi/2),
         ManParm("partial_roll_rate", inter_f3a_roll_rate, np.pi/2),
-        ManParm("full_roll_rate", inter_f3a_roll_rate, np.pi/2),
+        ManParm("full_roll_rate", inter_f3a_roll_rate, 3*np.pi/4),
         ManParm("snap_rate", inter_f3a_roll_rate, 4*np.pi),
         ManParm("stallturn_rate", inter_f3a_roll_rate, 2*np.pi),
         ManParm("spin_rate", inter_f3a_roll_rate, 1.7*np.pi),

@@ -4,6 +4,8 @@ from flightanalysis.criteria import *
 
 c45 = np.cos(np.radians(45))
 
+
+
 p25_def = SchedDef([
     f3amb.create(ManInfo(
             "Triangle", "tri", k=4, position=Position.CENTRE, 
@@ -13,7 +15,7 @@ p25_def = SchedDef([
             f3amb.loop(np.pi/4),
             f3amb.roll("2x4"),
             f3amb.loop(-np.pi*3/4), 
-            f3amb.roll("1/1",line_length=f3amb.mps.line_length / c45),
+            f3amb.roll("1/1",line_length=str(2 * f3amb.mps.line_length * c45)),
             f3amb.loop(-np.pi*3/4),
             f3amb.roll("2x4"),
             f3amb.loop(np.pi/4)
@@ -76,19 +78,22 @@ p25_def = SchedDef([
         ),[
             f3amb.roll("1/1", padded=False),
             f3amb.loop(-np.pi),
-            f3amb.roll("1/2", padded=False),
+            f3amb.roll("roll_option[0]", padded=False),
             f3amb.line(length=30),
-            f3amb.roll("1/2", padded=False),
+            f3amb.roll("roll_option[1]", padded=False),
             f3amb.loop(-np.pi),
             f3amb.roll("1/2", padded=False),
-        ], loop_radius=80),
+        ], loop_radius=100, 
+        roll_option=ManParm("roll_option", Combination(
+            [[np.pi/2, -np.pi/2], [-np.pi/2, np.pi/2]]
+        ), 0)),
     f3amb.create(ManInfo(
             "Humpty", "hB", k=4, position=Position.END, 
             start=BoxLocation(Height.BTM, Direction.DOWNWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.BTM)
         ),[
             f3amb.loop(np.pi/2),
-            f3amb.roll([np.pi/2, -np.pi/2]),
+            f3amb.roll([np.pi, -np.pi]),
             f3amb.loop(-np.pi),
             f3amb.roll("1/2"),
             f3amb.loop(np.pi/2),
@@ -103,7 +108,7 @@ p25_def = SchedDef([
             f3amb.loop(-np.pi/2, roll="roll_option[1]"),
             f3amb.loop(np.pi/2),
         ],
-        loop_radius=80,
+        loop_radius=100,
         roll_option=ManParm(
             "roll_option", 
             Combination([[np.pi, -np.pi], [-np.pi, np.pi]]), 0
@@ -127,7 +132,7 @@ p25_def = SchedDef([
             f3amb.loop(np.pi/2),
             f3amb.roll("1/2"),
             f3amb.loop(-np.pi*3/2),
-            f3amb.roll("1/2", line_length=f3amb.mps.loop_radius * 2),
+            f3amb.roll("1/2", line_length=str(f3amb.mps.loop_radius * 2)),
             f3amb.loop(np.pi*3/2),
             f3amb.roll("1/2"),
             f3amb.loop(-np.pi/2),
@@ -138,7 +143,7 @@ p25_def = SchedDef([
             end=BoxLocation(Height.TOP)
         ),[
             f3amb.loop(-np.pi/4),
-            f3amb.roll("1/2", line_length=f3amb.mps.line_length / c45),
+            f3amb.roll("1/2", line_length=str(f3amb.mps.line_length / c45)),
             f3amb.loop(np.pi*5/4),
             f3amb.roll("2x4"),
             f3amb.loop(np.pi/2),
@@ -146,8 +151,9 @@ p25_def = SchedDef([
     f3amb.create(ManInfo(
             "Spin", "Sp", k=4, position=Position.CENTRE, 
             start=BoxLocation(Height.TOP, Direction.UPWIND, Orientation.INVERTED),
-            end=BoxLocation(Height.BTM)
+            end=BoxLocation(Height.BTM),
         ),[
+            MBTags.CENTRE,
             f3amb.spin(2),
             f3amb.roll("1/2", line_length=165),
             f3amb.loop(np.pi/2),
@@ -184,7 +190,7 @@ p25_def = SchedDef([
             f3amb.loop(-3*np.pi/2),
             f3amb.roll("1/1"),
             f3amb.loop(np.pi/4),
-        ], line_length=(1/c45 + 1) * 50 + 0.5 * 60 - (1/c45 - 2) *50, loop_radius=50),  
+        ], line_length=(1/c45 + 1) * 50 + 0.5 * 60 - (1/c45 - 2) * 50, loop_radius=50),  
         #2 * R1 + L1 * c45 + 2* R1 * c45 = 4*R2*(1 - c45) - 2*R2 + 2 * L2 * c45
         #(1 / c45 + 1) * R1 + 0.5 * L1 - (1/c45 - 2) * R2 = L2
     f3amb.create(ManInfo(
@@ -206,13 +212,13 @@ p25_def = SchedDef([
 
 
 if __name__ == "__main__":
-    p25, template = p25_def[13:17].create_template(170, 1)
+    p25, template = p25_def.create_template(170, 1)
     from flightplotting import plotsec
     
-    plotsec(template, nmodels=100).show()
+    #plotsec(template, nmodels=5).show()
 
-    #fcj = template.create_fc_json(p25_def, "P25")
+    fcj = template.create_fc_json(p25_def, "P25")
 
-    #from json import dump
-    #with open("test.json", "w") as f:
-    #    dump(fcj, f)
+    from json import dump
+    with open("test.json", "w") as f:
+        dump(fcj, f)

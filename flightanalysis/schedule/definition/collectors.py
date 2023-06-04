@@ -35,7 +35,7 @@ class Collector(Opp):
 
 
 class Collectors(Collection):
-    VType=Collector
+    VType=Opp
     uid="name"
 
     def __str__(self):

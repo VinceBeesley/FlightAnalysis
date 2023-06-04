@@ -124,11 +124,12 @@ class ElDefs(Collection):
         """A function to return the sum of the requested parameter used when constructing the elements from the mps"""
         return sum(self.builder_list(name))
 
-    def collector_list(self, name: str) -> List[Callable]:
+    def collector_list(self, name: str) -> Collectors:
         """A list of the functions that return the requested parameter from an elements collection"""
-        return [e.get_collector(name) for e in self if f"{e.name}.{name}" in e.collectors]
+        return Collectors([e.get_collector(name) for e in self if f"{e.name}.{name}" in e.collectors.data])
+
 
     def collector_sum(self, name) -> Callable:
         """A function that returns the sum of the requested parameter from an elements collection"""
-        return lambda els : sum(c(els) for c in self.collector_list(name))
+        return sum(self.collector_list(name))
     
