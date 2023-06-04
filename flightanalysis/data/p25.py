@@ -2,6 +2,8 @@ from flightanalysis.schedule.definition import *
 from flightanalysis.schedule.elements import *
 from flightanalysis.criteria import *
 
+c45 = np.cos(np.radians(45))
+
 p25_def = SchedDef([
     f3amb.create(ManInfo(
             "Triangle", "tri", k=4, position=Position.CENTRE, 
@@ -11,7 +13,7 @@ p25_def = SchedDef([
             f3amb.loop(np.pi/4),
             f3amb.roll("2x4"),
             f3amb.loop(-np.pi*3/4), 
-            f3amb.roll("1/1",line_length=f3amb.mps.line_length * 1.4142135623730951),
+            f3amb.roll("1/1",line_length=f3amb.mps.line_length / c45),
             f3amb.loop(-np.pi*3/4),
             f3amb.roll("2x4"),
             f3amb.loop(np.pi/4)
@@ -116,7 +118,7 @@ p25_def = SchedDef([
             f3amb.loop(-np.pi/2),
             f3amb.roll("1/2"),
             f3amb.loop(np.pi/4),
-        ], line_length=130*np.cos(np.radians(45))),
+        ], line_length=130*c45),
     f3amb.create(ManInfo(
             "Cloverleaf", "Clv", k=4, position=Position.CENTRE, 
             start=BoxLocation(Height.TOP, Direction.DOWNWIND, Orientation.INVERTED),
@@ -136,7 +138,7 @@ p25_def = SchedDef([
             end=BoxLocation(Height.TOP)
         ),[
             f3amb.loop(-np.pi/4),
-            f3amb.roll("1/2", line_length=f3amb.mps.line_length * 1.414213562373095),
+            f3amb.roll("1/2", line_length=f3amb.mps.line_length / c45),
             f3amb.loop(np.pi*5/4),
             f3amb.roll("2x4"),
             f3amb.loop(np.pi/2),
@@ -169,9 +171,9 @@ p25_def = SchedDef([
             end=BoxLocation(Height.TOP)
         ),[
             f3amb.loop(3*np.pi/4),
-            f3amb.snap(1, line_length=((100-(1.5*f3amb.mps.loop_radius))*1.414213562373095)),
+            f3amb.snap(1),
             f3amb.loop(-3*np.pi/4),
-        ], loop_radius=30),
+        ], line_length=60, loop_radius=50),
     f3amb.create(ManInfo(
             "Comet", "Com", k=4, position=Position.END, 
             start=BoxLocation(Height.TOP, Direction.DOWNWIND, Orientation.UPRIGHT),
@@ -182,7 +184,9 @@ p25_def = SchedDef([
             f3amb.loop(-3*np.pi/2),
             f3amb.roll("1/1"),
             f3amb.loop(np.pi/4),
-        ]),
+        ], line_length=(1/c45 + 1) * 50 + 0.5 * 60 - (1/c45 - 2) *50, loop_radius=50),  
+        #2 * R1 + L1 * c45 + 2* R1 * c45 = 4*R2*(1 - c45) - 2*R2 + 2 * L2 * c45
+        #(1 / c45 + 1) * R1 + 0.5 * L1 - (1/c45 - 2) * R2 = L2
     f3amb.create(ManInfo(
             "Figure S", "S", k=4, position=Position.CENTRE, 
             start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),
@@ -202,7 +206,7 @@ p25_def = SchedDef([
 
 
 if __name__ == "__main__":
-    p25, template = p25_def.create_template(170, 1)
+    p25, template = p25_def[13:17].create_template(170, 1)
     from flightplotting import plotsec
     
     plotsec(template, nmodels=100).show()

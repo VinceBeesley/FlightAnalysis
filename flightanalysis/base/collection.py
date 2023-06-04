@@ -20,10 +20,13 @@ class Collection:
     def __getitem__(self, key: Union[int, str]):
         if isinstance(key, int): 
             return list(self.data.values())[key]
+        elif isinstance(key, slice):
+            return self.__class__(list(self.data.values())[key])
         elif isinstance(key, str):
             return self.data[key]
         elif isinstance(key, self.__class__.VType):
             return self.data[getattr(key, self.__class__.uid)]
+        raise ValueError(f"Invalid Key or Indexer {key}")
 
     def __iter__(self):
         for v in self.data.values():
