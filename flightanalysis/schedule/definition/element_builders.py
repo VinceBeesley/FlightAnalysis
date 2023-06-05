@@ -3,6 +3,7 @@ from flightanalysis.schedule.elements import *
 from flightanalysis.base.collection import Collection
 from flightanalysis.schedule.definition.collectors import Collectors
 from flightanalysis.schedule.definition import Opp
+from numbers import Number
 
 def line(name, speed, length, roll):
     return ElDef.build(Line, name, speed, length, roll), ManParms()
@@ -21,7 +22,7 @@ def stallturn(name, speed, yaw_rate):
 
 
 def roll_combo_f3a(name, speed, rolls, partial_rate, full_rate, pause_length) -> ElDefs:
-    #this creates pauses between opposing rolls and has a different rate for full and
+    #this creates pauses between same direction rolls and has a different rate for full and
     #part rolls.
     eds = ElDefs()
     
@@ -65,16 +66,28 @@ def pad(speed, line_length, eds: ElDefs):
 def roll_f3a(name, rolls, speed, partial_rate, full_rate, pause_length, line_length, reversible=True, padded=True):
     
     if isinstance(rolls, str):
-        _rolls = ManParm(f"{name}_rolls", Combination.rollcombo(rolls, reversible), 0)
+        try:
+            _rolls = ManParm.parse(rolls)
+        except Exception as e:
+            _rolls = ManParm(f"{name}_rolls", Combination.rollcombo(rolls, reversible), 0)
     elif isinstance(rolls, list):
         _rolls = ManParm(f"{name}_rolls", Combination.rolllist(rolls, reversible), 0) 
+    elif isinstance(rolls, Number) and reversible:
+        _rolls = ManParm(f"{name}_rolls", Combination([[rolls], [-rolls]]), 0)
     else:
         _rolls=rolls
     
     if isinstance(_rolls, ManParm):
         eds, mps = roll_combo_f3a(name, speed, _rolls, partial_rate, full_rate, pause_length)
     else:
-        eds = ElDefs([roll(f"{name}_roll", speed, partial_rate, _rolls)[0]])
+        if isinstance(_rolls, Number):
+            _r=_rolls
+        elif isinstance(_rolls, Opp):
+            _r=_rolls.a.value[_rolls.item]
+
+        rate = full_rate if abs(_r)>=1 else partial_rate
+
+        eds = ElDefs([roll(f"{name}_roll", speed, rate, _rolls)[0]])
         mps = ManParms()
             
     if padded:
@@ -84,26 +97,61 @@ def roll_f3a(name, rolls, speed, partial_rate, full_rate, pause_length, line_len
     return eds, mps.add(_rolls) 
 
     
-def snap(name, rolls, break_angle, rate, speed, break_rate, line_length=100, padded=True):
-    pitch_break = ElDef.build(PitchBreak, f"{name}_break", speed=speed, 
-                      length=speed * break_angle/break_rate, break_angle=break_angle)
+def snap(name, rolls, break_angle, rate, speed, break_rate, line_length=100, padded=True, reversible=True, pause_length=10):
     
-    autorotation = ElDef.build(Autorotation, f"{name}_autorotation", speed=speed,
-                        length=speed * rolls*2*np.pi/rate, roll=rolls)
+    eds = ElDefs()
+    mps = ManParms()
+
+    if isinstance(break_angle, Number):
+        break_angle = ManParm(
+            "break_angle", 
+            Combination([[break_angle], [-break_angle]]),
+            0
+        )
+        mps.add(break_angle)
     
-    if isinstance(rate, ManParm):
-        rate.append(autorotation.get_collector("rate"))
     
-    recovery = ElDef.build(Recovery, f"{name}_recovery", speed=speed,
-                    length=speed * break_angle/break_rate)
+    #pitch break
+    eds.add(ElDef.build(PitchBreak, f"{name}_break", speed=speed, 
+        length=speed * abs(break_angle.value[0])/break_rate, break_angle=break_angle.value[0]))
     
-    eds = ElDefs([pitch_break, autorotation, recovery])
-    
-    if padded:
-        return pad(speed, line_length, eds)
+    #autorotation
+    if isinstance(rolls,ManParm):
+        eds.add(ElDef.build(Autorotation, f"{name}_autorotation_{i}", speed=speed,
+            length=speed*abs(_rolls)*2*np.pi/rate, roll=_rolls))
     else:
-        return eds, ManParms()
+        if isinstance(rolls, Number):
+            rolls = [rolls]
+
+        if not isinstance(rolls, list):
+            raise ValueError(f"Expected a list, number or ManParm, got {rolls}")
+
+        _rolls = ManParm(f"{name}_rolls", Combination.rolllist(rolls, reversible), 0) 
+
+        #TODO this should be combined with roll_combo_f3a
+        for i, r in enumerate(_rolls.value):
+            eds.add(
+                ElDef.build(Autorotation, f"{name}_autorotation_{i}", speed=speed,
+                    length=speed*abs(_rolls.value[i])*2*np.pi/rate, roll=_rolls.value[i])
+            )
+            if isinstance(rate, ManParm):
+                rate.append(eds[-1].get_collector("rate"))
+            if i < _rolls.n - 1 and np.sign(_rolls.value[i]) == np.sign(_rolls.value[i+1]):
+                eds.add(line(
+                    f"{name}_pause_{i+1}",
+                    speed, pause_length, 0
+                ))
+    
+    #recovery
+    eds.add(ElDef.build(Recovery, f"{name}_recovery", speed=speed,
+                    length=speed * abs(break_angle.value[0])/break_rate))
         
+    if padded:
+        eds, _mps =  pad(speed, line_length, eds)
+        mps.add(_mps)
+
+    return eds, mps
+
 
 def spin(name, turns, break_angle, rate, speed, break_rate, reversible):
     

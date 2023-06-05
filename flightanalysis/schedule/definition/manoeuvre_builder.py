@@ -80,6 +80,7 @@ f3amb = ManoeuvreBuilder(
         ManParm("snap_rate", inter_f3a_roll_rate, 4*np.pi),
         ManParm("stallturn_rate", inter_f3a_roll_rate, 2*np.pi),
         ManParm("spin_rate", inter_f3a_roll_rate, 1.7*np.pi),
+        ManParm("ee_pause", inter_f3a_length, 20.0)
     ]),
     mpmaps=dict(
         line=dict(
