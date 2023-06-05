@@ -53,10 +53,19 @@ class Manoeuvre():
         flown = self.get_data(flown)
 
         for elm in self.all_elements:
+            st = elm.get_data(flown)
             elms.append(elm.match_intention(
                 istate.transform, 
-                elm.get_data(flown)
+                st
             ))
+
+            if isinstance(elms[-1], Autorotation):
+                #copy the autorotation pitch offset back to the preceding pitch departure
+                angles = np.arctan2(st.vel.z, st.vel.x)
+                pos_break = max(angles)
+                neg_break = min(angles)
+                elms[-2].break_angle = pos_break if pos_break > -neg_break else neg_break
+
             istate = elms[-1].create_template(istate)[-1]
         
         return Manoeuvre(elms[0], Elements(elms[1:]), self.uid), istate

@@ -77,10 +77,8 @@ class ManDef:
             ElDef: A Line element that will position this manoeuvre correctly.
         """
         itrans = self.info.initial_transform(170, 1) if itrans is None else itrans
-        
-        
+                
         heading = np.sign(itrans.rotation.transform_point(Point(1, 0, 0)).x[0]) # 1 for +ve x heading, -1 for negative x
-        wind = self.info.start.d.get_wind(heading) # is wind in +ve or negative x direction?
 
         #Create a template, at zero
         man = self._create()

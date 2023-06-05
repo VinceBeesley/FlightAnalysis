@@ -72,8 +72,6 @@ def copy_labels(template, flown, path=None) -> State:
 
         return State(flown.data.reset_index(drop=True).join(mans).set_index("t", drop=False))
 
-def remove_labels(st: State):
-    return State(st.data.drop(["manoeuvre", "element", "sub_element"], axis=1, errors="ignore"))
 
 def splitter_labels(self: State, mans: List[dict]) -> State:
         """label the manoeuvres in a State based on the flight coach splitter information
@@ -123,3 +121,8 @@ def get_subelement(self: State, sub_element_name: str):
 def get_element_from_manoeuvre(self: State, manoeuvre_name: str, element_name: str):
     return self.get_manoeuvre(manoeuvre_name).get_element(element_name)
 
+def get_meid(self: State, manid: int, elid: int=None):
+    st = self.get_manoeuvre(self.data.manoeuvre.unique()[manid])
+    if not elid is None:
+        st = st.get_element(st.data.element.unique()[elid])
+    return st

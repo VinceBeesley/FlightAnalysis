@@ -5,7 +5,7 @@ from geometry import Point, Quaternion, Transformation, PX, Q0, P0
 
 
 def move(st: State, transform: Transformation) -> State:
-    return st.copy_labels(State.from_constructs(
+    return State.copy_labels(st, State.from_constructs(
         time=st.time,
         pos=transform.point(st.pos),
         att=transform.rotate(st.att),

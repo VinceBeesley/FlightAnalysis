@@ -46,6 +46,7 @@ class Line(El):
             length=self.length,
             roll=self.roll,
             speed=self.speed,
+            rate=self.rate,
             uid=self.uid
         )
 

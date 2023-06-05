@@ -80,12 +80,13 @@ p23_def = SchedDef([
             BoxLocation(Height.TOP)
         ),[
             f3amb.loop(-np.pi),
-            f3amb.roll("1/2")
+            f3amb.roll("1/2", padded=False)
         ],loop_radius=100),
     f3amb.create(ManInfo("Inverted Spin",  "iSp",  4, Position.CENTRE,
             BoxLocation(Height.TOP, Direction.UPWIND, Orientation.INVERTED),
             BoxLocation(Height.BTM)
         ),[
+            0,
             f3amb.spin(2.5),
             f3amb.line(),
             f3amb.loop(np.pi/2)

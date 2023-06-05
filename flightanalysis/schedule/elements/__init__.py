@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from flightanalysis.state import State
 from geometry import Transformation, PX, PY, PZ, Point, angle_diff, Coord
-from json import load
+from json import load, dumps
 from flightanalysis.criteria import *
 from flightanalysis.base.collection import Collection
 from flightanalysis.base.table import Time
@@ -53,7 +53,8 @@ class El:
             return False
         return np.all([np.isclose(getattr(self, p), getattr(other, p), 0.01) for p in self.__class__.parameters])
 
-    
+    def __repr__(self):
+        return dumps(self.to_dict(), indent=2)
 
     def to_dict(self):
         return dict(type=self.__class__.__name__, **self.__dict__)

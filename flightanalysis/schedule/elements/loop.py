@@ -8,6 +8,7 @@ from flightanalysis.criteria import *
 from . import El, DownGrades, DownGrade
 from typing import Union
 
+
 class Loop(El):
     parameters = El.parameters + "radius,angle,roll,ke,rate".split(",")
 
@@ -153,7 +154,7 @@ class Loop(El):
         return self.set_parms(
             radius=calc_R(x[0], y[0],*center).mean(),
             roll=abs(self.roll) * np.sign(np.mean(flown.rvel.x)),
-            angle=-abs(self.angle) * np.sign(flown.r.mean() if self.ke else flown.q.mean()),
+            angle=abs(self.angle) * np.sign(flown.r.mean() if self.ke else flown.q.mean()),
             speed=abs(flown.vel).mean()
         )
     

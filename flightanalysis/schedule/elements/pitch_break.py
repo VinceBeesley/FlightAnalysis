@@ -23,10 +23,11 @@ class PitchBreak(El):
         ).superimpose_rotation(
             PY(),
             self.break_angle
-        )
+        ).label(element=self.uid)
 
     def describe(self):
         return "pitch break"
+    
     def match_intention(self, transform: Transformation, flown: State):
         jit = flown.judging_itrans(transform)
 
@@ -36,6 +37,9 @@ class PitchBreak(El):
 
         return self.set_parms(
             speed = _speed,
-            length = jit.att.inverse().transform_point(flown.pos - jit.pos).x[-1],
-            break_angle = alphas[-1] - alphas[0]
+            length = max(
+                jit.att.inverse().transform_point(flown.pos - jit.pos).x[-1],
+                5
+            ) ,
+            break_angle = alphas[-1]
         )

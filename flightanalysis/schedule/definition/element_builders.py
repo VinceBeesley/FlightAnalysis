@@ -85,7 +85,7 @@ def roll_f3a(name, rolls, speed, partial_rate, full_rate, pause_length, line_len
         elif isinstance(_rolls, Opp):
             _r=_rolls.a.value[_rolls.item]
 
-        rate = full_rate if abs(_r)>=1 else partial_rate
+        rate = full_rate if abs(_r)>=2*np.pi else partial_rate
 
         eds = ElDefs([roll(f"{name}_roll", speed, rate, _rolls)[0]])
         mps = ManParms()

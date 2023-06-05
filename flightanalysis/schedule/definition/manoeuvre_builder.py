@@ -130,7 +130,7 @@ f3amb = ManoeuvreBuilder(
                 speed="speed",
                 break_angle=np.radians(10),
                 rate="snap_rate",
-                break_rate=3*np.pi,
+                break_rate=2*np.pi,
                 line_length="line_length",
                 padded=True
             )

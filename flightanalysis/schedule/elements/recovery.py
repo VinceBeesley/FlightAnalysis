@@ -23,7 +23,7 @@ class Recovery(El):
         ).superimpose_rotation(
             PY(),
             -np.arctan2(istate.vel.z, istate.vel.x)[-1]
-        )
+        ).label(element=self.uid)
 
     def describe(self):
         return "recovery"
@@ -31,6 +31,6 @@ class Recovery(El):
     def match_intention(self, transform: Transformation, flown: State):
         jit = flown.judging_itrans(transform)
         return self.set_parms(
-            length=jit.att.inverse().transform_point(flown.pos - jit.pos).x[-1],
+            length=max(jit.att.inverse().transform_point(flown.pos - jit.pos).x[-1], 5),
             speed=abs(flown.vel).mean()
         )

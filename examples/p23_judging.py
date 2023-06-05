@@ -1,4 +1,4 @@
-from flightanalysis.data.p23 import create_p23
+from flightanalysis.data.p23 import p23_def
 from flightdata import Flight
 from flightanalysis import State, Box
 from geometry import Transformation
@@ -15,7 +15,6 @@ wind=-1
 
 
 #create the schedule definition, schedule and template
-p23_def = create_p23(wind)
 
 p23, template = p23_def.create_template(flown.pos.y.mean(), wind)
 

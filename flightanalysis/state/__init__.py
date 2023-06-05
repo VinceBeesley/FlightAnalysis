@@ -45,7 +45,7 @@ from .tools.alignment import (
     get_element, 
     get_subelement, 
     get_element_from_manoeuvre,
-    remove_labels
+    get_meid
 )
 #
 State.align = staticmethod(align)
@@ -55,7 +55,7 @@ State.get_manoeuvre = get_manoeuvre
 State.get_element = get_element
 State.get_subelement = get_subelement
 State.get_element_from_manoeuvre = get_element_from_manoeuvre
-State.remove_labels = remove_labels
+State.get_meid = get_meid
 #
 from .tools.conversions import convert_state, to_judging, body_to_wind, judging_to_wind, wind_to_body
 #
