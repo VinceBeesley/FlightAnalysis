@@ -46,7 +46,7 @@ def align(flown, template, radius=5, mirror=True, white=False, weights = Point(1
     return distance, copy_labels(template, flown, path)
 
 
-def copy_labels(template, flown, path) -> State:
+def copy_labels(template, flown, path=None) -> State:
     """Copy the labels from a template section to a flown section along the index warping path
 
     Args:
@@ -57,11 +57,20 @@ def copy_labels(template, flown, path) -> State:
     Returns:
         Section: a labelled section
     """
-    mans = pd.DataFrame(path, columns=["template", "flight"]).set_index("template").join(
-            template.data.reset_index(drop=True).loc[:, ["manoeuvre", "element"]]
-        ).groupby(['flight']).last().reset_index().set_index("flight")
+    keys = [k for k in ["manoeuvre", "element", "sub_element"] if k in template.data.columns]
+    if path is None:
+        return State(
+            pd.concat(
+                [flown.data.reset_index(drop=True), template.data.loc[:,keys].reset_index(drop=True)], 
+                axis=1
+            ).set_index("t", drop=False)
+        )
+    else:
+        mans = pd.DataFrame(path, columns=["template", "flight"]).set_index("template").join(
+                template.data.reset_index(drop=True).loc[:, keys]
+            ).groupby(['flight']).last().reset_index().set_index("flight")
 
-    return State(flown.data.reset_index(drop=True).join(mans).set_index("t", drop=False))
+        return State(flown.data.reset_index(drop=True).join(mans).set_index("t", drop=False))
 
 
 def splitter_labels(self: State, mans: List[dict]) -> State:
@@ -96,12 +105,24 @@ def splitter_labels(self: State, mans: List[dict]) -> State:
         return State.stack(labelled)
 
 
-def get_manoeuvre(self: State, manoeuvre_name: str):
-    return State(self.data.loc[self.data.manoeuvre == manoeuvre_name])
+def get_manoeuvre(self: State, manoeuvre: str):
+    if manoeuvre.__class__.__name__ == "Manoeuvre":
+        manoeuvre = manoeuvre.uid
+    return State(self.data.loc[self.data.manoeuvre == manoeuvre])
 
-def get_element(self: State, element_name: str):
-    return State(self.data.loc[self.data.element == element_name]) 
+def get_element(self: State, element: str):
+    if "El" in [c.__name__ for c in element.__class__.__bases__]:
+        element = element.uid
+    return State(self.data.loc[self.data.element == element]) 
+
+def get_subelement(self: State, sub_element_name: str):
+    return State(self.data.loc[self.data.sub_element == sub_element_name])
 
 def get_element_from_manoeuvre(self: State, manoeuvre_name: str, element_name: str):
     return self.get_manoeuvre(manoeuvre_name).get_element(element_name)
 
+def get_meid(self: State, manid: int, elid: int=None):
+    st = self.get_manoeuvre(self.data.manoeuvre.unique()[manid])
+    if not elid is None:
+        st = st.get_element(st.data.element.unique()[elid])
+    return st

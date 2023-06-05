@@ -6,6 +6,7 @@ from flightanalysis.base.table import Time
 from scipy import optimize
 from flightanalysis.criteria import *
 from . import El, DownGrades, DownGrade
+from typing import Union
 
 
 class Loop(El):
@@ -59,32 +60,31 @@ class Loop(El):
     def rate(self):
         return self.roll * self.speed / (self.angle * self.radius)
 
-    def create_template(self, transform: Transformation) -> State:
-        """generate a template loop State 
+    def create_template(self, istate: State, flown: State=None) -> State:
+        """Generate a template loop. 
 
         Args:
-            transform (Transformation): initial pos and attitude
+            istate (State): initial state
 
         Returns:
             [State]: flight data representing the loop
         """
-
         duration = self.radius * abs(self.angle) / self.speed
-        axis_rate = self.angle / duration
         
-        if axis_rate == 0:
-            raise NotImplementedError()
-
-        state = State.from_transform(
-            transform, 
-            vel=PX(self.speed),
-            rvel=PZ(self.angle / duration) if self.ke else PY(self.angle / duration)
-        ).extrapolate(duration)
+        if self.angle == 0:
+            raise NotImplementedError()      
         
-        return self._add_rolls(state, self.roll)
-
-    def corresponding_template(self, itrans: Transformation, aligned: State):
-        c = self.centre(itrans)
+        v = PX(self.speed) if istate.vel == 0 else istate.vel.scale(self.speed)
+        
+        return self._add_rolls(
+            istate.copy(
+                vel=v,
+                rvel=PZ(self.angle / duration) if self.ke else PY(self.angle / duration)
+            ).fill(
+                El.create_time(duration, flown)
+            ), 
+            self.roll
+        )
 
     @property
     def centre_vector(self) -> Point:
@@ -131,7 +131,6 @@ class Loop(El):
         return abs(flown.pos * Point(1,1,0))
    
     def measure_end_angle(self, flown: State, template:State):
-        
         template_vels = template.att.transform_point(template.vel) * Point(1,1,0)
         flown_vels = flown.att.transform_point(flown.vel) * Point(1,1,0)
         return Point.angle_between(template_vels[-1], flown_vels[-1])
@@ -139,14 +138,11 @@ class Loop(El):
     def match_axis_rate(self, pitch_rate: float):
         return self.set_parms(radius=self.speed / pitch_rate)
 
-    def match_intention(self, itrans: Transformation, flown: State):      
+    def match_intention(self, itrans: Transformation, flown: State):
         jit = flown.judging_itrans(itrans)
         pos = jit.att.transform_point(flown.pos - jit.pos)
 
-        if self.ke:
-            x, y = pos.x, pos.y
-        else:
-            x, y = pos.x, pos.z
+        x, y = (pos.x, pos.y) if self.ke else (pos.x, pos.z)
             
         calc_R = lambda x, y, xc, yc: np.sqrt((x-xc)**2 + (y-yc)**2)
 
@@ -158,8 +154,8 @@ class Loop(El):
         return self.set_parms(
             radius=calc_R(x[0], y[0],*center).mean(),
             roll=abs(self.roll) * np.sign(np.mean(flown.rvel.x)),
-            angle=abs(self.angle) * np.sign(np.sign(np.mean(flown.rvel.y))),
-            speed=np.mean(flown.u)
+            angle=abs(self.angle) * np.sign(flown.r.mean() if self.ke else flown.q.mean()),
+            speed=abs(flown.vel).mean()
         )
     
 

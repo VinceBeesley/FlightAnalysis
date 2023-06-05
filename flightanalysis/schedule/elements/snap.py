@@ -4,17 +4,23 @@ from flightanalysis.state import State
 from flightanalysis.base.table import Time
 from . import El, Line, DownGrades, DownGrade
 from flightanalysis.criteria import *
-
+from typing import Union
 
 class Snap(El):
-    parameters = El.parameters + "rolls,direction,rate,length".split(",")
+    parameters = El.parameters + "rolls,direction,rate,length,break_angle,pitch_rate".split(",")
     break_angle = np.radians(10)
-    def __init__(self, speed:float, rolls: float, rate:float, direction:int=1, uid: str=None):
+    def __init__(self, speed:float, rolls: float, rate:float, direction:int=1, break_angle: float=np.radians(10), pitch_rate:float=10, uid: str=None):
         super().__init__(uid, speed)
         self.rolls = rolls
         self.direction = direction
         self.rate = rate
-
+        self.break_angle = break_angle
+        self.pitch_rate = pitch_rate
+        self._rotation_axis = Euler(
+            0, 
+            self.direction * self.break_angle, 
+            0
+        ).inverse().transform_point(PX())
 
     @property
     def intra_scoring(self):
@@ -43,42 +49,49 @@ class Snap(El):
     def scale(self, factor):
         return self.set_parms(rate=self.rate/factor)        
 
-    def create_template(self, transform: Transformation) -> State: 
-        """Generate a section representing a snap roll, this is compared to a real snap in examples/snap_rolls.ipynb"""
-        
-        break_angle = np.radians(10)
-        pitch_rate = self.rate
-        
-        pitch_break = State.from_transform(
-            transform, 
-            time = Time(0, 1/State._construct_freq),
-            vel=PX(self.speed)
-        ).extrapolate( 
-            2 * np.pi * break_angle / pitch_rate
-        ).superimpose_rotation(PY(), self.direction * break_angle)
-        
-        
-        body_autorotation_axis = Euler(0, self.direction * break_angle, 0).inverse().transform_point(PX())
-        
-        autorotation = pitch_break[-1].copy(rvel=P0()).extrapolate(
-            2 * np.pi * abs(self.rolls) / self.rate
+    def _create_break(self, istate: State, flown: State=None) -> State:
+        return istate.fill( 
+            El.create_time(2 * np.pi * self.break_angle / self.pitch_rate, flown)
         ).superimpose_rotation(
-            body_autorotation_axis, 
+            PY(), 
+            self.direction * self.break_angle
+        )
+
+    def _create_autorotation(self, istate: State, flown: State=None) -> State:
+        
+        return istate.fill(
+            El.create_time(2 * np.pi * abs(self.rolls) / self.rate, flown).reset_zero()
+        ).superimpose_rotation(
+            self._rotation_axis, 
             2 * np.pi * self.rolls,
         )
 
-        correction = autorotation[-1].copy(rvel=P0()).extrapolate( 
-            2 * np.pi * break_angle / pitch_rate
-        ).superimpose_rotation(PY(), -self.direction * break_angle )
-
-        return self._add_rolls(
-            State.stack([
-                pitch_break.label(sub_element="pitch_break"), 
-                autorotation.label(sub_element="autorotation"), 
-                correction.label(sub_element="correction")
-            ]), 
-            0
+    def _create_correction(self, istate: State, flown: State=None) -> State:
+        return istate.fill(
+            El.create_time(2 * np.pi * self.break_angle / self.pitch_rate, flown).reset_zero()
+        ).superimpose_rotation(
+            PY(), 
+            -self.direction * self.break_angle
         )
+
+    def create_template(self, istate: Union[State, Transformation], flown:State=None) -> State:
+        sbr=None
+        sau=None
+        sco=None
+        
+        if flown is not None:
+            sbr = flown.get_subelement("pitch_break")
+            sau = flown.get_subelement("autorotation")
+            sco = flown.get_subelement("correction")
+        
+        istate = El._create_istate(istate, self.speed)
+
+        pitch_break = self._create_break(istate[-1], sbr).label(sub_element="pitch_break")
+        autorotation = self._create_autorotation(pitch_break[-1], sau).label(sub_element="autorotation")
+        correction = self._create_correction(autorotation[-1], sco).label(sub_element="correction")
+
+        return self._add_rolls(State.stack([pitch_break, autorotation, correction]), 0.0)
+
 
     def match_axis_rate(self, snap_rate: float):
         return self.set_parms()  # TODO should probably allow this somehow

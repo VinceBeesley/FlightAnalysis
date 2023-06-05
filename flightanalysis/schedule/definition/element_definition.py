@@ -1,13 +1,14 @@
 import enum
 from typing import List, Callable, Union, Dict
 import numpy as np
-from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn, El, Elements
+from flightanalysis.schedule.elements import *
 from inspect import getfullargspec
 from functools import partial
-from . import ManParm, ManParms, _a, Opp
+from . import ManParm, ManParms, _a, Opp, ItemOpp
 from flightanalysis.base.collection import Collection
 from numbers import Number
 from . import Collector, Collectors
+import inspect
 
 
 class ElDef:
@@ -58,88 +59,28 @@ class ElDef:
 
         return self.Kind(uid=self.name, **kwargs) 
     
-    def build(name, Kind, **kwargs):
+    def build(Kind, name, *args, **kwargs):
+        #if *args are passed, tag them onto kwargs
+        elargs = list(inspect.signature(Kind.__init__).parameters)[1:-1]
+        for arg, argname in zip(args, elargs[:len(args)] ):
+            kwargs[argname] = arg
+        
         ed = ElDef(name, Kind, kwargs)
         
         for key, value in kwargs.items():
             if isinstance(value, ManParm):
                 value.append(ed.get_collector(key))
-            
+            elif isinstance(value, ItemOpp):
+                value.a.assign(value.item, ed.get_collector(key))
+        
         return ed
 
     def rename(self, new_name):
         return ElDef(new_name, self.Kind, self.pfuncs)
-
-    @staticmethod
-    def loop(name:str, ke, s, r, angle, roll):
-        return ElDef.build(
-            name, 
-            Loop, 
-            speed=s,
-            radius=r,
-            angle=angle,
-            roll=roll,
-            ke=ke
-        )
     
-    @staticmethod
-    def line(name:str, s, l, roll):
-        return ElDef.build(
-            name, 
-            Line, 
-            speed=s,
-            length=l,
-            roll=roll
-        )
-
-    @staticmethod
-    def roll(name: str, s, rate, angle):
-        ed = ElDef.line(
-            name, 
-            s,
-            abs(angle) * s / rate,  
-            angle
-        )
-        if isinstance(rate, ManParm):
-            rate.append(ed.get_collector("rate"))
-        return ed
-
-    @staticmethod
-    def snap(name: str, s, rate, roll, direction):
-        return ElDef.build(
-            name,
-            Snap,
-            speed=s,
-            rolls=roll,
-            direction=direction,
-            rate=rate,
-            length=s * 2 * np.pi * (abs(roll) + 2 * Snap.break_angle) / rate
-        )
-
-    @staticmethod
-    def spin(name: str, s, turns, opp_turns, rate):
-        return ElDef.build(
-            name,
-            Spin,
-            speed=s,
-            turns=turns,
-            opp_turns=opp_turns,
-            rate=rate
-        )
-
-    @staticmethod
-    def stallturn(name, s, rate):
-        return ElDef.build(
-            name,
-            StallTurn,
-            speed=s,
-            yaw_rate=rate
-        )
-
     @property
     def id(self):
         return int(self.name.split("_")[1])
-
 
 class ElDefs(Collection):
     VType=ElDef
@@ -154,8 +95,8 @@ class ElDefs(Collection):
 
     def to_dict(self):
         return {v.name: v.to_dict() for v in self}
-
-    def get_new_name(self):
+    
+    def get_new_name(self): 
         new_id = 0 if len(self.data) == 0 else list(self.data.values())[-1].id + 1
         return f"e_{new_id}"
 
@@ -174,28 +115,6 @@ class ElDefs(Collection):
         else:
             return [self.add(e) for e in ed]
 
-    @staticmethod
-    def create_roll_combo(name: str, rolls: ManParm, s, rates, pause):
-        eds = ElDefs()
-        
-        for i in range(rolls.n):
-
-            new_roll = eds.add(ElDef.roll(
-                f"{name}_{i+1}",
-                s,
-                rates[i],
-                rolls[i]
-            ))
-
-            rolls.append(new_roll.get_collector("roll"))
-            
-            if i < rolls.n - 1 and np.sign(rolls.value[i]) == np.sign(rolls.value[i+1]):
-                eds.add(ElDef.line(
-                    f"{name}_{i+1}_pause",
-                    s, pause, 0
-                ))
-            
-        return eds
 
     def builder_list(self, name:str) ->List[Callable]:
         """A list of the functions that return the requested parameter when constructing the elements from the mps"""
@@ -205,11 +124,12 @@ class ElDefs(Collection):
         """A function to return the sum of the requested parameter used when constructing the elements from the mps"""
         return sum(self.builder_list(name))
 
-    def collector_list(self, name: str) -> List[Callable]:
+    def collector_list(self, name: str) -> Collectors:
         """A list of the functions that return the requested parameter from an elements collection"""
-        return [e.get_collector(name) for e in self if f"{e.name}.{name}" in e.collectors]
+        return Collectors([e.get_collector(name) for e in self if f"{e.name}.{name}" in e.collectors.data])
+
 
     def collector_sum(self, name) -> Callable:
         """A function that returns the sum of the requested parameter from an elements collection"""
-        return lambda els : sum(c(els) for c in self.collector_list(name))
+        return sum(self.collector_list(name))
     

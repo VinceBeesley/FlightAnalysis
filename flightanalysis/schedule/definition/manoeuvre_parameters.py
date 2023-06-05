@@ -17,6 +17,9 @@ from . import Collector, Collectors, MathOpp, FunOpp, ItemOpp, Opp
 class ManParm(Opp):
     """This class represents a parameter that can be used to characterise the geometry of a manoeuvre.
     For example, the loop diameters, line lengths, roll direction. 
+    
+    TODO: I think the way this uses the base class is nonsensical - ManParm.parse returns an Opp, not a ManParm.
+    perhaps a manparm should parse args and kwargs to the opp, or something like that.
     """
     def __init__(
         self, 
@@ -35,14 +38,14 @@ class ManParm(Opp):
                 collection. If the manoeuvre was flown correctly these should all be the same. The resulting list 
                 can be passed through the criteria (Comparison callable) to calculate a downgrade.
         """
-        self.name=name
         self.criteria = criteria
         self.default = default
-        
-        self.collectors = Collectors() if collectors is None else collectors
-        assert isinstance(self.collectors,Collectors)
+        self.collectors = collectors
+        if self.collectors is None:
+            self.collectors = Collectors()
         self.n = len(self.criteria.desired[0]) if isinstance(self.criteria, Combination) else None
-
+        super().__init__(name)
+        
     def to_dict(self):
         return dict(
             name = self.name,
@@ -68,6 +71,9 @@ class ManParm(Opp):
                 self.append(coll)
         else:
             raise ValueError(f"expected a Collector or Collectors not {collector.__class__.__name__}")
+
+    def assign(self, id, collector):
+        self.collectors.data[id] = collector
 
     def collect(self, els):
         return np.array([collector(els) for collector in self.collectors])
@@ -105,6 +111,13 @@ class ManParm(Opp):
     def __getitem__(self, i):
         return ItemOpp(self, i)
 
+    def copy(self):
+        return ManParm(self.name, self.criteria, self.default, self.collectors.copy())
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({str(self)} = {self.value})"
+
+
 
 
 class ManParms(Collection):
@@ -131,25 +144,6 @@ class ManParms(Collection):
         for mp, col in colls.items():
             self.data[mp].append(col)
 
-    @staticmethod
-    def create_defaults_f3a(**kwargs):
-        mps = ManParms([
-            ManParm("speed", inter_f3a_speed, 30.0),
-            ManParm("loop_radius", inter_f3a_radius, 55.0),
-            ManParm("line_length", inter_f3a_length, 130.0),
-            ManParm("point_length", inter_f3a_length, 10.0),
-            ManParm("continuous_roll_rate", inter_f3a_roll_rate, np.pi/2),
-            ManParm("partial_roll_rate", inter_f3a_roll_rate, np.pi/2),
-            ManParm("snap_rate", inter_f3a_roll_rate, 4*np.pi),
-            ManParm("stallturn_rate", inter_f3a_roll_rate, 2*np.pi),
-            ManParm("spin_rate", inter_f3a_roll_rate, 2*np.pi),
-        ])
-        for k,v in kwargs.items():
-            if isinstance(v, Number):
-                mps.data[k].default = v
-            elif isinstance(v, ManParm):
-                mps.data[k] = v
-        return mps
 
     def update_defaults(self, intended: Manoeuvre):
         """Pull the parameters from a manoeuvre object and update the defaults of self based on the result of 
@@ -165,17 +159,10 @@ class ManParms(Collection):
                 if isinstance(mp.criteria, Combination):
                     default = mp.criteria.check_option(flown_parm)
                 else:
-                    default = np.mean(flown_parm)
+                    default = np.mean(np.abs(flown_parm)) * np.sign(mp.default)
                 mp.default = default
             
                 
-
-class MPValue:
-    def __init__(self, value, minval, maxval, slope):
-        self.value = value
-        self.minval = minval
-        self.maxval = maxval
-        self.slope = slope
-
-
-
+    def remove_unused(self):
+        return ManParms([mp for mp in self if len(mp.collectors) > 0])
+        

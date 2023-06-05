@@ -1,23 +1,49 @@
 from flightanalysis.schedule.elements import Spin
-import unittest
-from geometry import Transformation, Points, Point, Quaternion
+from geometry import Transformation, Point, Quaternion, PZ, PX
 import numpy as np
 import pandas as pd
-import pytest
+from pytest import fixture, approx
 
-def test_create_template():
-    template = Spin(-1).scale(
-        100.0).create_template(Transformation(), 10.0)
+
+@fixture
+def spin():
+    return Spin(30.0, -1)
+
+@fixture
+def nose_drop(spin):
+    return spin._create_nose_drop(Transformation())
+
+def test_create_nose_drop(spin, nose_drop):
+    assert Point.angle_between(
+        nose_drop[-1].att.transform_point(PX()),
+        PZ(-1)
+    )[0] == approx(spin.break_angle)
+
+@fixture
+def autorotation(spin, nose_drop):
+    return spin._create_autorotation(nose_drop[-1].transform)
+
+def test_create_autorotation(spin, autorotation):
+    np.testing.assert_allclose(
+        Point.angle_between(autorotation.vel, PX(30.0)),
+        spin.break_angle
+    )
+
+
+def test_create_template(spin):
+    template = spin.create_template(Transformation())
 
     assert np.any(pd.isna(template.rvel)) == False
     assert template[-1].pos.z < 0
 
-    assert template[-1].att.transform_point(Point(0,0,1)).x== pytest.approx(1)
+    assert template[-1].att.transform_point(Point(0,0,1)).x== approx(1)
 
-@pytest.mark.skip("This test should no longer pass")
-def test_match_axis_rate():
-    template = Spin(1, 1).scale(100.0).match_axis_rate(10.0, 30.0).create_template(Transformation(), 30.0)
-    
-    assert template.rvel.x.max() == pytest.approx(10.0)
-    #assert np.sqrt(np.abs(template.grvel.x).max() **2 + np.abs(template.grvel.z).max() ** 2) == approx(10.0)
 
+@fixture
+def template(spin):
+    return spin.create_template(Transformation())
+
+def test_sub_elements(template):
+    assert np.all(
+        ["nose_drop", "autorotation", "correction"] in template.data.sub_element.unique()
+    )

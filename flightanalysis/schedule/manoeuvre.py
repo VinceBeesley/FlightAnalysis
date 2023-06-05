@@ -31,19 +31,21 @@ class Manoeuvre():
     def all_elements(self):
         return Elements([self.entry_line, *self.elements.to_list()]) if not self.entry_line is None else self.elements
 
-    def create_template(self, transform: Transformation) -> State:
-        itrans = transform
+    def create_template(self, initial: Union[Transformation, State]) -> State:
+        
+        istate = State.from_transform(initial, vel=PX()) if isinstance(initial, Transformation) else initial
+        
         templates = []
         for i, element in enumerate(self.all_elements):
-            templates.append(element.create_template(itrans))
-            itrans = templates[-1][-1].transform
+            templates.append(element.create_template(istate))
+            istate = templates[-1][-1]
         
         return State.stack(templates).label(manoeuvre=self.uid)
 
     def get_data(self, st: State):
         return st.get_manoeuvre(self.uid)
 
-    def match_intention(self, transform: Transformation, flown: State):
+    def match_intention(self, istate: State, flown: State):
         """Create a new manoeuvre with all the elements scaled to match the corresponding 
         flown element"""
 
@@ -51,20 +53,22 @@ class Manoeuvre():
         flown = self.get_data(flown)
 
         for elm in self.all_elements:
+            st = elm.get_data(flown)
             elms.append(elm.match_intention(
-                transform, 
-                elm.get_data(flown)
+                istate.transform, 
+                st
             ))
-            try:
-                transform = elms[-1].create_template(
-                    transform
-                )[-1].transform
-            except Exception as ex:
-                print(f"Error creating template for {elm.__class__.__name__}, {elm.__dict__}")
-                print(str(ex))
-                raise Exception("Error Creating Template")
 
-        return Manoeuvre(elms[0], Elements(elms[1:]), self.uid), transform
+            if isinstance(elms[-1], Autorotation):
+                #copy the autorotation pitch offset back to the preceding pitch departure
+                angles = np.arctan2(st.vel.z, st.vel.x)
+                pos_break = max(angles)
+                neg_break = min(angles)
+                elms[-2].break_angle = pos_break if pos_break > -neg_break else neg_break
+
+            istate = elms[-1].create_template(istate)[-1]
+        
+        return Manoeuvre(elms[0], Elements(elms[1:]), self.uid), istate
 
     def match_rates(self, rates):
         new_elms = [elm.match_axis_rate(rates[elm.__class__], rates["speed"]) for elm in self.elements]
@@ -88,3 +92,6 @@ class Manoeuvre():
             tp = el.get_data(template).relocate(fl.pos[0])
             ers.append(ElResults(el, el.analyse(fl, tp)))
         return ElementsResults(ers)
+
+    def descriptions(self):
+        return [e.describe() for e in self.elements]

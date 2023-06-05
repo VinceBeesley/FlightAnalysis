@@ -2,10 +2,11 @@ import numpy as np
 import pandas as pd
 from flightanalysis.state import State
 from geometry import Transformation, PX, PY, PZ, Point, angle_diff, Coord
-from json import load
+from json import load, dumps
 from flightanalysis.criteria import *
 from flightanalysis.base.collection import Collection
-
+from flightanalysis.base.table import Time
+from typing import Union
 
 class DownGrade:
     def __init__(self, name, measurement, criteria):
@@ -30,7 +31,7 @@ class DownGrades(Collection):
 
 class El:   
     parameters = ["speed"]
-    
+
     def __init__(self, uid: str, speed: float):        
         self.uid = uid
         if speed < 0:
@@ -42,7 +43,7 @@ class El:
 
     def _add_rolls(self, el: State, roll: float) -> State:
         if not roll == 0:
-            el = el.superimpose_roll(roll)
+            el = el.superimpose_rotation(PX(), roll)
         return el.label(element=self.uid)
 
     def __eq__(self, other):
@@ -50,16 +51,23 @@ class El:
             return False
         if not self.uid == other.uid:
             return False
-        return np.all([getattr(parm, self) == other.getattr(parm, other) for parm in self.__class__.parameters])
+        return np.all([np.isclose(getattr(self, p), getattr(other, p), 0.01) for p in self.__class__.parameters])
+
+    def __repr__(self):
+        return dumps(self.to_dict(), indent=2)
 
     def to_dict(self):
         return dict(type=self.__class__.__name__, **self.__dict__)
 
     def set_parms(self, **parms):
-        new_inst = self.__class__(**self.__dict__)
+        kwargs = {k:v for k, v in self.__dict__.items() if not k[0] == "_"}
+
         for key, value in parms.items():
-            setattr(new_inst, key, value)
-        return new_inst
+            if key in kwargs:
+                kwargs[key] = value
+        
+        return self.__class__(**kwargs)
+
 
     def setup_analysis_state(self, flown: State, template:State):
         """Change the reference coordinate frame for a flown element to the
@@ -132,6 +140,15 @@ class El:
         z_vector = PY(1.0) if abs(x_vector.y[0]) < 0.1 else PX(1.0)
         return Coord.from_zx(template[0].pos, z_vector, x_vector)
 
+    @staticmethod
+    def create_time(duration: float, flown: State=None):
+        if flown is None:
+            n = int(np.ceil(duration * State._construct_freq))
+            return Time.from_t(
+                np.linspace(0, duration, n if n > 1 else n+1))
+        else:
+            return flown.time.reset_zero().scale(duration)
+
     @property
     def exit_scoring(self):
         return DownGrades([
@@ -140,30 +157,8 @@ class El:
             DownGrade("roll_angle", "measure_end_roll_angle", basic_angle_f3a),
         ])
 
-from .line import Line
-from .loop import Loop
-from .snap import Snap
-from .spin import Spin
-from .stall_turn import StallTurn
-
-els = {c.__name__.lower(): c for c in El.__subclasses__()}
-
-El.from_name = lambda name: els[name.lower()]
-
-def from_dict(data):
-    kind = data.pop("kind")
-    return els[kind](**data)
-
-El.from_dict = staticmethod(from_dict)
-
-def from_json(file):
-    with open(file, "r") as f:
-        return El.from_dict(load(f))
-
-El.from_json = from_json
 
 from flightanalysis.base.collection import Collection
-
 
 class Elements(Collection):
     VType=El
@@ -195,6 +190,32 @@ class ElementsResults(Collection):
     def downgrade_list(self):
         return [er.results.downgrade() for er in self]
     
+
+from .line import Line
+from .loop import Loop
+from .snap import Snap
+from .spin import Spin
+from .stall_turn import StallTurn
+from .nose_drop import NoseDrop
+from .pitch_break import PitchBreak
+from .recovery import Recovery
+from .autorotation import Autorotation
+
+els = {c.__name__.lower(): c for c in El.__subclasses__()}
+
+El.from_name = lambda name: els[name.lower()]
+
+def from_dict(data):
+    kind = data.pop("kind")
+    return els[kind](**data)
+
+El.from_dict = staticmethod(from_dict)
+
+def from_json(file):
+    with open(file, "r") as f:
+        return El.from_dict(load(f))
+
+El.from_json = from_json
 
 
     

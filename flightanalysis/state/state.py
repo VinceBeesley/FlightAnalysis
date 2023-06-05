@@ -33,15 +33,16 @@ def make_racc(sec) -> Point:
     else:
         return P0()
 
+
 class State(Table):
-    constructs = Table.constructs + Constructs(dict(
-        pos  = SVar(Point,       ["x", "y", "z"]           , lambda self: P0(len(self))       ), 
-        att  = SVar(Quaternion,  ["rw", "rx", "ry", "rz"]  , lambda self : Q0(len(self))       ),
-        vel  = SVar(Point,       ["u", "v", "w"]           , make_bvel  ),
-        rvel = SVar(Point,       ["p", "q", "r"]           , make_rvel ),
-        acc  = SVar(Point,       ["du", "dv", "dw"]        , make_bacc  ),
-        racc = SVar(Point,       ["dp", "dq", "dr"]        , make_racc ),
-    ))
+    constructs = Table.constructs + Constructs([
+        SVar("pos", Point,       ["x", "y", "z"]           , lambda self: P0(len(self))       ), 
+        SVar("att", Quaternion,  ["rw", "rx", "ry", "rz"]  , lambda self : Q0(len(self))       ),
+        SVar("vel", Point,       ["u", "v", "w"]           , make_bvel  ),
+        SVar("rvel", Point,       ["p", "q", "r"]           , make_rvel ),
+        SVar("acc", Point,       ["du", "dv", "dw"]        , make_bacc  ),
+        SVar("racc", Point,       ["dp", "dq", "dr"]        , make_racc ),
+    ])
     _construct_freq = 30
 
     @property
@@ -52,13 +53,13 @@ class State(Table):
     def back_transform(self):
         return Transformation(-self.pos, self.att.inverse())
      
-
-    def from_transform(transform: Transformation, **kwargs): 
-        if not "time" in kwargs:
-            kwargs["time"] = Time.from_t(np.linspace(0, 30*len(transform), len(transform)))
+    @staticmethod
+    def from_transform(transform: Transformation, **kwargs):
+        if not "time" in kwargs: 
+            kwargs["time"] = Time.from_t(np.linspace(0, State._construct_freq*len(transform), len(transform)))
         return State.from_constructs(pos=transform.p, att=transform.q, **kwargs)
 
-    def body_to_world(self, pin: Point) -> Point:
+    def body_to_world(self, pin: Point, rotation_only=False) -> Point:
         """Rotate a point in the body frame to a point in the data frame
 
         Args:
@@ -67,5 +68,13 @@ class State(Table):
         Returns:
             Point: Point in the world
         """
-        return self.transform.point(pin)
+        if rotation_only:
+            return self.transform.rotate(pin)
+        else:
+            return self.transform.point(pin)
 
+    def world_to_body(self, pin: Point, rotation_only=False) -> Point:
+        if rotation_only:
+            self.back_transform.rotate(pin)
+        else:
+            return self.back_transform.point(pin)

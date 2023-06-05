@@ -35,3 +35,5 @@ class Single:
     @staticmethod
     def from_dict(data:dict):
         return Single(eval(data["lookup"]),eval(data["preprocess"]))
+    
+    

@@ -1,4 +1,6 @@
 from typing import Dict, List, Union, Any
+import numpy as np
+import pandas as pd
 
 
 class Collection:
@@ -18,10 +20,13 @@ class Collection:
     def __getitem__(self, key: Union[int, str]):
         if isinstance(key, int): 
             return list(self.data.values())[key]
+        elif isinstance(key, slice):
+            return self.__class__(list(self.data.values())[key])
         elif isinstance(key, str):
             return self.data[key]
         elif isinstance(key, self.__class__.VType):
             return self.data[getattr(key, self.__class__.uid)]
+        raise ValueError(f"Invalid Key or Indexer {key}")
 
     def __iter__(self):
         for v in self.data.values():
@@ -45,7 +50,12 @@ class Collection:
         return cls([cls.VType.from_dict(v) for v in vals.values()])
     
     def add(self, v):
-        self.data[getattr(v, self.uid)] = v
+        if v is None:
+            return self
+        elif isinstance(v, self.VType):
+            self.data[getattr(v, self.uid)] = v
+        elif isinstance(v, self.__class__):
+            return self.__class__(dict(**self.data, **v.data))
         return v
 
     def next_free_name(self, prefix: str):
@@ -55,4 +65,15 @@ class Collection:
         else:
             return f"{prefix}{i}"
 
+    def copy(self):
+        return self.__class__([v.copy() for v in self])
     
+    def __str__(self) -> str:
+        return str(pd.Series({k: str(v) for k, v in self.data.items()}))
+    
+    def __repr__(self) -> str:
+        contents = str(pd.Series({k: repr(v) for k, v in self.data.items()}))
+        return f"{self.__class__.__name__}\n{contents}"
+    
+    def __len__(self) -> int:
+        return len(self.data)

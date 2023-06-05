@@ -1,7 +1,6 @@
 import numpy as np
-import unittest
+from flightanalysis import State
 from flightanalysis.schedule.elements import El
-import pytest
 
 
 class SubEl(El):
@@ -12,18 +11,14 @@ class SubEl(El):
 
 
 
-def test_uid():
-    El.reset_counter()
-    se = SubEl(30, 2, 3)
-    assert se.uid == 1
-
-    se = SubEl(30, 2, 3)
-    assert se.uid == 2
-
-
 def test_set_parms():
     se = SubEl(30, 2, 3)
     se2 = se.set_parms(arg1=4)
     assert se2.arg1 == 4
     assert se2.arg2 == 3
     assert isinstance(se2, SubEl)
+
+
+def test_create_time_basic():
+    t = El.create_time(10, None)
+    assert len(t) == np.ceil(10 * State._construct_freq)

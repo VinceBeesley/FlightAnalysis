@@ -30,10 +30,10 @@ class Air(Base):
 
 
 class Environment(Table):
-    constructs = Table.constructs + Constructs(dict(
-        atm = SVar(Air, ["P", "T", "rho"], lambda tab: Air.iso_sea_level(len(tab))),
-        wind = SVar(Point, ["wvx", "wvy", "wvz"], lambda tab: P0(len(tab)))
-    ))
+    constructs = Table.constructs + Constructs([
+        SVar("atm", Air, ["P", "T", "rho"], lambda tab: Air.iso_sea_level(len(tab))),
+        SVar("wind", Point, ["wvx", "wvy", "wvz"], lambda tab: P0(len(tab)))
+    ])
 
     @staticmethod
     def build(flight: Flight, sec: State, wmodel: WindModel):

@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from geometry import Transformation, Point, PX, PY, PZ
+from geometry import Transformation, Point, PX, PY, PZ, P0
 from flightanalysis.state import State
     
 from . import El, DownGrades, DownGrade
@@ -30,13 +30,10 @@ class StallTurn(El):
     def describe(self):
         return f"stallturn, yaw rate = {self.yaw_rate}"
 
-    def scale(self, factor):
-        return self.set_parms()
-
-    def create_template(self, transform: Transformation):
+    def create_template(self, istate: State, flown: State=None) -> State:
         return self._add_rolls(
-            State.from_transform(transform, vel=Point.zeros()).extrapolate( 
-                np.pi / abs(self.yaw_rate)
+            istate.copy(rvel=P0() ,vel=P0()).fill( 
+                El.create_time(np.pi / abs(self.yaw_rate), flown)
             ).superimpose_rotation(
                 PZ(), 
                 np.sign(self.yaw_rate) * np.pi
@@ -49,7 +46,7 @@ class StallTurn(El):
 
     def match_intention(self, transform: Transformation, flown: State):
         return self.set_parms(
-            yaw_rate=flown.r.max(), 
+            yaw_rate=flown.data.r[flown.data.r.abs().idxmax()]
         )
 
     def copy_direction(self, other):

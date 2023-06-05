@@ -28,10 +28,10 @@ class Surfaces(Base):
 
 
 class Controls(Table):
-    constructs = Table.constructs + Constructs(dict(
-        surfaces = SVar(Surfaces),
-        channels = SVar(Channels)
-    ))
+    constructs = Table.constructs + Constructs([
+        SVar("surfaces", Surfaces),
+        SVar("channels", Channels)
+    ])
 
 
     def build(flight: Union[Flight, str], conversion):

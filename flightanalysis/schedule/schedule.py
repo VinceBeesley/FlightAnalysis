@@ -1,5 +1,5 @@
 from . import Manoeuvre
-from geometry import Transformation
+from geometry import Transformation, PX
 from flightanalysis.state import State
 import numpy as np
 from flightanalysis.base.collection import Collection
@@ -31,15 +31,17 @@ class Schedule(Collection):
         """resize every element of the schedule to best fit the corresponding element in a labelled State
 
         Args:
+            itrans (Transformation): Transformation to first point of template 
             alinged (State): labelled flight data
 
         Returns:
             Schedule: new schedule with all the elements resized
         """
         _mans = []
+        istate = State.from_transform(Transformation(alinged[0].pos,itrans.att), vel=PX(self[0].elements[0].speed))
         for i, man in enumerate(self):
-            man, transform = man.match_intention(
-                transform if i>0 else Transformation(alinged[0].pos,itrans.att), 
+            man, istate = man.match_intention(
+                istate, 
                 man.get_data(alinged)
             )
             _mans.append(man)

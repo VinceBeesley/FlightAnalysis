@@ -30,8 +30,12 @@ class Collector(Opp):
             pname=self.pname
         )
 
+    def copy(self):
+        return Collector(self.elname, self.pname)
+
+
 class Collectors(Collection):
-    VType=Collector
+    VType=Opp
     uid="name"
 
     def __str__(self):
@@ -54,3 +58,4 @@ class Collectors(Collection):
         for d in data:
             coll.add(Collector.parse(d, coll))
         return coll
+    
