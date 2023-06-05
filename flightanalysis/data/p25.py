@@ -215,10 +215,10 @@ if __name__ == "__main__":
     p25, template = p25_def.create_template(170, 1)
     from flightplotting import plotsec
     
-    #plotsec(template, nmodels=5).show()
+    plotsec(template, nmodels=5).show()
 
-    fcj = template.create_fc_json(p25_def, "P25")
+    #fcj = template.create_fc_json(p25_def, "P25")
 
-    from json import dump
-    with open("test.json", "w") as f:
-        dump(fcj, f)
+#    from json import dump
+#    with open("test.json", "w") as f:
+#        dump(fcj, f)

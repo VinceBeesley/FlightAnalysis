@@ -17,6 +17,8 @@ from . import Collector, Collectors, MathOpp, FunOpp, ItemOpp, Opp
 class ManParm(Opp):
     """This class represents a parameter that can be used to characterise the geometry of a manoeuvre.
     For example, the loop diameters, line lengths, roll direction. 
+    
+    TODO: I think the way this uses the base class is nonsensical, as ManParm.parse returns an Opp, not a ManParm
     """
     def __init__(
         self, 

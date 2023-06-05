@@ -2,6 +2,10 @@
 from flightanalysis.schedule.definition import *
 from flightanalysis.schedule.elements import *
 from flightanalysis.criteria import *
+import numpy as np
+
+c45 = np.cos(np.radians(45))
+
 
 p23_def = SchedDef([
     f3amb.create(ManInfo(
@@ -44,7 +48,7 @@ p23_def = SchedDef([
             f3amb.loop(np.pi/2),
             f3amb.roll("1/2"),
             f3amb.loop(-np.pi/4)
-        ], line_length=130*np.cos(np.radians(45))),
+        ], line_length=130*c45),
     f3amb.create(ManInfo("45 Upline Snaps", "upL", 5, Position.CENTRE,
             BoxLocation(Height.BTM, Direction.UPWIND, Orientation.INVERTED),
             BoxLocation(Height.TOP)
@@ -52,7 +56,7 @@ p23_def = SchedDef([
             f3amb.loop(-np.pi/4),
             f3amb.snap(1.5),
             f3amb.loop(-np.pi/4) 
-        ], line_length=110 + 130/np.cos(np.radians(45))),
+        ], line_length=110 + 130/c45),
     f3amb.create(ManInfo("Half 8 Sided Loop", "h8L", 3, Position.END,
             BoxLocation(Height.TOP, Direction.UPWIND, Orientation.UPRIGHT),
             BoxLocation(Height.BTM)
@@ -116,7 +120,7 @@ p23_def = SchedDef([
             BoxLocation(Height.TOP)
         ),[
             f3amb.loop(-np.pi/4),
-            f3amb.roll([np.pi, -np.pi], line_length="(2*loop_radius)"),
+            f3amb.roll([np.pi, -np.pi], line_length=str(2*f3amb.mps.loop_radius)),
             f3amb.loop(7*np.pi/4),
             f3amb.roll("2x4", line_length=100),
             f3amb.loop(-np.pi/2)
@@ -177,15 +181,15 @@ p23_def = SchedDef([
             BoxLocation(Height.BTM)
         ),[
             f3amb.roll("1/2", padded=False),
-            f3amb.line(length="roll_gap"),
+            f3amb.line(length=str(f3amb.mps.line_length*c45-0.5*np.pi*f3amb.mps.speed/f3amb.mps.partial_roll_rate)),
             f3amb.loop(-np.pi*3/4),
             f3amb.roll("2x4"),
             f3amb.loop(np.pi/2),
             f3amb.roll("2x4"),
             f3amb.loop(-np.pi*3/4),
-            f3amb.line(length="roll_gap"),
+            f3amb.line(length=str(f3amb.mps.line_length*c45-0.5*np.pi*f3amb.mps.speed/f3amb.mps.partial_roll_rate)),
             f3amb.roll("1/2", padded=False)
-        ], roll_gap="((line_length*0.7071067811865476)-(1.5707963267948966*(speed/partial_roll_rate)))"),
+        ]),
     f3amb.create(ManInfo("Shark Fin", "sFin", 3,Position.END,
             BoxLocation(Height.BTM, Direction.DOWNWIND, Orientation.UPRIGHT),
             BoxLocation(Height.BTM)
@@ -193,7 +197,7 @@ p23_def = SchedDef([
             f3amb.loop(np.pi/2),
             f3amb.roll("1/2", line_length=80),
             f3amb.loop(-np.pi*3/4),
-            f3amb.roll("2X4", line_length=80/np.cos(np.radians(45)) + 60),
+            f3amb.roll("2X4", line_length=80/c45 + 60),
             f3amb.loop(-np.pi/4),
         ],loop_radius=30),
     f3amb.create(ManInfo("Loop", "loop", 3,Position.CENTRE,
