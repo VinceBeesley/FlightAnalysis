@@ -27,17 +27,34 @@ class Manoeuvre():
     def from_all_elements(uid:str, els: List[El]):
         return Manoeuvre(els[0], els[1:], uid)
 
-    @property
-    def all_elements(self):
-        return Elements([self.entry_line, *self.elements.to_list()]) if not self.entry_line is None else self.elements
+    def all_elements(self, exit_line=False):
+        els = []
 
-    def create_template(self, initial: Union[Transformation, State]) -> State:
+        if not self.entry_line is None:
+            els.append(self.entry_line)
+        else:
+            els.append(Line(self.elements[0].speed, 30, 0, "entry_line"))
+
+        for el in self.elements:
+            els.append(el)
+
+        if exit_line:
+            els.append(Line(els[-1].speed, 30, 0, "exit_line"))
+        
+        return Elements(els)
+
+
+    def create_template(self, initial: Union[Transformation, State], flown:State=None) -> State:
         
         istate = State.from_transform(initial, vel=PX()) if isinstance(initial, Transformation) else initial
         
         templates = []
-        for i, element in enumerate(self.all_elements):
-            templates.append(element.create_template(istate))
+        els = self.all_elements()
+        for i, element in enumerate(els):
+            time = element.get_data(flown).time if not flown is None else None
+            if i < len(els)-1 and not time is None:
+                time = time.extend()
+            templates.append(element.create_template(istate, time))
             istate = templates[-1][-1]
         
         return State.stack(templates).label(manoeuvre=self.uid)
@@ -52,7 +69,7 @@ class Manoeuvre():
         elms = []
         flown = self.get_data(flown)
 
-        for elm in self.all_elements:
+        for elm in self.all_elements():
             st = elm.get_data(flown)
             elms.append(elm.match_intention(
                 istate.transform, 

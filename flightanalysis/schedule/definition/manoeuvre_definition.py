@@ -18,7 +18,7 @@ TODO Define a serialisation format
 import enum
 from typing import List, Dict, Callable, Union, Tuple
 import numpy as np
-from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn, El, Elements
+from flightanalysis.schedule.elements import Loop, Line, StallTurn, El, Elements
 from flightanalysis.schedule.manoeuvre import Manoeuvre
 from flightanalysis.schedule.definition.manoeuvre_info import ManInfo
 from flightanalysis.schedule.definition.collectors import Collectors

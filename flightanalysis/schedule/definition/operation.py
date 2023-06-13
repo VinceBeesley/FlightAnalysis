@@ -65,8 +65,26 @@ class Opp:
 
 
     @staticmethod
-    def parse(inp, coll:Collection, name=None):
+    def parse_f(inp, parser, name=None):
         """Parse a an Operation from a string"""
+        for test in [
+            lambda inp : FunOpp.parse_f(inp, parser, name),
+            lambda inp : MathOpp.parse_f(inp, parser, name),
+            lambda inp : ItemOpp.parse_f(inp, parser, name),
+            lambda inp : float(inp),
+            lambda inp : literal_eval(inp)
+        ]: 
+            try: 
+                return test(inp.strip(" "))
+            except ValueError:
+                continue
+        else:
+            return parser(inp)
+
+    @staticmethod
+    def parse(inp, coll:Collection, name=None):
+        """Parse a an Operation from a string
+        TODO move to the subclass and call parse_f"""
         for test in [
             lambda inp, mps : FunOpp.parse(inp, coll, name),
             lambda inp, mps : MathOpp.parse(inp, coll, name),
@@ -80,7 +98,6 @@ class Opp:
                 continue
         else:
             return coll[inp]
-
 
 class MathOpp(Opp):
     """This class facilitates various ManParm opperations and their serialisation"""
@@ -104,6 +121,24 @@ class MathOpp(Opp):
 
     def __str__(self):
         return f"({str(self.a)}{self.opp}{str(self.b)})"
+
+    @staticmethod
+    def parse_f(inp:str, parser, name:str=None):
+        if inp[0] == "(" and inp[-1] == ")":
+            bcount = 0
+            for i, l in enumerate(inp):
+                bcount += 1 if l=="(" else 0
+                bcount -=1 if l==")" else 0
+            
+                if bcount == 1 and l in MathOpp.opps:
+                    return MathOpp(
+                        Opp.parse_f(inp[1:i], parser, name),
+                        Opp.parse_f(inp[i+1:-1], parser, name),
+                        l,
+                        name
+                    )
+                    
+        raise ValueError(f"cannot read an MathOpp from the outside of {inp}")
 
     @staticmethod
     def parse(inp:str, coll: Collection, name:str=None):
@@ -143,6 +178,19 @@ class FunOpp(Opp):
         return f"{self.opp}({str(self.a)})"
 
     @staticmethod 
+    def parse_f(inp: str, parser, name=None):
+        for fun in FunOpp.funs:
+            if len(fun) >= len(inp) - 2:
+                continue
+            if fun == inp[:len(fun)]:
+                return FunOpp(
+                    Opp.parse_f(inp[len(fun)+1:-1], parser, name), 
+                    fun,
+                    name
+                )
+        raise ValueError(f"cannot read a FunOpp from the outside of {inp}")
+
+    @staticmethod 
     def parse(inp: str, coll: Collection, name=None):
         for fun in FunOpp.funs:
             if len(fun) >= len(inp) - 2:
@@ -168,6 +216,18 @@ class ItemOpp(Opp):
     
     def __str__(self):
         return f"{self.a.name}[{self.item}]"
+
+    @staticmethod
+    def parse_f(inp: str, parser, name:str=None):
+        contents = inp.split("[")
+        if not len(contents) == 2:
+            raise ValueError
+        return ItemOpp(
+            Opp.parse_f(contents[0], parser, name), 
+            int(contents[1][:-1]), 
+            name
+        )
+
 
     @staticmethod
     def parse(inp: str, coll: Collection, name:str=None):

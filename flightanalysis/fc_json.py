@@ -7,10 +7,10 @@ from flightdata import Flight
 def parse_fcj(data: dict):
     flight = Flight.from_fc_json(data)
     box = Box.from_fcjson_parmameters(data["parameters"])
-    state = State.from_flight(flight, box)
+    state = State.from_flight(flight, box).splitter_labels(data["mans"])
     
-    return state.splitter_labels(data["mans"]), get_schedule_definition(data["parameters"]["schedule"][1])
-
+    sdef = get_schedule_definition(data["parameters"]["schedule"][1])
+    return state, sdef
 #
 #
 #class FCJson:

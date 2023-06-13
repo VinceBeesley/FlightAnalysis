@@ -11,21 +11,19 @@ import dill as pickle
 
 @fixture(scope="session")
 def vline():
-    md = ManDef(ManInfo(
-            "Vertical Line", 
-            "vline", 
-            2,
+    return f3amb.create(ManInfo("Vertical Line", "vline", 2,
             Position.CENTRE,
             BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),
             BoxLocation(Height.BTM)
-    ))
+        ),
+        [
+            f3amb.loop(-np.pi/2),
+            f3amb.roll("1/2"),
+            f3amb.loop(np.pi/2),    
+        ]
+    )
 
-    p1 = md.add_loop(-np.pi/2)
-    p2 = md.add_simple_roll("1/2")
-    p3 = md.add_loop(np.pi/2)
     
-    return md
-
 
 @fixture(scope="session")
 def man(vline):
@@ -57,9 +55,13 @@ def test_to_from_dict(vline):
     assert np.all(downgrades.speed.downgrades==0)
 
 
-@fixture(scope="session")
-def ulsnap():
-    return upL()
+@fixture
+def p23_def_dict():
+    with open("flightanalysis/data/p23.json", "r") as f:
+        return load(f)
 
-def test_upl(ulsnap):
+
+def test_mdef_parse_dict(p23_def_dict):
+    iSp = ManDef.from_dict(p23_def_dict["trgle"])
     pass
+

@@ -30,11 +30,12 @@ class Time(Base):
     def reset_zero(self):
         return Time(self.t - self.t[0], self.dt)
 
-
     @staticmethod
     def now():
         return Time.from_t(time())
 
+    def extend(self):
+        return Time.concatenate([self, Time(self.t[-1] + self.dt[-1], self.dt[-1])])
 
 
 def make_time(tab):
@@ -145,8 +146,8 @@ class Table:
     def remove_labels(self):
         return self.__class__(
             self.data.drop(
-                [c for c in self.data.columns if not c in self.constructs.cols], 
-                1, 
+                [c for c in self.data.columns if not c in self.constructs.cols()], 
+                axis=1, 
                 errors="ignore"
             )
         )

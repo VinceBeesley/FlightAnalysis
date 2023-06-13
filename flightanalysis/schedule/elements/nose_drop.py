@@ -19,13 +19,13 @@ class NoseDrop(El):
         self.break_angle = break_angle
 
 
-    def create_template(self, istate: State, flown: State=None):
+    def create_template(self, istate: State, time: Time=None):
         _inverted = 1 if istate.transform.rotation.is_inverted()[0] else -1
         
         alpha =  np.arctan2(istate.vel.z, istate.vel.x)[0]
 
         return Loop(self.speed, self.radius, 0.5*np.pi*_inverted).create_template(
-            istate, flown
+            istate, time
         ).superimpose_rotation(
             PY(), 
             -alpha - abs(self.break_angle) * _inverted

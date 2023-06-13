@@ -61,7 +61,7 @@ To be described later but it is already implemented in the ManDef
 
 
 
-from .elements import Loop, Line, Snap, Spin, StallTurn
+from .elements import Loop, Line, StallTurn, NoseDrop, PitchBreak, Recovery, Autorotation
 from .manoeuvre import Manoeuvre
 from .schedule import Schedule
 from .definition import *

@@ -3,7 +3,6 @@ from typing import List, Dict, Callable, Union
 import numpy as np
 import pandas as pd
 from numbers import Number
-from flightanalysis.schedule.elements import Loop, Line, Snap, Spin, StallTurn, El, Elements
 from flightanalysis.schedule.manoeuvre import Manoeuvre
 from flightanalysis.criteria import *
 from flightanalysis import State
@@ -154,7 +153,7 @@ class ManParms(Collection):
         """
 
         for mp in self:
-            flown_parm = mp.collect(intended.all_elements)
+            flown_parm = mp.collect(intended.all_elements())
             if len(flown_parm) >0:
                 if isinstance(mp.criteria, Combination):
                     default = mp.criteria.check_option(flown_parm)

@@ -217,9 +217,11 @@ p23_def = SchedDef([
 ])
 
 if __name__ == "__main__":
-    from flightplotting import plotsec
-
-    p23, template = p23_def.create_template(170, 1)
-    from flightplotting import plotsec
     
-    plotsec(template).show()
+    p23_def.to_json("flightanalysis/data/p23.json")
+    #from flightplotting import plotsec
+
+    #p23, template = p23_def.create_template(170, 1)
+    #from flightplotting import plotsec
+    
+    #plotsec(template).show()

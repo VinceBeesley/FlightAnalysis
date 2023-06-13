@@ -60,7 +60,7 @@ class Loop(El):
     def rate(self):
         return self.roll * self.speed / (self.angle * self.radius)
 
-    def create_template(self, istate: State, flown: State=None) -> State:
+    def create_template(self, istate: State, time: Time=None) -> State:
         """Generate a template loop. 
 
         Args:
@@ -81,7 +81,7 @@ class Loop(El):
                 vel=v,
                 rvel=PZ(self.angle / duration) if self.ke else PY(self.angle / duration)
             ).fill(
-                El.create_time(duration, flown)
+                El.create_time(duration, time)
             ), 
             self.roll
         )

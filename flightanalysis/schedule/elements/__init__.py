@@ -141,13 +141,14 @@ class El:
         return Coord.from_zx(template[0].pos, z_vector, x_vector)
 
     @staticmethod
-    def create_time(duration: float, flown: State=None):
-        if flown is None:
+    def create_time(duration: float, time: Time=None):
+        if time is None:
             n = int(np.ceil(duration * State._construct_freq))
             return Time.from_t(
                 np.linspace(0, duration, n if n > 1 else n+1))
         else:
-            return flown.time.reset_zero().scale(duration)
+            #probably want to extend by one timestep
+            return time.reset_zero().scale(duration)
 
     @property
     def exit_scoring(self):
@@ -193,8 +194,6 @@ class ElementsResults(Collection):
 
 from .line import Line
 from .loop import Loop
-from .snap import Snap
-from .spin import Spin
 from .stall_turn import StallTurn
 from .nose_drop import NoseDrop
 from .pitch_break import PitchBreak

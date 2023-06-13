@@ -3,7 +3,7 @@ from flightanalysis import State
 from typing import Dict, Tuple
 from geometry import Transformation
 from flightanalysis.schedule.schedule import Schedule
-from flightanalysis.schedule.elements import Line, Loop, Snap, Spin, StallTurn
+from flightanalysis.schedule.elements import Line
 from flightanalysis.base.collection import Collection
 from json import dump, load
 from flightanalysis.base.numpy_encoder import NumpyEncoder

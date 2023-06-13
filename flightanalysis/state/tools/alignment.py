@@ -57,6 +57,9 @@ def copy_labels(template, flown, path=None) -> State:
     Returns:
         Section: a labelled section
     """
+
+    flown = flown.remove_labels()
+
     keys = [k for k in ["manoeuvre", "element", "sub_element"] if k in template.data.columns]
     if path is None:
         return State(
@@ -103,7 +106,7 @@ def splitter_labels(self: State, mans: List[dict]) -> State:
             labels.append(split_man["name"])
 
         return State.stack(labelled)
-
+        
 
 def get_manoeuvre(self: State, manoeuvre: str):
     if manoeuvre.__class__.__name__ == "Manoeuvre":

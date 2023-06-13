@@ -13,13 +13,13 @@ class Recovery(El):
         super().__init__(uid, speed)
         self.length = length
 
-    def create_template(self, istate: State, flown: State=None):
+    def create_template(self, istate: State, time: Time=None):
         
 
 
         return Line(self.speed, self.length).create_template(
             istate, 
-            flown
+            time
         ).superimpose_rotation(
             PY(),
             -np.arctan2(istate.vel.z, istate.vel.x)[-1]

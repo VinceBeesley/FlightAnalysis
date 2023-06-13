@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from geometry import Transformation, Point, PX, PY, PZ, P0
 from flightanalysis.state import State
-    
+from flightanalysis.base import Time
 from . import El, DownGrades, DownGrade
 from flightanalysis.criteria import *
 
@@ -30,10 +30,10 @@ class StallTurn(El):
     def describe(self):
         return f"stallturn, yaw rate = {self.yaw_rate}"
 
-    def create_template(self, istate: State, flown: State=None) -> State:
+    def create_template(self, istate: State, time: Time=None) -> State:
         return self._add_rolls(
             istate.copy(rvel=P0() ,vel=P0()).fill( 
-                El.create_time(np.pi / abs(self.yaw_rate), flown)
+                El.create_time(np.pi / abs(self.yaw_rate), time)
             ).superimpose_rotation(
                 PZ(), 
                 np.sign(self.yaw_rate) * np.pi

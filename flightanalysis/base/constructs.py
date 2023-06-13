@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 from typing import List, Dict, Union
 from .collection import Collection
-
+from itertools import chain
 class SVar:
     def __init__(self, name, obj, keys=None, builder=None):
         self.name = name
@@ -58,3 +58,6 @@ class Constructs(Collection):
     def __iter__(self):
         for val in self.data.values():
             yield val
+
+    def cols(self):
+        return chain(*[c.keys for c in self.data.values()])

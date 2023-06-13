@@ -30,9 +30,16 @@ def roll_combo_f3a(name, speed, rolls, partial_rate, full_rate, pause_length) ->
         eds.add(roll(
             f"{name}_{i}",
             speed,
-            partial_rate if abs(rolls.value[i]) < 1 else full_rate,
+            partial_rate if abs(rolls.value[i]) < 2*np.pi else full_rate,
             rolls.value[i]
         ))
+
+        if rolls.value[i] < 2*np.pi:
+            if isinstance(partial_rate, ManParm):
+                partial_rate.collectors.add(eds[-1].get_collector("rate"))
+        else:
+            if isinstance(full_rate, ManParm):
+                full_rate.collectors.add(eds[-1].get_collector("rate"))
 
         if i < rolls.n - 1 and np.sign(rolls.value[i]) == np.sign(rolls.value[i+1]):
             eds.add(line(
@@ -160,7 +167,11 @@ def spin(name, turns, break_angle, rate, speed, break_rate, reversible):
     
     autorotation = ElDef.build(Autorotation, f"{name}_autorotation", speed=speed,
                         length=(2 * np.pi * speed * turns)/rate, roll=turns)
-            
+    
+    if isinstance(rate, ManParm):
+        if isinstance(rate, ManParm):
+            rate.collectors.add(autorotation.get_collector("rate"))
+
     recovery = ElDef.build(Recovery, f"{name}_recovery", speed=speed,
                     length=speed * break_angle/break_rate)
     return ElDefs([nose_drop, autorotation, recovery]), ManParms()

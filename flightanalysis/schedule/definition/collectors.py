@@ -18,11 +18,12 @@ class Collector(Opp):
         return self.name
 
     @staticmethod
-    def parse(ins, coll: Collection):
-        try:
-            return Opp.parse(ins, coll)
-        except KeyError:
-            return Collector(*ins.strip(" ").split("."))
+    def parse(ins):
+        return Opp.parse_f(
+            ins, 
+            lambda ins : Collector(*ins.strip(" ").split("."))
+        )
+        
 
     def to_dict(self):
         return dict(
@@ -56,6 +57,6 @@ class Collectors(Collection):
     def from_list(data):
         coll = Collectors()
         for d in data:
-            coll.add(Collector.parse(d, coll))
+            coll.add(Collector.parse(d))
         return coll
     

@@ -15,11 +15,11 @@ class PitchBreak(El):
         self.length=length
         self.break_angle = break_angle
 
-    def create_template(self, istate: State, flown: State=None):
+    def create_template(self, istate: State, time: Time=None):
 
         return Line(self.speed, self.length).create_template(
             istate, 
-            flown
+            time
         ).superimpose_rotation(
             PY(),
             self.break_angle
