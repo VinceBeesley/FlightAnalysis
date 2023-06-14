@@ -23,6 +23,13 @@ class Manoeuvre():
             data["uid"]
         )
 
+    def to_dict(self):
+        return dict(
+            entry_line=self.entry_line.to_dict(),
+            elements=self.elements.to_dicts(),
+            uid=self.uid
+        )
+
     @staticmethod
     def from_all_elements(uid:str, els: List[El]):
         return Manoeuvre(els[0], els[1:], uid)

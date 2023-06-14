@@ -117,8 +117,6 @@ class ManParm(Opp):
         return f"{self.__class__.__name__}({str(self)} = {self.value})"
 
 
-
-
 class ManParms(Collection):
     VType=ManParm
     uid="name"
@@ -149,7 +147,7 @@ class ManParms(Collection):
         the collectors.
 
         Args:
-            intended (Manoeuvre): Usually a Manoeuvre that has been resized based on an alingned state
+            intended (Manoeuvre): Usually a Manoeuvre that has been resized based on an alinged state
         """
 
         for mp in self:
@@ -160,8 +158,7 @@ class ManParms(Collection):
                 else:
                     default = np.mean(np.abs(flown_parm)) * np.sign(mp.default)
                 mp.default = default
-            
-                
+
     def remove_unused(self):
         return ManParms([mp for mp in self if len(mp.collectors) > 0])
-        
+

@@ -15,6 +15,16 @@ class PitchBreak(El):
         self.length=length
         self.break_angle = break_angle
 
+    def to_dict(self):
+        return dict(
+            kind=self.__class__.__name__,
+            speed=self.speed,
+            length=self.length,
+            break_angle=self.break_angle,
+            uid=self.uid
+        )
+
+
     def create_template(self, istate: State, time: Time=None):
 
         return Line(self.speed, self.length).create_template(

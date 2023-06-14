@@ -10,10 +10,11 @@ class Combination:
     """Handles a series of criteria assessments.
     for example a number of rolls in an element. 
     """
-    def __init__(self, desired: List[List[Number]], criteria=None):
+    def __init__(self, desired: List[List[Number]], criteria=None, scr:str=None):
         self.desired = np.array(desired)
         self.criteria = lambda x : 0.0 if criteria is None else criteria
-        
+        self.scr = scr if scr else inspect.getsourcelines(self.criteria)[0][0].split("=")[1].strip()
+
     def __getitem__(self, value: int):
         return self.desired[value]
 
@@ -37,14 +38,15 @@ class Combination:
         return dict(
             kind = self.__class__.__name__,
             desired = list(self.desired),
-            criteria = inspect.getsourcelines(self.criteria)[0][0].split("=")[1].strip()
+            criteria = self.scr
         )
 
     @staticmethod
     def from_dict(data:dict):
         return Combination(
             desired = np.array(data["desired"]),
-            criteria = eval(data["criteria"])
+            criteria = eval(data["criteria"]),
+            scr=data["criteria"]
         )
 
     @staticmethod

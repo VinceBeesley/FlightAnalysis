@@ -48,7 +48,7 @@ class SchedDef(Collection):
 
     def to_json(self, file: str) -> str:
         with open(file, "w") as f:
-            dump(self.to_dict(), f, cls=NumpyEncoder)
+            dump(self.to_dict(), f, cls=NumpyEncoder, indent=2)
         return file
 
     @staticmethod

@@ -1,13 +1,10 @@
 from pathlib import Path
 
 from flightanalysis.schedule import SchedDef
-from .p23 import p23_def
-from .p25 import p25_def
-
-jsons = {p.stem: p  for p in Path(__file__).parent.glob("*.json")}
+from pkg_resources import resource_stream
+from json import loads
 
 
 def get_schedule_definition(name):
-    return SchedDef.from_json(jsons[name.lower()])
-
-
+    data = resource_stream(__name__, f"{name.lower()}.json").read().decode()
+    return SchedDef.from_dict(loads(data))

@@ -43,9 +43,8 @@ from .tools.alignment import (
     splitter_labels, 
     get_manoeuvre, 
     get_element, 
-    get_subelement, 
-    get_element_from_manoeuvre,
-    get_meid
+    get_meid,
+    get_subset
 )
 #
 State.align = staticmethod(align)
@@ -53,9 +52,8 @@ State.copy_labels = staticmethod(copy_labels)
 State.splitter_labels = splitter_labels
 State.get_manoeuvre = get_manoeuvre
 State.get_element = get_element
-State.get_subelement = get_subelement
-State.get_element_from_manoeuvre = get_element_from_manoeuvre
 State.get_meid = get_meid
+State.get_subset = get_subset
 #
 from .tools.conversions import convert_state, to_judging, body_to_wind, judging_to_wind, wind_to_body
 #

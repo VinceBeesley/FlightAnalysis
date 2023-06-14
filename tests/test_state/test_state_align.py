@@ -1,5 +1,5 @@
 from flightanalysis import State, Manoeuvre
-from flightanalysis.data.p23 import p23_def
+from flightanalysis.data import get_schedule_definition
 from pytest import fixture, approx
 from geometry import Transformation, Euler, P0
 import numpy as np
@@ -8,7 +8,7 @@ from flightanalysis.schedule.definition import *
 
 @fixture
 def th_def() -> ManDef:
-    return p23_def[0]
+    return get_schedule_definition("p23")[0]
 
 @fixture
 def initial_transform(th_def) -> Transformation:
@@ -41,15 +41,15 @@ def test_get_element(aligned: State, th: Manoeuvre):
     assert len(m3.data) == len(m1.data)
 
 @fixture
-def th_def_mod():
-    th = tHat()
+def th_def_mod(th_def) -> ManDef:
+    th = th_def
     th.mps.loop_radius.default = 100
     th.mps.line_length.default=110
     th.mps.speed.default = 20
     return th
 
 @fixture
-def th_fl(th_def_mod):
+def th_fl(th_def_mod) -> State:
     itr = th_def_mod.info.initial_transform(150, 1)
     return th_def_mod.create(itr).create_template(itr).remove_labels()
 
@@ -58,7 +58,7 @@ def test_remove_labels(th_fl):
     assert not "manoeuvre" in th_fl.data.columns
 
 @fixture
-def aligned(th_tp, th_fl):
+def aligned(th_tp, th_fl) -> State:
     dist, th_al = State.align(th_fl, th_tp)
     return th_al
 
@@ -66,11 +66,11 @@ def test_align(aligned):
     assert "manoeuvre" in aligned.data.columns
 
 @fixture
-def intended(th_def: ManDef, initial_transform: Transformation, aligned: State):
+def intended(th_def: ManDef, initial_transform: Transformation, aligned: State) -> Manoeuvre:
     th = th_def.create(initial_transform)
     return th.match_intention(initial_transform, aligned)[0]
 
-def test_intended_loop_radius(intended, th_def_mod ):
+def test_intended_loop_radius(intended, th_def_mod):
     assert intended.elements[0].radius == approx(th_def_mod.mps.loop_radius.default, rel=1e-3)
 
 
@@ -80,3 +80,15 @@ def test_copy_labels(th_tp):
     th_al = State.copy_labels(th_tp, th_fl)
 
     assert "element" in th_al.data.columns
+
+def test_subset(aligned):
+    els = aligned.data.element.unique()[:3]
+
+    al_ss = aligned.get_subset(els, col="element")
+    assert all([e in els for e in al_ss.data.element.unique()])
+
+    al_ss = aligned.get_subset(slice(0,3,None), col="element")
+    assert all([e in els for e in al_ss.data.element.unique()])
+
+    al_ss = aligned.get_subset(2, "element")
+    assert al_ss.data.element.unique()[0] == els[2]

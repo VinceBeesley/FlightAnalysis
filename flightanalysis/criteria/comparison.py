@@ -6,9 +6,10 @@ from typing import Callable
 import inspect
 
 class Comparison:
-    def __init__(self, criteria: Callable, initial_value=None):
+    def __init__(self, criteria: Callable, initial_value=None, scr: str=None):
         self.criteria = criteria
         self.initial_value = initial_value
+        self.scr = scr if scr else inspect.getsourcelines(self.criteria)[0][0].split("=")[1].strip()
 
     def lookup(self,value):
         try:
@@ -32,7 +33,7 @@ class Comparison:
     def to_dict(self):
         return dict(
             kind = self.__class__.__name__,
-            criteria = inspect.getsourcelines(self.criteria)[0][0].split("=")[1].strip(),
+            criteria = self.scr,
             initial_value = self.initial_value
         )
 
@@ -40,7 +41,8 @@ class Comparison:
     def from_dict(data:dict):
         return Comparison(
             eval(data["criteria"]),
-            initial_value = data["initial_value"]
+            initial_value = data["initial_value"],
+            scr=data["criteria"]
         )
 
     

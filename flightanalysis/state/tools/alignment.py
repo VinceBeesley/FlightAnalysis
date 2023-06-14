@@ -5,7 +5,8 @@ from scipy.spatial.distance import euclidean
 from flightanalysis.state import State
 import numpy as np
 import pandas as pd
-from typing import List
+from typing import List, Union
+from pandas.api.types import is_list_like
 
 
 def align(flown, template, radius=5, mirror=True, white=False, weights = Point(1,1,1)) -> State:
@@ -106,26 +107,35 @@ def splitter_labels(self: State, mans: List[dict]) -> State:
             labels.append(split_man["name"])
 
         return State.stack(labelled)
+
+
+
+def get_subset(self: State, mans: Union[list, slice], col="manoeuvre"):
+    selectors = self.data.loc[:,col].unique()
+    if isinstance(mans, slice):
+        mans = selectors[mans]
+
+    if not is_list_like(mans):
+        mans = [mans]
+    
+    if not all(isinstance(m, str) for m in mans):
+        mans = [m.uid if m.__class__.__name__ == "Manoeuvre" else m for m in mans]
+        mans = [m.uid if m.__class__.__bases__[0].__name__ == "El" else m for m in mans]    
+        mans = [selectors[m] if isinstance(m, int) else m for m in mans]
         
+    assert all(isinstance(m, str) for m in mans)
 
-def get_manoeuvre(self: State, manoeuvre: str):
-    if manoeuvre.__class__.__name__ == "Manoeuvre":
-        manoeuvre = manoeuvre.uid
-    return State(self.data.loc[self.data.manoeuvre == manoeuvre])
+    return State(self.data.loc[self.data.loc[:, col].isin(mans)])
 
-def get_element(self: State, element: str):
-    if "El" in [c.__name__ for c in element.__class__.__bases__]:
-        element = element.uid
-    return State(self.data.loc[self.data.element == element]) 
+def get_manoeuvre(self: State, manoeuvre: Union[str, list, int]):
+    return get_subset(self, manoeuvre, "manoeuvre")
 
-def get_subelement(self: State, sub_element_name: str):
-    return State(self.data.loc[self.data.sub_element == sub_element_name])
-
-def get_element_from_manoeuvre(self: State, manoeuvre_name: str, element_name: str):
-    return self.get_manoeuvre(manoeuvre_name).get_element(element_name)
+def get_element(self: State, element: Union[str, list, int]):
+    return get_subset(self, element, "element") 
 
 def get_meid(self: State, manid: int, elid: int=None):
-    st = self.get_manoeuvre(self.data.manoeuvre.unique()[manid])
+    st = self.get_manoeuvre(manid)
     if not elid is None:
-        st = st.get_element(st.data.element.unique()[elid])
-    return st
+        return st.get_element(elid)
+    else:
+        return st

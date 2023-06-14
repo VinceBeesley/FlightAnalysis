@@ -16,6 +16,15 @@ class Autorotation(El):
         self.length = length
         self.roll = roll
     
+    def to_dict(self):
+        return dict(
+            kind=self.__class__.__name__,
+            speed=self.speed,
+            length=self.length,
+            roll=self.roll,
+            uid=self.uid
+        )
+    
     @property
     def angle(self):
         return 2 * np.pi * self.roll

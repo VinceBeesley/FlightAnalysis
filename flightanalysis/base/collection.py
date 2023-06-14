@@ -36,7 +36,7 @@ class Collection:
         return list(self.data.values())
     
     def to_dicts(self) -> List[dict]:
-        return [v.to_dict() for v in self.data]
+        return [v.to_dict() for v in self.data.values()]
 
     def to_dict(self) -> Dict[str, dict]:
         return {k: v.to_dict() for k, v in self.data.items()}

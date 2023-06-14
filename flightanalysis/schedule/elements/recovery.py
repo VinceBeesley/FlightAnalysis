@@ -13,10 +13,15 @@ class Recovery(El):
         super().__init__(uid, speed)
         self.length = length
 
+    def to_dict(self):
+        return dict(
+            kind=self.__class__.__name__,
+            speed=self.speed,
+            length=self.length,
+            uid=self.uid
+        )
+
     def create_template(self, istate: State, time: Time=None):
-        
-
-
         return Line(self.speed, self.length).create_template(
             istate, 
             time

@@ -78,6 +78,13 @@ class Table:
         self.data.to_csv(filename)
         return filename
 
+    def to_dict(self):
+        return self.data.to_dict()
+    
+    @classmethod
+    def from_dict(Cls, data):
+        return Cls(pd.DataFrame(data))
+
     def __len__(self):
         return len(self.data)
 

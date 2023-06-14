@@ -49,3 +49,8 @@ def test_from_transform():
     st =State.from_transform(Transformation(), vel=PX(20))
     assert st.vel.x == 20
 
+
+def test_to_from_dict(state):
+    data = state.to_dict()
+    st_new = State.from_dict(data)
+    assert st_new.duration == state.duration

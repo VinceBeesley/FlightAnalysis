@@ -57,7 +57,7 @@ class El:
         return dumps(self.to_dict(), indent=2)
 
     def to_dict(self):
-        return dict(type=self.__class__.__name__, **self.__dict__)
+        return dict(kind=self.__class__.__name__, **self.__dict__)
 
     def set_parms(self, **parms):
         kwargs = {k:v for k, v in self.__dict__.items() if not k[0] == "_"}
@@ -205,7 +205,7 @@ els = {c.__name__.lower(): c for c in El.__subclasses__()}
 El.from_name = lambda name: els[name.lower()]
 
 def from_dict(data):
-    kind = data.pop("kind")
+    kind = data.pop("kind").lower()
     return els[kind](**data)
 
 El.from_dict = staticmethod(from_dict)

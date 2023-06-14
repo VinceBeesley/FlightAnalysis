@@ -11,6 +11,6 @@ this program. If not, see <http://www.gnu.org/licenses/>.
 """
 
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup()

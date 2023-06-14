@@ -46,7 +46,7 @@ class ManoeuvreBuilder():
         return partial(append_el, **all_kwargs)
 
 
-    def create(self, maninfo, elmakers, **kwargs):
+    def create(self, maninfo, elmakers, **kwargs) -> ManDef:
         mps = self.mps.copy()
         for k, v in kwargs.items():
             if isinstance(v, ManParm):
