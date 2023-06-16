@@ -18,10 +18,6 @@ def _a(arg):
     
 
 from .element_definition import ElDef, ElDefs
-
 from .manoeuvre_definition import ManDef
-
 from .schedule_definition import SchedDef
-
-
 from .manoeuvre_builder import ManoeuvreBuilder, f3amb, MBTags

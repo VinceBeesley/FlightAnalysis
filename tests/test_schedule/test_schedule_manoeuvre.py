@@ -8,13 +8,13 @@ from flightanalysis.schedule.elements import Line, Loop
 from geometry import Point, Quaternion, Transformation, Coord
 
 from pytest import fixture
-from flightanalysis.data.p23 import *
+from flightanalysis.data import get_schedule_definition
 
 
 
 @fixture(scope="session")
 def th_def():
-    return tHat()
+    return get_schedule_definition("p23")[0]
 
 @fixture(scope="session")
 def itrans(th_def):

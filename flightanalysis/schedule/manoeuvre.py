@@ -1,3 +1,4 @@
+from __future__ import annotations
 from geometry import Transformation, Quaternion, Coord, P0, PX, PY, PZ
 from flightanalysis.state import State
 from flightanalysis.schedule.elements import *
@@ -98,10 +99,10 @@ class Manoeuvre():
         new_elms = [elm.match_axis_rate(rates[elm.__class__], rates["speed"]) for elm in self.elements]
         return self.replace_elms(new_elms)
 
-    def copy_directions(self, other):
+    def copy_directions(self, other: Manoeuvre):
         return Manoeuvre.from_all_elements(
             self.uid, 
-            [es.copy_direction(eo) for es, eo in zip(self.all_elements, other.all_elements)]
+            [es.copy_direction(eo) for es, eo in zip(self.all_elements(), other.all_elements())]
         )
 
     def analyse(self, flown: State, template: State):

@@ -1,14 +1,7 @@
 
-from flightanalysis.base.table import Table, Time, SVar
-from typing import Union
-from flightdata import Flight, Fields
-from pathlib import Path
-from flightanalysis.base.constructs import Constructs, SVar
-from flightanalysis.state import State
-from flightanalysis.environment import Environment
-from geometry import Point, Quaternion, Base, PX, Euler
+from flightanalysis import Table, Time, SVar, Constructs, SVar
+from geometry import Point, Base, PX, Euler
 import numpy as np
-
 
 
 class Attack(Base):
@@ -22,7 +15,7 @@ class Flow(Table):
     ])
 
     @staticmethod
-    def build(body: State, env: Environment):
+    def build(body, env):
 #        wind = judge.judging_to_wind(env.wind)
         airspeed = body.vel - body.att.inverse().transform_point(env.wind)
 

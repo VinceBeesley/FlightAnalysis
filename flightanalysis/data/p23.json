@@ -1250,7 +1250,6 @@
         },
         "default": 30.0,
         "collectors": [
-          "e_1.speed",
           "e_2.speed"
         ]
       },
@@ -1322,7 +1321,7 @@
         "name": "e_1",
         "Kind": "Line",
         "props": {
-          "speed": "speed",
+          "speed": "25",
           "length": "line_length",
           "roll": "0.0"
         }
@@ -1893,21 +1892,13 @@
         "name": "speed",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x: 0",
+          "criteria": "lambda x : (1 - 1/(x+1))",
           "initial_value": null
         },
         "default": 30.0,
         "collectors": [
           "e_0.speed",
-          "e_1_roll.speed",
-          "e_1_pad1.speed",
-          "e_1_pad2.speed",
-          "e_3.speed",
           "e_4.speed",
-          "e_5.speed",
-          "e_7_roll.speed",
-          "e_7_pad1.speed",
-          "e_7_pad2.speed",
           "e_8.speed"
         ]
       },
@@ -2005,8 +1996,8 @@
         "name": "e_1_pad1",
         "Kind": "Line",
         "props": {
-          "speed": "speed",
-          "length": "(0.5*(line_length-(0+((abs(roll_option[0])*speed)/partial_roll_rate))))",
+          "speed": "30",
+          "length": "(0.5*(line_length-(0+((abs(roll_option[0])*30)/partial_roll_rate))))",
           "roll": "0"
         }
       },
@@ -2014,8 +2005,8 @@
         "name": "e_1_roll",
         "Kind": "Line",
         "props": {
-          "speed": "speed",
-          "length": "((abs(roll_option[0])*speed)/partial_roll_rate)",
+          "speed": "30",
+          "length": "((abs(roll_option[0])*30)/partial_roll_rate)",
           "roll": "roll_option[0]"
         }
       },
@@ -2023,8 +2014,8 @@
         "name": "e_1_pad2",
         "Kind": "Line",
         "props": {
-          "speed": "speed",
-          "length": "(0.5*(line_length-(0+((abs(roll_option[0])*speed)/partial_roll_rate))))",
+          "speed": "30",
+          "length": "(0.5*(line_length-(0+((abs(roll_option[0])*30)/partial_roll_rate))))",
           "roll": "0"
         }
       },
@@ -2040,7 +2031,7 @@
         "name": "e_3",
         "Kind": "Line",
         "props": {
-          "speed": "speed",
+          "speed": "30",
           "length": "line_length",
           "roll": "0.0"
         }
@@ -2060,7 +2051,7 @@
         "name": "e_5",
         "Kind": "Line",
         "props": {
-          "speed": "speed",
+          "speed": "30",
           "length": "line_length",
           "roll": "0.0"
         }
@@ -2077,8 +2068,8 @@
         "name": "e_7_pad1",
         "Kind": "Line",
         "props": {
-          "speed": "speed",
-          "length": "(0.5*(line_length-(0+((abs(roll_option[1])*speed)/partial_roll_rate))))",
+          "speed": "30",
+          "length": "(0.5*(line_length-(0+((abs(roll_option[1])*30)/partial_roll_rate))))",
           "roll": "0"
         }
       },
@@ -2086,8 +2077,8 @@
         "name": "e_7_roll",
         "Kind": "Line",
         "props": {
-          "speed": "speed",
-          "length": "((abs(roll_option[1])*speed)/partial_roll_rate)",
+          "speed": "30",
+          "length": "((abs(roll_option[1])*30)/partial_roll_rate)",
           "roll": "roll_option[1]"
         }
       },
@@ -2095,8 +2086,8 @@
         "name": "e_7_pad2",
         "Kind": "Line",
         "props": {
-          "speed": "speed",
-          "length": "(0.5*(line_length-(0+((abs(roll_option[1])*speed)/partial_roll_rate))))",
+          "speed": "30",
+          "length": "(0.5*(line_length-(0+((abs(roll_option[1])*30)/partial_roll_rate))))",
           "roll": "0"
         }
       },

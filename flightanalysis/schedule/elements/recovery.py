@@ -1,3 +1,4 @@
+from __future__ import annotations
 import numpy as np
 from geometry import Transformation, Point, Quaternion, PX, PY, PZ
 from flightanalysis.state import State
@@ -39,3 +40,14 @@ class Recovery(El):
             length=max(jit.att.inverse().transform_point(flown.pos - jit.pos).x[-1], 5),
             speed=abs(flown.vel).mean()
         )
+    
+    def copy_direction(self, other: Recovery) -> Recovery:
+        return self.set_parms()
+
+    @property
+    def intra_scoring(self):
+        return DownGrades()
+
+    @property
+    def exit_scoring(self):
+        return DownGrades()

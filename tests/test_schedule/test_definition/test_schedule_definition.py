@@ -4,7 +4,7 @@ from flightanalysis.schedule.definition import *
 from flightanalysis.schedule.elements import *
 from flightanalysis.criteria.comparison import *
 from flightanalysis import Manoeuvre
-from flightanalysis.data.p23 import *
+from flightanalysis.data import get_schedule_definition
 
 import dill as pickle
 

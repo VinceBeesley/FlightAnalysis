@@ -88,7 +88,7 @@ p23_def = SchedDef([
         ),[
             0,
             f3amb.spin(2.5),
-            f3amb.line(),
+            f3amb.line(speed=25),
             f3amb.loop(np.pi/2)
         ]),
     f3amb.create(
@@ -141,13 +141,13 @@ p23_def = SchedDef([
             BoxLocation(Height.BTM)
         ),[
             f3amb.loop(np.pi/2),
-            f3amb.roll("roll_option[0]"),
+            f3amb.roll("roll_option[0]", speed=30),
             f3amb.stallturn(),
-            f3amb.line(),
+            f3amb.line(speed=30),
             f3amb.loop(-np.pi),
-            f3amb.line(),
+            f3amb.line(speed=30),
             f3amb.stallturn(),
-            f3amb.roll("roll_option[1]"),
+            f3amb.roll("roll_option[1]", speed=30),
             f3amb.loop(np.pi/2)
         ],
         roll_option=ManParm(
@@ -158,8 +158,7 @@ p23_def = SchedDef([
             ]),
             1
         ),
-        line_length=150.0,
-        speed=ManParm("speed", inter_free, 30.0)
+        line_length=150.0
     ),
     f3amb.create(ManInfo("Fighter Turn", "fTrn", 4,Position.END,
             BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),

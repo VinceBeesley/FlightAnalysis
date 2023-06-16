@@ -1,10 +1,8 @@
 import numpy as np
 import pandas as pd
-from geometry import Point, Points
+from geometry import Point
 from scipy.interpolate import interp1d
-from flightanalysis.state import State
-from typing import Callable, List, Tuple
-from scipy.optimize import minimize
+from typing import List, Tuple
 
 
 class WindModel:

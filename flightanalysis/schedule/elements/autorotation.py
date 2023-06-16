@@ -1,3 +1,4 @@
+from __future__ import annotations
 import numpy as np
 from geometry import Transformation, Point, Quaternion, PX, PY, PZ, P0
 from flightanalysis import State
@@ -24,6 +25,14 @@ class Autorotation(El):
             roll=self.roll,
             uid=self.uid
         )
+    
+    @property
+    def exit_scoring(self):
+        return DownGrades()
+    
+    @property
+    def intra_scoring(self):
+        return DownGrades()
     
     @property
     def angle(self):
@@ -58,3 +67,9 @@ class Autorotation(El):
             roll=np.sign(np.mean(flown.p)) * abs(self.roll),
             speed=np.mean(abs(flown.vel))
         )
+    
+    def copy_direction(self, other: Autorotation) -> Autorotation:
+        return self.set_parms(roll=abs(self.roll) * np.sign(other.roll))
+
+
+        

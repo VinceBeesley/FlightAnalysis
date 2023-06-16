@@ -31,6 +31,7 @@ class Line(El):
             _intra_scoring.add(DownGrade("roll_rate", "measure_roll_rate", intra_f3a_roll_rate))
             _intra_scoring.add(DownGrade("roll_amount", "measure_end_roll_angle", basic_angle_f3a))
         else:
+            
             _intra_scoring.add(DownGrade("roll_angle", "measure_roll_angle_error", intra_f3a_angle))
         return _intra_scoring
 
@@ -95,6 +96,3 @@ class Line(El):
 
     def copy_direction(self, other):
         return self.set_parms(roll=abs(self.roll) * np.sign(other.roll))
-
-
-        

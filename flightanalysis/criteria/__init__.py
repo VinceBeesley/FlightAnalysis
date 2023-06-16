@@ -1,6 +1,7 @@
 from argparse import ArgumentTypeError
 import numpy as np
 import pandas as pd
+from pandas.api.types import is_list_like
 from typing import List, Dict, Callable
 from .results import Result, Results
 
@@ -13,7 +14,7 @@ f3a_speed = lambda x : (1 - 1/(x+1))
 f3a_roll_rate = lambda x : (1 - 1/(x+1))
 imac_angle = lambda x: x/10
 hard_zero = lambda x: 0 if x==0 else 10
-free = lambda x: 0
+free = lambda x: 0 if not is_list_like(x) else np.zeros(len(x))
 
 from .single import Single
 

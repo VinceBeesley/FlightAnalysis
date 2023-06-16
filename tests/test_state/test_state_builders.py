@@ -1,8 +1,5 @@
-from flightanalysis.state.state import State
-from flightanalysis.flightline import Box
-from flightanalysis.state.tools.builders import extrapolate, from_flight
+from flightanalysis import State, Box, Time
 from flightdata import Flight
-from flightanalysis.base.table import Time
 from pytest import approx, fixture, raises
 from geometry import Transformation, PX, PY, P0, Point
 import numpy as np
@@ -15,7 +12,7 @@ def test_extrapolate_no_rot():
         vel=PX(30)
     )
 
-    extrapolated = extrapolate(initial, 10)
+    extrapolated = initial.extrapolate(10)
     
     np.testing.assert_array_almost_equal(
         extrapolated[-1].pos.data, 
@@ -32,10 +29,10 @@ def test_extrapolate_rot():
         rvel=PY(2*np.pi/10)
     )
 
-    extrapolated = extrapolate(initial, 10)
+    extrapolated = initial.extrapolate(10)
     
     np.testing.assert_array_almost_equal(
-        extrapolated[-1].pos.data, 
+        extrapolated[-2].pos.data, 
         P0().data
     )
     
@@ -56,7 +53,7 @@ def test_extrapolate_first_point():
 
 @fixture
 def state(flight, box):
-    return from_flight(flight, box)
+    return State.from_flight(flight, box)
 
 def test_from_flight(flight, state):
     assert len(state.data) == len(flight.data)

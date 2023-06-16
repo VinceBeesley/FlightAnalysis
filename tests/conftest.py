@@ -1,7 +1,6 @@
 import pytest
 from flightdata import Flight
-from flightanalysis.flightline import Box
-from flightanalysis.state import State
+from flightanalysis import Box, State
 
 @pytest.fixture(scope="session")
 def whole_flight():

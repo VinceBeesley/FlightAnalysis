@@ -1,10 +1,11 @@
+from __future__ import annotations
 import numpy as np
 from geometry import Transformation, Point, Quaternion, PX, PY, PZ
 from flightanalysis.state import State
 from flightanalysis.base.table import Time
 from . import El, Loop, DownGrades, DownGrade, Elements
 from flightanalysis.criteria import *
-from . import Line
+from . import Line, DownGrades
 
 
 
@@ -24,9 +25,7 @@ class PitchBreak(El):
             uid=self.uid
         )
 
-
-    def create_template(self, istate: State, time: Time=None):
-
+    def create_template(self, istate: State, time: Time=None) -> State:
         return Line(self.speed, self.length).create_template(
             istate, 
             time
@@ -38,7 +37,7 @@ class PitchBreak(El):
     def describe(self):
         return "pitch break"
     
-    def match_intention(self, transform: Transformation, flown: State):
+    def match_intention(self, transform: Transformation, flown: State) -> PitchBreak:
         jit = flown.judging_itrans(transform)
 
         _speed = abs(flown.vel).mean()
@@ -53,3 +52,15 @@ class PitchBreak(El):
             ) ,
             break_angle = alphas[-1]
         )
+    
+    def copy_direction(self, other: PitchBreak) -> PitchBreak:
+        return self.set_parms(break_angle=abs(self.break_angle) * np.sign(other.break_angle))
+
+
+    @property
+    def intra_scoring(self):
+        return DownGrades()
+
+    @property
+    def exit_scoring(self):
+        return DownGrades()

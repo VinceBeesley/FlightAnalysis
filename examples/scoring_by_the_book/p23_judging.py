@@ -1,8 +1,12 @@
-from flightanalysis.data.p23 import p23_def
+import numpy as np
+import pandas as pd
+
+from flightanalysis import get_schedule_definition
 from flightdata import Flight
 from flightanalysis import State, Box
 from geometry import Transformation
 
+p23_def = get_schedule_definition("p23")
 
 #parse a flight, cutoff takeoff and landing
 flown = State.from_flight(
@@ -12,10 +16,7 @@ flown = State.from_flight(
 
 wind=-1
 
-
-
 #create the schedule definition, schedule and template
-
 p23, template = p23_def.create_template(flown.pos.y.mean(), wind)
 
 
@@ -39,11 +40,27 @@ intended_template = intended.create_template(Transformation(
 ))
 
 
-for i in range(17):
-    dgs =  p23_def[i].mps.collect(intended[i])
-    score = 10 - sum([sum(dg) for dg in dgs.values()])
-    print(f"{p23[i].uid}: {score} ")
+dgs = []
 
+for i in range(17):
+    inter_dgs =  p23_def[i].mps.collect(intended[i])
+
+    intra_dgs = intended[i].analyse(
+        intended[i].get_data(aligned),
+        intended[i].get_data(intended_template)
+    )
+
+    dgs.append(dict(
+        inter = sum([dg.value for dg in inter_dgs]),
+        intra = intra_dgs.downgrade()
+    ))
+
+#    score = 10 - sum([dg.value for dg in inter_dgs]) - intra_dgs.downgrade()
+ #   print(f"{p23[i].uid}: {score} ")
+
+
+df = pd.DataFrame.from_dict(dgs)
+pass
 
 #with open("_trials/temp/dgs.json", "w") as f:
 #    dump(dgs)
