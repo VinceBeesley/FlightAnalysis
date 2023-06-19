@@ -48,37 +48,50 @@ class ManoeuvreAnalysis:
 
     @staticmethod
     def build(mdef: ManDef, flown: State):
-
-        itrans = Transformation(
-            flown[0].pos,
+        pass
+    
+    @staticmethod
+    def initial_transform(mdef: ManDef, flown: State):
+        initial = flown[0]
+        return Transformation(
+            initial.pos,
             mdef.info.start.initial_rotation(
-                mdef.info.start.d.get_wind(flown.direction()[0])
+                mdef.info.start.d.get_wind(initial.direction()[0])
         ))
 
-        # this is weird, but it adds the exit line to the manoeuvre, which is present in the flown data
+    @staticmethod
+    def alignment(mdef: ManDef, flown: State):
+        itrans = ManoeuvreAnalysis.initial_transform(mdef, flown)
+
+        #add the exit line to the manoeuvre, which is present in the flown data
         man = Manoeuvre.from_all_elements(mdef.info.short_name, mdef.create(itrans).all_elements(True)) 
         tp = man.create_template(itrans)
 
         aligned = State.align(flown, tp, radius=10)[1]
-
         intended = man.match_intention(tp[0], aligned)[0]
-        int_tp = intended.create_template(itrans, aligned)
+        int_tp = intended.create_template(tp[0].transform, aligned)
 
-        aligned = State.align(flown, int_tp, radius=10, mirror=False)[1]
-
-        #now the alignment is done, exit line can be removed from the flown data and the manoeuvre:
+        aligned = State.align(aligned, int_tp, radius=10, mirror=False)[1]
         aligned = aligned.get_subset(slice(None, -1, None), "element")
-        man = Manoeuvre.from_all_elements(man.uid, man.all_elements()[:-1])
 
-        intended = man.match_intention(tp[0], aligned)[0]
-        int_tp = intended.create_template(itrans, aligned)
-        
+        #now the alignment is done, exit line can be removed from the flown data and the manoeuvre:        
+        intended = Manoeuvre.from_all_elements(man.uid, intended.all_elements()[:-1])
+
+        return ManoeuvreAnalysis.build_intended(mdef, intended, int_tp, aligned)    
+
+    @staticmethod
+    def build_aligned(mdef: ManDef, aligned: State):
+        pass
+
+    @staticmethod
+    def build_intended(mdef, intended: Manoeuvre, int_tp: Manoeuvre,  aligned: State):       
         mdef.mps.update_defaults(intended)       
 
         corr = Manoeuvre(intended.entry_line, mdef._create().elements, mdef.info.short_name)
-        corr_tp = corr.create_template(itrans, aligned)
+        corr_tp = corr.create_template(int_tp[0].transform, aligned)
         
         return ManoeuvreAnalysis(mdef, aligned, intended, int_tp, corr, corr_tp)
+    
 
     def plot_3d(self, **kwargs):
         fig = plotsec(self.aligned, color="red", **kwargs)

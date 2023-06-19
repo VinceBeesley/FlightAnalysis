@@ -1,8 +1,10 @@
+from __future__ import annotations
 from . import Manoeuvre
 from geometry import Transformation, PX
 from flightanalysis.state import State
 import numpy as np
 from flightanalysis.base.collection import Collection
+from typing import Tuple
 
 # TODO it would be better if the list index of each manoeuvre corresponded with the uid. This is not possible because takeoff is not included as a manoeuvre. 
 # TODO perhaps include takeoff in the list as manoeuvre 0 and add it when reading from the json, use a constructor rather than __init__ when creating from python
@@ -27,7 +29,7 @@ class Schedule(Collection):
             
         return State.stack(templates)
 
-    def match_intention(self, itrans:Transformation, alinged: State):
+    def match_intention(self, itrans:Transformation, alinged: State) -> Tuple[Schedule, State]:
         """resize every element of the schedule to best fit the corresponding element in a labelled State
 
         Args:

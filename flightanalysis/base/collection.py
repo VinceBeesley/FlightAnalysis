@@ -50,14 +50,19 @@ class Collection:
         return cls([cls.VType.from_dict(v) for v in vals.values()])
     
     def add(self, v):
-        if v is None:
-            return self
-        elif isinstance(v, self.VType):
+        if isinstance(v, self.VType):
             self.data[getattr(v, self.uid)] = v
         elif isinstance(v, self.__class__):
-            return self.__class__(dict(**self.data, **v.data))
+            self.data = dict(**self.data, **v.data)
         return v
-
+    
+    def add_start(self, v):
+        if isinstance(v, self.VType):
+            self.data.update({getattr(v, self.uid): v})
+        elif isinstance(v, self.__class__):
+            self.data = dict(**v.data, **self.data)
+        return v
+    
     def next_free_name(self, prefix: str):
         i=0
         while f"{prefix}{i}" in self.data:
@@ -65,8 +70,8 @@ class Collection:
         else:
             return f"{prefix}{i}"
 
-    def copy(self):
-        return self.__class__([v.copy() for v in self])
+    def copy(self, deep=True):
+        return self.__class__([v.copy() for v in self] if deep else self.data.copy())
     
     def __str__(self) -> str:
         return str(pd.Series({k: str(v) for k, v in self.data.items()}))

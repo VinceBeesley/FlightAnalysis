@@ -87,8 +87,7 @@ class Table:
 
     def __len__(self):
         return len(self.data)
-
-
+    
     @property
     def duration(self):
         return self.data.index[-1] - self.data.index[0]
@@ -136,32 +135,33 @@ class Table:
     def __repr__(self):
         return f"{self.__class__.__name__} Table, duration = {self.duration}\n{self.data}"
 
-
     def copy(self, *args,**kwargs):
         kwargs = dict(kwargs, **{list(self.constructs.data.keys())[i]: arg for i, arg in enumerate(args)}) # add the args to the kwargs
-
-        old_constructs = {key: self.__getattr__(key) for key in self.constructs.existing(self.data.columns).data if not key in kwargs}
-        
+        old_constructs = {key: self.__getattr__(key) for key in self.constructs.existing(self.data.columns).data if not key in kwargs}       
         new_constructs = {key: value for key, value in list(kwargs.items()) + list(old_constructs.items())}
-
-        return self.__class__.from_constructs(**new_constructs)
-
+        return self.__class__.from_constructs(**new_constructs).label(self.labels)
 
     def label(self, **kwargs):
         return self.__class__(self.data.assign(**kwargs))
 
+    @property
+    def label_keys(self):
+        return [c for c in self.data.columns if not c in self.constructs.cols()]
+    
+    @property
+    def labels(self) -> Dict[str, np.array]:
+        return {m: getattr(self, m) for m in self.label_keys}
+
     def remove_labels(self):
         return self.__class__(
             self.data.drop(
-                [c for c in self.data.columns if not c in self.constructs.cols()], 
+                self.label_keys, 
                 axis=1, 
                 errors="ignore"
             )
         )
     
-
     def append(self, other, timeoption:str="dt"):
-
         if timeoption in ["now", "t"]:
             t = np.array([time()]) if timeoption == "now" else other.t
             dt = other.dt

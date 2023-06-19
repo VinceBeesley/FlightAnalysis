@@ -2,7 +2,7 @@ from __future__ import annotations
 from geometry import Transformation, Quaternion, Coord, P0, PX, PY, PZ
 from flightanalysis.state import State
 from flightanalysis.schedule.elements import *
-from typing import List, Union
+from typing import List, Union, Tuple
 import numpy as np
 import pandas as pd
 
@@ -11,55 +11,76 @@ _els = {c.__name__: c for c in El.__subclasses__()}
 
 
 class Manoeuvre():
-    def __init__(self, entry_line: Line, elements: Union[Elements, list], uid: str = None):
+    def __init__(self, entry_line: Line, elements: Union[Elements, list], exit_line: Line, uid: str = None):
         self.entry_line = entry_line
         self.elements = elements if isinstance(elements, Elements) else Elements(elements)
+        self.exit_line = exit_line
         self.uid = uid
     
     @staticmethod
     def from_dict(data):
         return Manoeuvre(
-            Line.from_dict(data["entry_line"]),
+            Line.from_dict(data["entry_line"]) if data["entry_line"] else None,
             Elements.from_dicts(data["elements"]),
+            Line.from_dict(data["exit_line"]) if data["exit_line"] else None,
             data["uid"]
         )
 
     def to_dict(self):
         return dict(
-            entry_line=self.entry_line.to_dict(),
+            entry_line=self.entry_line.to_dict() if self.entry_line else None,
             elements=self.elements.to_dicts(),
+            exit_line=self.exit_line.to_dict() if self.exit_line else None,
             uid=self.uid
         )
 
     @staticmethod
     def from_all_elements(uid:str, els: List[El]):
-        return Manoeuvre(els[0], els[1:], uid)
+        hasentry = 1 if els[0].uid == "entry_line" else None
+        hasexit = -1 if els[-1].uid == "exit_line" else None
 
-    def all_elements(self, exit_line=False):
-        els = []
+        return Manoeuvre(
+            els[0] if hasentry else None, 
+            els[hasentry:hasexit], 
+            els[-1] if hasexit else None, 
+            uid
+        )
 
-        if not self.entry_line is None:
-            els.append(self.entry_line)
-        else:
-            els.append(Line(self.elements[0].speed, 30, 0, "entry_line"))
+    def all_elements(self, create_entry: bool = False, create_exit: bool = False) -> Elements:
+        els = Elements()
 
-        for el in self.elements:
-            els.append(el)
+        if self.entry_line:
+            els.add(self.entry_line)
+        elif create_entry:
+            els.add(Line(self.elements[0].speed, 30, 0, "entry_line"))
 
-        if exit_line:
-            els.append(Line(els[-1].speed, 30, 0, "exit_line"))
-        
-        return Elements(els)
+        els.add(self.elements)
 
+        if self.exit_line:
+            els.add(self.exit_line)
+        elif create_exit:
+            els.add(Line(self.elements[0].speed, 30, 0, "entry_line"))
 
-    def create_template(self, initial: Union[Transformation, State], flown:State=None) -> State:
+        return els
+
+    def add_lines(self, add_entry, add_exit):
+        return Manoeuvre.from_all_elements(self.uid, self.all_elements(add_entry, add_exit))
+    
+    def remove_lines(self, remove_entry, remove_exit):
+        return Manoeuvre(
+            None if remove_entry else self.entry_line, 
+            self.elements, 
+            None if remove_exit else self.exit_line, 
+            self.uid
+        )
+    
+    def create_template(self, initial: Union[Transformation, State], aligned:State=None) -> State:
         
         istate = State.from_transform(initial, vel=PX()) if isinstance(initial, Transformation) else initial
         
         templates = []
-        els = self.all_elements()
-        for i, element in enumerate(els):
-            time = element.get_data(flown).time if not flown is None else None
+        for i, element in enumerate(self.all_elements()):
+            time = element.get_data(aligned).time if not aligned is None else None
             if i < len(els)-1 and not time is None:
                 time = time.extend()
             templates.append(element.create_template(istate, time))
@@ -70,17 +91,18 @@ class Manoeuvre():
     def get_data(self, st: State):
         return st.get_manoeuvre(self.uid)
 
-    def match_intention(self, istate: State, flown: State):
+    def match_intention(self, istate: State, aligned: State) -> Tuple[Manoeuvre, State]:
         """Create a new manoeuvre with all the elements scaled to match the corresponding 
         flown element"""
 
-        elms = []
-        flown = self.get_data(flown)
+        elms = Elements()
+        templates = [istate]
+        aligned = self.get_data(aligned)
 
         for elm in self.all_elements():
-            st = elm.get_data(flown)
-            elms.append(elm.match_intention(
-                istate.transform, 
+            st = elm.get_data(aligned)
+            elms.add(elm.match_intention(
+                templates[-1][-1].transform, 
                 st
             ))
 
@@ -90,10 +112,10 @@ class Manoeuvre():
                 pos_break = max(angles)
                 neg_break = min(angles)
                 elms[-2].break_angle = pos_break if pos_break > -neg_break else neg_break
-
-            istate = elms[-1].create_template(istate)[-1]
-        
-        return Manoeuvre(elms[0], Elements(elms[1:]), self.uid), istate
+            
+            templates.append(elms[-1].create_template(templates[-1][-1], st))
+                    
+        return Manoeuvre.from_all_elements(elms, self.uid), State.stack(templates)
 
     def match_rates(self, rates):
         new_elms = [elm.match_axis_rate(rates[elm.__class__], rates["speed"]) for elm in self.elements]
@@ -106,7 +128,6 @@ class Manoeuvre():
         )
 
     def analyse(self, flown: State, template: State):
-        
         fl=self.entry_line.get_data(flown)
         tp=self.entry_line.get_data(template).relocate(fl.pos[0])
         
