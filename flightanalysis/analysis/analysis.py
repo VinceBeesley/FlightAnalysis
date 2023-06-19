@@ -20,15 +20,6 @@ class ManoeuvreAnalysis:
         self.intended_template = intended_template
         self.corrected = corrected
         self.corrected_template = corrected_template
-
-        self.pos_error = self.aligned.pos - self.corrected_template.pos
-        self.roll_error = Quaternion.body_axis_rates(self.aligned.att, self.corrected_template.att).x
-
-        #TODO factor by visibility, replace abs here with something cleverer. Add some logic to the arbitrary fudge factors
-        self.pos_dg = np.cumsum(abs(self.pos_error) * self.aligned.dt / 500)
-        self.roll_dg = np.cumsum(np.abs(self.roll_error) * self.aligned.dt / 40)
-
-        self.score = 10 - self.pos_dg[-1] - self.roll_dg[-1]
     
     def to_dict(self):
         return dict(
@@ -89,45 +80,13 @@ class ManoeuvreAnalysis:
         
         return ManoeuvreAnalysis(mdef, aligned, intended, int_tp, corr, corr_tp)
 
-
-
-
     def plot_3d(self, **kwargs):
         fig = plotsec(self.aligned, color="red", **kwargs)
         return plotsec(self.corrected_template, color="green", fig=fig, **kwargs)
 
-    def plot_dg(self):
-        import plotly.graph_objects as go
-
-        fig = go.Figure()
-
-        fig.add_trace(go.Line(y=self.pos_dg))
-        fig.add_trace(go.Line(y=self.roll_dg , yaxis="y2"))
-        fig.update_layout(
-            yaxis=dict(
-                title="position error"
-            ), 
-            yaxis2=dict(title="roll error",
-                overlaying="y",
-                side="right",)
-        )
-        fig.show()
 
 class ScheduleAnalysis(Collection):
     VType=ManoeuvreAnalysis
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def summary_df(self):
-        return pd.DataFrame(
-            [[an.mdef.info.short_name, an.mdef.info.k, an.score] for an in self], 
-            columns=["name", "k", "score"]
-        )
-
-    def total_score(self):
-        df = self.summary_df()
-        return sum(df.k * df.score)
 
 
 if __name__ == "__main__":
@@ -140,18 +99,29 @@ if __name__ == "__main__":
     state = State.from_flight(flight, box).splitter_labels(data["mans"])
     sdef = get_schedule_definition(data["parameters"]["schedule"][1])
 
-    analyses: List[ManoeuvreAnalysis] = []
+    analyses = ScheduleAnalysis()
 
     for mid in range(17):
-        analyses.append(ManoeuvreAnalysis.build(sdef[mid], state.get_meid(mid+1)))
+        analyses.add(ManoeuvreAnalysis.build(sdef[mid], state.get_meid(mid+1)))
 
-    df = pd.DataFrame([[an.mdef.info.short_name, an.score, an.mdef.info.k] for an in analyses], columns=["name", "score", "k"])
+    scores = []
+
+    for ma in analyses:
+        scores.append(dict(
+            name=ma.mdef.info.name,
+            k=ma.mdef.info.k,
+            pos_dg=np.sum(abs(ma.aligned.pos - ma.corrected_template.pos) * ma.aligned.dt / 500),
+            roll_dg = np.sum(np.abs(Quaternion.body_axis_rates(ma.aligned.att, ma.corrected_template.att).x) * ma.aligned.dt / 40)
+        ))
+
+    scores = pd.DataFrame(scores)
+    scores["score"] = 10 - scores.pos_dg - scores.roll_dg
     if "scores" in data:
-        df["manual_scores"] = data["scores"][1:-1]
+        scores["manual_scores"] = data["scores"][1:-1]
         
-    print(df)
-    print(f"total = {sum(df.score * df.k)}")
-    pass
+    print(scores)
+    print(f"total = {sum(scores.score * scores.k)}")
+    
 
     
 
