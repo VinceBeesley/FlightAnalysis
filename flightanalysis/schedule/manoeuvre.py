@@ -36,8 +36,8 @@ class Manoeuvre():
 
     @staticmethod
     def from_all_elements(uid:str, els: List[El]):
-        hasentry = 1 if els[0].uid == "entry_line" else None
-        hasexit = -1 if els[-1].uid == "exit_line" else None
+        hasentry = 1 if els[0].uid.startswith("entry_") else None
+        hasexit = -1 if els[-1].uid.startswith("exit_") else None
 
         return Manoeuvre(
             els[0] if hasentry else None, 
@@ -59,14 +59,14 @@ class Manoeuvre():
         if self.exit_line:
             els.add(self.exit_line)
         elif create_exit:
-            els.add(Line(self.elements[0].speed, 30, 0, "entry_line"))
+            els.add(Line(self.elements[0].speed, 30, 0, "exit_line"))
 
         return els
 
-    def add_lines(self, add_entry, add_exit):
+    def add_lines(self, add_entry=True, add_exit=True):
         return Manoeuvre.from_all_elements(self.uid, self.all_elements(add_entry, add_exit))
     
-    def remove_lines(self, remove_entry, remove_exit):
+    def remove_lines(self, remove_entry=True, remove_exit=True):
         return Manoeuvre(
             None if remove_entry else self.entry_line, 
             self.elements, 
@@ -77,7 +77,7 @@ class Manoeuvre():
     def create_template(self, initial: Union[Transformation, State], aligned:State=None) -> State:
         
         istate = State.from_transform(initial, vel=PX()) if isinstance(initial, Transformation) else initial
-        
+        aligned = self.get_data(aligned) if aligned else None
         templates = []
         for i, element in enumerate(self.all_elements()):
             time = element.get_data(aligned).time if not aligned is None else None
@@ -87,6 +87,7 @@ class Manoeuvre():
             istate = templates[-1][-1]
         
         return State.stack(templates).label(manoeuvre=self.uid)
+
 
     def get_data(self, st: State):
         return st.get_manoeuvre(self.uid)
@@ -99,7 +100,7 @@ class Manoeuvre():
         templates = [istate]
         aligned = self.get_data(aligned)
 
-        for elm in self.all_elements():
+        for i, elm in enumerate(self.all_elements()):
             st = elm.get_data(aligned)
             elms.add(elm.match_intention(
                 templates[-1][-1].transform, 
@@ -112,10 +113,12 @@ class Manoeuvre():
                 pos_break = max(angles)
                 neg_break = min(angles)
                 elms[-2].break_angle = pos_break if pos_break > -neg_break else neg_break
-            
-            templates.append(elms[-1].create_template(templates[-1][-1], st))
+            templates.append(elms[-1].create_template(
+                templates[-1][-1], 
+                st.time.extend() if i < len(els) - 1 else st.time
+            ))
                     
-        return Manoeuvre.from_all_elements(elms, self.uid), State.stack(templates)
+        return Manoeuvre.from_all_elements(self.uid, elms), State.stack(templates[1:]).label(manoeuvre=self.uid)
 
     def match_rates(self, rates):
         new_elms = [elm.match_axis_rate(rates[elm.__class__], rates["speed"]) for elm in self.elements]

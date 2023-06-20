@@ -1,15 +1,12 @@
-from json import load
-from flightanalysis.base import Collection
-from flightanalysis.state import State
-from flightanalysis.flightline import Box
-from flightanalysis.data import get_schedule_definition
-from flightanalysis.schedule import *
-from flightdata import Flight
-from geometry import Transformation, Quaternion, Q0
+from __future__ import annotations
 import numpy as np
 import pandas as pd
+from json import load
+from flightdata import Flight
+from flightanalysis import *
+from geometry import Transformation, Quaternion, Q0
 from flightplotting import plotsec, plotdtw
-from typing import List
+from typing import List, Tuple
 
 
 class ManoeuvreAnalysis:
@@ -45,10 +42,7 @@ class ManoeuvreAnalysis:
     @property
     def uid(self):
         return self.mdef.uid
-
-    @staticmethod
-    def build(mdef: ManDef, flown: State):
-        pass
+        
     
     @staticmethod
     def initial_transform(mdef: ManDef, flown: State):
@@ -58,40 +52,40 @@ class ManoeuvreAnalysis:
             mdef.info.start.initial_rotation(
                 mdef.info.start.d.get_wind(initial.direction()[0])
         ))
+    
+    @staticmethod
+    def template(mdef: ManDef, itrans: Transformation) -> Tuple[Manoeuvre, State]:
+        man = mdef.create(itrans).add_lines()
+        return man, man.create_template(itrans)
 
     @staticmethod
-    def alignment(mdef: ManDef, flown: State):
-        itrans = ManoeuvreAnalysis.initial_transform(mdef, flown)
-
-        #add the exit line to the manoeuvre, which is present in the flown data
-        man = Manoeuvre.from_all_elements(mdef.info.short_name, mdef.create(itrans).all_elements(True)) 
-        tp = man.create_template(itrans)
-
-        aligned = State.align(flown, tp, radius=10)[1]
-        intended = man.match_intention(tp[0], aligned)[0]
-        int_tp = intended.create_template(tp[0].transform, aligned)
-
-        aligned = State.align(aligned, int_tp, radius=10, mirror=False)[1]
-        aligned = aligned.get_subset(slice(None, -1, None), "element")
-
-        #now the alignment is done, exit line can be removed from the flown data and the manoeuvre:        
-        intended = Manoeuvre.from_all_elements(man.uid, intended.all_elements()[:-1])
-
-        return ManoeuvreAnalysis.build_intended(mdef, intended, int_tp, aligned)    
+    def alignment(template: State, man: Manoeuvre, flown: State) -> State:
+        aligned = State.align(flown, template, radius=10)[1]
+        int_tp = man.match_intention(template[0], aligned)[1]
+        
+        return State.align(aligned, int_tp, radius=10, mirror=False)[1]
 
     @staticmethod
-    def build_aligned(mdef: ManDef, aligned: State):
-        pass
+    def intention(man: Manoeuvre, aligned: State, template: State) -> Tuple[Manoeuvre, State]:
+        return man.match_intention(template[0], aligned)
 
     @staticmethod
-    def build_intended(mdef, intended: Manoeuvre, int_tp: Manoeuvre,  aligned: State):       
+    def correction(mdef: ManDef, intended: Manoeuvre, int_tp: State, aligned: State) -> Tuple(Manoeuvre, State):
         mdef.mps.update_defaults(intended)       
 
-        corr = Manoeuvre(intended.entry_line, mdef._create().elements, mdef.info.short_name)
+        corr = mdef.create(int_tp[0].transform).add_lines()
         corr_tp = corr.create_template(int_tp[0].transform, aligned)
         
+        return corr, corr_tp
+
+    @staticmethod
+    def build(mdef: ManDef, flown: State):
+        itrans = ManoeuvreAnalysis.initial_transform(mdef, flown)
+        man, tp = ManoeuvreAnalysis.template(mdef, itrans)
+        aligned = ManoeuvreAnalysis.alignment(tp, man, flown)
+        intended, int_tp = ManoeuvreAnalysis.intention(man, aligned, tp)
+        corr, corr_tp = ManoeuvreAnalysis.correction(mdef, intended, int_tp, aligned)
         return ManoeuvreAnalysis(mdef, aligned, intended, int_tp, corr, corr_tp)
-    
 
     def plot_3d(self, **kwargs):
         fig = plotsec(self.aligned, color="red", **kwargs)

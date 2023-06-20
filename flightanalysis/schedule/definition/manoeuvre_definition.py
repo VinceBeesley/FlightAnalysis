@@ -119,13 +119,15 @@ class ManDef:
                 self.info.initial_transform(depth, wind) if itrans is None else itrans
             )(self.mps),
             Elements([ed(self.mps) for ed in self.eds]), 
+            None,
             uid=self.info.short_name
         )
 
     def _create(self) -> Manoeuvre:
         return Manoeuvre(
             None,
-            Elements([ed(self.mps) for ed in self.eds]), 
+            Elements([ed(self.mps) for ed in self.eds]),
+            None,
             uid=self.info.name
         )
 

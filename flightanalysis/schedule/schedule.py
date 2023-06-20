@@ -14,19 +14,18 @@ from typing import Tuple
 class Schedule(Collection):
     VType = Manoeuvre
 
-    def create_template(self, itrans: Transformation) -> State:
+    def create_template(self, itrans: Transformation, aligned: State=None) -> State:
         """Create labelled template flight data
         Args:
             itrans (Transformation): transformation to initial position and orientation 
         Returns:
             State: labelled template flight data
         """
-        templates = []
+        templates = [State.from_transform(itrans, vel=PX(self[0].elements[0].speed))]
 
-        for manoeuvre in self:
-            itrans = itrans if len(templates) ==0 else templates[-1][-1].transform
-            templates.append(manoeuvre.create_template(itrans))
-            
+        for m in self:
+            templates.append(m.create_template(templates[-1][-1]),aligned)
+
         return State.stack(templates)
 
     def match_intention(self, itrans:Transformation, alinged: State) -> Tuple[Schedule, State]:
@@ -39,78 +38,20 @@ class Schedule(Collection):
         Returns:
             Schedule: new schedule with all the elements resized
         """
-        _mans = []
-        istate = State.from_transform(Transformation(alinged[0].pos,itrans.att), vel=PX(self[0].elements[0].speed))
-        for i, man in enumerate(self):
-            man, istate = man.match_intention(
-                istate, 
+        schedule = Schedule()
+        _templates = [State.from_transform(
+            Transformation(alinged[0].pos,itrans.att), 
+            vel=PX(self[0].elements[0].speed)
+        )]
+        for man in self:
+            man, template = man.match_intention(
+                _templates[-1], 
                 man.get_data(alinged)
             )
-            _mans.append(man)
+            schedule.add(man)
+            _templates.append(template)
 
-        return Schedule(_mans)
-
-    def correct_intention(self):
-        return self.replace_manoeuvres([man.fix_intention() for man in self])
-
-    def create_matched_template(self, alinged: State) -> State:
-        """This will go through all the manoeuvres in a labelled State and create a template with
-         only the initial position and speed of each matched"""
-        
-        iatt = self.create_iatt(alinged[0].direction()[0])
-
-        templates = []
-        for manoeuvre in self:
-            transform = Transformation(
-                manoeuvre.get_data(alinged)[0].pos,
-                iatt
-            )
-            templates.append(manoeuvre.create_template(
-                transform, np.mean(abs(alinged.vel))
-            ))
-            iatt = templates[-1][-1].att
-
-        return State.stack(templates)
-
-    def create_elm_matched_template(self, alinged: State) -> State:
-        """This will go through all the elements in a labelled State and create a template 
-        with the initial position and speed of each matched"""
-
-        iatt = self.create_iatt(alinged[0].direction()[0])
-
-        templates = []
-        for manoeuvre in self:
-            mtemps = []
-            for elm in manoeuvre.elements:
-                transform = Transformation(
-                    elm.get_data(alinged)[0].pos,
-                    iatt
-                )
-                mtemps.append(elm.create_template(transform, np.mean(abs(alinged.vel))))
-                iatt = mtemps[-1][-1].att
-            
-            templates.append(manoeuvre.label(State.stack(mtemps)))
-
-        return State.stack(templates)
-
-    def create_man_matched_template(self, alinged: State) -> State:
-        """This will go through all the manoeuvres in a labelled State,
-        measure the rates and return a scaled template for each based on the rates"""
-        iatt = self.create_iatt(alinged[0].direction)
-        templates = []
-        for man in self:
-            flown = man.get_data(alinged)
-
-            transform = Transformation(
-                flown[0].pos,
-                iatt
-            )
-            templates.append(
-                man.scale(np.mean(alinged.y) * np.tan(np.radians(60)))
-                .create_template(transform, np.mean(abs(alinged.vel)))
-            )
-            iatt = templates[-1][-1].att
-        return templates
+        return schedule, State.stack(_templates)
 
     def copy_directions(self, other):
         return Schedule([ms.copy_directions(mo) for ms, mo in zip(self, other)])

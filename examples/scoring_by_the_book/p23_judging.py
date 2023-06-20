@@ -1,65 +1,44 @@
+from json import load
+from flightanalysis import State, Box, get_schedule_definition, ManDef
+from flightdata import Flight
+from geometry import Transformation, Quaternion
 import numpy as np
 import pandas as pd
 
-from flightanalysis import get_schedule_definition
-from flightdata import Flight
-from flightanalysis import State, Box
-from geometry import Transformation
-
-p23_def = get_schedule_definition("p23")
-
-#parse a flight, cutoff takeoff and landing
-flown = State.from_flight(
-    Flight.from_csv("examples/data/p23_example.csv").flying_only(), 
-    Box.from_f3a_zone("examples/data/p23_box.f3a")
-)[39:405]
-
-wind=-1
-
-#create the schedule definition, schedule and template
-p23, template = p23_def.create_template(flown.pos.y.mean(), wind)
+with open("examples/data/manual_F3A_P23_22_05_31_00000350.json", "r") as f:
+    data = load(f)
 
 
-#align the template to the flight
-dist, aligned = State.align(flown, template)
+flight = Flight.from_fc_json(data)
+box = Box.from_fcjson_parmameters(data["parameters"])
+state = State.from_flight(flight, box).splitter_labels(data["mans"])
+sdef = get_schedule_definition(data["parameters"]["schedule"][1])
 
-#plotdtw(aligned, list(p23.manoeuvres.values())).show()
-#update the schedule to match the flight
-intended = p23.match_intention(template[0].transform, aligned)
+from flightanalysis import ScheduleAnalysis, ManoeuvreAnalysis
 
-#correct the intended inter element parameters to make a corrected shcedule and template
-p23_def.update_defaults(intended)
-corrected, corrected_template = p23_def.create_template(flown.pos.y.mean(), wind)
-
-#correct the roll directions in the intended template
-intended = intended.copy_directions(corrected)
-
-intended_template = intended.create_template(Transformation(
-    aligned[0].pos,
-    aligned[0].att.closest_principal()
-))
-
+analysis = ScheduleAnalysis()
+for mdef in sdef:
+    analysis.add(ManoeuvreAnalysis.build(mdef, state.get_manoeuvre(mdef.info.short_name)))
+    pass
 
 dgs = []
 
-for i in range(17):
-    inter_dgs =  p23_def[i].mps.collect(intended[i])
+for ma in analysis:
+    inter_dgs =  ma.mdef.mps.collect(ma.intended)
 
-    intra_dgs = intended[i].analyse(
-        intended[i].get_data(aligned),
-        intended[i].get_data(intended_template)
-    )
+    intra_dgs = ma.intended.analyse(ma.aligned,ma.intended_template)
 
     dgs.append(dict(
         inter = sum([dg.value for dg in inter_dgs]),
         intra = intra_dgs.downgrade()
     ))
-
+    dgs[-1]["score"] = 10 - dgs[-1]["inter"] - dgs[-1]["intra"]
 #    score = 10 - sum([dg.value for dg in inter_dgs]) - intra_dgs.downgrade()
  #   print(f"{p23[i].uid}: {score} ")
 
 
 df = pd.DataFrame.from_dict(dgs)
+print(df)
 pass
 
 #with open("_trials/temp/dgs.json", "w") as f:

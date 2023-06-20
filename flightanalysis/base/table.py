@@ -139,7 +139,7 @@ class Table:
         kwargs = dict(kwargs, **{list(self.constructs.data.keys())[i]: arg for i, arg in enumerate(args)}) # add the args to the kwargs
         old_constructs = {key: self.__getattr__(key) for key in self.constructs.existing(self.data.columns).data if not key in kwargs}       
         new_constructs = {key: value for key, value in list(kwargs.items()) + list(old_constructs.items())}
-        return self.__class__.from_constructs(**new_constructs).label(self.labels)
+        return self.__class__.from_constructs(**new_constructs).label(**self.labels)
 
     def label(self, **kwargs):
         return self.__class__(self.data.assign(**kwargs))
