@@ -1,11 +1,12 @@
+from __future__ import annotations
 import numpy as np
 import pandas as pd
 from typing import List, Dict, Callable
-from .results import Result, Results
+from . import Result, Results, Criteria
 import inspect
 
 
-class Single:
+class Single(Criteria):
     """This class creates a function to return a result for a set of errors. 
     """
     def __init__(self, lookup: Callable, preprocess: Callable=None, slu=None, spp=None):
@@ -23,7 +24,7 @@ class Single:
             self.preprocess = preprocess
         self.spp=spp if spp else inspect.getsourcelines(self.preprocess)[0][0].split("=")[1].strip()
 
-    def __call__(self, name: str, data: np.ndarray, pp = True) -> List[float]:
+    def __call__(self, name: str, data: np.ndarray, pp = True) -> Result:
         """get a Result object for a set of errors."""
         pdata = self.preprocess(data) if pp else data
         return Result(name,data,self.lookup(pdata))
@@ -36,7 +37,7 @@ class Single:
         )
 
     @staticmethod
-    def from_dict(data:dict):
+    def from_dict(data:dict) -> Single:
         return Single(
             eval(data["lookup"]),
             eval(data["preprocess"]),

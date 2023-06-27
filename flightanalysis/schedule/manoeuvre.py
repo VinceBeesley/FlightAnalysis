@@ -81,7 +81,8 @@ class Manoeuvre():
         templates = []
         for i, element in enumerate(self.all_elements()):
             time = element.get_data(aligned).time if not aligned is None else None
-            if i < len(els)-1 and not time is None:
+
+            if i < len(self.elements)-1 and not time is None:
                 time = time.extend()
             templates.append(element.create_template(istate, time))
             istate = templates[-1][-1]
@@ -113,9 +114,10 @@ class Manoeuvre():
                 pos_break = max(angles)
                 neg_break = min(angles)
                 elms[-2].break_angle = pos_break if pos_break > -neg_break else neg_break
+                
             templates.append(elms[-1].create_template(
                 templates[-1][-1], 
-                st.time.extend() if i < len(els) - 1 else st.time
+                st.time.extend() if i < len(self.elements) - 1 else st.time
             ))
                     
         return Manoeuvre.from_all_elements(self.uid, elms), State.stack(templates[1:]).label(manoeuvre=self.uid)

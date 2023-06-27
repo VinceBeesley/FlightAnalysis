@@ -2,7 +2,8 @@ from .element_definition import ElDef, ElDefs, ManParm, ManParms
 from flightanalysis.schedule.elements import *
 from flightanalysis.base.collection import Collection
 from flightanalysis.schedule.definition.collectors import Collectors
-from flightanalysis.schedule.definition import Opp
+from flightanalysis.schedule.definition import Opp, ItemOpp
+from flightanalysis.criteria import *
 from numbers import Number
 
 def line(name, speed, length, roll):
@@ -31,7 +32,7 @@ def roll_combo_f3a(name, speed, rolls, partial_rate, full_rate, pause_length) ->
             f"{name}_{i}",
             speed,
             partial_rate if abs(rolls.value[i]) < 2*np.pi else full_rate,
-            rolls.value[i]
+            rolls[i]
         ))
 
         if rolls.value[i] < 2*np.pi:
@@ -51,7 +52,9 @@ def roll_combo_f3a(name, speed, rolls, partial_rate, full_rate, pause_length) ->
 
 
 def pad(speed, line_length, eds: ElDefs):
-    
+    if isinstance(eds, ElDef):
+        eds = ElDefs([eds])
+
     pad_length = 0.5 * (line_length - eds.builder_sum("length"))
     
     e1, mps = line(f"e_{eds[0].id}_pad1", speed, pad_length, 0)
@@ -59,7 +62,7 @@ def pad(speed, line_length, eds: ElDefs):
     
     mp = ManParm(
         f"e_{eds[0].id}_pad_length", 
-        criteria, 
+        inter_f3a_length,
         None, 
         Collectors([e1.get_collector("length"), e3.get_collector("length")])
     )
@@ -71,37 +74,40 @@ def pad(speed, line_length, eds: ElDefs):
     return eds, ManParms([mp])
 
 def roll_f3a(name, rolls, speed, partial_rate, full_rate, pause_length, line_length, reversible=True, padded=True):
-    
-    if isinstance(rolls, str):
-        try:
-            _rolls = ManParm.parse(rolls)
-        except Exception as e:
-            _rolls = ManParm(f"{name}_rolls", Combination.rollcombo(rolls, reversible), 0)
-    elif isinstance(rolls, list):
-        _rolls = ManParm(f"{name}_rolls", Combination.rolllist(rolls, reversible), 0) 
-    elif isinstance(rolls, Number) and reversible:
-        _rolls = ManParm(f"{name}_rolls", Combination([[rolls], [-rolls]]), 0)
-    else:
-        _rolls=rolls
-    
-    if isinstance(_rolls, ManParm):
-        eds, mps = roll_combo_f3a(name, speed, _rolls, partial_rate, full_rate, pause_length)
-    else:
-        if isinstance(_rolls, Number):
-            _r=_rolls
-        elif isinstance(_rolls, Opp):
-            _r=_rolls.a.value[_rolls.item]
 
+    mps = ManParms()
+    if not isinstance(rolls, ManParm) and not isinstance(rolls, Opp):
+        if isinstance(rolls, str):
+            try:
+                _rolls = ManParm.parse(rolls)
+            except Exception as e:
+                _rolls = ManParm(f"{name}_rolls", Combination.rollcombo(rolls, reversible), 0)
+        elif isinstance(rolls, list):
+            _rolls = ManParm(f"{name}_rolls", Combination.rolllist(rolls, reversible), 0) 
+        elif isinstance(rolls, Number):
+            if reversible:
+                _rolls = ManParm(f"{name}_rolls", Combination([[rolls], [-rolls]]), 0)
+            else:
+                _rolls = ManParm(f"{name}_rolls", Combination([[rolls]]), 0)
+        mps.add(_rolls)
+
+    else:
+        _rolls = rolls
+
+    
+    if isinstance(_rolls, ItemOpp):
+        _r=_rolls.a.value[_rolls.item]
         rate = full_rate if abs(_r)>=2*np.pi else partial_rate
-
-        eds = ElDefs([roll(f"{name}_roll", speed, rate, _rolls)[0]])
-        mps = ManParms()
+        eds, rcmps = roll(f"{name}_roll", speed, rate, _rolls)
+    else:
+        eds, rcmps = roll_combo_f3a(name, speed, _rolls, partial_rate, full_rate, pause_length)
+    mps.add(rcmps)
             
     if padded:
-        eds, mps = pad(speed, line_length, eds)
-    
+        eds, padmps = pad(speed, line_length, eds)
+        mps.add(padmps)
 
-    return eds, mps.add(_rolls) 
+    return eds, mps
 
     
 def snap(name, rolls, break_angle, rate, speed, break_rate, line_length=100, padded=True, reversible=True, pause_length=10):

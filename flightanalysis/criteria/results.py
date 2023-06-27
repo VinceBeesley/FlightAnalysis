@@ -1,3 +1,4 @@
+from __future__ import annotations
 import numpy as np
 import pandas as pd
 from flightanalysis.base.collection import Collection
@@ -10,7 +11,7 @@ class Result:
         self.errors = errors
         self.downgrades = downgrades
         self.value = sum(self.downgrades)
-        
+
 
 class Results(Collection):
     VType = Result
@@ -21,7 +22,7 @@ class Results(Collection):
     def downgrade_summary(self):
         return {r.name: r.downgrades for r in self if len(r.downgrades > 0)}
 
-    def downgrade_df(self):
+    def downgrade_df(self) -> pd.DataFrame:
         dgs = self.downgrade_summary()
         if len(dgs) == 0:
             return pd.DataFrame()

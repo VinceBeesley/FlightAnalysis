@@ -1,28 +1,13 @@
+from __future__ import annotations
 import numpy as np
 import pandas as pd
 from typing import Callable
 from flightanalysis.base.collection import Collection
-from . import Result
+from . import Result, Criteria
 import inspect
 
-def get_peak_locs(arr, rev=False):
-    increasing = np.sign(np.diff(np.abs(arr)))>0
-    last_downgrade = np.column_stack([increasing[:-1], increasing[1:]])
-    peaks = np.sum(last_downgrade.astype(int) * [10,1], axis=1) == (1 if rev else 10)
-    last_val = False if rev else increasing[-1]
-    first_val = increasing[0] if rev else False
-    return np.concatenate([np.array([first_val]), peaks, np.array([last_val])])
 
-def downgradeable_values(arr):
-    """subtract the peaks from the troughs and return the difference"""
-    if isinstance(arr, pd.Series):
-        arr = arr.to_numpy()
-    peaks = arr[get_peak_locs(arr)]
-    troughs = arr[get_peak_locs(arr, True)]
-    return np.abs(peaks) - np.abs(troughs)
-
-
-class Continuous:
+class Continuous(Criteria):
     def __init__(self,  lookup: Callable, preprocess: Callable=None, slu:str=None, spp:str=None): 
         self.lookup = lookup
         self.slu=slu if slu else inspect.getsourcelines(self.lookup)[0][0].split("=")[1].strip()
@@ -31,11 +16,20 @@ class Continuous:
         else:
             self.preprocess = preprocess
         self.spp=spp if spp else inspect.getsourcelines(self.preprocess)[0][0].split("=")[1].strip()
-        
-    def __call__(self, name, data: pd.Series, pp: bool=True):
+    
+    @staticmethod
+    def get_peak_locs(arr, rev=False):
+        increasing = np.sign(np.diff(np.abs(arr)))>0
+        last_downgrade = np.column_stack([increasing[:-1], increasing[1:]])
+        peaks = np.sum(last_downgrade.astype(int) * [10,1], axis=1) == (1 if rev else 10)
+        last_val = False if rev else increasing[-1]
+        first_val = increasing[0] if rev else False
+        return np.concatenate([np.array([first_val]), peaks, np.array([last_val])])
+
+    def __call__(self, name, data: pd.Series, pp: bool=True) -> Result:
         pdata = self.preprocess(data) if pp else data
-        peak_locs = get_peak_locs(pdata)
-        trough_locs = get_peak_locs(pdata, True)
+        peak_locs = Continuous.get_peak_locs(pdata)
+        trough_locs = Continuous.get_peak_locs(pdata, True)
 
         mistakes = pdata[peak_locs] - pdata[trough_locs]
 
@@ -56,7 +50,7 @@ class Continuous:
         )
 
     @staticmethod
-    def from_dict(data:dict):
+    def from_dict(data:dict) -> Continuous:
         return Continuous(
             eval(data["lookup"]),
             eval(data["preprocess"]),

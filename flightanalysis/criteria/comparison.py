@@ -1,11 +1,11 @@
-
+from __future__ import annotations
 import numpy as np
 import pandas as pd
-from . import Result
+from . import Result, Criteria
 from typing import Callable
 import inspect
 
-class Comparison:
+class Comparison(Criteria):
     def __init__(self, criteria: Callable, initial_value=None, scr: str=None):
         self.criteria = criteria
         self.initial_value = initial_value
@@ -18,7 +18,7 @@ class Comparison:
             raise ValueError(f"The requested ratio of {value} is not present in levels {self.levels}")
             
             
-    def __call__(self, name, data):
+    def __call__(self, name, data) -> Result:
         if len(data) == 0:
             return Result(name, np.array([]), np.array([]))
         cval = data[0] if self.initial_value is None else self.initial_value
@@ -38,7 +38,7 @@ class Comparison:
         )
 
     @staticmethod
-    def from_dict(data:dict):
+    def from_dict(data:dict) -> Comparison:
         return Comparison(
             eval(data["criteria"]),
             initial_value = data["initial_value"],

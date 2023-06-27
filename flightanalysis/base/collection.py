@@ -56,6 +56,12 @@ class Collection:
             self.data = dict(**self.data, **v.data)
         return v
     
+    def concat(self, vs: list):
+        coll = self.__class__([])
+        for v in vs:
+            coll.add(v)
+        return coll
+    
     def add_start(self, v):
         if isinstance(v, self.VType):
             self.data.update({getattr(v, self.uid): v})

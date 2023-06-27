@@ -9,6 +9,7 @@ from flightplotting import plotsec, plotdtw
 from typing import List, Tuple
 
 
+
 class ManoeuvreAnalysis:
     def __init__(self, mdef: ManDef, aligned: State, intended: Manoeuvre, intended_template: State, corrected: Manoeuvre, corrected_template: State):
         self.mdef = mdef
@@ -90,6 +91,7 @@ class ManoeuvreAnalysis:
     def plot_3d(self, **kwargs):
         fig = plotsec(self.aligned, color="red", **kwargs)
         return plotsec(self.corrected_template, color="green", fig=fig, **kwargs)
+
 
 
 class ScheduleAnalysis(Collection):

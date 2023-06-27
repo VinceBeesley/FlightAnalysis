@@ -1,12 +1,13 @@
+from __future__ import annotations
 import numpy as np
 import pandas as pd
 from typing import Union, List
 from numbers import Number
-from . import Result
+from . import Result, Criteria
 import inspect
 
 
-class Combination:
+class Combination(Criteria):
     """Handles a series of criteria assessments.
     for example a number of rolls in an element. 
     """
@@ -26,11 +27,11 @@ class Combination:
         """The difference between the values and a given option"""
         return np.array(values) - self.desired[option]
 
-    def check_option(self, values):
+    def check_option(self, values) -> int:
         """Given a set of values, return the option id which gives the least error"""
         return np.sum(np.abs(self.get_errors(values)), axis=1).argmin()
 
-    def __call__(self, name: str, values):
+    def __call__(self, name: str, values) -> Result:
         dgs = self.criteria(self.get_option_error(self.check_option(values), values))
         return Result(name, values, dgs)
 
@@ -42,7 +43,7 @@ class Combination:
         )
 
     @staticmethod
-    def from_dict(data:dict):
+    def from_dict(data:dict) -> Combination:
         return Combination(
             desired = np.array(data["desired"]),
             criteria = eval(data["criteria"]),
@@ -50,12 +51,12 @@ class Combination:
         )
 
     @staticmethod
-    def rolllist(rolls, reversable=True):
+    def rolllist(rolls, reversable=True) -> Combination:
         rolls = [rolls, [-r for r in rolls]] if reversable else [rolls]
         return Combination(rolls)
 
     @staticmethod
-    def rollcombo(rollstring, reversable=True):
+    def rollcombo(rollstring, reversable=True) -> Combination:
         """Convenience constructor to allow Combinations to be built from strings such as 2X4 or 
         1/2"""
         if rollstring[1] == "/":

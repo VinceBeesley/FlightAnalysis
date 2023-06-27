@@ -1,33 +1,11 @@
+from __future__ import annotations
 import numpy as np
 import pandas as pd
-from flightanalysis.state import State
+from flightanalysis import State, Collection, Time
+from flightanalysis.criteria import *
 from geometry import Transformation, PX, PY, PZ, Point, angle_diff, Coord
 from json import load, dumps
-from flightanalysis.criteria import *
-from flightanalysis.base.collection import Collection
-from flightanalysis.base.table import Time
-from typing import Union
 
-class DownGrade:
-    def __init__(self, name, measurement, criteria):
-        self.name = name
-        self.measurement = measurement
-        self.criteria = criteria
-
-    def measure(self, el, flown, template):
-        return self.criteria.preprocess(getattr(el, self.measurement)(flown, template))
-    
-    def apply(self, el, flown, template):
-        return self.criteria(self.name, self.measure(el, flown, template), False)
-
-
-class DownGrades(Collection):
-    VType = DownGrade
-    uid = "name"
-
-    def apply(self, el, fl, tp):
-        return Results([es.criteria(es.name, es.measure(el, fl, tp), False) for es in self])
-       
 
 class El:   
     parameters = ["speed"]
@@ -95,7 +73,6 @@ class El:
         return flown.p 
 
     def measure_roll_angle(self, flown: State, template:State):
-        """The roll angle given a state in the loop coordinate frame"""
         roll_vector = flown.att.inverse().transform_point(PZ(1))
         return np.unwrap(np.arctan2(roll_vector.z, roll_vector.y))
 
@@ -151,6 +128,10 @@ class El:
             return time.reset_zero().scale(duration)
 
     @property
+    def intra_scoring(self) -> DownGrades:
+        return DownGrades()
+
+    @property
     def exit_scoring(self):
         return DownGrades([
             DownGrade("ip_track", "measure_end_ip_track", basic_angle_f3a),
@@ -158,8 +139,22 @@ class El:
             DownGrade("roll_angle", "measure_end_roll_angle", basic_angle_f3a),
         ])
 
+    @classmethod
+    def from_name(Cls, name) -> El:
+        for Child in Cls.__subclasses__():
+            if Child.__name__.lower() == name.lower():
+                return Child
 
-from flightanalysis.base.collection import Collection
+    @classmethod
+    def from_dict(Cls, data):        
+        El.from_name(data.pop("kind").lower())(**data)
+    
+    @classmethod
+    def from_json(Cls, file):
+        with open(file, "r") as f:
+            return El.from_dict(load(f))
+
+
 
 class Elements(Collection):
     VType=El
@@ -169,9 +164,9 @@ class Elements(Collection):
     @staticmethod
     def from_dicts(data):
         return Elements([El.from_dict(d) for d in data])
+            
 
-
-class ElResults(El):
+class ElResults():
     def __init__(self, el: El, results:Results):
         self.el = el
         self.results = results
@@ -179,8 +174,7 @@ class ElResults(El):
     @property
     def uid(self):
         return self.el.uid
-
-    
+   
 
 class ElementsResults(Collection):
     VType=ElResults
@@ -191,6 +185,11 @@ class ElementsResults(Collection):
     def downgrade_list(self):
         return [er.results.downgrade() for er in self]
     
+    def downgrade_df(self):
+        df = pd.concat([idg.results.downgrade_df().sum() for idg in self], axis=1).T
+        df["Total"] = df.T.sum()
+        return df
+
 
 from .line import Line
 from .loop import Loop
@@ -199,22 +198,6 @@ from .nose_drop import NoseDrop
 from .pitch_break import PitchBreak
 from .recovery import Recovery
 from .autorotation import Autorotation
-
-els = {c.__name__.lower(): c for c in El.__subclasses__()}
-
-El.from_name = lambda name: els[name.lower()]
-
-def from_dict(data):
-    kind = data.pop("kind").lower()
-    return els[kind](**data)
-
-El.from_dict = staticmethod(from_dict)
-
-def from_json(file):
-    with open(file, "r") as f:
-        return El.from_dict(load(f))
-
-El.from_json = from_json
 
 
     

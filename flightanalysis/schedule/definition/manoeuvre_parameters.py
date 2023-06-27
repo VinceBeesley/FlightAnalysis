@@ -3,11 +3,10 @@ from typing import List, Dict, Callable, Union
 import numpy as np
 import pandas as pd
 from numbers import Number
+from flightanalysis.base import Collection
 from flightanalysis.schedule.manoeuvre import Manoeuvre
+from flightanalysis.state import State
 from flightanalysis.criteria import *
-from flightanalysis import State
-from functools import partial
-from flightanalysis.base.collection import Collection
 from numbers import Number
 from . import Collector, Collectors, MathOpp, FunOpp, ItemOpp, Opp
 
@@ -57,7 +56,7 @@ class ManParm(Opp):
     def from_dict(data: dict):
         return ManParm(
             name = data["name"],
-            criteria = criteria_from_dict(data["criteria"]),
+            criteria = Criteria.from_dict(data["criteria"]),
             default = data["default"],
             collectors = Collectors.from_list(data["collectors"])
         )
@@ -79,6 +78,11 @@ class ManParm(Opp):
 
     def get_downgrades(self, els):
         return self.criteria(self.name, self.collect(els))
+
+#        downgrades = {c.elname: v for c, v in zip(self.collectors, result.downgrades)}
+#        errors = {c.elname: v for c, v in zip(self.collectors, result.errors)}
+#        return [downgrades[e.name] if e.name in downgrades else 0.0 for e in els]
+
 
     @property
     def value(self):
@@ -121,7 +125,7 @@ class ManParms(Collection):
     VType=ManParm
     uid="name"
 
-    def collect(self, manoeuvre: Manoeuvre) -> Dict[str, float]:
+    def collect(self, manoeuvre: Manoeuvre) -> Results:
         """Collect the comparison downgrades for each manparm for a given manoeuvre.
 
         Args:
@@ -152,12 +156,13 @@ class ManParms(Collection):
 
         for mp in self:
             flown_parm = mp.collect(intended.all_elements())
-            if len(flown_parm) >0:
-                if isinstance(mp.criteria, Combination):
-                    default = mp.criteria.check_option(flown_parm)
-                else:
-                    default = np.mean(np.abs(flown_parm)) * np.sign(mp.default)
-                mp.default = default
+            if len(flown_parm) > 0:
+                if mp.default is not None:
+                    if isinstance(mp.criteria, Combination):
+                        default = mp.criteria.check_option(flown_parm)
+                    else:
+                        default = np.mean(np.abs(flown_parm)) * np.sign(mp.default)
+                    mp.default = default
 
     def remove_unused(self):
         return ManParms([mp for mp in self if len(mp.collectors) > 0])
