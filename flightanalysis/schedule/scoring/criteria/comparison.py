@@ -1,7 +1,8 @@
 from __future__ import annotations
 import numpy as np
 import pandas as pd
-from . import Result, Criteria
+from . import Criteria
+from flightanalysis.schedule.scoring import Result, Results
 from typing import Callable
 import inspect
 

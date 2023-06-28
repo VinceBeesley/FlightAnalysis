@@ -7,9 +7,6 @@ import numpy as np
 import pandas as pd
 
 
-_els = {c.__name__: c for c in El.__subclasses__()}
-
-
 class Manoeuvre():
     def __init__(self, entry_line: Line, elements: Union[Elements, list], exit_line: Line, uid: str = None):
         self.entry_line = entry_line
@@ -79,10 +76,11 @@ class Manoeuvre():
         istate = State.from_transform(initial, vel=PX()) if isinstance(initial, Transformation) else initial
         aligned = self.get_data(aligned) if aligned else None
         templates = []
-        for i, element in enumerate(self.all_elements()):
+        els = self.all_elements()
+        for i, element in enumerate(els):
             time = element.get_data(aligned).time if not aligned is None else None
 
-            if i < len(self.elements)-1 and not time is None:
+            if i < len(els)-1 and not time is None:
                 time = time.extend()
             templates.append(element.create_template(istate, time))
             istate = templates[-1][-1]
@@ -100,8 +98,8 @@ class Manoeuvre():
         elms = Elements()
         templates = [istate]
         aligned = self.get_data(aligned)
-
-        for i, elm in enumerate(self.all_elements()):
+        els = self.all_elements()
+        for i, elm in enumerate(els):
             st = elm.get_data(aligned)
             elms.add(elm.match_intention(
                 templates[-1][-1].transform, 
@@ -117,7 +115,7 @@ class Manoeuvre():
                 
             templates.append(elms[-1].create_template(
                 templates[-1][-1], 
-                st.time.extend() if i < len(self.elements) - 1 else st.time
+                st.time.extend() if i < len(els) - 1 else st.time
             ))
                     
         return Manoeuvre.from_all_elements(self.uid, elms), State.stack(templates[1:]).label(manoeuvre=self.uid)

@@ -6,7 +6,7 @@ from numbers import Number
 from flightanalysis.base import Collection
 from flightanalysis.schedule.manoeuvre import Manoeuvre
 from flightanalysis.state import State
-from flightanalysis.criteria import *
+from flightanalysis.schedule.scoring import *
 from numbers import Number
 from . import Collector, Collectors, MathOpp, FunOpp, ItemOpp, Opp
 
@@ -22,7 +22,7 @@ class ManParm(Opp):
     def __init__(
         self, 
         name:str, 
-        criteria: Union[Single, Comparison, Combination], 
+        criteria: Criteria, 
         default=None, 
         collectors:Collectors=None
     ):

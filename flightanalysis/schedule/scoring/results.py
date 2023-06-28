@@ -2,15 +2,15 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 from flightanalysis.base.collection import Collection
-
+from flightanalysis.schedule.scoring.measurement import Measurement
 
 
 class Result:
-    def __init__(self, name: str, errors: np.ndarray, downgrades: np.ndarray):
+    def __init__(self, name: str,  measurement: Measurement, dgs: np.ndarray):
         self.name = name
-        self.errors = errors
-        self.downgrades = downgrades
-        self.value = sum(self.downgrades)
+        self.measurement = measurement
+        self.dgs = dgs
+        self.value = sum(self.dgs)
 
 
 class Results(Collection):
@@ -20,7 +20,7 @@ class Results(Collection):
         return sum([cr.value for cr in self])
 
     def downgrade_summary(self):
-        return {r.name: r.downgrades for r in self if len(r.downgrades > 0)}
+        return {r.name: r.dgs for r in self if len(r.dgs > 0)}
 
     def downgrade_df(self) -> pd.DataFrame:
         dgs = self.downgrade_summary()

@@ -3,8 +3,9 @@ from flightanalysis.schedule.elements import *
 from flightanalysis.base.collection import Collection
 from flightanalysis.schedule.definition.collectors import Collectors
 from flightanalysis.schedule.definition import Opp, ItemOpp
-from flightanalysis.criteria import *
+from flightanalysis.schedule.scoring import *
 from numbers import Number
+
 
 def line(name, speed, length, roll):
     return ElDef.build(Line, name, speed, length, roll), ManParms()

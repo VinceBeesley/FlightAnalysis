@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from json import load
 from flightdata import Flight
-from flightanalysis import *
+from flightanalysis import State, Manoeuvre, State, ManDef, Box, get_schedule_definition, Collection
 from geometry import Transformation, Quaternion, Q0
 from flightplotting import plotsec, plotdtw
 from typing import List, Tuple

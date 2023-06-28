@@ -5,7 +5,7 @@ from flightanalysis.base.table import Time
 from flightanalysis.state import State
 from enum import Enum
 from . import El, DownGrades, DownGrade
-from flightanalysis.criteria import *
+from flightanalysis.schedule.scoring import *
 from typing import Union
 
 

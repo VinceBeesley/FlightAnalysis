@@ -1,6 +1,6 @@
 from pytest import fixture
 import numpy as np
-from flightanalysis.criteria import *
+from flightanalysis.schedule.scoring import *
 
 
 

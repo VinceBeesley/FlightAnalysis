@@ -4,10 +4,9 @@ from geometry import Transformation, Coord, Point, Quaternion, PX, PY, PZ
 from flightanalysis.state import State
 from flightanalysis.base.table import Time
 from scipy import optimize
-from flightanalysis.criteria import *
+from flightanalysis.schedule.scoring import *
 from . import El, DownGrades, DownGrade
 from typing import Union
-
 
 class Loop(El):
     parameters = El.parameters + "radius,angle,roll,ke,rate".split(",")
@@ -22,19 +21,17 @@ class Loop(El):
 
     @property
     def intra_scoring(self):
-
         _intra_scoring = DownGrades([
-            DownGrade("speed", "measure_speed", intra_f3a_speed),
-            DownGrade("radius", "measure_radius", intra_f3a_radius),
-            DownGrade("track", "measure_ip_track", intra_f3a_angle),
-            DownGrade("loop_amount", "measure_end_angle", basic_angle_f3a),
+            DownGrade(Measurement.speed_ratio, f3a.intra_speed),
+            DownGrade(Measurement.radius, f3a.intra_radius),
+            DownGrade(Measurement.track_y, f3a.intra_angle),
+            DownGrade(Measurement.track_xz, f3a.single_angle), #TODO pass the last point of fl and tp only to this to get loop amount
         ])
-
         if not self.roll == 0:
-            _intra_scoring.add(DownGrade("roll_rate", "measure_roll_rate", intra_f3a_roll_rate))
-            _intra_scoring.add(DownGrade("roll_amount", "measure_end_roll_angle", basic_angle_f3a))
+            _intra_scoring.add(DownGrade(Measurement.roll_rate, f3a.intra_roll_rate))
+            _intra_scoring.add(DownGrade(Measurement.end_roll, f3a.single_angle))
         else:
-            _intra_scoring.add(DownGrade("roll_angle", "measure_roll_angle_error", intra_f3a_angle))
+            _intra_scoring.add(DownGrade(Measurement.roll_error, f3a.intra_angle))
         return _intra_scoring
 
     def describe(self):
@@ -118,19 +115,19 @@ class Loop(El):
 
         return Coord.from_zx(centre, loop_normal_vector, itrans.pos - centre)
 
-    def measure_radial_position(self, flown:State, template:State):
+    def measure_radial_position(self, flown:State, template:State, coord: Coord):
         """The radial position in radians given a state in the loop coordinate frame"""
         return np.arctan2(flown.pos.y, flown.pos.x)
 
-    def measure_ratio(self, flown: State, template:State):
-        rpos = self.measure_radial_position(flown, template)
+    def measure_ratio(self, flown: State, template:State, coord: Coord):
+        rpos = self.measure_radial_position(flown, template, coord)
         return rpos / rpos[-1]
 
-    def measure_radius(self, flown:State, template:State):
+    def measure_radius(self, flown:State, template:State, coord: Coord):
         """The radius in m given a state in the loop coordinate frame"""
         return abs(flown.pos * Point(1,1,0))
    
-    def measure_end_angle(self, flown: State, template:State):
+    def measure_end_angle(self, flown: State, template:State, coord: Coord):
         template_vels = template.att.transform_point(template.vel) * Point(1,1,0)
         flown_vels = flown.att.transform_point(flown.vel) * Point(1,1,0)
         return Point.angle_between(template_vels[-1], flown_vels[-1])

@@ -4,7 +4,7 @@ from geometry import Transformation, Point, PX, PY, PZ, P0
 from flightanalysis.state import State
 from flightanalysis.base import Time
 from . import El, DownGrades, DownGrade
-from flightanalysis.criteria import *
+from flightanalysis.schedule.scoring import *
 
 
 class StallTurn(El):

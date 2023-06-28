@@ -1,4 +1,4 @@
-from flightanalysis.criteria import f3a_angle, f3a_radius
+from flightanalysis.schedule.scoring import f3a_angle, f3a_radius
 import numpy as np
 
 

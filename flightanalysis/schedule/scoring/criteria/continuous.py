@@ -3,7 +3,8 @@ import numpy as np
 import pandas as pd
 from typing import Callable
 from flightanalysis.base.collection import Collection
-from . import Result, Criteria
+from . import Criteria
+from flightanalysis.schedule.scoring import Result, Results
 import inspect
 
 

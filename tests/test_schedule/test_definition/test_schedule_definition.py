@@ -2,7 +2,7 @@ from pytest import fixture
 
 from flightanalysis.schedule.definition import *
 from flightanalysis.schedule.elements import *
-from flightanalysis.criteria.comparison import *
+from flightanalysis.schedule.scoring import *
 from flightanalysis import Manoeuvre
 from flightanalysis.data import get_schedule_definition
 

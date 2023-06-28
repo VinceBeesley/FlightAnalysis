@@ -1,7 +1,7 @@
 from pytest import fixture
 import numpy as np
 import pandas as pd
-from flightanalysis.criteria import *
+from flightanalysis.schedule.scoring import *
 
 
 @fixture

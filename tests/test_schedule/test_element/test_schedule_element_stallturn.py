@@ -3,7 +3,7 @@
 
 from flightanalysis.schedule.elements import StallTurn
 import pytest
-from geometry import Transformation, Points, Point, Quaternion
+from geometry import Transformation, Point, Quaternion
 import numpy as np
 
 

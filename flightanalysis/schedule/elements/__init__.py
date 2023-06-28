@@ -2,8 +2,8 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 from flightanalysis import State, Collection, Time
-from flightanalysis.criteria import *
-from geometry import Transformation, PX, PY, PZ, Point, angle_diff, Coord
+from flightanalysis.schedule.scoring import *
+from geometry import Transformation, PX, PY, PZ, Point, angle_diff, Coord, Quaternion
 from json import load, dumps
 
 
@@ -52,60 +52,62 @@ class El:
         elements coord"""   
         return flown.move_back(Transformation.from_coord(self.coord(template)))
 
-    def measure_end_roll_angle(self, flown: State, template:State):
-        return np.array([self.measure_roll_angle(flown, template)[-1]])
+    def measure_end_roll_angle(self, flown: State, template:State, coord: Coord):
+        diff = Quaternion.body_axis_rates(template.att[-1], flown.att[-1])
+        return np.array([self.measure_roll_angle(flown, template, coord)[-1]])
 
-    def measure_ip_track(self, flown: State, template:State):
+    def measure_ip_track(self, flown: State, template:State, coord: Coord):
         vels = flown.att.transform_point(flown.vel) 
         return np.arcsin(vels.z/abs(vels) ) 
 
-    def measure_end_ip_track(self, flown, template):
-        return np.array([self.measure_ip_track(flown, template)[-1]])
+    def measure_end_ip_track(self, flown, template, coord: Coord):
+        return np.array([self.measure_ip_track(flown, template, coord)[-1]])
 
-    def measure_op_track(self, flown: State, template:State):
+    def measure_op_track(self, flown: State, template:State, coord: Coord):
         vels = flown.att.transform_point(flown.vel) 
         return np.arcsin(vels.y/abs(vels) ) 
 
-    def measure_end_op_track(self, flown, template):
-        return np.array([self.measure_op_track(flown, template)[-1]])
+    def measure_end_op_track(self, flown, template, coord: Coord):
+        return np.array([self.measure_op_track(flown, template, coord)[-1]])
 
-    def measure_roll_rate(self, flown: State, template:State):
+    def measure_roll_rate(self, flown: State, template:State, coord: Coord):
         return flown.p 
 
-    def measure_roll_angle(self, flown: State, template:State):
-        roll_vector = flown.att.inverse().transform_point(PZ(1))
-        return np.unwrap(np.arctan2(roll_vector.z, roll_vector.y))
+    def measure_roll_angle(self, flown: State, template:State, coord: Coord):
+        return Quaternion.body_axis_rates(template.att, flown.att).x
+        #roll_vector = flown.att.inverse().transform_point(PZ(1))
+        #return np.unwrap(np.arctan2(roll_vector.z, roll_vector.y))
 
-    def measure_eq_tp_roll_angle(self, flown, template):
-        tp_angles = self.measure_roll_angle(template, template)
-        return self.measure_ratio(flown, template) * (tp_angles[-1] - tp_angles[0]) + tp_angles[0]
+    def measure_eq_tp_roll_angle(self, flown, template, coord: Coord):
+        tp_angles = self.measure_roll_angle(template, template, coord)
+        return self.measure_ratio(flown, template, coord) * (tp_angles[-1] - tp_angles[0]) + tp_angles[0]
 
-    def measure_length(self, flown: State, template:State):
+    def measure_length(self, flown: State, template:State, coord: Coord):
         return np.cumsum(abs(flown.vel) * flown.dt)
 
-    def measure_ratio(self, flown: State, template:State):
+    def measure_ratio(self, flown: State, template:State, coord: Coord):
         return flown.x / flown.x[-1]
 
-    def measure_roll_angle_error(self, flown: State, template:State):
-        fl_angles = self.measure_roll_angle(flown, template) 
-        tp_angles = self.measure_eq_tp_roll_angle(flown, template)
+    def measure_roll_angle_error(self, flown: State, template:State, coord: Coord):
+        fl_angles = self.measure_roll_angle(flown, template, coord) 
+        tp_angles = self.measure_eq_tp_roll_angle(flown, template, coord)
         return angle_diff(fl_angles, tp_angles)
         
-    def measure_speed(self, flown, template):
+    def measure_speed(self, flown, template, coord: Coord):
         return abs(flown.vel)
 
     def score_series_builder(self, index):
         return lambda data: pd.Series(data, index=index)
 
     def analyse(self, flown:State, template:State) -> Results:
-        fl =  self.setup_analysis_state(flown, template)
-        tp =  self.setup_analysis_state(template, template)
-        return self.intra_scoring.apply(self, fl, tp)
+#        fl =  self.setup_analysis_state(flown, template)
+#        tp =  self.setup_analysis_state(template, template)
+        return self.intra_scoring.apply(self, flown, template, self.coord(template))
 
-    def analyse_exit(self, flown, template) -> Results:
-        fl =  self.setup_analysis_state(flown, template)
-        tp =  self.setup_analysis_state(template, template)
-        return self.exit_scoring.apply(self, fl, tp)
+    def analyse_exit(self, fl, tp) -> Results:
+        #fl =  self.setup_analysis_state(flown, template)
+        #tp =  self.setup_analysis_state(template, template)
+        return self.exit_scoring.apply(self, fl, tp, self.coord(tp))
 
     def coord(self, template: State) -> Coord:
         """Create the coordinate frame. 

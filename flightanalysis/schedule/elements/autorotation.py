@@ -4,7 +4,7 @@ from geometry import Transformation, Point, Quaternion, PX, PY, PZ, P0
 from flightanalysis import State
 from flightanalysis.base.table import Time
 from . import El, Loop, DownGrades, DownGrade, Elements
-from flightanalysis.criteria import *
+from flightanalysis.schedule.scoring import *
 from typing import Union
 
 

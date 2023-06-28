@@ -21,8 +21,6 @@ import numpy as np
 from flightanalysis.schedule.elements import Loop, Line, StallTurn, El, Elements
 from flightanalysis.schedule.manoeuvre import Manoeuvre
 from flightanalysis.schedule.definition.manoeuvre_info import ManInfo
-from flightanalysis.schedule.definition.collectors import Collectors
-from flightanalysis.criteria import Comparison, inter_f3a_length, Combination
 from flightanalysis import State
 from geometry import Transformation, Euler, Point, P0
 from functools import partial

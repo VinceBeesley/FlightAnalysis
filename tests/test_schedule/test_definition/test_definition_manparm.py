@@ -1,6 +1,6 @@
 
 from flightanalysis.schedule.definition import *
-from flightanalysis.criteria import *
+from flightanalysis.schedule.scoring import *
 from flightanalysis.schedule.elements import *
 from pytest import fixture
 

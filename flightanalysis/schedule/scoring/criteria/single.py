@@ -2,12 +2,13 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 from typing import List, Dict, Callable
-from . import Result, Results, Criteria
+from . import Criteria
+from flightanalysis.schedule.scoring import Result, Results, Measurement
 import inspect
 
 
 class Single(Criteria):
-    """This class creates a function to return a result for a set of errors. 
+    """This class creates a function to return a score for an error. 
     """
     def __init__(self, lookup: Callable, preprocess: Callable=None, slu=None, spp=None):
         """
@@ -24,11 +25,10 @@ class Single(Criteria):
             self.preprocess = preprocess
         self.spp=spp if spp else inspect.getsourcelines(self.preprocess)[0][0].split("=")[1].strip()
 
-    def __call__(self, name: str, data: np.ndarray, pp = True) -> Result:
+    def __call__(self, measurement: Measurement):
         """get a Result object for a set of errors."""
-        pdata = self.preprocess(data) if pp else data
-        return Result(name,data,self.lookup(pdata))
-
+        return self.lookup(self.preprocess(measurement.read()))
+        
     def to_dict(self):
         return dict(
             kind = self.__class__.__name__,
