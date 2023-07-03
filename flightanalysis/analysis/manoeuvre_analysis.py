@@ -2,7 +2,6 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 from json import load
-from flightdata import Flight
 from flightanalysis import State, Manoeuvre, State, ManDef, ElDef, Box, get_schedule_definition, Collection
 from flightanalysis.schedule.elements import El
 from geometry import Transformation, Quaternion, Q0
@@ -135,6 +134,7 @@ class ScheduleAnalysis(Collection):
 
 
 if __name__ == "__main__":
+    from flightdata import Flight
     with open("examples/data/manual_F3A_P23_22_05_31_00000350.json", "r") as f:
         data = load(f)
 
