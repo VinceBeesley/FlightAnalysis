@@ -5,7 +5,6 @@ from json import load
 from flightanalysis import State, Manoeuvre, State, ManDef, ElDef, Box, get_schedule_definition, Collection
 from flightanalysis.schedule.elements import El
 from geometry import Transformation, Quaternion, Q0
-from flightplotting import plotsec, plotdtw
 from typing import Any, List, Tuple
 
 
@@ -124,6 +123,7 @@ class ManoeuvreAnalysis:
         return ManoeuvreAnalysis(mdef, aligned, intended, int_tp, corr, corr_tp)
 
     def plot_3d(self, **kwargs):
+        from flightplotting import plotsec, plotdtw
         fig = plotsec(self.aligned, color="red", **kwargs)
         return plotsec(self.corrected_template, color="green", fig=fig, **kwargs)
 
