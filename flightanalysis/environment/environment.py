@@ -1,5 +1,4 @@
 
-from flightdata import Flight, Fields
 from flightanalysis import Constructs, SVar, Table
 from geometry import Point, Base, P0
 import numpy as np
@@ -32,7 +31,8 @@ class Environment(Table):
     ])
 
     @staticmethod
-    def build(flight: Flight, sec, wmodel: WindModel):
+    def build(flight, sec, wmodel: WindModel):
+        from flightdata import Fields
 
         df = flight.read_fields(Fields.PRESSURE)
         df = df.assign(temperature_0=291.15)
