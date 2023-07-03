@@ -8,8 +8,6 @@ from flightanalysis.environment import Environment, WindModelBuilder, WindModel,
 from flightanalysis.controls import Controls
 from flightanalysis.model import Coefficients, Flow, cold_draft, ACConstants
 from flightanalysis.flightline import Box
-from flightdata import Flight
-from scipy.optimize import minimize
 import numpy as np
 import pandas as pd
 
@@ -38,7 +36,7 @@ class Analysis:
         
     @staticmethod
     def build(
-        flight: Flight, 
+        flight, 
         box: Box, 
         wmodel: WindModel, 
         consts: ACConstants,
@@ -88,6 +86,7 @@ class Analysis:
 
 
 def fit_wind(body_axis: State, windbuilder: WindModelBuilder, bounds=False, **kwargs):
+    from scipy.optimize import minimize
 
     body_axis = State(body_axis.data.loc[body_axis.vel.x > 10])
 
