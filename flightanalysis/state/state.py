@@ -8,7 +8,7 @@ import pandas as pd
 from pandas.api.types import is_list_like
 
 from scipy.spatial.distance import euclidean
-from fastdtw import fastdtw
+
 
 from geometry import Point, Quaternion, Transformation, PX, PY, PZ, P0, Q0, Coord
 
@@ -191,6 +191,7 @@ class State(Table):
             whiten (bool, optional): Whether to whiten the data before performing the alignment. Defaults to False.
 
         """
+        from fastdtw import fastdtw
         if white:
             warnings.filterwarnings("ignore", message="Some columns have standard deviation zero. ")
 

@@ -3,10 +3,16 @@ import pandas as pd
 from geometry import Transformation, Coord, Point, Quaternion, PX, PY, PZ
 from flightanalysis.state import State
 from flightanalysis.base.table import Time
-from scipy import optimize
+
 from flightanalysis.schedule.scoring import *
 from . import El, DownGrades, DownGrade
 from typing import Union
+from warnings import warn
+try:
+    from scipy import optimize
+
+except ImportError:
+    warn("no scipy, loop fitting is not available")
 
 
 class Loop(El):
@@ -137,6 +143,7 @@ class Loop(El):
         return self.set_parms(radius=self.speed / pitch_rate)
 
     def match_intention(self, itrans: Transformation, flown: State):
+        
         jit = flown.judging_itrans(itrans)
         pos = jit.att.transform_point(flown.pos - jit.pos)
 

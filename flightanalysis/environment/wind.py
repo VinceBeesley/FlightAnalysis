@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 from geometry import Point
-from scipy.interpolate import interp1d
 from typing import List, Tuple
 
 
@@ -86,7 +85,7 @@ class WindModelBuilder:
 
     @staticmethod
     def fit(minwind=0.1, maxwind=20.0, minh=0, maxh=500, npoints=10, **kwargs ):
-
+        from scipy.interpolate import interp1d
         def wind_fit_builder(args):
             """generates a wind function based on a fit through arbitrary number of points. 
 

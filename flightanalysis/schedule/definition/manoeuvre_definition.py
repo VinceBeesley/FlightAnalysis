@@ -24,7 +24,6 @@ from flightanalysis.schedule.definition.manoeuvre_info import ManInfo
 from flightanalysis import State
 from geometry import Transformation, Euler, Point, P0
 from functools import partial
-from scipy.optimize import minimize
 from . import ManParm, ManParms, ElDef, ElDefs, _a, Position, Direction
 from copy import deepcopy
 
