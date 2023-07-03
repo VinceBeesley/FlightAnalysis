@@ -12,7 +12,6 @@ this program. If not, see <http://www.gnu.org/licenses/>.
 
 from geometry import GPS, Coord, Point, Transformation, Quaternion, PX, PY, PZ, P0, Euler
 from typing import Union
-from flightdata import Flight, Fields
 import numpy as np
 from json import load, dump
 
@@ -57,7 +56,7 @@ class Box(object):
         return "Box:{}".format(self.to_dict())
 
     @staticmethod
-    def from_initial(flight: Flight):
+    def from_initial(flight):
         '''Generate a box based on the initial position and heading of the model at the start of the log. 
         This is a convenient, but not very accurate way to setup the box. 
         '''
@@ -184,11 +183,11 @@ class FlightLine(object):
         )
 
     @staticmethod
-    def from_initial_position(flight: Flight):
+    def from_initial_position(flight):
         return FlightLine.from_box(Box.from_initial(flight), flight.origin)
 
     @staticmethod
-    def from_heading(flight: Flight, heading: float):
+    def from_heading(flight, heading: float):
         """generate a flightline based on the turn on gps position and a heading
 
         Args:
@@ -207,7 +206,7 @@ class FlightLine(object):
             ))
 
     @staticmethod
-    def from_covariance(flight: Flight):
+    def from_covariance(flight):
         """generate a flightline from a flight based on the covariance matrix
 
         Args:
