@@ -1,7 +1,6 @@
 
 from flightanalysis.base.table import Table, SVar, Time
 from typing import Union
-from flightdata import Flight, Fields
 from pathlib import Path
 from flightanalysis.base.constructs import Constructs, SVar
 from geometry import Point, Quaternion, Base
@@ -34,7 +33,8 @@ class Controls(Table):
     ])
 
 
-    def build(flight: Union[Flight, str], conversion):
+    def build(flight, conversion):
+        from flightdata import Flight, Fields
         if isinstance(flight, str):
             flight = {
                 ".csv": Flight.from_csv,
