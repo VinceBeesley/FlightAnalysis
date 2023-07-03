@@ -1,7 +1,7 @@
 """This file defines a P23 sequence using the ManDef Classes and helper functions."""
 from flightanalysis.schedule.definition import *
 from flightanalysis.schedule.elements import *
-from flightanalysis.criteria import *
+from flightanalysis.schedule.scoring import *
 import numpy as np
 
 c45 = np.cos(np.radians(45))

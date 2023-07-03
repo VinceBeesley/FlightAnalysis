@@ -2,48 +2,20 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 from . import Criteria
-from flightanalysis.schedule.scoring import Result, Results
-from typing import Callable
-import inspect
+from flightanalysis.schedule.scoring import Measurement
+
 
 class Comparison(Criteria):
-    def __init__(self, criteria: Callable, initial_value=None, scr: str=None):
-        self.criteria = criteria
-        self.initial_value = initial_value
-        self.scr = scr if scr else inspect.getsourcelines(self.criteria)[0][0].split("=")[1].strip()
+    """Works on a discrete set of ratio errors.
+    input should be ratio error to the expected (first) value
+    output is each compared to the previous value
+    """            
+    def __call__(self, m: Measurement):
+        cval = m.flown[0]
 
-    def lookup(self,value):
-        try:
-            return self.criteria(value)
-        except IndexError:
-            raise ValueError(f"The requested ratio of {value} is not present in levels {self.levels}")
-            
-            
-    def __call__(self, name, data) -> Result:
-        if len(data) == 0:
-            return Result(name, np.array([]), np.array([]))
-        cval = data[0] if self.initial_value is None else self.initial_value
-        data = np.concatenate([np.array([cval]), data])
-        ratios = data[1:] / data[:-1] - 1
-        return Result(
-            name, 
-            ratios,
-            self.lookup(np.abs(ratios))
-        )
+        data = np.concatenate([np.array([cval]), m.flown])
+        ratios = self.preprocess(m.flown[1:] / m.flown[:-1])
+        return self.lookup(np.abs(ratios))
 
-    def to_dict(self):
-        return dict(
-            kind = self.__class__.__name__,
-            criteria = self.scr,
-            initial_value = self.initial_value
-        )
-
-    @staticmethod
-    def from_dict(data:dict) -> Comparison:
-        return Comparison(
-            eval(data["criteria"]),
-            initial_value = data["initial_value"],
-            scr=data["criteria"]
-        )
 
     

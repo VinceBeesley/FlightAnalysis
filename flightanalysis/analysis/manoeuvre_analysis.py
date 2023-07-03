@@ -3,10 +3,28 @@ import numpy as np
 import pandas as pd
 from json import load
 from flightdata import Flight
-from flightanalysis import State, Manoeuvre, State, ManDef, Box, get_schedule_definition, Collection
+from flightanalysis import State, Manoeuvre, State, ManDef, ElDef, Box, get_schedule_definition, Collection
+from flightanalysis.schedule.elements import El
 from geometry import Transformation, Quaternion, Q0
 from flightplotting import plotsec, plotdtw
-from typing import List, Tuple
+from typing import Any, List, Tuple
+
+
+
+class ElementAnalysis:
+    def __init__(self, edef:ElDef, el: El, fl: State, tp: State):
+        self.edef = edef
+        self.el = el
+        self.fl=fl
+        self.tp = tp
+        self.coord = self.el.coord(self.tp)
+
+    def __repr__(self) -> str:
+        return f"ElementAnalysis({self.edef.name}, {self.el.__class__.__name__})"
+
+    def plot_3d(self, **kwargs):
+        fig = plotsec(self.fl, color="red", **kwargs)
+        return plotsec(self.tp, color="green", fig=fig, **kwargs)
 
 
 
@@ -19,6 +37,24 @@ class ManoeuvreAnalysis:
         self.corrected = corrected
         self.corrected_template = corrected_template
     
+    def __getitem__(self, i):
+        return self.get_ea(self.mdef.eds[i])
+
+    def __getattr__(self, name):
+        if name in self.mdef.eds.data.keys():
+            return self.get_ea(self.mdef.eds[name])
+        raise AttributeError()
+
+    def get_ea(self, edef):
+        el = getattr(self.intended.elements, edef.name)
+        st = el.get_data(self.aligned)
+        return ElementAnalysis(
+            edef,
+            el,
+            st,
+            el.get_data(self.intended_template).relocate(st.pos[0])
+        )
+
     def to_dict(self):
         return dict(
             mdef = self.mdef.to_dict(),

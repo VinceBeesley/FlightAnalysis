@@ -8,6 +8,7 @@ from flightanalysis.schedule.scoring import *
 from . import El, DownGrades, DownGrade
 from typing import Union
 
+
 class Loop(El):
     parameters = El.parameters + "radius,angle,roll,ke,rate".split(",")
 
@@ -22,16 +23,16 @@ class Loop(El):
     @property
     def intra_scoring(self):
         _intra_scoring = DownGrades([
-            DownGrade(Measurement.speed_ratio, f3a.intra_speed),
+            DownGrade(Measurement.speed, f3a.intra_speed),
             DownGrade(Measurement.radius, f3a.intra_radius),
-            DownGrade(Measurement.track_y, f3a.intra_angle),
-            DownGrade(Measurement.track_xz, f3a.single_angle), #TODO pass the last point of fl and tp only to this to get loop amount
+            DownGrade(Measurement.op_track, f3a.intra_angle),
+            DownGrade(Measurement.ip_track, f3a.single_angle), #TODO pass the last point of fl and tp only to this to get loop amount
         ])
         if not self.roll == 0:
             _intra_scoring.add(DownGrade(Measurement.roll_rate, f3a.intra_roll_rate))
-            _intra_scoring.add(DownGrade(Measurement.end_roll, f3a.single_angle))
+            _intra_scoring.add(DownGrade(Measurement.roll_angle, f3a.single_angle))
         else:
-            _intra_scoring.add(DownGrade(Measurement.roll_error, f3a.intra_angle))
+            _intra_scoring.add(DownGrade(Measurement.roll_angle, f3a.intra_angle))
         return _intra_scoring
 
     def describe(self):

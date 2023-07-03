@@ -15,9 +15,6 @@ from . import Collector, Collectors, MathOpp, FunOpp, ItemOpp, Opp
 class ManParm(Opp):
     """This class represents a parameter that can be used to characterise the geometry of a manoeuvre.
     For example, the loop diameters, line lengths, roll direction. 
-    
-    TODO: I think the way this uses the base class is nonsensical - ManParm.parse returns an Opp, not a ManParm.
-    perhaps a manparm should parse args and kwargs to the opp, or something like that.
     """
     def __init__(
         self, 
@@ -32,7 +29,7 @@ class ManParm(Opp):
             name (str): a short name, must work as an attribute so no spaces or funny characters
             criteria (Comparison): The comparison criteria function to be used when judging this parameter
             default (float): A default value (or default option if specified in criteria)
-            collectors (Callable): a list of functions that will pull values for this parameter from an Elements 
+            collectors (Collectors): a list of functions that will pull values for this parameter from an Elements 
                 collection. If the manoeuvre was flown correctly these should all be the same. The resulting list 
                 can be passed through the criteria (Comparison callable) to calculate a downgrade.
         """
@@ -92,7 +89,7 @@ class ManParm(Opp):
             return self.criteria[self.default]
 
     def valuefunc(self, id:int=0) -> Callable:
-        """Create a function to return the value property of this manparm from a manparms collection.
+        """Create a function to return the value of this manparm from a manparms collection.
         
         Args:
             id (int, optional): The element id to return if reading the default from a Combination
@@ -104,12 +101,10 @@ class ManParm(Opp):
         Returns:
             Callable: function to get the default value for this manparm from the mps collection
         """
-        if isinstance(self.criteria, Comparison) or isinstance(self.criteria, Single):
-            return lambda mps: mps.data[self.name].value 
-        elif isinstance(self.criteria, Combination):
-            return lambda mps: mps.data[self.name].value[id] 
+        if isinstance(self.criteria, Combination):
+            return lambda mps: mps.data[self.name].value[id]
         else:
-            raise Exception("Cant create a valuefunc in this case")
+            return lambda mps: mps.data[self.name].value 
     
     def __getitem__(self, i):
         return ItemOpp(self, i)

@@ -17,20 +17,24 @@ class DownGrade:
         self.measure = measure
         self.criteria = criteria
 
-    def measure_element(self, fl, tp, coord) -> Measurement:
-        return self.measure(fl, tp, coord)
-    
-    def apply(self, measurement: Measurement):
-        return self.criteria(self.name, measurement, False)
-    
+    @property
+    def name(self):
+        return self.measure.__name__
+
     def __call__(self, el, fl, tp, coord) -> Result:
-        measurement = self.measure_element(fl, tp, coord)
+        if self.criteria.__class__ is Criteria:
+            meas = self.measure(fl[-1], tp[-1], coord)
+        else:
+            meas = self.measure(fl, tp, coord)
+
         return Result(
-            f"{el.uid}_{self.measure.__name__}",
-            measurement,
-            self.criteria(measurement)
+            self.measure.__name__,
+            meas,
+            self.criteria(meas)
         )
 
+    def __repr__(self):
+        return f"Downgrade({self.name}, {self.criteria.__class__.__name__})"
 
 class DownGrades(Collection):
     VType = DownGrade

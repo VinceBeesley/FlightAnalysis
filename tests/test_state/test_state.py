@@ -6,6 +6,7 @@ from flightdata import Flight, Fields
 import numpy as np
 import pandas as pd
 from pytest import approx, fixture
+from json import dumps, loads
 
 flight = Flight.from_csv('tests/test_inputs/test_log_00000052_flight.csv')
 
@@ -51,6 +52,11 @@ def test_from_transform():
 
 
 def test_to_from_dict(state):
-    data = state.to_dict()
-    st_new = State.from_dict(data)
+    st = state.label(manoeuvre="test")
+    data_dict = st.to_dict()
+    data_json = dumps(data_dict)
+    data_new_dict = loads(data_json)
+    st_new = State.from_dict(data_new_dict)
     assert st_new.duration == state.duration
+
+

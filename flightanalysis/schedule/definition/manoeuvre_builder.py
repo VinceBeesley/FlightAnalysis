@@ -1,5 +1,6 @@
 from . import ManDef, ManParm, ManParms, ElDef, ElDefs
 from flightanalysis.schedule.elements import *
+
 from typing import Dict, List
 from numbers import Number
 from functools import partial
@@ -67,20 +68,21 @@ class ManoeuvreBuilder():
         return md
     
 
+from flightanalysis.schedule.scoring import f3a
 
 f3amb = ManoeuvreBuilder(
     ManParms([
-        ManParm("speed", inter_f3a_speed, 30.0),
-        ManParm("loop_radius", inter_f3a_radius, 55.0),
-        ManParm("line_length", inter_f3a_length, 130.0),
-        ManParm("point_length", inter_f3a_length, 20.0),
-        ManParm("continuous_roll_rate", inter_f3a_roll_rate, np.pi/2),
-        ManParm("partial_roll_rate", inter_f3a_roll_rate, np.pi/2),
-        ManParm("full_roll_rate", inter_f3a_roll_rate, 3*np.pi/4),
-        ManParm("snap_rate", inter_f3a_roll_rate, 4*np.pi),
-        ManParm("stallturn_rate", inter_f3a_roll_rate, 2*np.pi),
-        ManParm("spin_rate", inter_f3a_roll_rate, 1.7*np.pi),
-        ManParm("ee_pause", inter_f3a_length, 20.0)
+        ManParm("speed", f3a.inter_speed, 30.0),
+        ManParm("loop_radius", f3a.inter_radius, 55.0),
+        ManParm("line_length", f3a.inter_length, 130.0),
+        ManParm("point_length", f3a.inter_length, 20.0),
+        ManParm("continuous_roll_rate", f3a.inter_roll_rate, np.pi/2),
+        ManParm("partial_roll_rate", f3a.inter_roll_rate, np.pi/2),
+        ManParm("full_roll_rate", f3a.inter_roll_rate, 3*np.pi/4),
+        ManParm("snap_rate", f3a.inter_roll_rate, 4*np.pi),
+        ManParm("stallturn_rate", f3a.inter_roll_rate, 2*np.pi),
+        ManParm("spin_rate", f3a.inter_roll_rate, 1.7*np.pi),
+        ManParm("ee_pause", f3a.inter_length, 20.0)
     ]),
     mpmaps=dict(
         line=dict(

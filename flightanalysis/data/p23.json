@@ -21,8 +21,8 @@
         "name": "speed",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 30.0,
         "collectors": [
@@ -49,8 +49,8 @@
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 55.0,
         "collectors": [
@@ -64,8 +64,8 @@
         "name": "line_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 130.0,
         "collectors": [
@@ -77,8 +77,8 @@
         "name": "point_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 20.0,
         "collectors": [
@@ -90,8 +90,8 @@
         "name": "partial_roll_rate",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 1.5707963267948966,
         "collectors": [
@@ -105,7 +105,6 @@
       "e_1_rolls": {
         "name": "e_1_rolls",
         "criteria": {
-          "kind": "Combination",
           "desired": [
             [
               1.5707963267948966,
@@ -116,7 +115,9 @@
               -1.5707963267948966
             ]
           ],
-          "criteria": "lambda x : 0.0 if criteria is None else criteria"
+          "kind": "Combination",
+          "errortype": "ratio",
+          "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
         "collectors": [
@@ -128,8 +129,8 @@
         "name": "e_1_pad_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": null,
         "collectors": [
@@ -140,7 +141,6 @@
       "e_3_rolls": {
         "name": "e_3_rolls",
         "criteria": {
-          "kind": "Combination",
           "desired": [
             [
               3.141592653589793
@@ -149,7 +149,9 @@
               -3.141592653589793
             ]
           ],
-          "criteria": "lambda x : 0.0 if criteria is None else criteria"
+          "kind": "Combination",
+          "errortype": "ratio",
+          "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
         "collectors": [
@@ -160,8 +162,8 @@
         "name": "e_3_pad_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": null,
         "collectors": [
@@ -172,7 +174,6 @@
       "e_5_rolls": {
         "name": "e_5_rolls",
         "criteria": {
-          "kind": "Combination",
           "desired": [
             [
               1.5707963267948966,
@@ -183,7 +184,9 @@
               -1.5707963267948966
             ]
           ],
-          "criteria": "lambda x : 0.0 if criteria is None else criteria"
+          "kind": "Combination",
+          "errortype": "ratio",
+          "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
         "collectors": [
@@ -195,8 +198,8 @@
         "name": "e_5_pad_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": null,
         "collectors": [
@@ -391,8 +394,8 @@
         "name": "speed",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 30.0,
         "collectors": [
@@ -407,8 +410,8 @@
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 55.0,
         "collectors": [
@@ -420,8 +423,8 @@
         "name": "line_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 130.0,
         "collectors": [
@@ -432,8 +435,8 @@
         "name": "partial_roll_rate",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 1.5707963267948966,
         "collectors": [
@@ -443,7 +446,6 @@
       "e_1_rolls": {
         "name": "e_1_rolls",
         "criteria": {
-          "kind": "Combination",
           "desired": [
             [
               3.141592653589793
@@ -452,7 +454,9 @@
               -3.141592653589793
             ]
           ],
-          "criteria": "lambda x : 0.0 if criteria is None else criteria"
+          "kind": "Combination",
+          "errortype": "ratio",
+          "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
         "collectors": [
@@ -463,8 +467,8 @@
         "name": "e_1_pad_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": null,
         "collectors": [
@@ -547,8 +551,8 @@
         "name": "speed",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 30.0,
         "collectors": [
@@ -567,8 +571,8 @@
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 55.0,
         "collectors": [
@@ -581,8 +585,8 @@
         "name": "line_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 130.0,
         "collectors": [
@@ -594,8 +598,8 @@
         "name": "partial_roll_rate",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 1.5707963267948966,
         "collectors": [
@@ -606,8 +610,8 @@
         "name": "full_roll_rate",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 2.356194490192345,
         "collectors": [
@@ -617,7 +621,6 @@
       "e_1_rolls": {
         "name": "e_1_rolls",
         "criteria": {
-          "kind": "Combination",
           "desired": [
             [
               6.283185307179586
@@ -626,7 +629,9 @@
               -6.283185307179586
             ]
           ],
-          "criteria": "lambda x : 0.0 if criteria is None else criteria"
+          "kind": "Combination",
+          "errortype": "ratio",
+          "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
         "collectors": [
@@ -637,8 +642,8 @@
         "name": "e_1_pad_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": null,
         "collectors": [
@@ -649,7 +654,6 @@
       "e_3_rolls": {
         "name": "e_3_rolls",
         "criteria": {
-          "kind": "Combination",
           "desired": [
             [
               3.141592653589793
@@ -658,7 +662,9 @@
               -3.141592653589793
             ]
           ],
-          "criteria": "lambda x : 0.0 if criteria is None else criteria"
+          "kind": "Combination",
+          "errortype": "ratio",
+          "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
         "collectors": [
@@ -669,8 +675,8 @@
         "name": "e_3_pad_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": null,
         "collectors": [
@@ -791,8 +797,8 @@
         "name": "speed",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 30.0,
         "collectors": [
@@ -811,8 +817,8 @@
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 55.0,
         "collectors": [
@@ -825,8 +831,8 @@
         "name": "line_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 91.92388155425118,
         "collectors": [
@@ -838,8 +844,8 @@
         "name": "partial_roll_rate",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 1.5707963267948966,
         "collectors": [
@@ -850,7 +856,6 @@
       "e_1_rolls": {
         "name": "e_1_rolls",
         "criteria": {
-          "kind": "Combination",
           "desired": [
             [
               3.141592653589793
@@ -859,7 +864,9 @@
               -3.141592653589793
             ]
           ],
-          "criteria": "lambda x : 0.0 if criteria is None else criteria"
+          "kind": "Combination",
+          "errortype": "ratio",
+          "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
         "collectors": [
@@ -870,8 +877,8 @@
         "name": "e_1_pad_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": null,
         "collectors": [
@@ -882,7 +889,6 @@
       "e_3_rolls": {
         "name": "e_3_rolls",
         "criteria": {
-          "kind": "Combination",
           "desired": [
             [
               3.141592653589793
@@ -891,7 +897,9 @@
               -3.141592653589793
             ]
           ],
-          "criteria": "lambda x : 0.0 if criteria is None else criteria"
+          "kind": "Combination",
+          "errortype": "ratio",
+          "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
         "collectors": [
@@ -902,8 +910,8 @@
         "name": "e_3_pad_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": null,
         "collectors": [
@@ -1024,8 +1032,8 @@
         "name": "speed",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 30.0,
         "collectors": [
@@ -1042,8 +1050,8 @@
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 55.0,
         "collectors": [
@@ -1055,8 +1063,8 @@
         "name": "line_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 293.84776310850236,
         "collectors": [
@@ -1067,8 +1075,8 @@
         "name": "snap_rate",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 12.566370614359172,
         "collectors": [
@@ -1079,8 +1087,8 @@
         "name": "e_1_pad_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": null,
         "collectors": [
@@ -1180,8 +1188,8 @@
         "name": "speed",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 30.0,
         "collectors": [
@@ -1198,8 +1206,8 @@
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 55.0,
         "collectors": [
@@ -1213,8 +1221,8 @@
         "name": "line_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 50,
         "collectors": [
@@ -1320,8 +1328,8 @@
         "name": "speed",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 30.0,
         "collectors": [
@@ -1337,8 +1345,8 @@
         "name": "point_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 20.0,
         "collectors": [
@@ -1350,8 +1358,8 @@
         "name": "partial_roll_rate",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 1.5707963267948966,
         "collectors": [
@@ -1364,7 +1372,6 @@
       "e_0_rolls": {
         "name": "e_0_rolls",
         "criteria": {
-          "kind": "Combination",
           "desired": [
             [
               3.141592653589793,
@@ -1379,7 +1386,9 @@
               3.141592653589793
             ]
           ],
-          "criteria": "lambda x : 0.0 if criteria is None else criteria"
+          "kind": "Combination",
+          "errortype": "ratio",
+          "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
         "collectors": [
@@ -1469,8 +1478,8 @@
         "name": "speed",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 30.0,
         "collectors": [
@@ -1482,8 +1491,8 @@
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 100,
         "collectors": [
@@ -1494,8 +1503,8 @@
         "name": "partial_roll_rate",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 1.5707963267948966,
         "collectors": [
@@ -1505,7 +1514,6 @@
       "e_1_rolls": {
         "name": "e_1_rolls",
         "criteria": {
-          "kind": "Combination",
           "desired": [
             [
               3.141592653589793
@@ -1514,7 +1522,9 @@
               -3.141592653589793
             ]
           ],
-          "criteria": "lambda x : 0.0 if criteria is None else criteria"
+          "kind": "Combination",
+          "errortype": "ratio",
+          "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
         "collectors": [
@@ -1567,8 +1577,8 @@
         "name": "speed",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 30.0,
         "collectors": [
@@ -1579,8 +1589,8 @@
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 55.0,
         "collectors": [
@@ -1591,8 +1601,8 @@
         "name": "line_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 130.0,
         "collectors": [
@@ -1603,8 +1613,8 @@
         "name": "spin_rate",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 5.340707511102648,
         "collectors": [
@@ -1683,8 +1693,8 @@
         "name": "speed",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 30.0,
         "collectors": [
@@ -1703,8 +1713,8 @@
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 55.0,
         "collectors": [
@@ -1717,8 +1727,8 @@
         "name": "line_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 130.0,
         "collectors": [
@@ -1730,8 +1740,8 @@
         "name": "partial_roll_rate",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 1.5707963267948966,
         "collectors": [
@@ -1742,7 +1752,6 @@
       "roll_option": {
         "name": "roll_option",
         "criteria": {
-          "kind": "Combination",
           "desired": [
             [
               3.141592653589793,
@@ -1769,7 +1778,9 @@
               1.5707963267948966
             ]
           ],
-          "criteria": "lambda x : 0.0 if criteria is None else criteria"
+          "kind": "Combination",
+          "errortype": "ratio",
+          "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
         "collectors": [
@@ -1781,8 +1792,8 @@
         "name": "e_1_pad_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": null,
         "collectors": [
@@ -1794,8 +1805,8 @@
         "name": "e_3_pad_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": null,
         "collectors": [
@@ -1916,8 +1927,8 @@
         "name": "speed",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 30.0,
         "collectors": [
@@ -1939,8 +1950,8 @@
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 70,
         "collectors": [
@@ -1953,8 +1964,8 @@
         "name": "point_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 20.0,
         "collectors": [
@@ -1965,8 +1976,8 @@
         "name": "partial_roll_rate",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 1.5707963267948966,
         "collectors": [
@@ -1979,7 +1990,6 @@
       "e_1_rolls": {
         "name": "e_1_rolls",
         "criteria": {
-          "kind": "Combination",
           "desired": [
             [
               3.141592653589793,
@@ -1990,7 +2000,9 @@
               3.141592653589793
             ]
           ],
-          "criteria": "lambda x : 0.0 if criteria is None else criteria"
+          "kind": "Combination",
+          "errortype": "ratio",
+          "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
         "collectors": [
@@ -2002,8 +2014,8 @@
         "name": "e_1_pad_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": null,
         "collectors": [
@@ -2014,7 +2026,6 @@
       "e_3_rolls": {
         "name": "e_3_rolls",
         "criteria": {
-          "kind": "Combination",
           "desired": [
             [
               1.5707963267948966,
@@ -2025,7 +2036,9 @@
               -1.5707963267948966
             ]
           ],
-          "criteria": "lambda x : 0.0 if criteria is None else criteria"
+          "kind": "Combination",
+          "errortype": "ratio",
+          "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
         "collectors": [
@@ -2037,8 +2050,8 @@
         "name": "e_3_pad_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": null,
         "collectors": [
@@ -2186,8 +2199,8 @@
         "name": "speed",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 30.0,
         "collectors": [
@@ -2202,8 +2215,8 @@
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 55.0,
         "collectors": [
@@ -2215,8 +2228,8 @@
         "name": "line_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 130.0,
         "collectors": [
@@ -2227,8 +2240,8 @@
         "name": "partial_roll_rate",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 1.5707963267948966,
         "collectors": [
@@ -2238,7 +2251,6 @@
       "e_1_rolls": {
         "name": "e_1_rolls",
         "criteria": {
-          "kind": "Combination",
           "desired": [
             [
               3.141592653589793
@@ -2247,7 +2259,9 @@
               -3.141592653589793
             ]
           ],
-          "criteria": "lambda x : 0.0 if criteria is None else criteria"
+          "kind": "Combination",
+          "errortype": "ratio",
+          "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
         "collectors": [
@@ -2258,8 +2272,8 @@
         "name": "e_1_pad_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": null,
         "collectors": [
@@ -2342,8 +2356,8 @@
         "name": "speed",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 30.0,
         "collectors": [
@@ -2356,8 +2370,8 @@
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 55.0,
         "collectors": [
@@ -2370,8 +2384,8 @@
         "name": "line_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 150.0,
         "collectors": [
@@ -2385,8 +2399,8 @@
         "name": "partial_roll_rate",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 1.5707963267948966,
         "collectors": [
@@ -2398,8 +2412,8 @@
         "name": "stallturn_rate",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 6.283185307179586,
         "collectors": [
@@ -2410,7 +2424,6 @@
       "roll_option": {
         "name": "roll_option",
         "criteria": {
-          "kind": "Combination",
           "desired": [
             [
               4.71238898038469,
@@ -2421,7 +2434,9 @@
               -4.71238898038469
             ]
           ],
-          "criteria": "lambda x : 0.0 if criteria is None else criteria"
+          "kind": "Combination",
+          "errortype": "ratio",
+          "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 1,
         "collectors": [
@@ -2433,8 +2448,8 @@
         "name": "e_1_pad_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": null,
         "collectors": [
@@ -2446,8 +2461,8 @@
         "name": "e_7_pad_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": null,
         "collectors": [
@@ -2602,8 +2617,8 @@
         "name": "speed",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 30.0,
         "collectors": [
@@ -2622,8 +2637,8 @@
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 55.0,
         "collectors": [
@@ -2636,8 +2651,8 @@
         "name": "line_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 130.0,
         "collectors": [
@@ -2649,8 +2664,8 @@
         "name": "partial_roll_rate",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 1.5707963267948966,
         "collectors": [
@@ -2661,7 +2676,6 @@
       "roll_option": {
         "name": "roll_option",
         "criteria": {
-          "kind": "Combination",
           "desired": [
             [
               -1.5707963267948966,
@@ -2672,7 +2686,9 @@
               -1.5707963267948966
             ]
           ],
-          "criteria": "lambda x : 0.0 if criteria is None else criteria"
+          "kind": "Combination",
+          "errortype": "ratio",
+          "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
         "collectors": [
@@ -2684,8 +2700,8 @@
         "name": "e_1_pad_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": null,
         "collectors": [
@@ -2697,8 +2713,8 @@
         "name": "e_3_pad_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": null,
         "collectors": [
@@ -2819,8 +2835,8 @@
         "name": "speed",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 30.0,
         "collectors": [
@@ -2847,8 +2863,8 @@
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 55.0,
         "collectors": [
@@ -2861,8 +2877,8 @@
         "name": "line_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 130.0,
         "collectors": [
@@ -2874,8 +2890,8 @@
         "name": "point_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 20.0,
         "collectors": [
@@ -2887,8 +2903,8 @@
         "name": "partial_roll_rate",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 1.5707963267948966,
         "collectors": [
@@ -2903,7 +2919,6 @@
       "e_0_rolls": {
         "name": "e_0_rolls",
         "criteria": {
-          "kind": "Combination",
           "desired": [
             [
               3.141592653589793
@@ -2912,7 +2927,9 @@
               -3.141592653589793
             ]
           ],
-          "criteria": "lambda x : 0.0 if criteria is None else criteria"
+          "kind": "Combination",
+          "errortype": "ratio",
+          "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
         "collectors": [
@@ -2922,7 +2939,6 @@
       "e_3_rolls": {
         "name": "e_3_rolls",
         "criteria": {
-          "kind": "Combination",
           "desired": [
             [
               1.5707963267948966,
@@ -2933,7 +2949,9 @@
               -1.5707963267948966
             ]
           ],
-          "criteria": "lambda x : 0.0 if criteria is None else criteria"
+          "kind": "Combination",
+          "errortype": "ratio",
+          "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
         "collectors": [
@@ -2945,8 +2963,8 @@
         "name": "e_3_pad_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": null,
         "collectors": [
@@ -2957,7 +2975,6 @@
       "e_5_rolls": {
         "name": "e_5_rolls",
         "criteria": {
-          "kind": "Combination",
           "desired": [
             [
               1.5707963267948966,
@@ -2968,7 +2985,9 @@
               -1.5707963267948966
             ]
           ],
-          "criteria": "lambda x : 0.0 if criteria is None else criteria"
+          "kind": "Combination",
+          "errortype": "ratio",
+          "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
         "collectors": [
@@ -2980,8 +2999,8 @@
         "name": "e_5_pad_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": null,
         "collectors": [
@@ -2992,7 +3011,6 @@
       "e_8_rolls": {
         "name": "e_8_rolls",
         "criteria": {
-          "kind": "Combination",
           "desired": [
             [
               3.141592653589793
@@ -3001,7 +3019,9 @@
               -3.141592653589793
             ]
           ],
-          "criteria": "lambda x : 0.0 if criteria is None else criteria"
+          "kind": "Combination",
+          "errortype": "ratio",
+          "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
         "collectors": [
@@ -3193,8 +3213,8 @@
         "name": "speed",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 30.0,
         "collectors": [
@@ -3215,8 +3235,8 @@
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 30,
         "collectors": [
@@ -3229,8 +3249,8 @@
         "name": "point_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 20.0,
         "collectors": [
@@ -3241,8 +3261,8 @@
         "name": "partial_roll_rate",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 1.5707963267948966,
         "collectors": [
@@ -3254,7 +3274,6 @@
       "e_1_rolls": {
         "name": "e_1_rolls",
         "criteria": {
-          "kind": "Combination",
           "desired": [
             [
               3.141592653589793
@@ -3263,7 +3282,9 @@
               -3.141592653589793
             ]
           ],
-          "criteria": "lambda x : 0.0 if criteria is None else criteria"
+          "kind": "Combination",
+          "errortype": "ratio",
+          "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
         "collectors": [
@@ -3274,8 +3295,8 @@
         "name": "e_1_pad_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": null,
         "collectors": [
@@ -3286,7 +3307,6 @@
       "e_3_rolls": {
         "name": "e_3_rolls",
         "criteria": {
-          "kind": "Combination",
           "desired": [
             [
               1.5707963267948966,
@@ -3297,7 +3317,9 @@
               -1.5707963267948966
             ]
           ],
-          "criteria": "lambda x : 0.0 if criteria is None else criteria"
+          "kind": "Combination",
+          "errortype": "ratio",
+          "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
         "collectors": [
@@ -3309,8 +3331,8 @@
         "name": "e_3_pad_length",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": null,
         "collectors": [
@@ -3449,8 +3471,8 @@
         "name": "speed",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1))",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 1 - 1/x"
         },
         "default": 30.0,
         "collectors": [
@@ -3463,8 +3485,8 @@
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
-          "criteria": "lambda x : (1 - 1/(x+1)) * 4",
-          "initial_value": null
+          "errortype": "ratio",
+          "slu": "lambda x: 4 - 4/x"
         },
         "default": 80,
         "collectors": [
@@ -3476,7 +3498,6 @@
       "roll_option": {
         "name": "roll_option",
         "criteria": {
-          "kind": "Combination",
           "desired": [
             [
               3.141592653589793
@@ -3485,7 +3506,9 @@
               -3.141592653589793
             ]
           ],
-          "criteria": "lambda x : 0.0 if criteria is None else criteria"
+          "kind": "Combination",
+          "errortype": "ratio",
+          "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
         "collectors": [

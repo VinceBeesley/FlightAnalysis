@@ -1,21 +1,18 @@
 from __future__ import annotations
 import numpy as np
-import pandas as pd
-from typing import Union, List
+from typing import List
 from numbers import Number
 from . import Criteria
-from flightanalysis.schedule.scoring import Result, Results
-import inspect
+
 
 
 class Combination(Criteria):
     """Handles a series of criteria assessments.
     for example a number of rolls in an element. 
     """
-    def __init__(self, desired: List[List[Number]], criteria=None, scr:str=None):
+    def __init__(self, desired: List[List[Number]], *args, **kwargs):
         self.desired = np.array(desired)
-        self.criteria = lambda x : 0.0 if criteria is None else criteria
-        self.scr = scr if scr else inspect.getsourcelines(self.criteria)[0][0].split("=")[1].strip()
+        super().__init__(*args, **kwargs)
 
     def __getitem__(self, value: int):
         return self.desired[value]
@@ -32,23 +29,10 @@ class Combination(Criteria):
         """Given a set of values, return the option id which gives the least error"""
         return np.sum(np.abs(self.get_errors(values)), axis=1).argmin()
 
-    def __call__(self, name: str, values) -> Result:
-        dgs = self.criteria(self.get_option_error(self.check_option(values), values))
-        return Result(name, values, dgs)
-
     def to_dict(self):
         return dict(
-            kind = self.__class__.__name__,
             desired = list(self.desired),
-            criteria = self.scr
-        )
-
-    @staticmethod
-    def from_dict(data:dict) -> Combination:
-        return Combination(
-            desired = np.array(data["desired"]),
-            criteria = eval(data["criteria"]),
-            scr=data["criteria"]
+            **super().to_dict()
         )
 
     @staticmethod

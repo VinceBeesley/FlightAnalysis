@@ -63,7 +63,7 @@ def pad(speed, line_length, eds: ElDefs):
     
     mp = ManParm(
         f"e_{eds[0].id}_pad_length", 
-        inter_f3a_length,
+        f3a.inter_length,
         None, 
         Collectors([e1.get_collector("length"), e3.get_collector("length")])
     )

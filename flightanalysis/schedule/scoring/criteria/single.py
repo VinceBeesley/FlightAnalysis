@@ -10,7 +10,7 @@ import inspect
 class Single(Criteria):
     """This class creates a function to return a score for an error. 
     """
-    def __init__(self, lookup: Callable, preprocess: Callable=None, slu=None, spp=None):
+    def __init__(self, lookup: Callable, slu=None):
         """
         Args:
             lookup (Callable): a function that returns a score for a given error
@@ -19,29 +19,20 @@ class Single(Criteria):
         self.lookup = lookup        
         self.slu=slu if slu else inspect.getsourcelines(self.lookup)[0][0].split("=")[1].strip()
 
-        if preprocess is None:
-            self.preprocess = lambda x: x
-        else:
-            self.preprocess = preprocess
-        self.spp=spp if spp else inspect.getsourcelines(self.preprocess)[0][0].split("=")[1].strip()
-
     def __call__(self, measurement: Measurement):
         """get a Result object for a set of errors."""
-        return self.lookup(self.preprocess(measurement.read()))
+        return self.lookup(measurement.read)
         
     def to_dict(self):
         return dict(
             kind = self.__class__.__name__,
-            lookup = self.slu,
-            preprocess = self.spp
+            lookup = self.slu
         )
 
     @staticmethod
     def from_dict(data:dict) -> Single:
         return Single(
             eval(data["lookup"]),
-            eval(data["preprocess"]),
             data["lookup"],
-            data["preprocess"]
         )
     

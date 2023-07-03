@@ -1,6 +1,5 @@
 numpy
 pandas
-flightdata
 pfc-geometry
 scipy
 fastdtw

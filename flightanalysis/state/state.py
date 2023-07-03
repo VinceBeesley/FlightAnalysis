@@ -11,7 +11,6 @@ from scipy.spatial.distance import euclidean
 from fastdtw import fastdtw
 
 from geometry import Point, Quaternion, Transformation, PX, PY, PZ, P0, Q0, Coord
-from flightdata import Flight, Fields
 
 from flightanalysis import Table, Constructs, SVar, Time, FlightLine, Box, Flow, Environment
 
@@ -99,7 +98,8 @@ class State(Table):
         return State(df.set_index("t", drop=False))
 
     @staticmethod
-    def from_flight(flight: Union[Flight, str], box:Union[FlightLine, Box, str]) -> State:
+    def from_flight(flight, box:Union[FlightLine, Box, str]) -> State:
+        from flightdata import Flight, Fields
         if isinstance(flight, str):
             flight = {
                 ".csv": Flight.from_csv,
@@ -117,7 +117,8 @@ class State(Table):
         raise NotImplementedError()
 
     @staticmethod
-    def _from_flight(flight: Flight, flightline: FlightLine) -> State:
+    def _from_flight(flight, flightline: FlightLine) -> State:
+        from flightdata import Fields
         """Read position and attitude directly from the log(after transforming to flightline)"""
         time = Time.from_t(np.array(flight.data.time_flight))
         pos = flightline.transform_from.point(Point(flight.read_fields(Fields.POSITION)))

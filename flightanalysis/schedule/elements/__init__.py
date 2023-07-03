@@ -46,56 +46,6 @@ class El:
         
         return self.__class__(**kwargs)
 
-
-    def setup_analysis_state(self, flown: State, template:State):
-        """Change the reference coordinate frame for a flown element to the
-        elements coord"""   
-        return flown.move_back(Transformation.from_coord(self.coord(template)))
-
-    def measure_end_roll_angle(self, flown: State, template:State, coord: Coord):
-        diff = Quaternion.body_axis_rates(template.att[-1], flown.att[-1])
-        return np.array([self.measure_roll_angle(flown, template, coord)[-1]])
-
-    def measure_ip_track(self, flown: State, template:State, coord: Coord):
-        vels = flown.att.transform_point(flown.vel) 
-        return np.arcsin(vels.z/abs(vels) ) 
-
-    def measure_end_ip_track(self, flown, template, coord: Coord):
-        return np.array([self.measure_ip_track(flown, template, coord)[-1]])
-
-    def measure_op_track(self, flown: State, template:State, coord: Coord):
-        vels = flown.att.transform_point(flown.vel) 
-        return np.arcsin(vels.y/abs(vels) ) 
-
-    def measure_end_op_track(self, flown, template, coord: Coord):
-        return np.array([self.measure_op_track(flown, template, coord)[-1]])
-
-    def measure_roll_rate(self, flown: State, template:State, coord: Coord):
-        return flown.p 
-
-    def measure_roll_angle(self, flown: State, template:State, coord: Coord):
-        return Quaternion.body_axis_rates(template.att, flown.att).x
-        #roll_vector = flown.att.inverse().transform_point(PZ(1))
-        #return np.unwrap(np.arctan2(roll_vector.z, roll_vector.y))
-
-    def measure_eq_tp_roll_angle(self, flown, template, coord: Coord):
-        tp_angles = self.measure_roll_angle(template, template, coord)
-        return self.measure_ratio(flown, template, coord) * (tp_angles[-1] - tp_angles[0]) + tp_angles[0]
-
-    def measure_length(self, flown: State, template:State, coord: Coord):
-        return np.cumsum(abs(flown.vel) * flown.dt)
-
-    def measure_ratio(self, flown: State, template:State, coord: Coord):
-        return flown.x / flown.x[-1]
-
-    def measure_roll_angle_error(self, flown: State, template:State, coord: Coord):
-        fl_angles = self.measure_roll_angle(flown, template, coord) 
-        tp_angles = self.measure_eq_tp_roll_angle(flown, template, coord)
-        return angle_diff(fl_angles, tp_angles)
-        
-    def measure_speed(self, flown, template, coord: Coord):
-        return abs(flown.vel)
-
     def score_series_builder(self, index):
         return lambda data: pd.Series(data, index=index)
 
@@ -136,9 +86,8 @@ class El:
     @property
     def exit_scoring(self):
         return DownGrades([
-            DownGrade("ip_track", "measure_end_ip_track", basic_angle_f3a),
-            DownGrade("op_track", "measure_end_op_track", basic_angle_f3a),
-            DownGrade("roll_angle", "measure_end_roll_angle", basic_angle_f3a),
+            DownGrade(Measurement.track, f3a.single_angle),
+            DownGrade(Measurement.roll_angle, f3a.single_angle),
         ])
 
     @classmethod
@@ -149,7 +98,7 @@ class El:
 
     @classmethod
     def from_dict(Cls, data):        
-        El.from_name(data.pop("kind").lower())(**data)
+        return El.from_name(data.pop("kind").lower())(**data)
     
     @classmethod
     def from_json(Cls, file):
@@ -190,7 +139,8 @@ class ElementsResults(Collection):
     def downgrade_df(self):
         df = pd.concat([idg.results.downgrade_df().sum() for idg in self], axis=1).T
         df["Total"] = df.T.sum()
-        return df
+        df["Element"] = [el.uid for el in self]
+        return df.set_index("Element")
 
 
 from .line import Line

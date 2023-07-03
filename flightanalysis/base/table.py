@@ -79,11 +79,11 @@ class Table:
         return filename
 
     def to_dict(self):
-        return self.data.to_dict()
+        return self.data.to_dict(orient="records")
     
     @classmethod
     def from_dict(Cls, data):
-        return Cls(pd.DataFrame(data))
+        return Cls(pd.DataFrame.from_dict(data).set_index("t", drop=False))
 
     def __len__(self):
         return len(self.data)
