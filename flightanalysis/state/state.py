@@ -17,8 +17,7 @@ try:
     from scipy.spatial.distance import euclidean
     from fastdtw import fastdtw
 except ImportError as ex:
-    warn("missing optional dependencies {ex}")
-
+    pass
 
 
 

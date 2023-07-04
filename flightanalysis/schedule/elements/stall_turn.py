@@ -16,7 +16,7 @@ class StallTurn(El):
     @property
     def intra_scoring(self):
         return DownGrades([
-            DownGrade("roll_angle", "measure_roll_angle_error", intra_f3a_angle)
+            DownGrade(Measurement.roll_angle, f3a.intra_roll)
         ])
 
     def to_dict(self):

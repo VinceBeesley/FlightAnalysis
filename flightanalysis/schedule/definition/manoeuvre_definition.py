@@ -9,11 +9,6 @@ A complete manoeuvre description includes a set of functions to create the eleme
 the higher level parameters and another set of functions to collect the parameters from the 
 elements collection.
 
-TODO Tidy all the helper functions
-TODO Scale the manoeuvres defaults so they fit in a box
-TODO Define a serialisation format
-
-
 """
 import enum
 from typing import List, Dict, Callable, Union, Tuple

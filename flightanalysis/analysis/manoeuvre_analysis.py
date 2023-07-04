@@ -6,7 +6,10 @@ from flightanalysis import State, Manoeuvre, State, ManDef, ElDef, Box, get_sche
 from flightanalysis.schedule.elements import El
 from geometry import Transformation, Quaternion, Q0
 from typing import Any, List, Tuple
-
+try:
+    from flightplotting import plotsec
+except ImportError:
+    pass
 
 
 class ElementAnalysis:

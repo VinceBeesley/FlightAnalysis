@@ -18,8 +18,15 @@ class Continuous(Criteria):
         first_val = increasing[0] if rev else False
         return np.concatenate([np.array([first_val]), peaks, np.array([last_val])])
 
+    def smooth_sample(self, values, window_width=10):
+        cumsum_vec = np.cumsum(np.insert(values, 0, 0)) 
+        ma_vec = (cumsum_vec[window_width:] - cumsum_vec[:-window_width]) / window_width
+        return ma_vec
+
+
     def __call__(self, m: Measurement):
         data = self.preprocess(m.value, m.expected) * m.visibility
+        data = self.smooth_sample(data, 10)
         peak_locs = Continuous.get_peak_locs(data) 
         trough_locs = Continuous.get_peak_locs(data, True)
 

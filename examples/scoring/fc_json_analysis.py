@@ -15,9 +15,13 @@ state = State.from_flight(flight, box).splitter_labels(data["mans"])
 
 sdef = get_schedule_definition(data["parameters"]["schedule"][1])
 
-mid = 0
+mid = 15
 
-ma = ManoeuvreAnalysis.build(sdef[mid], state.get_meid(mid+1))
+mdef = sdef[mid]
+flown = state.get_manoeuvre(mid+1)
+
+ma = ManoeuvreAnalysis.build(mdef, flown)
+
     
 if False:
     def npconverter(o):
@@ -27,14 +31,15 @@ if False:
         dump(ma.to_dict(), f, default=npconverter)
 
 
-ma.plot_3d(nmodels=20).show()
+ma.plot_3d(nmodels=5).show()
 
 ma.intra_dgs = ma.intended.analyse(ma.aligned, ma.intended_template)
 ma.intra_dg = ma.intra_dgs.downgrade()
-print(ma.intra_dgs.downgrade_df())
-
-ma.inter_dgs = ma.mdef.mps.collect(ma.intended)
-ma.inter_dg = sum([dg.value for dg in ma.inter_dgs])
+df = ma.intra_dgs.downgrade_df()
+print(df)
+print(df.sum())
+#ma.inter_dgs = ma.mdef.mps.collect(ma.intended)
+#ma.inter_dg = sum([dg.value for dg in ma.inter_dgs])
 
 
 

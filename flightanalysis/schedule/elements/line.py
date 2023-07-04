@@ -23,15 +23,15 @@ class Line(El):
     def intra_scoring(self):
         _intra_scoring = DownGrades([
             DownGrade(Measurement.speed, f3a.intra_speed),
-            DownGrade(Measurement.track, f3a.intra_angle)
+            DownGrade(Measurement.track, f3a.intra_track)
         ])
 
         if not self.roll == 0:
             _intra_scoring.add(DownGrade(Measurement.roll_rate, f3a.intra_roll_rate))
-            _intra_scoring.add(DownGrade(Measurement.roll_angle, f3a.single_angle))
+            _intra_scoring.add(DownGrade(Measurement.roll_angle, f3a.single_roll))
         else:
             
-            _intra_scoring.add(DownGrade(Measurement.roll_angle, f3a.intra_angle))
+            _intra_scoring.add(DownGrade(Measurement.roll_angle, f3a.intra_roll))
         return _intra_scoring
 
 

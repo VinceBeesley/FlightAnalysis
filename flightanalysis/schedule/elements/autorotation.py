@@ -25,14 +25,10 @@ class Autorotation(El):
             roll=self.roll,
             uid=self.uid
         )
-    
-    @property
-    def exit_scoring(self):
-        return DownGrades()
-    
+        
     @property
     def intra_scoring(self):
-        return DownGrades()
+        return DownGrades(DownGrade(Measurement.roll_angle, f3a.single_roll))
     
     @property
     def angle(self):

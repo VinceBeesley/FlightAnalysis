@@ -10,9 +10,9 @@ from typing import Union
 from warnings import warn
 try:
     from scipy import optimize
-
 except ImportError:
-    warn("no scipy, loop fitting is not available")
+    pass
+#    warn("no scipy, loop fitting is not available")
 
 
 class Loop(El):
@@ -31,14 +31,14 @@ class Loop(El):
         _intra_scoring = DownGrades([
             DownGrade(Measurement.speed, f3a.intra_speed),
             DownGrade(Measurement.radius, f3a.intra_radius),
-            DownGrade(Measurement.op_track, f3a.intra_angle),
-            DownGrade(Measurement.ip_track, f3a.single_angle), #TODO pass the last point of fl and tp only to this to get loop amount
+            DownGrade(Measurement.op_track, f3a.intra_track),
+            DownGrade(Measurement.ip_track, f3a.single_track),
         ])
         if not self.roll == 0:
             _intra_scoring.add(DownGrade(Measurement.roll_rate, f3a.intra_roll_rate))
-            _intra_scoring.add(DownGrade(Measurement.roll_angle, f3a.single_angle))
+            _intra_scoring.add(DownGrade(Measurement.roll_angle, f3a.single_roll))
         else:
-            _intra_scoring.add(DownGrade(Measurement.roll_angle, f3a.intra_angle))
+            _intra_scoring.add(DownGrade(Measurement.roll_angle, f3a.intra_roll))
         return _intra_scoring
 
     def describe(self):
