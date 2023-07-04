@@ -7,12 +7,19 @@ import numpy as np
 import pandas as pd
 from pandas.api.types import is_list_like
 
-from scipy.spatial.distance import euclidean
-
 
 from geometry import Point, Quaternion, Transformation, PX, PY, PZ, P0, Q0, Coord
 
 from flightanalysis import Table, Constructs, SVar, Time, FlightLine, Box, Flow, Environment
+
+from warnings import warn
+try:
+    from scipy.spatial.distance import euclidean
+    from fastdtw import fastdtw
+except ImportError as ex:
+    warn("missing optional dependencies {ex}")
+
+
 
 
 class State(Table):
@@ -191,7 +198,7 @@ class State(Table):
             whiten (bool, optional): Whether to whiten the data before performing the alignment. Defaults to False.
 
         """
-        from fastdtw import fastdtw
+        
         if white:
             warnings.filterwarnings("ignore", message="Some columns have standard deviation zero. ")
 
