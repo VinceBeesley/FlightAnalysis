@@ -9,37 +9,29 @@ from flightanalysis.state import State
 from flightanalysis.schedule.scoring import *
 from numbers import Number
 from . import Collector, Collectors, MathOpp, FunOpp, ItemOpp, Opp
+from dataclasses import dataclass, field
+from typing import Any
 
-
-
+@dataclass
 class ManParm(Opp):
     """This class represents a parameter that can be used to characterise the geometry of a manoeuvre.
     For example, the loop diameters, line lengths, roll direction. 
-    """
-    def __init__(
-        self, 
-        name:str, 
-        criteria: Criteria, 
-        default=None, 
-        collectors:Collectors=None
-    ):
-        """Construct a ManParm
+        name (str): a short name, must work as an attribute so no spaces or funny characters
+        criteria (Comparison): The comparison criteria function to be used when judging this parameter
+        default (float): A default value (or default option if specified in criteria)
+        collectors (Collectors): a list of functions that will pull values for this parameter from an Elements 
+            collection. If the manoeuvre was flown correctly these should all be the same. The resulting list 
+            can be passed through the criteria (Comparison callable) to calculate a downgrade.
 
-        Args:
-            name (str): a short name, must work as an attribute so no spaces or funny characters
-            criteria (Comparison): The comparison criteria function to be used when judging this parameter
-            default (float): A default value (or default option if specified in criteria)
-            collectors (Collectors): a list of functions that will pull values for this parameter from an Elements 
-                collection. If the manoeuvre was flown correctly these should all be the same. The resulting list 
-                can be passed through the criteria (Comparison callable) to calculate a downgrade.
-        """
-        self.criteria = criteria
-        self.default = default
-        self.collectors = collectors
-        if self.collectors is None:
-            self.collectors = Collectors()
-        self.n = len(self.criteria.desired[0]) if isinstance(self.criteria, Combination) else None
-        super().__init__(name)
+    """
+    criteria: Criteria
+    default:Any=None
+    collectors:Collectors=field(default_factory=lambda : Collectors())
+
+
+    @property
+    def n(self):
+        return len(self.criteria.desired[0]) if isinstance(self.criteria, Combination) else None
         
     def to_dict(self):
         return dict(
@@ -74,7 +66,13 @@ class ManParm(Opp):
         return np.array([collector(els) for collector in self.collectors])
 
     def get_downgrades(self, els):
-        return self.criteria(self.name, self.collect(els))
+        values = self.collect(els)
+        return Result(
+            self.name, 
+            values,
+            self.criteria(values),
+            self.collectors.keys()
+        )
 
 #        downgrades = {c.elname: v for c, v in zip(self.collectors, result.downgrades)}
 #        errors = {c.elname: v for c, v in zip(self.collectors, result.errors)}
@@ -106,14 +104,9 @@ class ManParm(Opp):
         else:
             return lambda mps: mps.data[self.name].value 
     
-    def __getitem__(self, i):
-        return ItemOpp(self, i)
 
     def copy(self):
-        return ManParm(self.name, self.criteria, self.default, self.collectors.copy())
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({str(self)} = {self.value})"
+        return ManParm(name=self.name, criteria=self.criteria, default=self.default, collectors=self.collectors.copy())
 
 
 class ManParms(Collection):

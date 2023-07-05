@@ -6,7 +6,7 @@ from numbers import Number
 from functools import partial
 from .element_builders import *
 from numbers import Number
-
+import numpy as np
 
 class MBTags:
     CENTRE=0

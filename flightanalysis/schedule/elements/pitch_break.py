@@ -1,16 +1,16 @@
 from __future__ import annotations
 import numpy as np
-from geometry import Transformation, Point, Quaternion, PX, PY, PZ
+from geometry import Transformation, PX, PY, PZ
 from flightanalysis.state import State
 from flightanalysis.base.table import Time
-from . import El, Loop, DownGrades, DownGrade, Elements
+from .element import Element
 from flightanalysis.schedule.scoring import *
-from . import Line, DownGrades
+from .line import Line
 
 
 
-class PitchBreak(El):
-    parameters = El.parameters + "length,break_angle".split(",")
+class PitchBreak(Element):
+    parameters = Element.parameters + "length,break_angle".split(",")
     def __init__(self, speed: float, length: float, break_angle: float, uid: str=None):
         super().__init__(uid, speed)
         self.length=length
@@ -58,9 +58,9 @@ class PitchBreak(El):
 
 
     @property
-    def intra_scoring(self):
+    def intra_scoring(self) -> DownGrades:
         return DownGrades()
 
     @property
-    def exit_scoring(self):
+    def exit_scoring(self) -> DownGrades:
         return DownGrades()

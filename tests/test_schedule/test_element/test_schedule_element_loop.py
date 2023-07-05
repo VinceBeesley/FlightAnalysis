@@ -1,6 +1,6 @@
 
 
-from flightanalysis.schedule.elements import Loop, El
+from flightanalysis.schedule.elements import Loop, Element
 from pytest import approx, fixture, mark
 from flightanalysis import State
 from geometry import Transformation, Point, Quaternion, PZ, PX, Euler, P0
@@ -82,7 +82,7 @@ def th_e0()->State:
 @fixture
 def th_el()->Loop:
     with open("tests/test_schedule/test_element/p23_th_e0.json", "r") as f:
-        return El.from_dict(json.load(f))
+        return Element.from_dict(json.load(f))
 
 @fixture
 def th_e0_tp()->State:

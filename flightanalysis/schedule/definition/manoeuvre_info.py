@@ -7,6 +7,8 @@ WIP, very vague ideas at the moment.
 import numpy as np
 from geometry import Point, Transformation, Euler
 from enum import Enum
+from dataclasses import dataclass
+
 
 class Orientation(Enum):
     DRIVEN=0
@@ -91,27 +93,15 @@ class BoxLocation():
             Direction[data["d"]],
             Orientation[data["o"]]
         )
-
+@dataclass
 class ManInfo:
-    def __init__(
-        self, 
-        name:str, 
-        short_name:str, 
-        k:float, 
-        position: Position,
-        start: BoxLocation, 
-        end: BoxLocation,
-        centre_loc: int = -1, # -1 for standard definitino, >=0 for the start of an element ID
-    ):
-
-        self.name = name
-        self.short_name = short_name
-        self.k = k
-        self.position=position
-        self.start = start
-        self.end = end
-        self.centre_loc = centre_loc
-
+    name:str
+    short_name:str
+    k:float
+    position: Position
+    start: BoxLocation
+    end: BoxLocation
+    centre_loc: int = -1, # -1 for standard definitino, >=0 for the start of an element ID
 
     def initial_position(self, depth: float, wind: int) -> Transformation: 
         return Point(
@@ -146,7 +136,8 @@ class ManInfo:
             k=self.k,
             position = self.position.name,
             start = self.start.to_dict(),
-            end = self.end.to_dict()
+            end = self.end.to_dict(),
+            centre_loc = self.centre_loc
         )
 
     @staticmethod
@@ -157,6 +148,7 @@ class ManInfo:
             inp["k"],
             Position[inp["position"]],
             BoxLocation.from_dict(inp["start"]),
-            BoxLocation.from_dict(inp["end"])
+            BoxLocation.from_dict(inp["end"]),
+            centre_loc=inp["centre_loc"] if "centre_loc" in inp else -1
         )
         

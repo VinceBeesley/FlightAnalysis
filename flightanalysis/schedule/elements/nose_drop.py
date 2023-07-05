@@ -1,18 +1,19 @@
 from __future__ import annotations
 import numpy as np
-from geometry import Transformation, Point, Quaternion, PX, PY, PZ, Coord
+from geometry import Transformation, PX, PY, PZ
 from flightanalysis.state import State
 from flightanalysis.base.table import Time
-from . import El, Loop, DownGrades, DownGrade, Elements
+from .element import Element
+from .loop import Loop
 from flightanalysis.schedule.scoring import *
-from typing import Union
 
 
-class NoseDrop(El):
+
+class NoseDrop(Element):
     """A nose drop is used for spin entries. It consists of a loop to a vertical downline, with an integrated
     pitch rotation in the opposite direction to the loops pitch rotation so that the body axis finishes at
     break_angle off the vertical line"""
-    parameters = El.parameters + "radius,break_angle".split(",")
+    parameters = Element.parameters + "radius,break_angle".split(",")
     def __init__(self, speed: float, radius: float, break_angle: float, uid: str=None):
         super().__init__(uid, speed)
         self.radius=radius
@@ -62,9 +63,9 @@ class NoseDrop(El):
         return self.set_parms(break_angle=abs(self.break_angle) * np.sign(other.break_angle))
 
     @property
-    def intra_scoring(self):
+    def intra_scoring(self) -> DownGrades:
         return DownGrades()
 
     @property
-    def exit_scoring(self):
+    def exit_scoring(self) -> DownGrades:
         return DownGrades()

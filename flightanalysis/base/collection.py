@@ -6,12 +6,21 @@ import pandas as pd
 class Collection:
     VType = None
     uid = "uid"
-    def __init__(self, data: Union[Dict[str,Any], List[Any]]=None):
-        if data is None:
-            data = {}
-        self.data = data if isinstance(data, dict) else {getattr(d, self.__class__.uid): d for d in data}
-        assert all(isinstance(v, self.__class__.VType) for v in self.data.values())
+    def __init__(self, data: Union[Dict[str,Any], List[Any]]=None, check_types=True):
+        
+        self.data = {}
+        if isinstance(data, dict):
+            self.data = data
+        elif isinstance(data, self.__class__):
+            self.data = data.data
+        elif data is None:
+            pass
+        else:
+            self.data = {getattr(d, self.__class__.uid): d for d in data}
+
         assert all([hasattr(v, self.__class__.uid) for v in self.data.values()])
+        if check_types:
+            assert all(isinstance(v, self.__class__.VType) for v in self.data.values())
 
     def __getattr__(self, name):
         if name in self.data:

@@ -1,9 +1,9 @@
 import numpy as np
 from flightanalysis import State
-from flightanalysis.schedule.elements import El
+from flightanalysis.schedule.elements import Element
 
 
-class SubEl(El):
+class SubEl(Element):
     def __init__(self, speed, arg1, arg2, uid: str = None):
         super().__init__(uid, speed)
         self.arg1 = arg1
@@ -20,5 +20,5 @@ def test_set_parms():
 
 
 def test_create_time_basic():
-    t = El.create_time(10, None)
+    t = Element.create_time(10, None)
     assert len(t) == np.ceil(10 * State._construct_freq)

@@ -45,11 +45,11 @@ class ElDef:
     def from_dict(data: dict, mps: ManParms): 
         return ElDef(
             name=data["name"],
-            Kind = El.from_name(data["Kind"]),
+            Kind = Element.from_name(data["Kind"]),
             props = {k: ManParm.parse(v, mps) for k, v in data["props"].items()}
         )
 
-    def __call__(self, mps: ManParms) -> El:
+    def __call__(self, mps: ManParms) -> Element:
         kwargs = {}
         args = getfullargspec(self.Kind.__init__).args
         for pname, prop in self.props.items():

@@ -1,22 +1,15 @@
+from __future__ import annotations
 import numpy as np
-import pandas as pd
-from geometry import Transformation, Coord, Point, Quaternion, PX, PY, PZ
+from geometry import Transformation, Coord, Point, PX, PY, PZ
+
 from flightanalysis.state import State
 from flightanalysis.base.table import Time
-
 from flightanalysis.schedule.scoring import *
-from . import El, DownGrades, DownGrade
-from typing import Union
-from warnings import warn
-try:
-    from scipy import optimize
-except ImportError:
-    pass
-#    warn("no scipy, loop fitting is not available")
+from . import Element
 
 
-class Loop(El):
-    parameters = El.parameters + "radius,angle,roll,ke,rate".split(",")
+class Loop(Element):
+    parameters = Element.parameters + "radius,angle,roll,ke,rate".split(",")
 
     def __init__(self, speed: float, radius: float, angle: float, roll:float=0.0, ke: bool = False, uid: str=None):
         super().__init__(uid, speed)
@@ -27,7 +20,7 @@ class Loop(El):
         self.ke = ke
 
     @property
-    def intra_scoring(self):
+    def intra_scoring(self) -> DownGrades:
         _intra_scoring = DownGrades([
             DownGrade(Measurement.speed, f3a.intra_speed),
             DownGrade(Measurement.radius, f3a.intra_radius),
@@ -85,7 +78,7 @@ class Loop(El):
                 vel=v,
                 rvel=PZ(self.angle / duration) if self.ke else PY(self.angle / duration)
             ).fill(
-                El.create_time(duration, time)
+                Element.create_time(duration, time)
             ), 
             self.roll
         )
@@ -139,11 +132,11 @@ class Loop(El):
         flown_vels = flown.att.transform_point(flown.vel) * Point(1,1,0)
         return Point.angle_between(template_vels[-1], flown_vels[-1])
 
-    def match_axis_rate(self, pitch_rate: float):
+    def match_axis_rate(self, pitch_rate: float) -> Loop:
         return self.set_parms(radius=self.speed / pitch_rate)
 
-    def match_intention(self, itrans: Transformation, flown: State):
-        
+    def match_intention(self, itrans: Transformation, flown: State) -> Loop:
+        from scipy import optimize
         jit = flown.judging_itrans(itrans)
         pos = jit.att.transform_point(flown.pos - jit.pos)
 
@@ -170,7 +163,7 @@ class Loop(El):
         
         return subsections, elms
 
-    def copy_direction(self, other):
+    def copy_direction(self, other) -> Loop:
         return self.set_parms(
             roll=abs(self.roll) * np.sign(other.roll),
             angle=abs(self.angle) * np.sign(other.angle)

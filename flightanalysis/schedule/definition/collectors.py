@@ -12,6 +12,7 @@ class Collector(Opp):
 
     def __call__(self, els):
         """return the value"""
+        #this could return a vector in a direction that is useful for assessing visibility
         return els.get_parameter_from_element(self.elname, self.pname)
 
     def __str__(self):
@@ -60,3 +61,5 @@ class Collectors(Collection):
             coll.add(Collector.parse(d))
         return coll
     
+    def keys(self):
+        return [c.elname for c in self]

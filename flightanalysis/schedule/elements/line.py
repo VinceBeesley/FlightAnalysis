@@ -1,16 +1,15 @@
-
+from __future__ import annotations
 import numpy as np
-from geometry import Transformation, Point, P0, PX, PY, PZ, Coord
+from geometry import Transformation, P0, PX, PY, PZ
 from flightanalysis.base.table import Time
 from flightanalysis.state import State
-from enum import Enum
-from . import El, DownGrades, DownGrade
+
+from .element import Element
 from flightanalysis.schedule.scoring import *
-from typing import Union
 
 
-class Line(El):
-    parameters = El.parameters + "length,roll,rate".split(",")
+class Line(Element):
+    parameters = Element.parameters + "length,roll,rate".split(",")
 
     def __init__(self, speed, length, roll=0, uid:str=None):
         super().__init__(uid, speed)
@@ -20,7 +19,7 @@ class Line(El):
         self.roll = roll
     
     @property
-    def intra_scoring(self):
+    def intra_scoring(self) -> DownGrades:
         _intra_scoring = DownGrades([
             DownGrade(Measurement.speed, f3a.intra_speed),
             DownGrade(Measurement.track, f3a.intra_track)
@@ -68,12 +67,12 @@ class Line(El):
              
         return self._add_rolls(
             istate.copy(vel=v, rvel=P0()).fill(
-                El.create_time(self.length / self.speed, time)
+                Element.create_time(self.length / self.speed, time)
             ), 
             self.roll
         )
 
-    def match_axis_rate(self, roll_rate: float):
+    def match_axis_rate(self, roll_rate: float) -> Line:
         # roll rate in radians per second
         if not self.roll == 0.0:
             return self.set_parms(
@@ -81,7 +80,7 @@ class Line(El):
         else:
             return self.set_parms()
 
-    def match_intention(self, transform: Transformation, flown: State):
+    def match_intention(self, transform: Transformation, flown: State) -> Line:
         jit = flown.judging_itrans(transform)
         return self.set_parms(
             length=jit.att.inverse().transform_point(flown.pos - jit.pos).x[-1],
@@ -90,8 +89,8 @@ class Line(El):
         )
 
     @staticmethod
-    def from_roll(speed: float, rate: float, angle: float):
+    def from_roll(speed: float, rate: float, angle: float) -> Line:
         return Line(speed, rate * angle * speed, angle )
 
-    def copy_direction(self, other):
+    def copy_direction(self, other) -> Line:
         return self.set_parms(roll=abs(self.roll) * np.sign(other.roll))

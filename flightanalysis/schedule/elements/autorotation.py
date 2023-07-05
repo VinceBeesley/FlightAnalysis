@@ -3,15 +3,15 @@ import numpy as np
 from geometry import Transformation, Point, Quaternion, PX, PY, PZ, P0
 from flightanalysis import State
 from flightanalysis.base.table import Time
-from . import El, Loop, DownGrades, DownGrade, Elements
+from .element import Element, Elements
 from flightanalysis.schedule.scoring import *
 from typing import Union
 
 
-class Autorotation(El):
+class Autorotation(Element):
     """much like a line, but rolls happens around the velocity vector,
     rather than the body x axis"""
-    parameters = El.parameters + "length,roll,rate,angle".split(",")
+    parameters = Element.parameters + "length,roll,rate,angle".split(",")
     def __init__(self, speed: float, length: float, roll: float, uid: str):
         super().__init__(uid, speed)
         self.length = length
@@ -44,7 +44,7 @@ class Autorotation(El):
             vel=istate.vel.scale(self.speed),
             rvel=P0()
         ).fill(
-            El.create_time(self.length / self.speed, time)
+            Element.create_time(self.length / self.speed, time)
         ).superimpose_rotation(
             istate.vel.unit(),
             self.angle

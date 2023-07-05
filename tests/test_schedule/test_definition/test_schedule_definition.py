@@ -5,9 +5,9 @@ from flightanalysis.schedule.elements import *
 from flightanalysis.schedule.scoring import *
 from flightanalysis import Manoeuvre
 from flightanalysis.data import get_schedule_definition
-
+import numpy as np
 import dill as pickle
-
+from json import load
 
 @fixture(scope="session")
 def vline():

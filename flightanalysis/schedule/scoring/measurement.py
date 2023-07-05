@@ -2,17 +2,16 @@ from __future__ import annotations
 from flightanalysis.state import State
 from geometry import Point, Coord, Quaternion, PX, PY, PZ, P0
 import numpy as np
+from dataclasses import dataclass
+from typing import Union, Any
 
 
+@dataclass()
 class Measurement:
-    def __init__(self, value: Point, expected: Point, visibility: np.array):
-        self.value = value
-        self.expected = expected
-        self.visibility = visibility
-    
-    def __repr__(self) -> str:
-        return f"Measurement(max={max(abs(self.value))}, min={min(abs(self.value))}, visibility={self.visibility.mean()}"
-
+    value: Union[Point, Any]
+    expected: Union[Point, Any]
+    visibility: np.ndarray
+        
     @staticmethod
     def vector_vis(value: Point, expected: Point, loc: Point, att: Quaternion) -> Measurement:
         return Measurement(value, expected, Measurement._vector_vis(value, loc)    )

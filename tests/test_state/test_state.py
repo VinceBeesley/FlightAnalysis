@@ -20,7 +20,7 @@ def state():
     return State(df) 
 
 def test_child_init(state):
-    assert all([col in state.data.columns for col in state.constructs.cols])
+    assert all([col in state.data.columns for col in state.constructs.cols()])
 
 def test_child_getattr(state):
 

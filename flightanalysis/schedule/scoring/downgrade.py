@@ -6,16 +6,17 @@ from .results import Results, Result
 from typing import Callable
 from flightanalysis.state import State 
 from geometry import Coord
+from dataclasses import dataclass
 
 
+@dataclass
 class DownGrade:
-    def __init__(
-            self, 
-            measure: Callable[[State, State, Coord], Measurement], 
-            criteria: Criteria
-        ):
-        self.measure = measure
-        self.criteria = criteria
+    """This is for Intra scoring, it sits within an El and defines how errors should be measured and the criteria to apply
+        measure - a Measurement constructor
+        criteria - takes a Measurement and calculates the score
+    """
+    measure: Callable[[State, State, Coord], Measurement]
+    criteria: Criteria
 
     @property
     def name(self):
@@ -33,13 +34,14 @@ class DownGrade:
             self.criteria(meas)
         )
 
-    def __repr__(self):
-        return f"Downgrade({self.name}, {self.criteria.__class__.__name__})"
+#    def __repr__(self):
+#        return f"Downgrade({self.name}, {self.criteria.__class__.__name__})"
+
 
 class DownGrades(Collection):
     VType = DownGrade
     uid = "name"
 
     def apply(self, el, fl, tp, coord) -> Results:
-        return Results([dg(el, fl, tp, coord) for dg in self])
+        return Results(el.uid, [dg(el, fl, tp, coord) for dg in self])
        

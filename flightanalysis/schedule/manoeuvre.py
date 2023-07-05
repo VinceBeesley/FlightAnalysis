@@ -1,21 +1,24 @@
 from __future__ import annotations
-from geometry import Transformation, Quaternion, Coord, P0, PX, PY, PZ
-from flightanalysis.state import State
-from flightanalysis.schedule.elements import *
+from geometry import Transformation, P0, PX, PY, PZ
 from typing import List, Union, Tuple
 import numpy as np
-import pandas as pd
+from dataclasses import dataclass
 
 
-class Manoeuvre():
-    def __init__(self, entry_line: Line, elements: Union[Elements, list], exit_line: Line, uid: str = None):
-        self.entry_line = entry_line
-        self.elements = elements if isinstance(elements, Elements) else Elements(elements)
-        self.exit_line = exit_line
-        self.uid = uid
+from flightanalysis.state import State
+from flightanalysis.schedule.elements import *
+from flightanalysis.schedule.scoring import *
+
+
+@dataclass
+class Manoeuvre:
+    entry_line: Line
+    elements: Elements
+    exit_line: Line
+    uid: str = None
     
     @staticmethod
-    def from_dict(data):
+    def from_dict(data) -> Manoeuvre:
         return Manoeuvre(
             Line.from_dict(data["entry_line"]) if data["entry_line"] else None,
             Elements.from_dicts(data["elements"]),
@@ -32,7 +35,7 @@ class Manoeuvre():
         )
 
     @staticmethod
-    def from_all_elements(uid:str, els: List[El]):
+    def from_all_elements(uid:str, els: List[Element]) -> Manoeuvre:
         hasentry = 1 if els[0].uid.startswith("entry_") else None
         hasexit = -1 if els[-1].uid.startswith("exit_") else None
 
@@ -60,10 +63,10 @@ class Manoeuvre():
 
         return els
 
-    def add_lines(self, add_entry=True, add_exit=True):
+    def add_lines(self, add_entry=True, add_exit=True) -> Manoeuvre:
         return Manoeuvre.from_all_elements(self.uid, self.all_elements(add_entry, add_exit))
     
-    def remove_lines(self, remove_entry=True, remove_exit=True):
+    def remove_lines(self, remove_entry=True, remove_exit=True) -> Manoeuvre:
         return Manoeuvre(
             None if remove_entry else self.entry_line, 
             self.elements, 
@@ -88,7 +91,7 @@ class Manoeuvre():
         return State.stack(templates).label(manoeuvre=self.uid)
 
 
-    def get_data(self, st: State):
+    def get_data(self, st: State) -> State:
         return st.get_manoeuvre(self.uid)
 
     def match_intention(self, istate: State, aligned: State) -> Tuple[Manoeuvre, State]:
@@ -120,11 +123,7 @@ class Manoeuvre():
                     
         return Manoeuvre.from_all_elements(self.uid, elms), State.stack(templates[1:]).label(manoeuvre=self.uid)
 
-    def match_rates(self, rates):
-        new_elms = [elm.match_axis_rate(rates[elm.__class__], rates["speed"]) for elm in self.elements]
-        return self.replace_elms(new_elms)
-
-    def copy_directions(self, other: Manoeuvre):
+    def copy_directions(self, other: Manoeuvre) -> Manoeuvre:
         return Manoeuvre.from_all_elements(
             self.uid, 
             [es.copy_direction(eo) for es, eo in zip(self.all_elements(), other.all_elements())]
@@ -134,12 +133,12 @@ class Manoeuvre():
         fl=self.entry_line.get_data(flown)
         tp=self.entry_line.get_data(template).relocate(fl.pos[0])
         
-        ers = [ElResults(self.entry_line, self.entry_line.analyse_exit(fl, tp))]
+        ers = [Results(self.entry_line.uid, self.entry_line.analyse_exit(fl, tp))]
 
         for el in self.elements:
             fl = el.get_data(flown)
             tp = el.get_data(template).relocate(fl.pos[0])
-            ers.append(ElResults(el, el.analyse(fl, tp)))
+            ers.append(Results(el.uid, el.analyse(fl, tp)))
         return ElementsResults(ers)
 
     def descriptions(self):

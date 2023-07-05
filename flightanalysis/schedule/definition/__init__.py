@@ -2,7 +2,7 @@
 from typing import Callable
 from numbers import Number
 
-from .operation import Opp, MathOpp, FunOpp, ItemOpp
+from .operations import *
 from .manoeuvre_info import ManInfo, BoxLocation, Orientation, Direction, Height, Position
 from .collectors import Collector, Collectors
 

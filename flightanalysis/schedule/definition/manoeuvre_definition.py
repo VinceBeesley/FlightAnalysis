@@ -13,7 +13,7 @@ elements collection.
 import enum
 from typing import List, Dict, Callable, Union, Tuple
 import numpy as np
-from flightanalysis.schedule.elements import Loop, Line, StallTurn, El, Elements
+from flightanalysis.schedule.elements import Line, Elements
 from flightanalysis.schedule.manoeuvre import Manoeuvre
 from flightanalysis.schedule.definition.manoeuvre_info import ManInfo
 from flightanalysis import State
@@ -21,8 +21,6 @@ from geometry import Transformation, Euler, Point, P0
 from functools import partial
 from . import ManParm, ManParms, ElDef, ElDefs, _a, Position, Direction
 from copy import deepcopy
-
-
 
 
 class ManDef:

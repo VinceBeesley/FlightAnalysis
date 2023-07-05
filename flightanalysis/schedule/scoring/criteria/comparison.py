@@ -10,11 +10,12 @@ class Comparison(Criteria):
     input should be ratio error to the expected (first) value
     output is each compared to the previous value
     """            
-    def __call__(self, m: Measurement):
-        cval = m.flown[0]
+    def __call__(self, data: np.ndarray):
+        #TODO change to take a measurement and account for visibility
+        cval = data[0]
 
-        data = np.concatenate([np.array([cval]), m.flown])
-        ratios = self.preprocess(m.flown[1:] / m.flown[:-1])
+        data = np.concatenate([np.array([cval]), data])
+        ratios = self.preprocess(data[:-1], data[1:]) + 1
         return self.lookup(np.abs(ratios))
 
 

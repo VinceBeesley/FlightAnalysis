@@ -3,40 +3,37 @@ import numpy as np
 import pandas as pd
 from json import load
 from flightanalysis import State, Manoeuvre, State, ManDef, ElDef, Box, get_schedule_definition, Collection
-from flightanalysis.schedule.elements import El
-from geometry import Transformation, Quaternion, Q0
+from flightanalysis.schedule.elements import Element
+from geometry import Transformation, Quaternion, Q0, Coord
 from typing import Any, List, Tuple
-try:
-    from flightplotting import plotsec
-except ImportError:
-    pass
+from dataclasses import dataclass
 
 
+@dataclass(repr=False)
 class ElementAnalysis:
-    def __init__(self, edef:ElDef, el: El, fl: State, tp: State):
-        self.edef = edef
-        self.el = el
-        self.fl=fl
-        self.tp = tp
-        self.coord = self.el.coord(self.tp)
+    edef:ElDef
+    el: Element
+    fl: State
+    tp: State
+    coord: Coord
 
     def __repr__(self) -> str:
         return f"ElementAnalysis({self.edef.name}, {self.el.__class__.__name__})"
 
     def plot_3d(self, **kwargs):
+        from flightplotting import plotsec
         fig = plotsec(self.fl, color="red", **kwargs)
         return plotsec(self.tp, color="green", fig=fig, **kwargs)
 
 
-
+@dataclass
 class ManoeuvreAnalysis:
-    def __init__(self, mdef: ManDef, aligned: State, intended: Manoeuvre, intended_template: State, corrected: Manoeuvre, corrected_template: State):
-        self.mdef = mdef
-        self.aligned = aligned
-        self.intended = intended
-        self.intended_template = intended_template
-        self.corrected = corrected
-        self.corrected_template = corrected_template
+    mdef: ManDef
+    aligned: State
+    intended: Manoeuvre
+    intended_template: State
+    corrected: Manoeuvre
+    corrected_template: State
     
     def __getitem__(self, i):
         return self.get_ea(self.mdef.eds[i])
@@ -126,6 +123,7 @@ class ManoeuvreAnalysis:
         return ManoeuvreAnalysis(mdef, aligned, intended, int_tp, corr, corr_tp)
 
     def plot_3d(self, **kwargs):
+        from flightplotting import plotsec
         from flightplotting import plotsec, plotdtw
         fig = plotsec(self.aligned, color="red", **kwargs)
         return plotsec(self.corrected_template, color="green", fig=fig, **kwargs)
@@ -138,6 +136,7 @@ class ScheduleAnalysis(Collection):
 
 if __name__ == "__main__":
     from flightdata import Flight
+    from flightplotting import plotsec
     with open("examples/data/manual_F3A_P23_22_05_31_00000350.json", "r") as f:
         data = load(f)
 
