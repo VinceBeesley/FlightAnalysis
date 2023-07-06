@@ -133,7 +133,7 @@ class Table:
         return cls(df)
 
     def __repr__(self):
-        return f"{self.__class__.__name__} Table, duration = {self.duration}\n{self.data}"
+        return f"{self.__class__.__name__} Table(duration = {self.duration})"
 
     def copy(self, *args,**kwargs):
         kwargs = dict(kwargs, **{list(self.constructs.data.keys())[i]: arg for i, arg in enumerate(args)}) # add the args to the kwargs

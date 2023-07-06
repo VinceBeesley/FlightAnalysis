@@ -15,7 +15,7 @@ state = State.from_flight(flight, box).splitter_labels(data["mans"])
 
 sdef = get_schedule_definition(data["parameters"]["schedule"][1])
 
-mid = 0
+mid = 1
 
 mdef = sdef[mid]
 flown = state.get_manoeuvre(mid+1)
@@ -27,7 +27,7 @@ if False:
     def npconverter(o):
         if isinstance(o, np.ndarray):
             return o.tolist()
-    with open("examples/scoring/manoeuvre/tophat_analysis.json", "w") as f:
+    with open("examples/scoring/manoeuvre/ma.json", "w") as f:
         dump(ma.to_dict(), f, default=npconverter)
 
 

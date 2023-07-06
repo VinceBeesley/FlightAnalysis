@@ -22,7 +22,8 @@ class Line(Element):
     def intra_scoring(self) -> DownGrades:
         _intra_scoring = DownGrades([
             DownGrade(Measurement.speed, f3a.intra_speed),
-            DownGrade(Measurement.track, f3a.intra_track)
+            DownGrade(Measurement.track_y, f3a.intra_track),
+            DownGrade(Measurement.track_z, f3a.intra_track)
         ])
 
         if not self.roll == 0:

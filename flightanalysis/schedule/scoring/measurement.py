@@ -67,27 +67,18 @@ class Measurement:
         )
     
     @staticmethod
-    def track(fl: State, tp:State, coord: Coord) -> Measurement:
-        """angle error between fl and tp velocity vectors"""
-        error = Point.cross(fl.vel, tp.vel).unit() * Point.angle_between(fl.vel, tp.vel)
-        world_error = fl.att.inverse().transform_point(error)
-        return Measurement.track_vis(world_error, P0(len(world_error)), tp.pos, tp.att)
-
-    @staticmethod
-    def ip_track(fl: State, tp:State, coord: Coord) -> Measurement:
+    def track_y(fl: State, tp:State, coord: Coord) -> Measurement:
         """angle error in the velocity vector about the coord y axis"""
-        norm = Point.cross(fl.vel, tp.vel).unit() * Point.angle_between(fl.vel, tp.vel)
-        normy = Point.vector_projection(norm, coord.y_axis)
-        return Measurement.track_vis(normy, P0(len(normy)), tp.pos, tp.att)
+        err = Point.cross(fl.vel, tp.vel).unit() * Point.angle_between(fl.vel, tp.vel)
+        w_y_err = tp.att.transform_point(Point.vector_projection(err, coord.y_axis))
+        return Measurement.track_vis(w_y_err, P0(len(w_y_err)), tp.pos, tp.att)
 
     @staticmethod
-    def op_track(fl: State, tp:State, coord: Coord) -> Measurement:
+    def track_z(fl: State, tp:State, coord: Coord) -> Measurement:
         """angular error in the velocity vector, due to deviations in the coord z axis"""
-        z_dev = Point.vector_projection(fl.vel, coord.z_axis)
-        opvel = tp.vel + z_dev
-        error = Point.cross(opvel, tp.vel).unit() * Point.angle_between(opvel, tp.vel)
-        world_error = fl.att.transform_point(error)
-        return Measurement.track_vis(world_error, P0(len(world_error)), tp.pos, tp.att)
+        err = Point.cross(fl.vel, tp.vel).unit() * Point.angle_between(fl.vel, tp.vel)
+        w_z_err = tp.att.transform_point(Point.vector_projection(err, coord.z_axis))
+        return Measurement.track_vis(w_z_err, P0(len(w_z_err)), tp.pos, tp.att)
 
     @staticmethod
     def radius(fl:State, tp:State, coord:Coord) -> Measurement:

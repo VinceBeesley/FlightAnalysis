@@ -24,8 +24,8 @@ class Loop(Element):
         _intra_scoring = DownGrades([
             DownGrade(Measurement.speed, f3a.intra_speed),
             DownGrade(Measurement.radius, f3a.intra_radius),
-            DownGrade(Measurement.op_track, f3a.intra_track),
-            DownGrade(Measurement.ip_track, f3a.single_track),
+            DownGrade(Measurement.track_y, f3a.intra_track),
+            DownGrade(Measurement.track_z, f3a.single_track),
         ])
         if not self.roll == 0:
             _intra_scoring.add(DownGrade(Measurement.roll_rate, f3a.intra_roll_rate))

@@ -9,16 +9,13 @@ from typing import Any, List, Tuple
 from dataclasses import dataclass
 
 
-@dataclass(repr=False)
+@dataclass
 class ElementAnalysis:
     edef:ElDef
     el: Element
     fl: State
     tp: State
     coord: Coord
-
-    def __repr__(self) -> str:
-        return f"ElementAnalysis({self.edef.name}, {self.el.__class__.__name__})"
 
     def plot_3d(self, **kwargs):
         from flightplotting import plotsec
@@ -46,12 +43,8 @@ class ManoeuvreAnalysis:
     def get_ea(self, edef):
         el = getattr(self.intended.elements, edef.name)
         st = el.get_data(self.aligned)
-        return ElementAnalysis(
-            edef,
-            el,
-            st,
-            el.get_data(self.intended_template).relocate(st.pos[0])
-        )
+        tp = el.get_data(self.intended_template).relocate(st.pos[0])
+        return ElementAnalysis(edef,el,st,tp, el.coord(tp))
 
     def to_dict(self):
         return dict(
@@ -78,7 +71,6 @@ class ManoeuvreAnalysis:
     def uid(self):
         return self.mdef.uid
         
-    
     @staticmethod
     def initial_transform(mdef: ManDef, flown: State):
         initial = flown[0]

@@ -86,7 +86,8 @@ class Element:
     @property
     def exit_scoring(self):
         return DownGrades([
-            DownGrade(Measurement.track, f3a.single_track),
+            DownGrade(Measurement.track_y, f3a.single_track),
+            DownGrade(Measurement.track_z, f3a.single_track),
             DownGrade(Measurement.roll_angle, f3a.single_roll),
         ])
 
