@@ -46,7 +46,7 @@ class Results(Collection):
         if len(dgs) == 0:
             return pd.DataFrame()
         max_len = max([len(v) for v in dgs.values()])
-        extend = lambda vals: [vals[i] if i < len(vals) else 0.0 for i in range(max_len)]
+        extend = lambda vals: [vals[i] if i < len(vals) else np.NaN for i in range(max_len)]
         df =  pd.DataFrame.from_dict({k:extend(v) for k,v in dgs.items()})
         
         return df

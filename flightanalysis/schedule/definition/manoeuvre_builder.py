@@ -90,7 +90,7 @@ f3amb = ManoeuvreBuilder(
             args=[],
             kwargs=dict(
                 roll=0.0,
-                speed="speed",
+                speed=30.0,
                 length="line_length"
             )
         ),
@@ -100,7 +100,7 @@ f3amb = ManoeuvreBuilder(
             kwargs=dict(
                 roll=0.0,
                 ke=False,
-                speed="speed",
+                speed=30.0,
                 radius="loop_radius"   
             )
         ),
@@ -110,7 +110,7 @@ f3amb = ManoeuvreBuilder(
             kwargs=dict(
                 padded=True,
                 reversible=True,
-                speed="speed",
+                speed=30.0,
                 line_length="line_length",
                 partial_rate="partial_roll_rate",
                 full_rate="full_roll_rate",
@@ -129,7 +129,7 @@ f3amb = ManoeuvreBuilder(
             func=snap,
             args=["rolls"],
             kwargs=dict(
-                speed="speed",
+                speed=30.0,
                 break_angle=np.radians(10),
                 rate="snap_rate",
                 break_rate=2*np.pi,

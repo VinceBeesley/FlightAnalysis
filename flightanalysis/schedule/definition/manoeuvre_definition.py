@@ -91,7 +91,7 @@ class ManDef:
         return ElDef.build(
             Line,
             f"entry_{self.info.short_name}", 
-            self.mps.speed, 
+            30.0, 
             max(man_start_x - itrans.translation.x[0] * heading, 30), 
             0)
 
