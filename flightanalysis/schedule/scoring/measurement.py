@@ -1,6 +1,6 @@
 from __future__ import annotations
 from flightanalysis.state import State
-from geometry import Point, Coord, Quaternion, PX, PY, PZ, P0
+from geometry import Point, Coord, Quaternion, PX, PY, PZ, P0, Transformation
 import numpy as np
 from dataclasses import dataclass
 from typing import Union, Any
@@ -69,16 +69,33 @@ class Measurement:
     @staticmethod
     def track_y(fl: State, tp:State, coord: Coord) -> Measurement:
         """angle error in the velocity vector about the coord y axis"""
-        err = Point.cross(fl.vel, tp.vel).unit() * Point.angle_between(fl.vel, tp.vel)
-        w_y_err = tp.att.transform_point(Point.vector_projection(err, coord.y_axis))
-        return Measurement.track_vis(w_y_err, P0(len(w_y_err)), tp.pos, tp.att)
+        tr = Transformation.from_coord(coord).q.inverse()
+
+        flcvel = tr.transform_point(fl.att.transform_point(fl.vel)) 
+        tpcvel = tr.transform_point(tp.att.transform_point(tp.vel))
+
+        flycvel = Point(flcvel.x, flcvel.y, tpcvel.z)
+
+        cyerr = (Point.cross(flycvel, tpcvel) / (abs(flycvel) * abs(tpcvel))).arcsin
+        #cyerr = Point.vector_projection(cerr, PY())
+        
+        wyerr = tp.att.transform_point(cyerr)
+        return Measurement.track_vis(wyerr, P0(len(wyerr)), tp.pos, tp.att)
 
     @staticmethod
     def track_z(fl: State, tp:State, coord: Coord) -> Measurement:
-        """angular error in the velocity vector, due to deviations in the coord z axis"""
-        err = Point.cross(fl.vel, tp.vel).unit() * Point.angle_between(fl.vel, tp.vel)
-        w_z_err = tp.att.transform_point(Point.vector_projection(err, coord.z_axis))
-        return Measurement.track_vis(w_z_err, P0(len(w_z_err)), tp.pos, tp.att)
+        tr = Transformation.from_coord(coord).q.inverse()
+
+        flcvel = tr.transform_point(fl.att.transform_point(fl.vel)) 
+        tpcvel = tr.transform_point(tp.att.transform_point(tp.vel)) 
+
+        flzcvel = Point(flcvel.x, tpcvel.y, flcvel.z)
+
+        czerr = (Point.cross(flzcvel, tpcvel) / (abs(flzcvel) * abs(tpcvel))).arcsin
+        #czerr = Point.vector_projection(cerr, PZ())
+        
+        wzerr = tp.att.transform_point(czerr)
+        return Measurement.track_vis(wzerr, P0(len(wzerr)), tp.pos, tp.att)
 
     @staticmethod
     def radius(fl:State, tp:State, coord:Coord) -> Measurement:
