@@ -47,8 +47,9 @@ class Results(Collection):
             return pd.DataFrame()
         max_len = max([len(v) for v in dgs.values()])
         extend = lambda vals: [vals[i] if i < len(vals) else 0.0 for i in range(max_len)]
-        return pd.DataFrame.from_dict({k:extend(v) for k,v in dgs.items()})
-
+        df =  pd.DataFrame.from_dict({k:extend(v) for k,v in dgs.items()})
+        
+        return df
 
 class ElementsResults(Collection):
     """Intra Only
@@ -67,4 +68,5 @@ class ElementsResults(Collection):
         df = pd.concat([idg.downgrade_df().sum() for idg in self], axis=1).T
         df["Total"] = df.T.sum()
         df["Element"] = self.data.keys()
+        
         return df.set_index("Element")

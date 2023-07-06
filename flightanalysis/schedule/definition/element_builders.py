@@ -5,6 +5,7 @@ from flightanalysis.schedule.definition.collectors import Collectors
 from flightanalysis.schedule.definition import Opp, ItemOpp
 from flightanalysis.schedule.scoring import *
 from numbers import Number
+import numpy as np
 
 
 def line(name, speed, length, roll):
@@ -70,7 +71,7 @@ def pad(speed, line_length, eds: ElDefs):
     eds = ElDefs([e1] + [ed for ed in eds] + [e3])
 
     if isinstance(line_length, ManParm):
-        line_length.append(eds.collector_sum("length"))
+        line_length.append(eds.collector_sum("length", f"e_{eds[0].id}"))
     
     return eds, ManParms([mp])
 

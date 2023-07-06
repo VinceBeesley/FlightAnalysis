@@ -12,8 +12,8 @@ error = abs(flown - expected)
 """
 
 
-radius = lambda x: 4 - 4/(x+1)
-length = lambda x: 4 - 4/(x+1)
+radius = lambda x: 2 - 2/(x+1)  # making this a bit less harsh
+length = lambda x: 3 - 3/(x+1)  # making this a bit less harsh
 speed = lambda x: 1 - 1/(x+1)
 roll_rate = lambda x: 1 - 1/(x+1)
 track_angle = lambda x: abs(x/0.2617993877991494)

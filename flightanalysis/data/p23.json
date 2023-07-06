@@ -14,7 +14,8 @@
         "h": "BTM",
         "d": "DRIVEN",
         "o": "DRIVEN"
-      }
+      },
+      "centre_loc": -1
     },
     "mps": {
       "speed": {
@@ -22,85 +23,85 @@
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 30.0,
-        "collectors": [
-          "e_0.speed",
-          "e_1_0.speed",
-          "e_1_1_pause.speed",
-          "e_1_1.speed",
-          "e_1_pad1.speed",
-          "e_1_pad2.speed",
-          "e_2.speed",
-          "e_3_0.speed",
-          "e_3_pad1.speed",
-          "e_3_pad2.speed",
-          "e_4.speed",
-          "e_5_0.speed",
-          "e_5_1_pause.speed",
-          "e_5_1.speed",
-          "e_5_pad1.speed",
-          "e_5_pad2.speed",
-          "e_6.speed"
-        ]
+        "collectors": {
+          "e_0.speed": "e_0.speed",
+          "e_1_0.speed": "e_1_0.speed",
+          "e_1_1_pause.speed": "e_1_1_pause.speed",
+          "e_1_1.speed": "e_1_1.speed",
+          "e_1_pad1.speed": "e_1_pad1.speed",
+          "e_1_pad2.speed": "e_1_pad2.speed",
+          "e_2.speed": "e_2.speed",
+          "e_3_0.speed": "e_3_0.speed",
+          "e_3_pad1.speed": "e_3_pad1.speed",
+          "e_3_pad2.speed": "e_3_pad2.speed",
+          "e_4.speed": "e_4.speed",
+          "e_5_0.speed": "e_5_0.speed",
+          "e_5_1_pause.speed": "e_5_1_pause.speed",
+          "e_5_1.speed": "e_5_1.speed",
+          "e_5_pad1.speed": "e_5_pad1.speed",
+          "e_5_pad2.speed": "e_5_pad2.speed",
+          "e_6.speed": "e_6.speed"
+        }
       },
       "loop_radius": {
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 2 - 2/(x+1)  # making this a bit less harsh"
         },
         "default": 55.0,
-        "collectors": [
-          "e_0.radius",
-          "e_2.radius",
-          "e_4.radius",
-          "e_6.radius"
-        ]
+        "collectors": {
+          "e_0.radius": "e_0.radius",
+          "e_2.radius": "e_2.radius",
+          "e_4.radius": "e_4.radius",
+          "e_6.radius": "e_6.radius"
+        }
       },
       "line_length": {
         "name": "line_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": 130.0,
-        "collectors": [
-          "(((((0+e_1_pad1.length)+e_1_0.length)+e_1_1_pause.length)+e_1_1.length)+e_1_pad2.length)",
-          "(((((0+e_5_pad1.length)+e_5_0.length)+e_5_1_pause.length)+e_5_1.length)+e_5_pad2.length)"
-        ]
+        "collectors": {
+          "e_1": "(((((0+e_1_pad1.length)+e_1_0.length)+e_1_1_pause.length)+e_1_1.length)+e_1_pad2.length)",
+          "e_5": "(((((0+e_5_pad1.length)+e_5_0.length)+e_5_1_pause.length)+e_5_1.length)+e_5_pad2.length)"
+        }
       },
       "point_length": {
         "name": "point_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": 20.0,
-        "collectors": [
-          "e_1_1_pause.length",
-          "e_5_1_pause.length"
-        ]
+        "collectors": {
+          "e_1_1_pause.length": "e_1_1_pause.length",
+          "e_5_1_pause.length": "e_5_1_pause.length"
+        }
       },
       "partial_roll_rate": {
         "name": "partial_roll_rate",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 1.5707963267948966,
-        "collectors": [
-          "e_1_0.rate",
-          "e_1_1.rate",
-          "e_3_0.rate",
-          "e_5_0.rate",
-          "e_5_1.rate"
-        ]
+        "collectors": {
+          "e_1_0.rate": "e_1_0.rate",
+          "e_1_1.rate": "e_1_1.rate",
+          "e_3_0.rate": "e_3_0.rate",
+          "e_5_0.rate": "e_5_0.rate",
+          "e_5_1.rate": "e_5_1.rate"
+        }
       },
       "e_1_rolls": {
         "name": "e_1_rolls",
@@ -120,23 +121,23 @@
           "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
-        "collectors": [
-          "e_1_0.roll",
-          "e_1_1.roll"
-        ]
+        "collectors": {
+          "e_1_0.roll": "e_1_0.roll",
+          "e_1_1.roll": "e_1_1.roll"
+        }
       },
       "e_1_pad_length": {
         "name": "e_1_pad_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": null,
-        "collectors": [
-          "e_1_pad1.length",
-          "e_1_pad2.length"
-        ]
+        "collectors": {
+          "e_1_pad1.length": "e_1_pad1.length",
+          "e_1_pad2.length": "e_1_pad2.length"
+        }
       },
       "e_3_rolls": {
         "name": "e_3_rolls",
@@ -154,22 +155,22 @@
           "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
-        "collectors": [
-          "e_3_0.roll"
-        ]
+        "collectors": {
+          "e_3_0.roll": "e_3_0.roll"
+        }
       },
       "e_3_pad_length": {
         "name": "e_3_pad_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": null,
-        "collectors": [
-          "e_3_pad1.length",
-          "e_3_pad2.length"
-        ]
+        "collectors": {
+          "e_3_pad1.length": "e_3_pad1.length",
+          "e_3_pad2.length": "e_3_pad2.length"
+        }
       },
       "e_5_rolls": {
         "name": "e_5_rolls",
@@ -189,23 +190,23 @@
           "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
-        "collectors": [
-          "e_5_0.roll",
-          "e_5_1.roll"
-        ]
+        "collectors": {
+          "e_5_0.roll": "e_5_0.roll",
+          "e_5_1.roll": "e_5_1.roll"
+        }
       },
       "e_5_pad_length": {
         "name": "e_5_pad_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": null,
-        "collectors": [
-          "e_5_pad1.length",
-          "e_5_pad2.length"
-        ]
+        "collectors": {
+          "e_5_pad1.length": "e_5_pad1.length",
+          "e_5_pad2.length": "e_5_pad2.length"
+        }
       }
     },
     "eds": {
@@ -387,7 +388,8 @@
         "h": "TOP",
         "d": "DRIVEN",
         "o": "DRIVEN"
-      }
+      },
+      "centre_loc": -1
     },
     "mps": {
       "speed": {
@@ -395,53 +397,53 @@
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 30.0,
-        "collectors": [
-          "e_0.speed",
-          "e_1_0.speed",
-          "e_1_pad1.speed",
-          "e_1_pad2.speed",
-          "e_2.speed"
-        ]
+        "collectors": {
+          "e_0.speed": "e_0.speed",
+          "e_1_0.speed": "e_1_0.speed",
+          "e_1_pad1.speed": "e_1_pad1.speed",
+          "e_1_pad2.speed": "e_1_pad2.speed",
+          "e_2.speed": "e_2.speed"
+        }
       },
       "loop_radius": {
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 2 - 2/(x+1)  # making this a bit less harsh"
         },
         "default": 55.0,
-        "collectors": [
-          "e_0.radius",
-          "e_2.radius"
-        ]
+        "collectors": {
+          "e_0.radius": "e_0.radius",
+          "e_2.radius": "e_2.radius"
+        }
       },
       "line_length": {
         "name": "line_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": 130.0,
-        "collectors": [
-          "(((0+e_1_pad1.length)+e_1_0.length)+e_1_pad2.length)"
-        ]
+        "collectors": {
+          "e_1": "(((0+e_1_pad1.length)+e_1_0.length)+e_1_pad2.length)"
+        }
       },
       "partial_roll_rate": {
         "name": "partial_roll_rate",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 1.5707963267948966,
-        "collectors": [
-          "e_1_0.rate"
-        ]
+        "collectors": {
+          "e_1_0.rate": "e_1_0.rate"
+        }
       },
       "e_1_rolls": {
         "name": "e_1_rolls",
@@ -459,22 +461,22 @@
           "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
-        "collectors": [
-          "e_1_0.roll"
-        ]
+        "collectors": {
+          "e_1_0.roll": "e_1_0.roll"
+        }
       },
       "e_1_pad_length": {
         "name": "e_1_pad_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": null,
-        "collectors": [
-          "e_1_pad1.length",
-          "e_1_pad2.length"
-        ]
+        "collectors": {
+          "e_1_pad1.length": "e_1_pad1.length",
+          "e_1_pad2.length": "e_1_pad2.length"
+        }
       }
     },
     "eds": {
@@ -544,7 +546,8 @@
         "h": "TOP",
         "d": "DRIVEN",
         "o": "DRIVEN"
-      }
+      },
+      "centre_loc": -1
     },
     "mps": {
       "speed": {
@@ -552,71 +555,71 @@
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 30.0,
-        "collectors": [
-          "e_0.speed",
-          "e_1_0.speed",
-          "e_1_pad1.speed",
-          "e_1_pad2.speed",
-          "e_2.speed",
-          "e_3_0.speed",
-          "e_3_pad1.speed",
-          "e_3_pad2.speed",
-          "e_4.speed"
-        ]
+        "collectors": {
+          "e_0.speed": "e_0.speed",
+          "e_1_0.speed": "e_1_0.speed",
+          "e_1_pad1.speed": "e_1_pad1.speed",
+          "e_1_pad2.speed": "e_1_pad2.speed",
+          "e_2.speed": "e_2.speed",
+          "e_3_0.speed": "e_3_0.speed",
+          "e_3_pad1.speed": "e_3_pad1.speed",
+          "e_3_pad2.speed": "e_3_pad2.speed",
+          "e_4.speed": "e_4.speed"
+        }
       },
       "loop_radius": {
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 2 - 2/(x+1)  # making this a bit less harsh"
         },
         "default": 55.0,
-        "collectors": [
-          "e_0.radius",
-          "e_2.radius",
-          "e_4.radius"
-        ]
+        "collectors": {
+          "e_0.radius": "e_0.radius",
+          "e_2.radius": "e_2.radius",
+          "e_4.radius": "e_4.radius"
+        }
       },
       "line_length": {
         "name": "line_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": 130.0,
-        "collectors": [
-          "(((0+e_1_pad1.length)+e_1_0.length)+e_1_pad2.length)",
-          "(((0+e_3_pad1.length)+e_3_0.length)+e_3_pad2.length)"
-        ]
+        "collectors": {
+          "e_1": "(((0+e_1_pad1.length)+e_1_0.length)+e_1_pad2.length)",
+          "e_3": "(((0+e_3_pad1.length)+e_3_0.length)+e_3_pad2.length)"
+        }
       },
       "partial_roll_rate": {
         "name": "partial_roll_rate",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 1.5707963267948966,
-        "collectors": [
-          "e_3_0.rate"
-        ]
+        "collectors": {
+          "e_3_0.rate": "e_3_0.rate"
+        }
       },
       "full_roll_rate": {
         "name": "full_roll_rate",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 2.356194490192345,
-        "collectors": [
-          "e_1_0.rate"
-        ]
+        "collectors": {
+          "e_1_0.rate": "e_1_0.rate"
+        }
       },
       "e_1_rolls": {
         "name": "e_1_rolls",
@@ -634,22 +637,22 @@
           "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
-        "collectors": [
-          "e_1_0.roll"
-        ]
+        "collectors": {
+          "e_1_0.roll": "e_1_0.roll"
+        }
       },
       "e_1_pad_length": {
         "name": "e_1_pad_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": null,
-        "collectors": [
-          "e_1_pad1.length",
-          "e_1_pad2.length"
-        ]
+        "collectors": {
+          "e_1_pad1.length": "e_1_pad1.length",
+          "e_1_pad2.length": "e_1_pad2.length"
+        }
       },
       "e_3_rolls": {
         "name": "e_3_rolls",
@@ -667,22 +670,22 @@
           "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
-        "collectors": [
-          "e_3_0.roll"
-        ]
+        "collectors": {
+          "e_3_0.roll": "e_3_0.roll"
+        }
       },
       "e_3_pad_length": {
         "name": "e_3_pad_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": null,
-        "collectors": [
-          "e_3_pad1.length",
-          "e_3_pad2.length"
-        ]
+        "collectors": {
+          "e_3_pad1.length": "e_3_pad1.length",
+          "e_3_pad2.length": "e_3_pad2.length"
+        }
       }
     },
     "eds": {
@@ -790,7 +793,8 @@
         "h": "BTM",
         "d": "DRIVEN",
         "o": "DRIVEN"
-      }
+      },
+      "centre_loc": -1
     },
     "mps": {
       "speed": {
@@ -798,60 +802,60 @@
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 30.0,
-        "collectors": [
-          "e_0.speed",
-          "e_1_0.speed",
-          "e_1_pad1.speed",
-          "e_1_pad2.speed",
-          "e_2.speed",
-          "e_3_0.speed",
-          "e_3_pad1.speed",
-          "e_3_pad2.speed",
-          "e_4.speed"
-        ]
+        "collectors": {
+          "e_0.speed": "e_0.speed",
+          "e_1_0.speed": "e_1_0.speed",
+          "e_1_pad1.speed": "e_1_pad1.speed",
+          "e_1_pad2.speed": "e_1_pad2.speed",
+          "e_2.speed": "e_2.speed",
+          "e_3_0.speed": "e_3_0.speed",
+          "e_3_pad1.speed": "e_3_pad1.speed",
+          "e_3_pad2.speed": "e_3_pad2.speed",
+          "e_4.speed": "e_4.speed"
+        }
       },
       "loop_radius": {
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 2 - 2/(x+1)  # making this a bit less harsh"
         },
         "default": 55.0,
-        "collectors": [
-          "e_0.radius",
-          "e_2.radius",
-          "e_4.radius"
-        ]
+        "collectors": {
+          "e_0.radius": "e_0.radius",
+          "e_2.radius": "e_2.radius",
+          "e_4.radius": "e_4.radius"
+        }
       },
       "line_length": {
         "name": "line_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": 91.92388155425118,
-        "collectors": [
-          "(((0+e_1_pad1.length)+e_1_0.length)+e_1_pad2.length)",
-          "(((0+e_3_pad1.length)+e_3_0.length)+e_3_pad2.length)"
-        ]
+        "collectors": {
+          "e_1": "(((0+e_1_pad1.length)+e_1_0.length)+e_1_pad2.length)",
+          "e_3": "(((0+e_3_pad1.length)+e_3_0.length)+e_3_pad2.length)"
+        }
       },
       "partial_roll_rate": {
         "name": "partial_roll_rate",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 1.5707963267948966,
-        "collectors": [
-          "e_1_0.rate",
-          "e_3_0.rate"
-        ]
+        "collectors": {
+          "e_1_0.rate": "e_1_0.rate",
+          "e_3_0.rate": "e_3_0.rate"
+        }
       },
       "e_1_rolls": {
         "name": "e_1_rolls",
@@ -869,22 +873,22 @@
           "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
-        "collectors": [
-          "e_1_0.roll"
-        ]
+        "collectors": {
+          "e_1_0.roll": "e_1_0.roll"
+        }
       },
       "e_1_pad_length": {
         "name": "e_1_pad_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": null,
-        "collectors": [
-          "e_1_pad1.length",
-          "e_1_pad2.length"
-        ]
+        "collectors": {
+          "e_1_pad1.length": "e_1_pad1.length",
+          "e_1_pad2.length": "e_1_pad2.length"
+        }
       },
       "e_3_rolls": {
         "name": "e_3_rolls",
@@ -902,22 +906,22 @@
           "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
-        "collectors": [
-          "e_3_0.roll"
-        ]
+        "collectors": {
+          "e_3_0.roll": "e_3_0.roll"
+        }
       },
       "e_3_pad_length": {
         "name": "e_3_pad_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": null,
-        "collectors": [
-          "e_3_pad1.length",
-          "e_3_pad2.length"
-        ]
+        "collectors": {
+          "e_3_pad1.length": "e_3_pad1.length",
+          "e_3_pad2.length": "e_3_pad2.length"
+        }
       }
     },
     "eds": {
@@ -1025,7 +1029,8 @@
         "h": "TOP",
         "d": "DRIVEN",
         "o": "DRIVEN"
-      }
+      },
+      "centre_loc": -1
     },
     "mps": {
       "speed": {
@@ -1033,68 +1038,68 @@
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 30.0,
-        "collectors": [
-          "e_0.speed",
-          "e_1_break.speed",
-          "e_1_autorotation_0.speed",
-          "e_1_recovery.speed",
-          "e_1_pad1.speed",
-          "e_1_pad2.speed",
-          "e_2.speed"
-        ]
+        "collectors": {
+          "e_0.speed": "e_0.speed",
+          "e_1_break.speed": "e_1_break.speed",
+          "e_1_autorotation_0.speed": "e_1_autorotation_0.speed",
+          "e_1_recovery.speed": "e_1_recovery.speed",
+          "e_1_pad1.speed": "e_1_pad1.speed",
+          "e_1_pad2.speed": "e_1_pad2.speed",
+          "e_2.speed": "e_2.speed"
+        }
       },
       "loop_radius": {
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 2 - 2/(x+1)  # making this a bit less harsh"
         },
         "default": 55.0,
-        "collectors": [
-          "e_0.radius",
-          "e_2.radius"
-        ]
+        "collectors": {
+          "e_0.radius": "e_0.radius",
+          "e_2.radius": "e_2.radius"
+        }
       },
       "line_length": {
         "name": "line_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": 293.84776310850236,
-        "collectors": [
-          "(((((0+e_1_pad1.length)+e_1_break.length)+e_1_autorotation_0.length)+e_1_recovery.length)+e_1_pad2.length)"
-        ]
+        "collectors": {
+          "e_1": "(((((0+e_1_pad1.length)+e_1_break.length)+e_1_autorotation_0.length)+e_1_recovery.length)+e_1_pad2.length)"
+        }
       },
       "snap_rate": {
         "name": "snap_rate",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 12.566370614359172,
-        "collectors": [
-          "e_1_autorotation_0.rate"
-        ]
+        "collectors": {
+          "e_1_autorotation_0.rate": "e_1_autorotation_0.rate"
+        }
       },
       "e_1_pad_length": {
         "name": "e_1_pad_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": null,
-        "collectors": [
-          "e_1_pad1.length",
-          "e_1_pad2.length"
-        ]
+        "collectors": {
+          "e_1_pad1.length": "e_1_pad1.length",
+          "e_1_pad2.length": "e_1_pad2.length"
+        }
       }
     },
     "eds": {
@@ -1181,7 +1186,8 @@
         "h": "BTM",
         "d": "DRIVEN",
         "o": "DRIVEN"
-      }
+      },
+      "centre_loc": -1
     },
     "mps": {
       "speed": {
@@ -1189,47 +1195,47 @@
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 30.0,
-        "collectors": [
-          "e_0.speed",
-          "e_1.speed",
-          "e_2.speed",
-          "e_3.speed",
-          "e_4.speed",
-          "e_5.speed",
-          "e_6.speed"
-        ]
+        "collectors": {
+          "e_0.speed": "e_0.speed",
+          "e_1.speed": "e_1.speed",
+          "e_2.speed": "e_2.speed",
+          "e_3.speed": "e_3.speed",
+          "e_4.speed": "e_4.speed",
+          "e_5.speed": "e_5.speed",
+          "e_6.speed": "e_6.speed"
+        }
       },
       "loop_radius": {
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 2 - 2/(x+1)  # making this a bit less harsh"
         },
         "default": 55.0,
-        "collectors": [
-          "e_0.radius",
-          "e_2.radius",
-          "e_4.radius",
-          "e_6.radius"
-        ]
+        "collectors": {
+          "e_0.radius": "e_0.radius",
+          "e_2.radius": "e_2.radius",
+          "e_4.radius": "e_4.radius",
+          "e_6.radius": "e_6.radius"
+        }
       },
       "line_length": {
         "name": "line_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": 50,
-        "collectors": [
-          "e_1.length",
-          "e_3.length",
-          "e_5.length"
-        ]
+        "collectors": {
+          "e_1.length": "e_1.length",
+          "e_3.length": "e_3.length",
+          "e_5.length": "e_5.length"
+        }
       }
     },
     "eds": {
@@ -1321,7 +1327,8 @@
         "h": "BTM",
         "d": "DRIVEN",
         "o": "DRIVEN"
-      }
+      },
+      "centre_loc": -1
     },
     "mps": {
       "speed": {
@@ -1329,45 +1336,45 @@
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 30.0,
-        "collectors": [
-          "e_0_0.speed",
-          "e_0_1_pause.speed",
-          "e_0_1.speed",
-          "e_0_2.speed",
-          "e_0_3_pause.speed",
-          "e_0_3.speed"
-        ]
+        "collectors": {
+          "e_0_0.speed": "e_0_0.speed",
+          "e_0_1_pause.speed": "e_0_1_pause.speed",
+          "e_0_1.speed": "e_0_1.speed",
+          "e_0_2.speed": "e_0_2.speed",
+          "e_0_3_pause.speed": "e_0_3_pause.speed",
+          "e_0_3.speed": "e_0_3.speed"
+        }
       },
       "point_length": {
         "name": "point_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": 20.0,
-        "collectors": [
-          "e_0_1_pause.length",
-          "e_0_3_pause.length"
-        ]
+        "collectors": {
+          "e_0_1_pause.length": "e_0_1_pause.length",
+          "e_0_3_pause.length": "e_0_3_pause.length"
+        }
       },
       "partial_roll_rate": {
         "name": "partial_roll_rate",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 1.5707963267948966,
-        "collectors": [
-          "e_0_0.rate",
-          "e_0_1.rate",
-          "e_0_2.rate",
-          "e_0_3.rate"
-        ]
+        "collectors": {
+          "e_0_0.rate": "e_0_0.rate",
+          "e_0_1.rate": "e_0_1.rate",
+          "e_0_2.rate": "e_0_2.rate",
+          "e_0_3.rate": "e_0_3.rate"
+        }
       },
       "e_0_rolls": {
         "name": "e_0_rolls",
@@ -1391,12 +1398,12 @@
           "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
-        "collectors": [
-          "e_0_0.roll",
-          "e_0_1.roll",
-          "e_0_2.roll",
-          "e_0_3.roll"
-        ]
+        "collectors": {
+          "e_0_0.roll": "e_0_0.roll",
+          "e_0_1.roll": "e_0_1.roll",
+          "e_0_2.roll": "e_0_2.roll",
+          "e_0_3.roll": "e_0_3.roll"
+        }
       }
     },
     "eds": {
@@ -1471,7 +1478,8 @@
         "h": "TOP",
         "d": "DRIVEN",
         "o": "DRIVEN"
-      }
+      },
+      "centre_loc": -1
     },
     "mps": {
       "speed": {
@@ -1479,37 +1487,37 @@
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 30.0,
-        "collectors": [
-          "e_0.speed",
-          "e_1_0.speed"
-        ]
+        "collectors": {
+          "e_0.speed": "e_0.speed",
+          "e_1_0.speed": "e_1_0.speed"
+        }
       },
       "loop_radius": {
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 2 - 2/(x+1)  # making this a bit less harsh"
         },
         "default": 100,
-        "collectors": [
-          "e_0.radius"
-        ]
+        "collectors": {
+          "e_0.radius": "e_0.radius"
+        }
       },
       "partial_roll_rate": {
         "name": "partial_roll_rate",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 1.5707963267948966,
-        "collectors": [
-          "e_1_0.rate"
-        ]
+        "collectors": {
+          "e_1_0.rate": "e_1_0.rate"
+        }
       },
       "e_1_rolls": {
         "name": "e_1_rolls",
@@ -1527,9 +1535,9 @@
           "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
-        "collectors": [
-          "e_1_0.roll"
-        ]
+        "collectors": {
+          "e_1_0.roll": "e_1_0.roll"
+        }
       }
     },
     "eds": {
@@ -1570,7 +1578,8 @@
         "h": "BTM",
         "d": "DRIVEN",
         "o": "DRIVEN"
-      }
+      },
+      "centre_loc": 0
     },
     "mps": {
       "speed": {
@@ -1578,48 +1587,48 @@
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 30.0,
-        "collectors": [
-          "e_2.speed"
-        ]
+        "collectors": {
+          "e_2.speed": "e_2.speed"
+        }
       },
       "loop_radius": {
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 2 - 2/(x+1)  # making this a bit less harsh"
         },
         "default": 55.0,
-        "collectors": [
-          "e_2.radius"
-        ]
+        "collectors": {
+          "e_2.radius": "e_2.radius"
+        }
       },
       "line_length": {
         "name": "line_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": 130.0,
-        "collectors": [
-          "e_1.length"
-        ]
+        "collectors": {
+          "e_1.length": "e_1.length"
+        }
       },
       "spin_rate": {
         "name": "spin_rate",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 5.340707511102648,
-        "collectors": [
-          "e_0_autorotation.rate"
-        ]
+        "collectors": {
+          "e_0_autorotation.rate": "e_0_autorotation.rate"
+        }
       }
     },
     "eds": {
@@ -1686,7 +1695,8 @@
         "h": "BTM",
         "d": "DRIVEN",
         "o": "DRIVEN"
-      }
+      },
+      "centre_loc": -1
     },
     "mps": {
       "speed": {
@@ -1694,60 +1704,60 @@
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 30.0,
-        "collectors": [
-          "e_0.speed",
-          "e_1_roll.speed",
-          "e_1_pad1.speed",
-          "e_1_pad2.speed",
-          "e_2.speed",
-          "e_3_roll.speed",
-          "e_3_pad1.speed",
-          "e_3_pad2.speed",
-          "e_4.speed"
-        ]
+        "collectors": {
+          "e_0.speed": "e_0.speed",
+          "e_1_roll.speed": "e_1_roll.speed",
+          "e_1_pad1.speed": "e_1_pad1.speed",
+          "e_1_pad2.speed": "e_1_pad2.speed",
+          "e_2.speed": "e_2.speed",
+          "e_3_roll.speed": "e_3_roll.speed",
+          "e_3_pad1.speed": "e_3_pad1.speed",
+          "e_3_pad2.speed": "e_3_pad2.speed",
+          "e_4.speed": "e_4.speed"
+        }
       },
       "loop_radius": {
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 2 - 2/(x+1)  # making this a bit less harsh"
         },
         "default": 55.0,
-        "collectors": [
-          "e_0.radius",
-          "e_2.radius",
-          "e_4.radius"
-        ]
+        "collectors": {
+          "e_0.radius": "e_0.radius",
+          "e_2.radius": "e_2.radius",
+          "e_4.radius": "e_4.radius"
+        }
       },
       "line_length": {
         "name": "line_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": 130.0,
-        "collectors": [
-          "(((0+e_1_pad1.length)+e_1_roll.length)+e_1_pad2.length)",
-          "(((0+e_3_pad1.length)+e_3_roll.length)+e_3_pad2.length)"
-        ]
+        "collectors": {
+          "e_1": "(((0+e_1_pad1.length)+e_1_roll.length)+e_1_pad2.length)",
+          "e_3": "(((0+e_3_pad1.length)+e_3_roll.length)+e_3_pad2.length)"
+        }
       },
       "partial_roll_rate": {
         "name": "partial_roll_rate",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 1.5707963267948966,
-        "collectors": [
-          "e_1_roll.rate",
-          "e_3_roll.rate"
-        ]
+        "collectors": {
+          "e_1_roll.rate": "e_1_roll.rate",
+          "e_3_roll.rate": "e_3_roll.rate"
+        }
       },
       "roll_option": {
         "name": "roll_option",
@@ -1783,36 +1793,36 @@
           "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
-        "collectors": [
-          "e_1_roll.roll",
-          "e_3_roll.roll"
-        ]
+        "collectors": {
+          "e_1_roll.roll": "e_1_roll.roll",
+          "e_3_roll.roll": "e_3_roll.roll"
+        }
       },
       "e_1_pad_length": {
         "name": "e_1_pad_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": null,
-        "collectors": [
-          "e_1_pad1.length",
-          "e_1_pad2.length"
-        ]
+        "collectors": {
+          "e_1_pad1.length": "e_1_pad1.length",
+          "e_1_pad2.length": "e_1_pad2.length"
+        }
       },
       "e_3_pad_length": {
         "name": "e_3_pad_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": null,
-        "collectors": [
-          "e_3_pad1.length",
-          "e_3_pad2.length"
-        ]
+        "collectors": {
+          "e_3_pad1.length": "e_3_pad1.length",
+          "e_3_pad2.length": "e_3_pad2.length"
+        }
       }
     },
     "eds": {
@@ -1920,7 +1930,8 @@
         "h": "TOP",
         "d": "DRIVEN",
         "o": "DRIVEN"
-      }
+      },
+      "centre_loc": -1
     },
     "mps": {
       "speed": {
@@ -1928,64 +1939,64 @@
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 30.0,
-        "collectors": [
-          "e_0.speed",
-          "e_1_0.speed",
-          "e_1_1.speed",
-          "e_1_pad1.speed",
-          "e_1_pad2.speed",
-          "e_2.speed",
-          "e_3_0.speed",
-          "e_3_1_pause.speed",
-          "e_3_1.speed",
-          "e_3_pad1.speed",
-          "e_3_pad2.speed",
-          "e_4.speed"
-        ]
+        "collectors": {
+          "e_0.speed": "e_0.speed",
+          "e_1_0.speed": "e_1_0.speed",
+          "e_1_1.speed": "e_1_1.speed",
+          "e_1_pad1.speed": "e_1_pad1.speed",
+          "e_1_pad2.speed": "e_1_pad2.speed",
+          "e_2.speed": "e_2.speed",
+          "e_3_0.speed": "e_3_0.speed",
+          "e_3_1_pause.speed": "e_3_1_pause.speed",
+          "e_3_1.speed": "e_3_1.speed",
+          "e_3_pad1.speed": "e_3_pad1.speed",
+          "e_3_pad2.speed": "e_3_pad2.speed",
+          "e_4.speed": "e_4.speed"
+        }
       },
       "loop_radius": {
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 2 - 2/(x+1)  # making this a bit less harsh"
         },
         "default": 70,
-        "collectors": [
-          "e_0.radius",
-          "e_2.radius",
-          "e_4.radius"
-        ]
+        "collectors": {
+          "e_0.radius": "e_0.radius",
+          "e_2.radius": "e_2.radius",
+          "e_4.radius": "e_4.radius"
+        }
       },
       "point_length": {
         "name": "point_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": 20.0,
-        "collectors": [
-          "e_3_1_pause.length"
-        ]
+        "collectors": {
+          "e_3_1_pause.length": "e_3_1_pause.length"
+        }
       },
       "partial_roll_rate": {
         "name": "partial_roll_rate",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 1.5707963267948966,
-        "collectors": [
-          "e_1_0.rate",
-          "e_1_1.rate",
-          "e_3_0.rate",
-          "e_3_1.rate"
-        ]
+        "collectors": {
+          "e_1_0.rate": "e_1_0.rate",
+          "e_1_1.rate": "e_1_1.rate",
+          "e_3_0.rate": "e_3_0.rate",
+          "e_3_1.rate": "e_3_1.rate"
+        }
       },
       "e_1_rolls": {
         "name": "e_1_rolls",
@@ -2005,23 +2016,23 @@
           "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
-        "collectors": [
-          "e_1_0.roll",
-          "e_1_1.roll"
-        ]
+        "collectors": {
+          "e_1_0.roll": "e_1_0.roll",
+          "e_1_1.roll": "e_1_1.roll"
+        }
       },
       "e_1_pad_length": {
         "name": "e_1_pad_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": null,
-        "collectors": [
-          "e_1_pad1.length",
-          "e_1_pad2.length"
-        ]
+        "collectors": {
+          "e_1_pad1.length": "e_1_pad1.length",
+          "e_1_pad2.length": "e_1_pad2.length"
+        }
       },
       "e_3_rolls": {
         "name": "e_3_rolls",
@@ -2041,23 +2052,23 @@
           "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
-        "collectors": [
-          "e_3_0.roll",
-          "e_3_1.roll"
-        ]
+        "collectors": {
+          "e_3_0.roll": "e_3_0.roll",
+          "e_3_1.roll": "e_3_1.roll"
+        }
       },
       "e_3_pad_length": {
         "name": "e_3_pad_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": null,
-        "collectors": [
-          "e_3_pad1.length",
-          "e_3_pad2.length"
-        ]
+        "collectors": {
+          "e_3_pad1.length": "e_3_pad1.length",
+          "e_3_pad2.length": "e_3_pad2.length"
+        }
       }
     },
     "eds": {
@@ -2192,7 +2203,8 @@
         "h": "BTM",
         "d": "DRIVEN",
         "o": "DRIVEN"
-      }
+      },
+      "centre_loc": -1
     },
     "mps": {
       "speed": {
@@ -2200,53 +2212,53 @@
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 30.0,
-        "collectors": [
-          "e_0.speed",
-          "e_1_0.speed",
-          "e_1_pad1.speed",
-          "e_1_pad2.speed",
-          "e_2.speed"
-        ]
+        "collectors": {
+          "e_0.speed": "e_0.speed",
+          "e_1_0.speed": "e_1_0.speed",
+          "e_1_pad1.speed": "e_1_pad1.speed",
+          "e_1_pad2.speed": "e_1_pad2.speed",
+          "e_2.speed": "e_2.speed"
+        }
       },
       "loop_radius": {
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 2 - 2/(x+1)  # making this a bit less harsh"
         },
         "default": 55.0,
-        "collectors": [
-          "e_0.radius",
-          "e_2.radius"
-        ]
+        "collectors": {
+          "e_0.radius": "e_0.radius",
+          "e_2.radius": "e_2.radius"
+        }
       },
       "line_length": {
         "name": "line_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": 130.0,
-        "collectors": [
-          "(((0+e_1_pad1.length)+e_1_0.length)+e_1_pad2.length)"
-        ]
+        "collectors": {
+          "e_1": "(((0+e_1_pad1.length)+e_1_0.length)+e_1_pad2.length)"
+        }
       },
       "partial_roll_rate": {
         "name": "partial_roll_rate",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 1.5707963267948966,
-        "collectors": [
-          "e_1_0.rate"
-        ]
+        "collectors": {
+          "e_1_0.rate": "e_1_0.rate"
+        }
       },
       "e_1_rolls": {
         "name": "e_1_rolls",
@@ -2264,22 +2276,22 @@
           "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
-        "collectors": [
-          "e_1_0.roll"
-        ]
+        "collectors": {
+          "e_1_0.roll": "e_1_0.roll"
+        }
       },
       "e_1_pad_length": {
         "name": "e_1_pad_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": null,
-        "collectors": [
-          "e_1_pad1.length",
-          "e_1_pad2.length"
-        ]
+        "collectors": {
+          "e_1_pad1.length": "e_1_pad1.length",
+          "e_1_pad2.length": "e_1_pad2.length"
+        }
       }
     },
     "eds": {
@@ -2349,7 +2361,8 @@
         "h": "BTM",
         "d": "DRIVEN",
         "o": "DRIVEN"
-      }
+      },
+      "centre_loc": -1
     },
     "mps": {
       "speed": {
@@ -2357,69 +2370,69 @@
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 30.0,
-        "collectors": [
-          "e_0.speed",
-          "e_4.speed",
-          "e_8.speed"
-        ]
+        "collectors": {
+          "e_0.speed": "e_0.speed",
+          "e_4.speed": "e_4.speed",
+          "e_8.speed": "e_8.speed"
+        }
       },
       "loop_radius": {
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 2 - 2/(x+1)  # making this a bit less harsh"
         },
         "default": 55.0,
-        "collectors": [
-          "e_0.radius",
-          "e_4.radius",
-          "e_8.radius"
-        ]
+        "collectors": {
+          "e_0.radius": "e_0.radius",
+          "e_4.radius": "e_4.radius",
+          "e_8.radius": "e_8.radius"
+        }
       },
       "line_length": {
         "name": "line_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": 150.0,
-        "collectors": [
-          "(((0+e_1_pad1.length)+e_1_roll.length)+e_1_pad2.length)",
-          "e_3.length",
-          "e_5.length",
-          "(((0+e_7_pad1.length)+e_7_roll.length)+e_7_pad2.length)"
-        ]
+        "collectors": {
+          "e_1": "(((0+e_1_pad1.length)+e_1_roll.length)+e_1_pad2.length)",
+          "e_3.length": "e_3.length",
+          "e_5.length": "e_5.length",
+          "e_7": "(((0+e_7_pad1.length)+e_7_roll.length)+e_7_pad2.length)"
+        }
       },
       "partial_roll_rate": {
         "name": "partial_roll_rate",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 1.5707963267948966,
-        "collectors": [
-          "e_1_roll.rate",
-          "e_7_roll.rate"
-        ]
+        "collectors": {
+          "e_1_roll.rate": "e_1_roll.rate",
+          "e_7_roll.rate": "e_7_roll.rate"
+        }
       },
       "stallturn_rate": {
         "name": "stallturn_rate",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 6.283185307179586,
-        "collectors": [
-          "e_2.yaw_rate",
-          "e_6.yaw_rate"
-        ]
+        "collectors": {
+          "e_2.yaw_rate": "e_2.yaw_rate",
+          "e_6.yaw_rate": "e_6.yaw_rate"
+        }
       },
       "roll_option": {
         "name": "roll_option",
@@ -2439,36 +2452,36 @@
           "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 1,
-        "collectors": [
-          "e_1_roll.roll",
-          "e_7_roll.roll"
-        ]
+        "collectors": {
+          "e_1_roll.roll": "e_1_roll.roll",
+          "e_7_roll.roll": "e_7_roll.roll"
+        }
       },
       "e_1_pad_length": {
         "name": "e_1_pad_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": null,
-        "collectors": [
-          "e_1_pad1.length",
-          "e_1_pad2.length"
-        ]
+        "collectors": {
+          "e_1_pad1.length": "e_1_pad1.length",
+          "e_1_pad2.length": "e_1_pad2.length"
+        }
       },
       "e_7_pad_length": {
         "name": "e_7_pad_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": null,
-        "collectors": [
-          "e_7_pad1.length",
-          "e_7_pad2.length"
-        ]
+        "collectors": {
+          "e_7_pad1.length": "e_7_pad1.length",
+          "e_7_pad2.length": "e_7_pad2.length"
+        }
       }
     },
     "eds": {
@@ -2610,7 +2623,8 @@
         "h": "BTM",
         "d": "DRIVEN",
         "o": "DRIVEN"
-      }
+      },
+      "centre_loc": -1
     },
     "mps": {
       "speed": {
@@ -2618,60 +2632,60 @@
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 30.0,
-        "collectors": [
-          "e_0.speed",
-          "e_1_roll.speed",
-          "e_1_pad1.speed",
-          "e_1_pad2.speed",
-          "e_2.speed",
-          "e_3_roll.speed",
-          "e_3_pad1.speed",
-          "e_3_pad2.speed",
-          "e_4.speed"
-        ]
+        "collectors": {
+          "e_0.speed": "e_0.speed",
+          "e_1_roll.speed": "e_1_roll.speed",
+          "e_1_pad1.speed": "e_1_pad1.speed",
+          "e_1_pad2.speed": "e_1_pad2.speed",
+          "e_2.speed": "e_2.speed",
+          "e_3_roll.speed": "e_3_roll.speed",
+          "e_3_pad1.speed": "e_3_pad1.speed",
+          "e_3_pad2.speed": "e_3_pad2.speed",
+          "e_4.speed": "e_4.speed"
+        }
       },
       "loop_radius": {
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 2 - 2/(x+1)  # making this a bit less harsh"
         },
         "default": 55.0,
-        "collectors": [
-          "e_0.radius",
-          "e_2.radius",
-          "e_4.radius"
-        ]
+        "collectors": {
+          "e_0.radius": "e_0.radius",
+          "e_2.radius": "e_2.radius",
+          "e_4.radius": "e_4.radius"
+        }
       },
       "line_length": {
         "name": "line_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": 130.0,
-        "collectors": [
-          "(((0+e_1_pad1.length)+e_1_roll.length)+e_1_pad2.length)",
-          "(((0+e_3_pad1.length)+e_3_roll.length)+e_3_pad2.length)"
-        ]
+        "collectors": {
+          "e_1": "(((0+e_1_pad1.length)+e_1_roll.length)+e_1_pad2.length)",
+          "e_3": "(((0+e_3_pad1.length)+e_3_roll.length)+e_3_pad2.length)"
+        }
       },
       "partial_roll_rate": {
         "name": "partial_roll_rate",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 1.5707963267948966,
-        "collectors": [
-          "e_1_roll.rate",
-          "e_3_roll.rate"
-        ]
+        "collectors": {
+          "e_1_roll.rate": "e_1_roll.rate",
+          "e_3_roll.rate": "e_3_roll.rate"
+        }
       },
       "roll_option": {
         "name": "roll_option",
@@ -2691,36 +2705,36 @@
           "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
-        "collectors": [
-          "e_1_roll.roll",
-          "e_3_roll.roll"
-        ]
+        "collectors": {
+          "e_1_roll.roll": "e_1_roll.roll",
+          "e_3_roll.roll": "e_3_roll.roll"
+        }
       },
       "e_1_pad_length": {
         "name": "e_1_pad_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": null,
-        "collectors": [
-          "e_1_pad1.length",
-          "e_1_pad2.length"
-        ]
+        "collectors": {
+          "e_1_pad1.length": "e_1_pad1.length",
+          "e_1_pad2.length": "e_1_pad2.length"
+        }
       },
       "e_3_pad_length": {
         "name": "e_3_pad_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": null,
-        "collectors": [
-          "e_3_pad1.length",
-          "e_3_pad2.length"
-        ]
+        "collectors": {
+          "e_3_pad1.length": "e_3_pad1.length",
+          "e_3_pad2.length": "e_3_pad2.length"
+        }
       }
     },
     "eds": {
@@ -2828,7 +2842,8 @@
         "h": "BTM",
         "d": "DRIVEN",
         "o": "DRIVEN"
-      }
+      },
+      "centre_loc": -1
     },
     "mps": {
       "speed": {
@@ -2836,85 +2851,85 @@
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 30.0,
-        "collectors": [
-          "e_0_0.speed",
-          "e_1.speed",
-          "e_2.speed",
-          "e_3_0.speed",
-          "e_3_1_pause.speed",
-          "e_3_1.speed",
-          "e_3_pad1.speed",
-          "e_3_pad2.speed",
-          "e_4.speed",
-          "e_5_0.speed",
-          "e_5_1_pause.speed",
-          "e_5_1.speed",
-          "e_5_pad1.speed",
-          "e_5_pad2.speed",
-          "e_6.speed",
-          "e_7.speed",
-          "e_8_0.speed"
-        ]
+        "collectors": {
+          "e_0_0.speed": "e_0_0.speed",
+          "e_1.speed": "e_1.speed",
+          "e_2.speed": "e_2.speed",
+          "e_3_0.speed": "e_3_0.speed",
+          "e_3_1_pause.speed": "e_3_1_pause.speed",
+          "e_3_1.speed": "e_3_1.speed",
+          "e_3_pad1.speed": "e_3_pad1.speed",
+          "e_3_pad2.speed": "e_3_pad2.speed",
+          "e_4.speed": "e_4.speed",
+          "e_5_0.speed": "e_5_0.speed",
+          "e_5_1_pause.speed": "e_5_1_pause.speed",
+          "e_5_1.speed": "e_5_1.speed",
+          "e_5_pad1.speed": "e_5_pad1.speed",
+          "e_5_pad2.speed": "e_5_pad2.speed",
+          "e_6.speed": "e_6.speed",
+          "e_7.speed": "e_7.speed",
+          "e_8_0.speed": "e_8_0.speed"
+        }
       },
       "loop_radius": {
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 2 - 2/(x+1)  # making this a bit less harsh"
         },
         "default": 55.0,
-        "collectors": [
-          "e_2.radius",
-          "e_4.radius",
-          "e_6.radius"
-        ]
+        "collectors": {
+          "e_2.radius": "e_2.radius",
+          "e_4.radius": "e_4.radius",
+          "e_6.radius": "e_6.radius"
+        }
       },
       "line_length": {
         "name": "line_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": 130.0,
-        "collectors": [
-          "(((((0+e_3_pad1.length)+e_3_0.length)+e_3_1_pause.length)+e_3_1.length)+e_3_pad2.length)",
-          "(((((0+e_5_pad1.length)+e_5_0.length)+e_5_1_pause.length)+e_5_1.length)+e_5_pad2.length)"
-        ]
+        "collectors": {
+          "e_3": "(((((0+e_3_pad1.length)+e_3_0.length)+e_3_1_pause.length)+e_3_1.length)+e_3_pad2.length)",
+          "e_5": "(((((0+e_5_pad1.length)+e_5_0.length)+e_5_1_pause.length)+e_5_1.length)+e_5_pad2.length)"
+        }
       },
       "point_length": {
         "name": "point_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": 20.0,
-        "collectors": [
-          "e_3_1_pause.length",
-          "e_5_1_pause.length"
-        ]
+        "collectors": {
+          "e_3_1_pause.length": "e_3_1_pause.length",
+          "e_5_1_pause.length": "e_5_1_pause.length"
+        }
       },
       "partial_roll_rate": {
         "name": "partial_roll_rate",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 1.5707963267948966,
-        "collectors": [
-          "e_0_0.rate",
-          "e_3_0.rate",
-          "e_3_1.rate",
-          "e_5_0.rate",
-          "e_5_1.rate",
-          "e_8_0.rate"
-        ]
+        "collectors": {
+          "e_0_0.rate": "e_0_0.rate",
+          "e_3_0.rate": "e_3_0.rate",
+          "e_3_1.rate": "e_3_1.rate",
+          "e_5_0.rate": "e_5_0.rate",
+          "e_5_1.rate": "e_5_1.rate",
+          "e_8_0.rate": "e_8_0.rate"
+        }
       },
       "e_0_rolls": {
         "name": "e_0_rolls",
@@ -2932,9 +2947,9 @@
           "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
-        "collectors": [
-          "e_0_0.roll"
-        ]
+        "collectors": {
+          "e_0_0.roll": "e_0_0.roll"
+        }
       },
       "e_3_rolls": {
         "name": "e_3_rolls",
@@ -2954,23 +2969,23 @@
           "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
-        "collectors": [
-          "e_3_0.roll",
-          "e_3_1.roll"
-        ]
+        "collectors": {
+          "e_3_0.roll": "e_3_0.roll",
+          "e_3_1.roll": "e_3_1.roll"
+        }
       },
       "e_3_pad_length": {
         "name": "e_3_pad_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": null,
-        "collectors": [
-          "e_3_pad1.length",
-          "e_3_pad2.length"
-        ]
+        "collectors": {
+          "e_3_pad1.length": "e_3_pad1.length",
+          "e_3_pad2.length": "e_3_pad2.length"
+        }
       },
       "e_5_rolls": {
         "name": "e_5_rolls",
@@ -2990,23 +3005,23 @@
           "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
-        "collectors": [
-          "e_5_0.roll",
-          "e_5_1.roll"
-        ]
+        "collectors": {
+          "e_5_0.roll": "e_5_0.roll",
+          "e_5_1.roll": "e_5_1.roll"
+        }
       },
       "e_5_pad_length": {
         "name": "e_5_pad_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": null,
-        "collectors": [
-          "e_5_pad1.length",
-          "e_5_pad2.length"
-        ]
+        "collectors": {
+          "e_5_pad1.length": "e_5_pad1.length",
+          "e_5_pad2.length": "e_5_pad2.length"
+        }
       },
       "e_8_rolls": {
         "name": "e_8_rolls",
@@ -3024,9 +3039,9 @@
           "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
-        "collectors": [
-          "e_8_0.roll"
-        ]
+        "collectors": {
+          "e_8_0.roll": "e_8_0.roll"
+        }
       }
     },
     "eds": {
@@ -3206,7 +3221,8 @@
         "h": "BTM",
         "d": "DRIVEN",
         "o": "DRIVEN"
-      }
+      },
+      "centre_loc": -1
     },
     "mps": {
       "speed": {
@@ -3214,62 +3230,62 @@
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 30.0,
-        "collectors": [
-          "e_0.speed",
-          "e_1_0.speed",
-          "e_1_pad1.speed",
-          "e_1_pad2.speed",
-          "e_2.speed",
-          "e_3_0.speed",
-          "e_3_1_pause.speed",
-          "e_3_1.speed",
-          "e_3_pad1.speed",
-          "e_3_pad2.speed",
-          "e_4.speed"
-        ]
+        "collectors": {
+          "e_0.speed": "e_0.speed",
+          "e_1_0.speed": "e_1_0.speed",
+          "e_1_pad1.speed": "e_1_pad1.speed",
+          "e_1_pad2.speed": "e_1_pad2.speed",
+          "e_2.speed": "e_2.speed",
+          "e_3_0.speed": "e_3_0.speed",
+          "e_3_1_pause.speed": "e_3_1_pause.speed",
+          "e_3_1.speed": "e_3_1.speed",
+          "e_3_pad1.speed": "e_3_pad1.speed",
+          "e_3_pad2.speed": "e_3_pad2.speed",
+          "e_4.speed": "e_4.speed"
+        }
       },
       "loop_radius": {
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 2 - 2/(x+1)  # making this a bit less harsh"
         },
         "default": 30,
-        "collectors": [
-          "e_0.radius",
-          "e_2.radius",
-          "e_4.radius"
-        ]
+        "collectors": {
+          "e_0.radius": "e_0.radius",
+          "e_2.radius": "e_2.radius",
+          "e_4.radius": "e_4.radius"
+        }
       },
       "point_length": {
         "name": "point_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": 20.0,
-        "collectors": [
-          "e_3_1_pause.length"
-        ]
+        "collectors": {
+          "e_3_1_pause.length": "e_3_1_pause.length"
+        }
       },
       "partial_roll_rate": {
         "name": "partial_roll_rate",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 1.5707963267948966,
-        "collectors": [
-          "e_1_0.rate",
-          "e_3_0.rate",
-          "e_3_1.rate"
-        ]
+        "collectors": {
+          "e_1_0.rate": "e_1_0.rate",
+          "e_3_0.rate": "e_3_0.rate",
+          "e_3_1.rate": "e_3_1.rate"
+        }
       },
       "e_1_rolls": {
         "name": "e_1_rolls",
@@ -3287,22 +3303,22 @@
           "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
-        "collectors": [
-          "e_1_0.roll"
-        ]
+        "collectors": {
+          "e_1_0.roll": "e_1_0.roll"
+        }
       },
       "e_1_pad_length": {
         "name": "e_1_pad_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": null,
-        "collectors": [
-          "e_1_pad1.length",
-          "e_1_pad2.length"
-        ]
+        "collectors": {
+          "e_1_pad1.length": "e_1_pad1.length",
+          "e_1_pad2.length": "e_1_pad2.length"
+        }
       },
       "e_3_rolls": {
         "name": "e_3_rolls",
@@ -3322,23 +3338,23 @@
           "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
-        "collectors": [
-          "e_3_0.roll",
-          "e_3_1.roll"
-        ]
+        "collectors": {
+          "e_3_0.roll": "e_3_0.roll",
+          "e_3_1.roll": "e_3_1.roll"
+        }
       },
       "e_3_pad_length": {
         "name": "e_3_pad_length",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 3 - 3/(x+1)  # making this a bit less harsh"
         },
         "default": null,
-        "collectors": [
-          "e_3_pad1.length",
-          "e_3_pad2.length"
-        ]
+        "collectors": {
+          "e_3_pad1.length": "e_3_pad1.length",
+          "e_3_pad2.length": "e_3_pad2.length"
+        }
       }
     },
     "eds": {
@@ -3464,7 +3480,8 @@
         "h": "BTM",
         "d": "DRIVEN",
         "o": "DRIVEN"
-      }
+      },
+      "centre_loc": -1
     },
     "mps": {
       "speed": {
@@ -3472,28 +3489,28 @@
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 1 - 1/x"
+          "slu": "lambda x: 1 - 1/(x+1)"
         },
         "default": 30.0,
-        "collectors": [
-          "e_0.speed",
-          "e_1.speed",
-          "e_2.speed"
-        ]
+        "collectors": {
+          "e_0.speed": "e_0.speed",
+          "e_1.speed": "e_1.speed",
+          "e_2.speed": "e_2.speed"
+        }
       },
       "loop_radius": {
         "name": "loop_radius",
         "criteria": {
           "kind": "Comparison",
           "errortype": "ratio",
-          "slu": "lambda x: 4 - 4/x"
+          "slu": "lambda x: 2 - 2/(x+1)  # making this a bit less harsh"
         },
         "default": 80,
-        "collectors": [
-          "e_0.radius",
-          "e_1.radius",
-          "e_2.radius"
-        ]
+        "collectors": {
+          "e_0.radius": "e_0.radius",
+          "e_1.radius": "e_1.radius",
+          "e_2.radius": "e_2.radius"
+        }
       },
       "roll_option": {
         "name": "roll_option",
@@ -3511,9 +3528,9 @@
           "slu": "lambda x: np.zeros_like(x)"
         },
         "default": 0,
-        "collectors": [
-          "e_1.roll"
-        ]
+        "collectors": {
+          "e_1.roll": "e_1.roll"
+        }
       }
     },
     "eds": {

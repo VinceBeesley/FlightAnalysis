@@ -1,7 +1,7 @@
 """The collectors are serializable functions that return parameters from elements"""
 from flightanalysis.base.collection import Collection
 from . import Opp
-
+from uuid import uuid1
 
 
 class Collector(Opp):
@@ -19,10 +19,11 @@ class Collector(Opp):
         return self.name
 
     @staticmethod
-    def parse(ins):
+    def parse(ins, name=None):
         return Opp.parse_f(
             ins, 
-            lambda ins : Collector(*ins.strip(" ").split("."))
+            lambda ins : Collector(*ins.strip(" ").split(".")),
+            uuid1() if name is None else name
         )
         
 
@@ -51,6 +52,13 @@ class Collectors(Collection):
     def from_eldef(el):
         return Collectors([Collector(el.name, pname) for pname in el.Kind.parameters])
     
+    def to_dict(self):
+        return {v.name: str(v) for v in self}
+
+    @staticmethod
+    def from_dict(data):
+        return Collectors({k: Collector.parse(v, k) for k, v in data.items()})
+
     def to_list(self):
         return [str(v) for v in self]
     

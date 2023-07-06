@@ -9,7 +9,7 @@ from flightanalysis.base.collection import Collection
 from numbers import Number
 from . import Collector, Collectors
 import inspect
-
+from uuid import uuid1
 
 class ElDef:
     """This class creates a function to build an element (Loop, Line, Snap, Spin, Stallturn)
@@ -120,16 +120,22 @@ class ElDefs(Collection):
         """A list of the functions that return the requested parameter when constructing the elements from the mps"""
         return [e.props[name] for e in self if name in e.props]
 
-    def builder_sum(self, name:str) -> Callable:
+    def builder_sum(self, name:str, oppname=None) -> Callable:
         """A function to return the sum of the requested parameter used when constructing the elements from the mps"""
-        return sum(self.builder_list(name))
+        opp = sum(self.builder_list(name))
+        if hasattr(opp, name):
+            opp.name = uuid1() if oppname is None else oppname
+        return opp
 
     def collector_list(self, name: str) -> Collectors:
         """A list of the functions that return the requested parameter from an elements collection"""
         return Collectors([e.get_collector(name) for e in self if f"{e.name}.{name}" in e.collectors.data])
 
 
-    def collector_sum(self, name) -> Callable:
+    def collector_sum(self, name, oppname=None) -> Callable:
         """A function that returns the sum of the requested parameter from an elements collection"""
-        return sum(self.collector_list(name))
+        opp = sum(self.collector_list(name))
+        if hasattr(opp, name):
+            opp.name = uuid1() if oppname is None else oppname
+        return opp
     

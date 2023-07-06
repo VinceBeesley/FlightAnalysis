@@ -15,7 +15,7 @@ class Comparison(Criteria):
         cval = data[0]
 
         data = np.concatenate([np.array([cval]), data])
-        ratios = self.preprocess(data[:-1], data[1:]) + 1
+        ratios = self.preprocess(data[:-1], data[1:])
         return self.lookup(np.abs(ratios))
 
 

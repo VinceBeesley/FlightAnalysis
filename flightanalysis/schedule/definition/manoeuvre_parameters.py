@@ -38,7 +38,7 @@ class ManParm(Opp):
             name = self.name,
             criteria = self.criteria.to_dict(),
             default = self.default,
-            collectors = self.collectors.to_list()
+            collectors = self.collectors.to_dict()
         )
     
     @staticmethod
@@ -47,7 +47,7 @@ class ManParm(Opp):
             name = data["name"],
             criteria = Criteria.from_dict(data["criteria"]),
             default = data["default"],
-            collectors = Collectors.from_list(data["collectors"])
+            collectors = Collectors.from_dict(data["collectors"])
         )
 
     def append(self, collector: Union[Opp, Collector, Collectors]):
@@ -122,7 +122,7 @@ class ManParms(Collection):
         Returns:
             Dict[str, float]: The sum of downgrades for each ManParm
         """
-        return Results([mp.get_downgrades(manoeuvre.all_elements()) for mp in self if not isinstance(mp.criteria, Combination)])
+        return Results("Inter",[mp.get_downgrades(manoeuvre.all_elements()) for mp in self if not isinstance(mp.criteria, Combination)])
     
     def append_collectors(self, colls: Dict[str, Callable]):
         """Append each of a dict of collector methods to the relevant ManParm

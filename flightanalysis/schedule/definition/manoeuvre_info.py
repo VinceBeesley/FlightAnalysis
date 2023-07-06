@@ -101,7 +101,7 @@ class ManInfo:
     position: Position
     start: BoxLocation
     end: BoxLocation
-    centre_loc: int = -1, # -1 for standard definitino, >=0 for the start of an element ID
+    centre_loc: int = -1 # -1 for standard definitino, >=0 for the start of an element ID
 
     def initial_position(self, depth: float, wind: int) -> Transformation: 
         return Point(

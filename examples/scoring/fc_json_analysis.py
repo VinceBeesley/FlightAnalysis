@@ -15,7 +15,7 @@ state = State.from_flight(flight, box).splitter_labels(data["mans"])
 
 sdef = get_schedule_definition(data["parameters"]["schedule"][1])
 
-mid = 16
+mid = 2
 
 mdef = sdef[mid]
 flown = state.get_manoeuvre(mid+1)
@@ -31,7 +31,7 @@ if False:
         dump(ma.to_dict(), f, default=npconverter)
 
 
-#ma.plot_3d(nmodels=5).show()
+ma.plot_3d(nmodels=5).show()
 
 ma.intra_dgs = ma.intended.analyse(ma.aligned, ma.intended_template)
 ma.intra_dg = ma.intra_dgs.downgrade()
@@ -41,6 +41,13 @@ print(df.sum())
 ma.inter_dgs = ma.mdef.mps.collect(ma.intended)
 ma.inter_dg = sum([dg.value for dg in ma.inter_dgs])
 
+inter = ma.inter_dgs.downgrade_df()
+print(inter)
+print(inter.sum())
+print(inter.sum().sum())
+
+
+print(10 - df.sum().Total - inter.sum().sum())
 pass
 
 
