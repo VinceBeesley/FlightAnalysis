@@ -28,7 +28,7 @@ class Autorotation(Element):
         
     @property
     def intra_scoring(self):
-        return DownGrades(DownGrade(Measurement.roll_angle, f3a.single_roll))
+        return DownGrades([DownGrade(Measurement.roll_angle, f3a.single_roll)])
     
     @property
     def angle(self):

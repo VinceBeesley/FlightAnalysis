@@ -19,6 +19,7 @@ class Continuous(Criteria):
         return np.concatenate([np.array([first_val]), peaks, np.array([last_val])])
 
     def smooth_sample(self, values, window_width=10):
+        window_width = min(window_width, int(len(values)/2))
         cumsum_vec = np.cumsum(np.insert(values, 0, 0)) 
         ma_vec = (cumsum_vec[window_width:] - cumsum_vec[:-window_width]) / window_width
         return ma_vec
