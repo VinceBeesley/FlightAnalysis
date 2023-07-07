@@ -11,10 +11,16 @@ class Measurement:
     value: Union[Point, Any]
     expected: Union[Point, Any]
     visibility: np.ndarray
-        
+    
+    def _pos_vis(loc: Point):
+        return loc.y / abs(loc)
+
     @staticmethod
     def vector_vis(value: Point, expected: Point, loc: Point, att: Quaternion) -> Measurement:
-        return Measurement(value, expected, Measurement._vector_vis(value, loc)    )
+        return Measurement(
+            value, expected, 
+            Measurement._vector_vis(value, loc) * Measurement._pos_vis(loc)
+        )
 
     @staticmethod
     def _vector_vis(direction: Point, loc: Point) -> np.ndarray:
@@ -24,7 +30,10 @@ class Measurement:
 
     @staticmethod
     def track_vis(value: Point, expected: Point, loc: Point, att: Quaternion) -> Measurement:
-        return Measurement(value, expected, Measurement._track_vis(value, loc)    )
+        return Measurement(
+            value, expected, 
+            Measurement._track_vis(value, loc) * Measurement._pos_vis(loc)
+        )
 
     @staticmethod
     def _track_vis(axis: Point, loc: Point) -> np.ndarray:

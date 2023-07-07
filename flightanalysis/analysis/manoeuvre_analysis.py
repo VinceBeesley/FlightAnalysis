@@ -4,6 +4,8 @@ import pandas as pd
 from json import load
 from flightanalysis import State, Manoeuvre, State, ManDef, ElDef, Box, get_schedule_definition, Collection
 from flightanalysis.schedule.elements import Element
+from flightanalysis.schedule.scoring import *
+from flightanalysis.schedule.definition.manoeuvre_info import Position
 from geometry import Transformation, Quaternion, Q0, Coord
 from typing import Any, List, Tuple
 from dataclasses import dataclass
@@ -121,6 +123,45 @@ class ManoeuvreAnalysis:
         return plotsec(self.corrected_template, color="green", fig=fig, **kwargs)
 
 
+    def side_box(self):
+        al = self.aligned#.get_element(slice(1,-1,None))
+        side_box_angle = np.arctan2(al.pos.x, al.pos.y)
+
+        if self.mdef.info.position == Position.CENTRE:
+            if self.mdef.info.centre_loc == -1:
+                centre = max(side_box_angle) + min(side_box_angle)
+            else:
+                centre_pos = self.intended.elements[self.mdef.info.centre_loc].get_data(self.aligned).pos[0]
+                centre = np.arctan2(centre_pos.x, centre_pos.y)[0]
+            box_dg = f3a.angle(centre)
+            return Result("centering",np.array([centre]),np.array([box_dg]))
+        else:
+            max_sb = max(abs(side_box_angle))
+            min_sb = min(abs(side_box_angle))
+
+            outside = 1 - (1.0471975511965976 - min_sb) / (max_sb - min_sb)
+            box_dg = max(outside, 0) * 5
+            return Result("box",np.array([outside]),np.array([box_dg]))
+
+    def top_box(self):
+        top_box_angle = max(np.arctan(self.aligned.pos.z / self.aligned.pos.y))
+
+        outside_tb = (top_box_angle - 1.0471975511965976) / 1.0471975511965976
+        top_box_dg = max(outside_tb, 0) * 6
+        return Result("top box", np.array([outside_tb]), np.array([top_box_dg]))
+
+    def distance(self):
+        #only downgrade distance if the template is narrow
+        #TODO doesnt quite cover it, stalled manoeuvres need to be considered
+        dist = np.mean(self.aligned.pos.y)
+
+        tp_width = max(self.corrected_template.y) - min(self.corrected_template.y)
+
+        if tp_width < 10:
+            dist_dg = f3a.distance(max(dist, 170))
+        else:
+            dist_dg = 0.0
+        return Result("distance", np.array([dist]), np.array([dist_dg])) 
 
 class ScheduleAnalysis(Collection):
     VType=ManoeuvreAnalysis

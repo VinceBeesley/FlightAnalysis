@@ -18,11 +18,15 @@ speed = lambda x: 1 - 1/(x+1)
 roll_rate = lambda x: 1 - 1/(x+1)
 track_angle = lambda x: abs(x/0.2617993877991494)
 roll_angle = lambda x: abs(2.5*x**1.8) # I think this is more like a human judge
+angle = lambda x: abs(x) / 0.2617993877991494
+distance = lambda x: (x - 170) / 15 
+
 
 from . import Criteria, Continuous, Comparison, free
 
 single_track = Criteria(track_angle, "absolute")
 single_roll = Criteria(roll_angle, "absolute")
+single_angle = Criteria(angle, "absolute")
 
 intra_track = Continuous(track_angle, "absolute")
 intra_roll = Continuous(roll_angle, "absolute")
