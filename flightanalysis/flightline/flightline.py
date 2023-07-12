@@ -16,6 +16,7 @@ import numpy as np
 from json import load, dump
 
 
+
 class Box(object):
     '''This class defines an aerobatic box in the world, it uses the pilot position and the direction 
     in which the pilot is facing (normal to the main aerobatic manoeuvering plane)'''
@@ -57,6 +58,7 @@ class Box(object):
 
     @staticmethod
     def from_initial(flight):
+        from flightdata import Fields
         '''Generate a box based on the initial position and heading of the model at the start of the log. 
         This is a convenient, but not very accurate way to setup the box. 
         '''

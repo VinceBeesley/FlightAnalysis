@@ -104,7 +104,7 @@ class State(Table):
         return State(df.set_index("t", drop=False))
 
     @staticmethod
-    def from_flight(flight, box:Union[FlightLine, Box, str]) -> State:
+    def from_flight(flight, box:Union[FlightLine, Box, str] = None) -> State:
         from flightdata import Flight, Fields
         if isinstance(flight, str):
             flight = {
@@ -310,6 +310,12 @@ class State(Table):
     def get_element(self: State, element: Union[str, list, int]):
         return self.get_subset(element, "element") 
 
+    def get_man_or_el(self: State, el: str):
+        if el in self.data.element.unique():
+            return self.get_element([el])
+        elif el in self.data.manoeuvre.unique():
+            return self.get_manoeuvre([el])
+        
     def get_meid(self: State, manid: int, elid: int=None):
         st = self.get_manoeuvre(manid)
         if not elid is None:
@@ -601,3 +607,20 @@ class State(Table):
         angles = Point.full(axis.unit(), len(t)) * np.concatenate([angles_0, angles_1, angles_2])
 
         return self.superimpose_angles(angles, reference)
+
+    def edit_labels(self, col, elname, new_t) -> State:
+        odata = self.data.copy()
+        new_t = min(new_t, self.data.t.iloc[-1])
+        new_t = max(new_t, self.data.t.iloc[0])
+
+        elnames = list(odata.element.unique())
+        elid = elnames.index(elname)
+        elt = odata.loc[odata[col] == elname].index.to_numpy()
+
+        if elt[-1] > new_t:
+            nelt = self.data.loc[odata[col] == elnames[elid+1]].index.to_numpy()
+            odata.loc[new_t:nelt[-1], col] = elnames[elid+1]
+        else:
+            odata.loc[elt[0]:new_t, col] = elnames[elid] 
+        
+        return State(odata)

@@ -60,3 +60,32 @@ def test_to_from_dict(state):
     assert st_new.duration == state.duration
 
 
+@fixture
+def labst():
+    st=State.from_transform(Transformation.zero()).extrapolate(10)
+    al = State.stack([st.label(element=f"test{i}") for i in range(5)])
+    al.data.t = al.data.t + 100
+    return al
+
+
+def test_state_edit_labels_increase(labst):
+    
+    labst2=labst.edit_labels("element", "test3",  45)
+
+    assert labst2.get_element("test3").duration == approx(15, abs=0.2)
+    assert labst2.get_element("test4").duration == approx(5, abs=0.2)
+
+
+def test_state_edit_labels_reduce(labst):
+    labst2=labst.edit_labels("element", "test3",  35)
+
+    assert labst2.get_element("test3").duration == approx(5, abs=0.2)
+    assert labst2.get_element("test4").duration == approx(15, abs=0.2)
+
+
+def test_state_edit_labels_end(labst):
+    labst2=labst.edit_labels("element", "test3",  55)
+
+    assert labst2.get_element("test3").duration == approx(20, abs=0.2)
+
+    assert not "test4" in labst2.data.element.unique()

@@ -74,7 +74,7 @@ class ManoeuvreAnalysis:
         return self.mdef.uid
         
     @staticmethod
-    def initial_transform(mdef: ManDef, flown: State):
+    def initial_transform(mdef: ManDef, flown: State) -> Transformation:
         initial = flown[0]
         return Transformation(
             initial.pos,

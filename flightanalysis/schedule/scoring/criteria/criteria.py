@@ -40,8 +40,9 @@ class Criteria:
 
     @classmethod
     def from_dict(Cls, data) -> Criteria:
+        data=data.copy()
         criteria = {c.__name__: c for c in Cls.__subclasses__()}
         criteria[Cls.__name__] = Cls
-        Child = criteria[data.pop("kind")]
+        Child = criteria[data.pop('kind')]
         func = eval(data["slu"])
         return Child(lookup=func,**data)

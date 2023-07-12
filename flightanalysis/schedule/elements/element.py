@@ -98,7 +98,8 @@ class Element:
                 return Child
 
     @classmethod
-    def from_dict(Cls, data):        
+    def from_dict(Cls, data: dict):
+        data=data.copy()
         return Element.from_name(data.pop("kind").lower())(**data)
     
     @classmethod
