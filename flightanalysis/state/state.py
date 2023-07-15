@@ -608,19 +608,35 @@ class State(Table):
 
         return self.superimpose_angles(angles, reference)
 
-    def edit_labels(self, col, elname, new_t) -> State:
+    def shift_labels(self, col, elname, offset, allow_label_loss=True) -> State:
+        
+        new_t = self.label_ts("element")[elname][1] +  offset
+        
         odata = self.data.copy()
-        new_t = min(new_t, self.data.t.iloc[-1])
-        new_t = max(new_t, self.data.t.iloc[0])
 
-        elnames = list(odata.element.unique())
+        elnames = list(odata[col].unique())
         elid = elnames.index(elname)
-        elt = odata.loc[odata[col] == elname].index.to_numpy()
+        elt = odata.loc[odata[col] == elname].index.to_numpy()       
+        nelt = self.data.loc[odata[col] == elnames[elid+1]].index.to_numpy()
+        
+        if allow_label_loss:
+            new_t = max(new_t, self.data.index[0])
+            new_t = min(new_t, self.data.index[-1])
+        else:
+            new_t = max(new_t, elt[0])
+            new_t = min(new_t, nelt[-1])
 
-        if elt[-1] > new_t:
-            nelt = self.data.loc[odata[col] == elnames[elid+1]].index.to_numpy()
+        if elt[-1] > new_t:    
             odata.loc[new_t:nelt[-1], col] = elnames[elid+1]
         else:
-            odata.loc[elt[0]:new_t, col] = elnames[elid] 
+            odata.loc[elt[0]:new_t, col] = elname
         
         return State(odata)
+    
+    def label_ts(self, col, t=False):
+        labels = list(self.data[col].unique())
+        rng = lambda arr: (min(arr), max(arr))
+        if t:
+            return {lab: rng(self.data.loc[self.data[col]==lab].t.to_numpy()) for lab in labels}    
+        else:
+            return {lab: rng(self.data.loc[self.data[col]==lab].index.to_numpy()) for lab in labels}
