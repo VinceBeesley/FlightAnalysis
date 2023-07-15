@@ -9,6 +9,8 @@ import numpy as np
 import dill as pickle
 from json import load
 
+
+
 @fixture(scope="session")
 def vline():
     return f3amb.create(ManInfo("Vertical Line", "vline", 2,
@@ -64,4 +66,10 @@ def p23_def_dict():
 def test_mdef_parse_dict(p23_def_dict):
     iSp = ManDef.from_dict(p23_def_dict["trgle"])
     pass
+
+
+
+def test_get_schedule_definition():
+    p23 = get_schedule_definition("p23")
+    assert len(p23) == 17
 

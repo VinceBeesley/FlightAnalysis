@@ -25,6 +25,7 @@ class Collection:
     def __getattr__(self, name):
         if name in self.data:
             return self.data[name]
+        raise AttributeError(f"{name} not found in {self.__class__}")
 
     def __getitem__(self, key: Union[int, str]):
         if isinstance(key, int): 
