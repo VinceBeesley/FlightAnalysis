@@ -22,6 +22,25 @@ def th(th_def: ManDef, initial_transform: Transformation) -> Manoeuvre:
 def th_tp(th: Manoeuvre, initial_transform: Transformation) -> State:
     return th.create_template(initial_transform)
 
+@fixture
+def th_def_mod(th_def) -> ManDef:
+    th = th_def
+    th.mps.loop_radius.default = 100
+    th.mps.line_length.default=110
+    th.mps.speed.default = 20
+    return th
+
+@fixture
+def th_fl(th_def_mod) -> State:
+    itr = th_def_mod.info.initial_transform(150, 1)
+    return th_def_mod.create(itr).create_template(itr).remove_labels()
+
+@fixture
+def aligned(th_tp, th_fl) -> State:
+    dist, th_al = State.align(th_fl, th_tp)
+    return th_al
+
+
 def test_get_manoeuvre(aligned: State, th: Manoeuvre):
     m1 = aligned.get_manoeuvre(th)
     m2 = aligned.get_manoeuvre(th.uid)
@@ -40,27 +59,11 @@ def test_get_element(aligned: State, th: Manoeuvre):
     assert len(m2.data) == len(m1.data)
     assert len(m3.data) == len(m1.data)
 
-@fixture
-def th_def_mod(th_def) -> ManDef:
-    th = th_def
-    th.mps.loop_radius.default = 100
-    th.mps.line_length.default=110
-    th.mps.speed.default = 20
-    return th
-
-@fixture
-def th_fl(th_def_mod) -> State:
-    itr = th_def_mod.info.initial_transform(150, 1)
-    return th_def_mod.create(itr).create_template(itr).remove_labels()
 
 
 def test_remove_labels(th_fl):
     assert not "manoeuvre" in th_fl.data.columns
 
-@fixture
-def aligned(th_tp, th_fl) -> State:
-    dist, th_al = State.align(th_fl, th_tp)
-    return th_al
 
 def test_align(aligned):
     assert "manoeuvre" in aligned.data.columns

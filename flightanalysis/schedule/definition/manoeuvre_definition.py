@@ -10,6 +10,7 @@ the higher level parameters and another set of functions to collect the paramete
 elements collection.
 
 """
+from __future__ import annotations
 import enum
 from typing import List, Dict, Callable, Union, Tuple
 import numpy as np
@@ -47,7 +48,7 @@ class ManDef:
         )
 
     @staticmethod
-    def from_dict(data: dict):
+    def from_dict(data: dict) -> ManDef:
         info = ManInfo.from_dict(data["info"])
         mps = ManParms.from_dict(data["mps"])
         eds = ElDefs.from_dict(data["eds"], mps)

@@ -1,4 +1,4 @@
-from typing import Dict, List, Union, Any
+from typing import Dict, List, Union, Any, Self
 import numpy as np
 import pandas as pd
 
@@ -52,11 +52,11 @@ class Collection:
         return {k: v.to_dict() for k, v in self.data.items()}
 
     @classmethod
-    def from_dicts(cls, vals: List[dict]):
+    def from_dicts(cls, vals: List[dict]) -> Self:
         return cls([cls.VType.from_dict(**v) for v in vals])    
 
     @classmethod
-    def from_dict(cls, vals: Dict[str, dict]):
+    def from_dict(cls, vals: Dict[str, dict]) -> Self:
         return cls([cls.VType.from_dict(v) for v in vals.values()])
     
     def add(self, v):
@@ -66,7 +66,7 @@ class Collection:
             self.data = dict(**self.data, **v.data)
         return v
     
-    def concat(self, vs: list):
+    def concat(self, vs: list) -> Self:
         coll = self.__class__([])
         for v in vs:
             coll.add(v)
@@ -86,7 +86,7 @@ class Collection:
         else:
             return f"{prefix}{i}"
 
-    def copy(self, deep=True):
+    def copy(self, deep=True) -> Self:
         return self.__class__([v.copy() for v in self] if deep else self.data.copy())
     
     def __str__(self) -> str:

@@ -26,6 +26,43 @@ class ElementAnalysis:
 
 
 @dataclass
+class ManoeuvreResults:
+    inter: Results
+    intra: ElementsResults
+    side_box: Result
+    top_box: Result
+    centre: Result
+    distance: Result
+
+    def summary(self):
+        return {k: v.downgrade() for k, v in self.__dict__.items() if not v is None} 
+
+    def score(self):
+        return 10 - sum([v for v in self.summary().values()])
+    
+    def to_dict(self):
+        return dict(
+            inter=self.inter.to_dict(),
+            intra=self.intra.to_dict(),
+            side_box=self.side_box.to_dict() if self.side_box else None,
+            top_box=self.top_box.to_dict(),
+            centre=self.centre.to_dict() if self.centre else None,
+            distance=self.distance.to_dict()        
+        )
+
+    @staticmethod
+    def from_dict(data):
+        return Manoeuvre(
+            Results.from_dict(data['inter']),
+            ElementsResults.from_dict(data['intra']),
+            Result.from_dict(data['side_box']) if data['side_box'] else None,
+            Result.from_dict(data['top_box']),
+            Result.from_dict(data['centre']) if data['centre'] else None,
+            Result.from_dict(data['distance'])
+        )
+
+
+@dataclass
 class ManoeuvreAnalysis:
     mdef: ManDef
     aligned: State
@@ -99,13 +136,9 @@ class ManoeuvreAnalysis:
         return man.match_intention(template[0], aligned)
 
     @staticmethod
-    def correction(mdef: ManDef, intended: Manoeuvre, int_tp: State, aligned: State) -> Tuple(Manoeuvre, State):
+    def correction(mdef: ManDef, intended: Manoeuvre, int_tp: State, aligned: State) -> Manoeuvre:
         mdef.mps.update_defaults(intended)       
-
-        corr = mdef.create(int_tp[0].transform).add_lines()
-        corr_tp = corr.create_template(int_tp[0].transform, aligned)
-        
-        return corr, corr_tp
+        return mdef.create(int_tp[0].transform).add_lines()
 
     @staticmethod
     def build(mdef: ManDef, flown: State):
@@ -113,35 +146,25 @@ class ManoeuvreAnalysis:
         man, tp = ManoeuvreAnalysis.template(mdef, itrans)
         aligned = ManoeuvreAnalysis.alignment(tp, man, flown)
         intended, int_tp = ManoeuvreAnalysis.intention(man, aligned, tp)
-        corr, corr_tp = ManoeuvreAnalysis.correction(mdef, intended, int_tp, aligned)
-        return ManoeuvreAnalysis(mdef, aligned, intended, int_tp, corr, corr_tp)
+        corr = ManoeuvreAnalysis.correction(mdef, intended, int_tp, aligned)
+        return ManoeuvreAnalysis(mdef, aligned, intended, int_tp, corr, corr.create_template(int_tp[0], aligned))
 
     def plot_3d(self, **kwargs):
         from flightplotting import plotsec
-        from flightplotting import plotsec, plotdtw
         fig = plotsec(self.aligned, color="red", **kwargs)
-        return plotsec(self.corrected_template, color="green", fig=fig, **kwargs)
+        return plotsec(self.intended_template, color="green", fig=fig, **kwargs)
 
 
     def side_box(self):
         al = self.aligned#.get_element(slice(1,-1,None))
         side_box_angle = np.arctan2(al.pos.x, al.pos.y)
 
-        if self.mdef.info.position == Position.CENTRE:
-            if self.mdef.info.centre_loc == -1:
-                centre = max(side_box_angle) + min(side_box_angle)
-            else:
-                centre_pos = self.intended.elements[self.mdef.info.centre_loc].get_data(self.aligned).pos[0]
-                centre = np.arctan2(centre_pos.x, centre_pos.y)[0]
-            box_dg = f3a.angle(centre)
-            return Result("centering",np.array([centre]),np.array([box_dg]))
-        else:
-            max_sb = max(abs(side_box_angle))
-            min_sb = min(abs(side_box_angle))
+        max_sb = max(abs(side_box_angle))
+        min_sb = min(abs(side_box_angle))
 
-            outside = 1 - (1.0471975511965976 - min_sb) / (max_sb - min_sb)
-            box_dg = max(outside, 0) * 5
-            return Result("box",np.array([outside]),np.array([box_dg]))
+        outside = 1 - (1.0471975511965976 - min_sb) / (max_sb - min_sb)
+        box_dg = max(outside, 0) * 5
+        return Result("box",np.array([outside]),np.array([box_dg]))
 
     def top_box(self):
         top_box_angle = max(np.arctan(self.aligned.pos.z / self.aligned.pos.y))
@@ -149,6 +172,17 @@ class ManoeuvreAnalysis:
         outside_tb = (top_box_angle - 1.0471975511965976) / 1.0471975511965976
         top_box_dg = max(outside_tb, 0) * 6
         return Result("top box", np.array([outside_tb]), np.array([top_box_dg]))
+
+    def centre(self):
+        al = self.aligned#.get_element(slice(1,-1,None))
+        side_box_angle = np.arctan2(al.pos.x, al.pos.y)
+        if self.mdef.info.centre_loc == -1:
+            centre = max(side_box_angle) + min(side_box_angle)
+        else:
+            centre_pos = self.intended.elements[self.mdef.info.centre_loc].get_data(self.aligned).pos[0]
+            centre = np.arctan2(centre_pos.x, centre_pos.y)[0]
+        box_dg = f3a.angle(centre)
+        return Result("centering",np.array([centre]),np.array([box_dg]))
 
     def distance(self):
         #only downgrade distance if the template is narrow
@@ -163,8 +197,29 @@ class ManoeuvreAnalysis:
             dist_dg = 0.0
         return Result("distance", np.array([dist]), np.array([dist_dg])) 
 
+    def intra(self):
+        return self.intended.analyse(self.aligned, self.intended_template)
+
+    def inter(self):
+        return self.mdef.mps.collect(self.intended)
+
+
+    def scores(self):
+        return ManoeuvreResults(
+            self.inter(), 
+            self.intra(), 
+            self.side_box() if self.mdef.info.position == Position.END else None, 
+            self.top_box(), 
+            self.centre()if self.mdef.info.position == Position.CENTRE else None, 
+            self.distance()
+        )
+
+
 class ScheduleAnalysis(Collection):
     VType=ManoeuvreAnalysis
+
+
+
 
 
 if __name__ == "__main__":

@@ -11,7 +11,22 @@ class Measurement:
     value: Union[Point, Any]
     expected: Union[Point, Any]
     visibility: np.ndarray
+
+    def to_dict(self):
+        return dict(
+            value = self.value.to_dict() if isinstance(self.value, Point) else list(self.value),
+            expected = self.expected.to_dict() if isinstance(self.expected, Point) else list(self.expected),
+            visibility = list(self.visibility)
+        )
     
+    @staticmethod
+    def from_dict(data) -> Measurement:
+        return Measurement(
+            Point(**data['value']) if isinstance(data['value'], dict) else np.array(data['value']),
+            Point(**data['expected']) if isinstance(data['expected'], dict) else np.array(data['expected']),
+            np.array(data['visibility'])
+        )
+
     def _pos_vis(loc: Point):
         return loc.y / abs(loc)
 

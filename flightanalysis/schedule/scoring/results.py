@@ -22,6 +22,26 @@ class Result:
     def value(self):
         return sum(self.dgs)
 
+    def downgrade(self):
+        return self.value
+    
+    def to_dict(self):
+        return dict(
+            name = self.name,
+            measurement = self.measurement.to_dict() if isinstance(self.measurement, Measurement) else list(self.measurement),
+            dgs = list(self.dgs), 
+            keys = self.keys
+        )
+    
+    @staticmethod
+    def from_dict(data) -> Result:
+        return Result(
+            data['name'],
+            Measurement.from_dict(data['measurement']) if isinstance(data['measurement'], dict) else np.array(data['measurement']),
+            np.array(data['dgs']),
+            data['keys']
+        )
+
 
 class Results(Collection):
     """
@@ -50,6 +70,20 @@ class Results(Collection):
         df =  pd.DataFrame.from_dict({k:extend(v) for k,v in dgs.items()})
         
         return df
+
+    def to_dict(self) -> Dict[str, dict]:
+        return dict(
+            name = self.name,
+            data = {k: v.to_dict() for k, v in self.data.items()}
+        )
+
+    @staticmethod
+    def from_dict(data) -> Results:
+        return Results(
+            data['name'],
+            [Result.from_dict(v) for v in data.values()]
+        )
+
 
 class ElementsResults(Collection):
     """Intra Only

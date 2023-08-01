@@ -39,6 +39,13 @@ class ScheduleInfo:
     def from_fcj_sch(fcj):
         return ScheduleInfo(fcj[0].lower(), fcj[1].lower())
 
+    @staticmethod
+    def build(category, name):
+        return ScheduleInfo(category.lower(), name.lower())
+
+
+
+
 schedule_library = [ScheduleInfo.from_str(fname) for fname in resource_listdir("flightanalysis", "data") if fname.endswith(".json")]
 
 
