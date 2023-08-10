@@ -38,7 +38,7 @@ class ManoeuvreResults:
         return {k: v.downgrade() for k, v in self.__dict__.items() if not v is None} 
 
     def score(self):
-        return 10 - sum([v for v in self.summary().values()])
+        return max(0, 10 - sum([v for v in self.summary().values()]))
     
     def to_dict(self):
         return dict(
@@ -47,7 +47,9 @@ class ManoeuvreResults:
             side_box=self.side_box.to_dict() if self.side_box else None,
             top_box=self.top_box.to_dict(),
             centre=self.centre.to_dict() if self.centre else None,
-            distance=self.distance.to_dict()        
+            distance=self.distance.to_dict(),
+            summary=self.summary(),
+            score=self.score()
         )
 
     @staticmethod
@@ -163,7 +165,7 @@ class ManoeuvreAnalysis:
         min_sb = min(abs(side_box_angle))
 
         outside = 1 - (1.0471975511965976 - min_sb) / (max_sb - min_sb)
-        box_dg = max(outside, 0) * 5
+        box_dg = max(outside, 0.0) * 5.0
         return Result("box",np.array([outside]),np.array([box_dg]))
 
     def top_box(self):

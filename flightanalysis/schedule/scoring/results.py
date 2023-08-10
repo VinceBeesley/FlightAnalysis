@@ -30,7 +30,8 @@ class Result:
             name = self.name,
             measurement = self.measurement.to_dict() if isinstance(self.measurement, Measurement) else list(self.measurement),
             dgs = list(self.dgs), 
-            keys = self.keys
+            keys = self.keys,
+            value = self.value
         )
     
     @staticmethod
@@ -74,7 +75,9 @@ class Results(Collection):
     def to_dict(self) -> Dict[str, dict]:
         return dict(
             name = self.name,
-            data = {k: v.to_dict() for k, v in self.data.items()}
+            data = {k: v.to_dict() for k, v in self.data.items()},
+            summary = self.downgrade_summary(),
+            value = self.downgrade()
         )
 
     @staticmethod
@@ -96,7 +99,7 @@ class ElementsResults(Collection):
         return sum(er.downgrade() for er in self)
     
     def downgrade_list(self):
-        return [er.results.downgrade() for er in self]
+        return [er.downgrade() for er in self]
     
     def downgrade_df(self):
         df = pd.concat([idg.downgrade_df().sum() for idg in self], axis=1).T
@@ -104,3 +107,16 @@ class ElementsResults(Collection):
         df["Element"] = self.data.keys()
         
         return df.set_index("Element")
+    
+    def to_dict(self) -> Dict[str, dict]:
+        return dict(
+            data = {k: v.to_dict() for k, v in self.data.items()},
+            summary = self.downgrade_list(),
+            value = self.downgrade()
+        )
+
+    @staticmethod
+    def from_dict(data) -> Results:
+        return Results(
+            [Result.from_dict(v) for v in data.values()]
+        )
