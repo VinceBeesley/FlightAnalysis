@@ -117,7 +117,7 @@ class Manoeuvre:
                 elms[-2].break_angle = pos_break if pos_break > -neg_break else neg_break
                 
             templates.append(elms[-1].create_template(
-                templates[-1][-1], 
+                templates[-1][-1].relocate(st[0].pos), 
                 st.time.extend() if i < len(els) - 1 else st.time
             ))
                     

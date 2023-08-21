@@ -640,3 +640,12 @@ class State(Table):
             return {lab: rng(self.data.loc[self.data[col]==lab].t.to_numpy()) for lab in labels}    
         else:
             return {lab: rng(self.data.loc[self.data[col]==lab].index.to_numpy()) for lab in labels}
+        
+    
+    def zero_g_acc(self):
+        return self.att.inverse().transform_point(PZ(-9.81)) + self.acc
+
+    def arc_centre(self) -> Point:
+        acc = Point.vector_rejection(self.zero_g_acc(), self.vel)
+
+        return acc.unit() * abs(self.vel) ** 2 / abs(acc)

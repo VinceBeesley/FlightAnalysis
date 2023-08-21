@@ -101,7 +101,7 @@ class Loop(Element):
         to the first State in the loop"""
         return itrans.pos - itrans.att.transform_point(self.centre_vector)
 
-    def coord(self, template: State) -> Coord:
+    def coord_old(self, template: State) -> Coord:
         """Create the loop coordinate frame. Assumes inital position is in the same as flown
         origin on loop centre,
         X axis towards start of radius,
@@ -123,10 +123,20 @@ class Loop(Element):
         rpos = self.measure_radial_position(flown, template, coord)
         return rpos / rpos[-1]
 
-    def measure_radius(self, flown:State, template:State, coord: Coord):
+    def measure_radius_coord(self, flown:State, template:State, coord: Coord):
         """The radius in m given a state in the loop coordinate frame"""
         return abs(flown.pos * Point(1,1,0))
-   
+
+    def measure_radius(self, flown:State, template:State, coord: Coord):
+        """The radius vector in m given a state in the loop coordinate frame"""
+        centre = flown.att.transform_point(flown.arc_centre())
+
+        if self.ke:
+            centre = centre * Point(1,1,0)
+        else:
+            centre = centre * Point(1,0,1)
+        return abs(centre)
+
     def measure_end_angle(self, flown: State, template:State, coord: Coord):
         template_vels = template.att.transform_point(template.vel) * Point(1,1,0)
         flown_vels = flown.att.transform_point(flown.vel) * Point(1,1,0)
@@ -136,6 +146,14 @@ class Loop(Element):
         return self.set_parms(radius=self.speed / pitch_rate)
 
     def match_intention(self, itrans: Transformation, flown: State) -> Loop:
+        return self.set_parms(
+            radius = self.measure_radius(flown, None, None).mean(),
+            roll=abs(self.roll) * np.sign(np.mean(flown.rvel.x)),
+            angle=abs(self.angle) * np.sign(flown.r.mean() if self.ke else flown.q.mean()),
+            speed=abs(flown.vel).mean()
+        )
+
+    def match_intention_fit(self, itrans: Transformation, flown: State) -> Loop:
         from scipy import optimize
         jit = flown.judging_itrans(itrans)
         pos = jit.att.transform_point(flown.pos - jit.pos)

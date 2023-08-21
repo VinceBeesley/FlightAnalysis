@@ -28,7 +28,6 @@ class Criteria:
             return abs(flown - expected)
 
     def __call__(self, m: Measurement):
-
         return self.lookup(self.preprocess(m.value, m.expected)) * m.visibility
 
     def to_dict(self) -> dict[str, str]:

@@ -24,7 +24,7 @@ class DownGrade:
 
     def __call__(self, el, fl, tp, coord) -> Result:
         if self.criteria.__class__ is Criteria:
-            meas = self.measure(fl[-1], tp[-1], coord)
+            meas = self.measure(fl, tp, coord).exit_only()
         else:
             meas = self.measure(fl, tp, coord)
 
