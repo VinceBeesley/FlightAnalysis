@@ -79,7 +79,7 @@ class Measurement:
 
     @staticmethod
     def speed(fl: State, tp: State, ref_frame: Transformation) -> Measurement:
-        return Measurement.vector_vis(fl.vel, tp.vel, fl.pos, tp.att)
+        return Measurement.vector_vis(fl.att.transform_point(fl.vel), tp.att.transform_point(tp.vel), fl.pos, tp.att)
     
     @staticmethod
     def roll_angle(fl: State, tp: State, ref_frame: Transformation) -> Measurement:
