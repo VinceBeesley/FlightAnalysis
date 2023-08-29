@@ -68,21 +68,21 @@ class ManoeuvreBuilder():
         return md
     
 
-from flightanalysis.schedule.scoring import f3a
+from flightanalysis.schedule.scoring.criteria.f3a_criteria import f3a
 
 f3amb = ManoeuvreBuilder(
     ManParms([
-        ManParm("speed", f3a.inter_speed, 30.0),
-        ManParm("loop_radius", f3a.inter_radius, 55.0),
-        ManParm("line_length", f3a.inter_length, 130.0),
-        ManParm("point_length", f3a.inter_length, 20.0),
-        ManParm("continuous_roll_rate", f3a.inter_roll_rate, np.pi/2),
-        ManParm("partial_roll_rate", f3a.inter_roll_rate, np.pi/2),
-        ManParm("full_roll_rate", f3a.inter_roll_rate, 3*np.pi/4),
-        ManParm("snap_rate", f3a.inter_roll_rate, 4*np.pi),
-        ManParm("stallturn_rate", f3a.inter_roll_rate, 2*np.pi),
-        ManParm("spin_rate", f3a.inter_roll_rate, 1.7*np.pi),
-        ManParm("ee_pause", f3a.inter_length, 20.0)
+        ManParm("speed", f3a.inter.speed, 30.0),
+        ManParm("loop_radius", f3a.inter.radius, 55.0),
+        ManParm("line_length", f3a.inter.length, 130.0),
+        ManParm("point_length", f3a.inter.length, 20.0),
+        ManParm("continuous_roll_rate", f3a.inter.roll_rate, np.pi/2),
+        ManParm("partial_roll_rate", f3a.inter.roll_rate, np.pi/2),
+        ManParm("full_roll_rate", f3a.inter.roll_rate, 3*np.pi/4),
+        ManParm("snap_rate", f3a.inter.roll_rate, 4*np.pi),
+        ManParm("stallturn_rate", f3a.inter.roll_rate, 2*np.pi),
+        ManParm("spin_rate", f3a.inter.roll_rate, 1.7*np.pi),
+        ManParm("ee_pause", f3a.inter.length, 20.0)
     ]),
     mpmaps=dict(
         line=dict(

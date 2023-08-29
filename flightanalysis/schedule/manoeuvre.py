@@ -47,7 +47,7 @@ class Manoeuvre:
         )
 
     def all_elements(self, create_entry: bool = False, create_exit: bool = False) -> Elements:
-        els = Elements()
+        els = Elements([])
 
         if self.entry_line:
             els.add(self.entry_line)
@@ -104,10 +104,7 @@ class Manoeuvre:
         els = self.all_elements()
         for i, elm in enumerate(els):
             st = elm.get_data(aligned)
-            elms.add(elm.match_intention(
-                templates[-1][-1].transform, 
-                st
-            ))
+            elms.add(elm.match_intention(templates[-1].transform, st))
 
             if isinstance(elms[-1], Autorotation):
                 #copy the autorotation pitch offset back to the preceding pitch departure

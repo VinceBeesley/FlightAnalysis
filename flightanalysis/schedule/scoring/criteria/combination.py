@@ -35,6 +35,9 @@ class Combination(Criteria):
             **super().to_dict()
         )
 
+    def __str__(self):
+        return f'Combination({self.lookup}, {self.errortype}, {self.desired})'
+
     @staticmethod
     def rolllist(rolls, reversable=True) -> Combination:
         rolls = [rolls, [-r for r in rolls]] if reversable else [rolls]

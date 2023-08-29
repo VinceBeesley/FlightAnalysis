@@ -1,11 +1,12 @@
 from __future__ import annotations
 import numpy as np
-from geometry import Transformation, P0, PX, PY, PZ
+from geometry import Transformation, P0, PX, PY, PZ, Point
 from flightanalysis.base.table import Time
 from flightanalysis.state import State
 
 from .element import Element
-from flightanalysis.schedule.scoring import *
+from flightanalysis.schedule.scoring.criteria.f3a_criteria import f3a
+from flightanalysis.schedule.scoring import Measurement, DownGrade, DownGrades
 
 
 class Line(Element):
@@ -13,28 +14,23 @@ class Line(Element):
 
     def __init__(self, speed, length, roll=0, uid:str=None):
         super().__init__(uid, speed)
-#        if length < 0:
- #           raise ValueError("Cannot create line with negative length")
         self.length = length
         self.roll = roll
     
     @property
     def intra_scoring(self) -> DownGrades:
         _intra_scoring = DownGrades([
-            DownGrade(Measurement.speed, f3a.intra_speed),
-            DownGrade(Measurement.track_y, f3a.intra_track),
-            DownGrade(Measurement.track_z, f3a.intra_track)
+            DownGrade(Measurement.speed, f3a.intra.speed),
+            DownGrade(Measurement.track_y, f3a.intra.track),
+            DownGrade(Measurement.track_z, f3a.intra.track)
         ])
 
         if not self.roll == 0:
-            _intra_scoring.add(DownGrade(Measurement.roll_rate, f3a.intra_roll_rate))
-            _intra_scoring.add(DownGrade(Measurement.roll_angle, f3a.single_roll))
+            _intra_scoring.add(DownGrade(Measurement.roll_rate, f3a.intra.roll_rate))
+            _intra_scoring.add(DownGrade(Measurement.roll_angle, f3a.single.roll))
         else:
-            
-            _intra_scoring.add(DownGrade(Measurement.roll_angle, f3a.intra_roll))
+            _intra_scoring.add(DownGrade(Measurement.roll_angle, f3a.intra.roll))
         return _intra_scoring
-
-
 
     def describe(self):
         d1 = "line" if self.roll==0 else f"{self.roll} roll"
@@ -81,10 +77,9 @@ class Line(Element):
         else:
             return self.set_parms()
 
-    def match_intention(self, transform: Transformation, flown: State) -> Line:
-        jit = flown.judging_itrans(transform)
+    def match_intention(self, itrans: Transformation, flown: State) -> Line:
         return self.set_parms(
-            length=jit.att.inverse().transform_point(flown.pos - jit.pos).x[-1],
+            length=abs(self.length_vec(flown))[0],
             roll=np.sign(np.mean(flown.p)) * abs(self.roll),
             speed=abs(flown.vel).mean()
         )

@@ -16,15 +16,15 @@ class MathOpp(Opp):
     b: Any
     opp: str
 
-    def __call__(self, mps):
+    def __call__(self, mps, **kwargs):
         if self.opp == "+":
-            return self.get_vf(self.a)(mps) + self.get_vf(self.b)(mps)
+            return self.get_vf(self.a)(mps, **kwargs) + self.get_vf(self.b)(mps, **kwargs)
         elif self.opp == "-":
-            return self.get_vf(self.a)(mps) - self.get_vf(self.b)(mps)
+            return self.get_vf(self.a)(mps, **kwargs) - self.get_vf(self.b)(mps, **kwargs)
         elif self.opp == "*":
-            return self.get_vf(self.a)(mps) * self.get_vf(self.b)(mps)
+            return self.get_vf(self.a)(mps, **kwargs) * self.get_vf(self.b)(mps, **kwargs)
         elif self.opp == "/":
-            return self.get_vf(self.a)(mps) / self.get_vf(self.b)(mps)
+            return self.get_vf(self.a)(mps, **kwargs) / self.get_vf(self.b)(mps, **kwargs)
 
     def __str__(self):
         return f"({str(self.a)}{self.opp}{str(self.b)})"

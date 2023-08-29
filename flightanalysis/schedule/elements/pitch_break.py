@@ -4,9 +4,9 @@ from geometry import Transformation, PX, PY, PZ
 from flightanalysis.state import State
 from flightanalysis.base.table import Time
 from .element import Element
-from flightanalysis.schedule.scoring import *
+from flightanalysis.schedule.scoring.criteria.f3a_criteria import f3a
+from flightanalysis.schedule.scoring import Measurement, DownGrade, DownGrades
 from .line import Line
-
 
 
 class PitchBreak(Element):

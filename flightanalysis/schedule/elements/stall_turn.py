@@ -4,7 +4,8 @@ from geometry import Transformation, PX, PY, PZ, P0
 from flightanalysis.state import State
 from flightanalysis.base import Time
 from .element import Element
-from flightanalysis.schedule.scoring import *
+from flightanalysis.schedule.scoring.criteria.f3a_criteria import f3a
+from flightanalysis.schedule.scoring import Measurement, DownGrade, DownGrades
 
 
 class StallTurn(Element):
@@ -16,7 +17,8 @@ class StallTurn(Element):
     @property
     def intra_scoring(self) -> DownGrades:
         return DownGrades([
-            DownGrade(Measurement.roll_angle, f3a.intra_roll)
+            DownGrade(Measurement.roll_angle, f3a.intra.roll),
+            DownGrade(Measurement.track_y, f3a.single.track)
         ])
 
     def to_dict(self):

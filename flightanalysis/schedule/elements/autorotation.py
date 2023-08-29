@@ -4,7 +4,8 @@ from geometry import Transformation, Point, Quaternion, PX, PY, PZ, P0
 from flightanalysis import State
 from flightanalysis.base.table import Time
 from .element import Element, Elements
-from flightanalysis.schedule.scoring import *
+from flightanalysis.schedule.scoring.criteria.f3a_criteria import f3a
+from flightanalysis.schedule.scoring import Measurement, DownGrade, DownGrades
 from typing import Union
 
 
@@ -28,7 +29,7 @@ class Autorotation(Element):
         
     @property
     def intra_scoring(self):
-        return DownGrades([DownGrade(Measurement.roll_angle, f3a.single_roll)])
+        return DownGrades([DownGrade(Measurement.roll_angle, f3a.single.roll)])
     
     @property
     def angle(self):

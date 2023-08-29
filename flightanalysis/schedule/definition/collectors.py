@@ -1,5 +1,6 @@
 """The collectors are serializable functions that return parameters from elements"""
 from flightanalysis.base.collection import Collection
+from flightanalysis.state import State
 from . import Opp
 from uuid import uuid1
 
@@ -10,9 +11,11 @@ class Collector(Opp):
         self.elname = elname
         super().__init__(f"{self.elname}.{self.pname}")
 
-    def __call__(self, els):
+    def __call__(self, els, flown: State, template:State):
         """return the value"""
-        #this could return a vector in a direction that is useful for assessing visibility
+        fl = els.data[self.elname].get_data(flown)
+        tp = els.data[self.elname].get_data(template)
+        
         return els.get_parameter_from_element(self.elname, self.pname)
 
     def __str__(self):
@@ -26,7 +29,6 @@ class Collector(Opp):
             uuid1() if name is None else name
         )
         
-
     def to_dict(self):
         return dict(
             elname=self.elname,

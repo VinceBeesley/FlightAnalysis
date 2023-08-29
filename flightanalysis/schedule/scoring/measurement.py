@@ -63,12 +63,15 @@ class Measurement:
     def _track_vis(axis: Point, loc: Point) -> np.ndarray:
         #a track error is more visible if it is parrallel to the viewing vector
         # 0 to np.pi, pi/2 gives max, 0&np.pi give min
-        return np.abs(Point.cos_angle_between(loc, axis))
+        return 0.2 + 0.8 * np.abs(Point.cos_angle_between(loc, axis))
     
 
     @staticmethod
     def roll_vis(value: Point, expected: Point, loc: Point, att: Quaternion) -> Measurement:
-        return Measurement(value, expected, Measurement._roll_vis(loc, att))
+        return Measurement(
+            value, expected, 
+            Measurement._roll_vis(loc, att) * Measurement._pos_vis(loc)
+        )
     
     @staticmethod
     def _roll_vis(loc: Point, att: Quaternion) -> np.ndarray:
@@ -78,8 +81,20 @@ class Measurement:
         return 1-0.8*np.abs(Point.cos_angle_between(loc, world_tip_movement_direction))
 
     @staticmethod
+    def _rad_vis(loc:Point, axial_dir: Point) -> np.ndarray:
+        #radial error more visible if axis is parallel to the view vector
+        return 0.2+0.8*np.abs(Point.cos_angle_between(loc, axial_dir))
+
+    @staticmethod
+    def rad_vis(value: Point, expected: Point, loc: Point, axis: Point) -> Measurement:
+        return Measurement(
+            value, expected, 
+            Measurement._rad_vis(loc, axis) * Measurement._pos_vis(loc)
+        )
+
+    @staticmethod
     def speed(fl: State, tp: State, ref_frame: Transformation) -> Measurement:
-        return Measurement.vector_vis(fl.att.transform_point(fl.vel), tp.att.transform_point(tp.vel), fl.pos, tp.att)
+        return Measurement.vector_vis(fl.att.transform_point(fl.vel), tp.att.transform_point(tp.vel), fl.pos, fl.att)
     
     @staticmethod
     def roll_angle(fl: State, tp: State, ref_frame: Transformation) -> Measurement:
@@ -87,7 +102,7 @@ class Measurement:
 
         body_roll_error = Quaternion.body_axis_rates(tp.att, fl.att) * PX()
         world_roll_error = fl.att.transform_point(body_roll_error)
-        return Measurement.roll_vis(world_roll_error, P0(len(world_roll_error)), fl.pos, tp.att)
+        return Measurement.roll_vis(world_roll_error, P0(len(world_roll_error)), fl.pos, fl.att)
 
     @staticmethod
     def roll_rate(fl: State, tp: State, ref_frame: Transformation) -> Measurement:
@@ -96,7 +111,7 @@ class Measurement:
             fl.att.transform_point(fl.p * PX()), 
             tp.att.transform_point(tp.p * PX()),
             fl.pos, 
-            tp.att
+            fl.att
         )
     
     @staticmethod
@@ -112,8 +127,8 @@ class Measurement:
         cyerr = (Point.cross(flycvel, tpcvel) / (abs(flycvel) * abs(tpcvel))).arcsin
         #cyerr = Point.vector_projection(cerr, PY())
         
-        wyerr = tp.att.transform_point(cyerr)
-        return Measurement.track_vis(wyerr, P0(len(wyerr)), tp.pos, tp.att)
+        wyerr = tr.inverse().transform_point(cyerr)
+        return Measurement.track_vis(wyerr, P0(len(wyerr)), fl.pos, fl.att)
 
     @staticmethod
     def track_z(fl: State, tp:State, ref_frame: Transformation) -> Measurement:
@@ -127,8 +142,8 @@ class Measurement:
         czerr = (Point.cross(flzcvel, tpcvel) / (abs(flzcvel) * abs(tpcvel))).arcsin
         #czerr = Point.vector_projection(cerr, PZ())
         
-        wzerr = tp.att.transform_point(czerr)
-        return Measurement.track_vis(wzerr, P0(len(wzerr)), tp.pos, tp.att)
+        wzerr = tr.inverse().transform_point(czerr)
+        return Measurement.track_vis(wzerr, P0(len(wzerr)), fl.pos, fl.att)
 
     @staticmethod
     def radius(fl:State, tp:State, ref_frame: Transformation) -> Measurement:
@@ -138,9 +153,9 @@ class Measurement:
 
         fl_loop_centre = fl.body_to_world(flrad)  # centre of loop in world frame
         tp_loop_centre = tp.body_to_world(tprad)  
-
-        fl_loop_centre_lc = ref_frame.att.inverse().transform_point(fl_loop_centre - ref_frame.pos)
-        tp_loop_centre_lc = ref_frame.att.inverse().transform_point(tp_loop_centre - ref_frame.pos)
+        tr = ref_frame.att.inverse()
+        fl_loop_centre_lc = tr.transform_point(fl_loop_centre - ref_frame.pos)
+        tp_loop_centre_lc = tr.transform_point(tp_loop_centre - ref_frame.pos)
 
         #figure out whether its a KE loop
         loop_plane = PY()
@@ -152,9 +167,9 @@ class Measurement:
         fl_rad_lc = Point.vector_rejection(fl_loop_centre_lc, loop_plane) - fl_lc.pos #loop frame radius vector
         tp_rad_lc = Point.vector_rejection(tp_loop_centre_lc, loop_plane) - tp_lc.pos
 
-        return Measurement.vector_vis(
+        return Measurement.rad_vis(
             ref_frame.att.transform_point(fl_rad_lc), 
             ref_frame.att.transform_point(tp_rad_lc), 
-            tp.pos, tp.att
+            fl.pos, ref_frame.att.transform_point(loop_plane)
         )
     

@@ -62,11 +62,11 @@ class ManParm(Opp):
     def assign(self, id, collector):
         self.collectors.data[id] = collector
 
-    def collect(self, els):
-        return np.array([collector(els) for collector in self.collectors])
+    def collect(self, els, flown, template):
+        return np.array([collector(els, flown, template) for collector in self.collectors])
 
-    def get_downgrades(self, els):
-        values = self.collect(els)
+    def get_downgrades(self, els, flown: State, template: State):
+        values = self.collect(els, flown, template)
         return Result(
             self.name, 
             values,
@@ -113,7 +113,7 @@ class ManParms(Collection):
     VType=ManParm
     uid="name"
 
-    def collect(self, manoeuvre: Manoeuvre) -> Results:
+    def collect(self, manoeuvre: Manoeuvre, flown: State, template: State) -> Results:
         """Collect the comparison downgrades for each manparm for a given manoeuvre.
 
         Args:
@@ -122,7 +122,7 @@ class ManParms(Collection):
         Returns:
             Dict[str, float]: The sum of downgrades for each ManParm
         """
-        return Results("Inter",[mp.get_downgrades(manoeuvre.all_elements()) for mp in self if not isinstance(mp.criteria, Combination)])
+        return Results("Inter",[mp.get_downgrades(manoeuvre.all_elements(), flown, template) for mp in self if not isinstance(mp.criteria, Combination)])
     
     def append_collectors(self, colls: Dict[str, Callable]):
         """Append each of a dict of collector methods to the relevant ManParm

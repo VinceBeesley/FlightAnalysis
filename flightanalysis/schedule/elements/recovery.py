@@ -5,7 +5,8 @@ from flightanalysis.state import State
 from flightanalysis.base.table import Time
 from .element import Element
 from .line import Line
-from flightanalysis.schedule.scoring import *
+from flightanalysis.schedule.scoring.criteria.f3a_criteria import f3a
+from flightanalysis.schedule.scoring import Measurement, DownGrade, DownGrades
 
 
 class Recovery(Element):
@@ -21,6 +22,13 @@ class Recovery(Element):
             length=self.length,
             uid=self.uid
         )
+
+    @property
+    def intra_scoring(self) -> DownGrades:
+        return DownGrades([
+            DownGrade(Measurement.track_z, f3a.single.track),
+            DownGrade(Measurement.track_y, f3a.single.track)
+        ])
 
     def create_template(self, istate: State, time: Time=None) -> State:
         return Line(self.speed, self.length).create_template(

@@ -59,20 +59,8 @@ class Element:
         #tp =  self.setup_analysis_state(template, template)
         return self.exit_scoring.apply(self, fl, tp, self.ref_frame(tp))
 
-
-
     def ref_frame(self, template: State) -> Transformation:
         return template[0].transform
-
-    def coord_old(self, template: State) -> Coord:
-        """Create the coordinate frame. 
-        Origin on start point, X axis in velocity vector
-        if the x_vector is in the xz plane then the z vector is world y,
-        #otherwise the Z vector is world X
-        """
-        x_vector = template[0].att.transform_point(PX(1))
-        z_vector = PY(1.0) if abs(x_vector.y[0]) < 0.1 else PX(1.0)
-        return Coord.from_zx(template[0].pos, z_vector, x_vector)
 
     @staticmethod
     def create_time(duration: float, time: Time=None):
@@ -112,6 +100,19 @@ class Element:
         with open(file, "r") as f:
             return Element.from_dict(load(f))
 
+    def length_vec(self, flown:State) -> Point:
+        return flown.pos[-1] - flown.pos[0]
+    
+    def roll_vec(self, flown: State) -> Point:
+        return flown.att[-1].transform_point(PX(
+            np.sign(np.mean(flown.p)) * abs(self.roll)
+        ))
+
+    def speed_vec(self, flown: State) -> Point:
+        return flown.att[-1].transform_point(flown.vel.mean())
+
+    def rate_vec(self, flown: State) -> Point:
+        flown.att[-1].transform_point(np.mean(flown.p))
 
 
 class Elements(Collection):

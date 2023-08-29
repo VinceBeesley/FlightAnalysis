@@ -15,9 +15,9 @@ class FunOpp(Opp):
     a: Any
     opp: str
 
-    def __call__(self, mps):
+    def __call__(self, mps, **kwargs):
         return {
-            'abs': abs(self.get_vf(self.a)(mps))
+            'abs': abs(self.get_vf(self.a)(mps, **kwargs))
         }[self.opp]
     
     def __str__(self):

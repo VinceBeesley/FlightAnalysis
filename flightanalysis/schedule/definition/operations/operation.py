@@ -20,14 +20,14 @@ class Opp:
     def __str__(self):
         return self.name 
 
-    def __call__(self, coll):
+    def __call__(self, coll, **kwargs):
         return self.value
 
     def get_vf(self, arg):
         if isinstance(arg, Opp):
             return arg
         elif isinstance(arg, Number):
-            return lambda mps: arg
+            return lambda mps, **kwargs: arg
 
     def __abs__(self) -> FunOpp:
         return FunOpp(self.name, self, "abs")
