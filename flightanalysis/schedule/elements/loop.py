@@ -93,7 +93,12 @@ class Loop(Element):
         return abs(Point.vector_rejection(centre, bvec))
 
     def radius_vec(self, itrans: Transformation,flown: State) -> Point:
-        pass
+        return itrans.att.transform_point(PZ() if self.ke else PY()) * \
+            self.measure_radius(itrans, flown).mean()
+        
+    def angle_vec(self, itrans: Transformation,flown: State) -> Point:
+        return itrans.att.transform_point(PZ() if self.ke else PY()) * \
+            self.angle
 
     def match_intention(self, itrans: Transformation, flown: State) -> Loop:
         return self.set_parms(

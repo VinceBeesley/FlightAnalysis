@@ -5,6 +5,7 @@ from . import Opp
 from uuid import uuid1
 
 
+
 class Collector(Opp):
     def __init__(self, elname, pname):
         self.pname = pname
@@ -12,12 +13,9 @@ class Collector(Opp):
         super().__init__(f"{self.elname}.{self.pname}")
 
     def __call__(self, els, flown: State, template:State):
-        """return the value"""
-        fl = els.data[self.elname].get_data(flown)
-        tp = els.data[self.elname].get_data(template)
-        
-        return els.get_parameter_from_element(self.elname, self.pname)
-
+        """return the value"""        
+        return getattr(els.data[self.elname], self.pname)#(tp[0].transform, fl))[0]
+        # todo think about visibility here.
     def __str__(self):
         return self.name
 
@@ -73,3 +71,6 @@ class Collectors(Collection):
     
     def keys(self):
         return [c.elname for c in self]
+    
+
+    

@@ -103,6 +103,12 @@ class Opp:
         else:
             return coll[inp]
 
+    def base_values(self, arg):
+        if isinstance(arg, Opp):
+            return arg.list_base_values()
+        else:
+            return [arg]
+
 
 from .mathopp import MathOpp
 from .funopp import FunOpp

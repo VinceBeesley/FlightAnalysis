@@ -51,13 +51,13 @@ class NoseDrop(Element):
             transform, flown
         )
 
-        alpha = np.arctan2(flown.vel.z, flown.vel.x)[-1]
-
         return self.set_parms(
             speed = _speed,
             radius = loop.radius,
-            break_angle = abs(alpha)
+            break_angle = abs(np.arctan2(flown.vel.z, flown.vel.x)[-1])
         )
+
+    
 
     def copy_direction(self, other: NoseDrop) -> NoseDrop:
         return self.set_parms(break_angle=abs(self.break_angle) * np.sign(other.break_angle))

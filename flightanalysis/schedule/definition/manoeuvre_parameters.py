@@ -63,7 +63,11 @@ class ManParm(Opp):
         self.collectors.data[id] = collector
 
     def collect(self, els, flown, template):
-        return np.array([collector(els, flown, template) for collector in self.collectors])
+        return {str(collector): collector(els, flown, template) for collector in self.collectors}
+
+    def get_visibility(self, els, flown, template):
+        pass
+
 
     def get_downgrades(self, els, flown: State, template: State):
         values = self.collect(els, flown, template)

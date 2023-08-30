@@ -100,19 +100,19 @@ class Element:
         with open(file, "r") as f:
             return Element.from_dict(load(f))
 
-    def length_vec(self, flown:State) -> Point:
+    def length_vec(self, itrans: Transformation, flown:State) -> Point:
         return flown.pos[-1] - flown.pos[0]
     
-    def roll_vec(self, flown: State) -> Point:
+    def roll_vec(self, itrans: Transformation, flown: State) -> Point:
         return flown.att[-1].transform_point(PX(
             np.sign(np.mean(flown.p)) * abs(self.roll)
         ))
 
-    def speed_vec(self, flown: State) -> Point:
+    def speed_vec(self, itrans: Transformation, flown: State) -> Point:
         return flown.att[-1].transform_point(flown.vel.mean())
 
-    def rate_vec(self, flown: State) -> Point:
-        flown.att[-1].transform_point(np.mean(flown.p))
+    def rate_vec(self, itrans: Transformation, flown: State) -> Point:
+        return flown.att[-1].transform_point(np.mean(flown.p))
 
 
 class Elements(Collection):
