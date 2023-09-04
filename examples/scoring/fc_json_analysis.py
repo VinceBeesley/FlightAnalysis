@@ -1,5 +1,5 @@
 from json import load, dump
-from flightanalysis import State, Box, get_schedule_definition, ManoeuvreAnalysis
+from flightanalysis import State, Box, ManoeuvreAnalysis, SchedDef
 from flightdata import Flight
 import numpy as np
 import pandas as pd
@@ -15,7 +15,7 @@ flight = Flight.from_fc_json(data)
 box = Box.from_fcjson_parmameters(data["parameters"])
 state = State.from_flight(flight, box).splitter_labels(data["mans"])
 
-sdef = get_schedule_definition(data["parameters"]["schedule"][1])
+sdef = SchedDef.load(data["parameters"]["schedule"][1])
 
 mid = 9
 

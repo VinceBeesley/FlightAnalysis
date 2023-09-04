@@ -2,9 +2,10 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 from json import load
-from flightanalysis import State, Manoeuvre, State, ManDef, ElDef, Box, get_schedule_definition, Collection
+from flightanalysis import State, Manoeuvre, State, ManDef, ElDef, Box, Collection
 from flightanalysis.schedule.elements import Element
 from flightanalysis.schedule.scoring import *
+from flightanalysis.schedule.scoring.criteria.f3a_criteria import F3A
 from flightanalysis.schedule.definition.manoeuvre_info import Position
 from geometry import Transformation, Quaternion, Q0, Coord
 from typing import Any, List, Tuple
@@ -17,7 +18,7 @@ class ElementAnalysis:
     el: Element
     fl: State
     tp: State
-    coord: Coord
+    ref_frame: Transformation
 
     def plot_3d(self, **kwargs):
         from flightplotting import plotsec
@@ -85,7 +86,7 @@ class ManoeuvreAnalysis:
         el = getattr(self.intended.elements, edef.name)
         st = el.get_data(self.aligned)
         tp = el.get_data(self.intended_template).relocate(st.pos[0])
-        return ElementAnalysis(edef,el,st,tp, el.coord(tp))
+        return ElementAnalysis(edef,el,st,tp, el.ref_frame(tp))
 
     def to_dict(self):
         return dict(
@@ -183,7 +184,7 @@ class ManoeuvreAnalysis:
         else:
             centre_pos = self.intended.elements[self.mdef.info.centre_loc].get_data(self.aligned).pos[0]
             centre = np.arctan2(centre_pos.x, centre_pos.y)[0]
-        box_dg = f3a.angle(centre)
+        box_dg = F3A.single.angle.lookup(abs(centre))
         return Result("centering",np.array([centre]),np.array([box_dg]))
 
     def distance(self):
@@ -194,7 +195,7 @@ class ManoeuvreAnalysis:
         tp_width = max(self.corrected_template.y) - min(self.corrected_template.y)
 
         if tp_width < 10:
-            dist_dg = f3a.distance(max(dist, 170))
+            dist_dg = F3A.single.distance.lookup(max(dist, 170) - 170)
         else:
             dist_dg = 0.0
         return Result("distance", np.array([dist]), np.array([dist_dg])) 
@@ -222,11 +223,10 @@ class ScheduleAnalysis(Collection):
 
 
 
-
-
 if __name__ == "__main__":
     from flightdata import Flight
     from flightplotting import plotsec
+    from flightanalysis import SchedDef
     with open("examples/data/manual_F3A_P23_22_05_31_00000350.json", "r") as f:
         data = load(f)
 
@@ -234,7 +234,7 @@ if __name__ == "__main__":
     flight = Flight.from_fc_json(data)
     box = Box.from_fcjson_parmameters(data["parameters"])
     state = State.from_flight(flight, box).splitter_labels(data["mans"])
-    sdef = get_schedule_definition(data["parameters"]["schedule"][1])
+    sdef = SchedDef.load(data["parameters"]["schedule"][1])
 
     analyses = ScheduleAnalysis()
 

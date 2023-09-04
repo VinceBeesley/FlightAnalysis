@@ -1,12 +1,14 @@
 
 from flightanalysis.base import Collection
-from .criteria import Criteria
+from .criteria import Single, Continuous, Criteria
 from .measurement import Measurement
 from .results import Results, Result
 from typing import Callable
 from flightanalysis.state import State 
 from geometry import Coord
 from dataclasses import dataclass
+import numpy as np
+import pandas as pd
 
 
 @dataclass
@@ -22,20 +24,34 @@ class DownGrade:
     def name(self):
         return self.measure.__name__
 
-    def __call__(self, el, fl, tp, coord) -> Result:
-        if self.criteria.__class__ is Criteria:
-            meas = self.measure(fl, tp, coord).exit_only()
+    
+    @staticmethod
+    def convolve(data, width):
+        kernel = np.ones(width) / width
+        return np.convolve(data, kernel, mode='same')
+    
+
+    def __call__(self, fl, tp, coord) -> Result:
+        measurement = self.measure(fl, tp, coord)
+
+        vals = self.criteria.prepare(measurement.value, measurement.expected)    
+    
+        if isinstance(self.criteria, Single):
+            id, dg = self.criteria([len(vals)-1], [vals[-1]])
+
+        elif isinstance(self.criteria, Continuous):
+            if len(vals) > 11:
+                vals = self.convolve(vals, 5)
+                id, dg = self.criteria(
+                    list(range(5,len(vals)-5,1)), 
+                    vals[5:-5]
+                )
+            else:
+                id, dg = len(vals)-1, 0.0
         else:
-            meas = self.measure(fl, tp, coord)
-
-        return Result(
-            self.measure.__name__,
-            meas,
-            self.criteria(meas)
-        )
-
-#    def __repr__(self):
-#        return f"Downgrade({self.name}, {self.criteria.__class__.__name__})"
+            raise TypeError(f'Expected a Criteria, got {self.criteria.__class__.__name__}')
+        
+        return Result(self.measure.__name__, measurement, dg, id)
 
 
 class DownGrades(Collection):
@@ -43,5 +59,5 @@ class DownGrades(Collection):
     uid = "name"
 
     def apply(self, el, fl, tp, coord) -> Results:
-        return Results(el.uid, [dg(el, fl, tp, coord) for dg in self])
+        return Results(el.uid, [dg(fl, tp, coord) for dg in self])
        

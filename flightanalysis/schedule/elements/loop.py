@@ -4,7 +4,7 @@ from geometry import Transformation, Coord, Point, PX, PY, PZ
 
 from flightanalysis.state import State
 from flightanalysis.base.table import Time
-from flightanalysis.schedule.scoring.criteria.f3a_criteria import f3a
+from flightanalysis.schedule.scoring.criteria.f3a_criteria import F3A
 from flightanalysis.schedule.scoring import Measurement, DownGrade, DownGrades
 from . import Element
 
@@ -23,16 +23,16 @@ class Loop(Element):
     @property
     def intra_scoring(self) -> DownGrades:
         _intra_scoring = DownGrades([
-            DownGrade(Measurement.speed, f3a.intra.speed),
-            DownGrade(Measurement.radius, f3a.intra.radius),
-            DownGrade(Measurement.track_y, f3a.intra.track),
-            DownGrade(Measurement.track_z, f3a.single.track),
+            DownGrade(Measurement.speed, F3A.intra.speed),
+            DownGrade(Measurement.radius, F3A.intra.radius),
+            DownGrade(Measurement.track_y, F3A.intra.track),
+            DownGrade(Measurement.track_z, F3A.single.track),
         ])
         if not self.roll == 0:
-            _intra_scoring.add(DownGrade(Measurement.roll_rate, f3a.intra.roll_rate))
-            _intra_scoring.add(DownGrade(Measurement.roll_angle, f3a.single.roll))
+            _intra_scoring.add(DownGrade(Measurement.roll_rate, F3A.intra.roll_rate))
+            _intra_scoring.add(DownGrade(Measurement.roll_angle, F3A.single.roll))
         else:
-            _intra_scoring.add(DownGrade(Measurement.roll_angle, f3a.intra.roll))
+            _intra_scoring.add(DownGrade(Measurement.roll_angle, F3A.intra.roll))
         return _intra_scoring
 
     def describe(self):

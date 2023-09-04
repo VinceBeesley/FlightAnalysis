@@ -5,6 +5,7 @@ from flightanalysis import State, Manoeuvre
 from geometry import Transformation, PX, Point, Euldeg
 import plotly.graph_objects as go
 from flightplotting import plotsec
+from flightanalysis.schedule.scoring.criteria.f3a_criteria import f3a
 
 
 loop = Loop(30, 100, np.radians(360), uid='loop')
@@ -18,7 +19,7 @@ tp = loop.create_template(ist)
 
 fl = Manoeuvre.from_all_elements( 'test',  Elements([
     Loop(30, 100, np.radians(180), uid="loop"),
-    Loop(30, 100, np.radians(180), uid="loop2")
+    Loop(30, 100, np.radians(180), roll=np.radians(5), uid="loop2")
 ])).create_template(ist)
 
 fl.data.element='loop'
@@ -32,8 +33,9 @@ fig.add_trace(go.Scatter3d(x=[0],y=[0],z=[0], mode='markers'))
 fig.show()
 meas = Measurement.roll_angle(fl, tp, tp[0].transform)
 
-import plotly.graph_objects as go
+res = f3a.intra.roll(meas)
 
+import plotly.graph_objects as go
 
 fig = go.Figure()
 fig.add_trace(go.Scatter(y=meas.visibility, name='visibility'))

@@ -11,6 +11,8 @@ from numbers import Number
 from . import Collector, Collectors, MathOpp, FunOpp, ItemOpp, Opp
 from dataclasses import dataclass, field
 from typing import Any
+import numpy as np
+
 
 @dataclass
 class ManParm(Opp):
@@ -62,26 +64,20 @@ class ManParm(Opp):
     def assign(self, id, collector):
         self.collectors.data[id] = collector
 
-    def collect(self, els, flown, template):
-        return {str(collector): collector(els, flown, template) for collector in self.collectors}
+    def collect(self, els):
+        return {str(collector): collector(els) for collector in self.collectors}
 
-    def get_visibility(self, els, flown, template):
-        pass
-
-
-    def get_downgrades(self, els, flown: State, template: State):
-        values = self.collect(els, flown, template)
-        return Result(
-            self.name, 
-            values,
-            self.criteria(values),
-            self.collectors.keys()
+    def get_downgrades(self, els):
+        coll = self.collect(els)
+        vs = list(coll.values())
+        meas = Measurement(
+            vs,
+            [vs[0]] + vs[:-1],
+            np.full(len(vs), 0.4)
         )
 
-#        downgrades = {c.elname: v for c, v in zip(self.collectors, result.downgrades)}
-#        errors = {c.elname: v for c, v in zip(self.collectors, result.errors)}
-#        return [downgrades[e.name] if e.name in downgrades else 0.0 for e in els]
-
+        keys, dgs = self.criteria(list(coll.keys()), list(coll.values())) 
+        return Result(self.name, meas, dgs, keys)
 
     @property
     def value(self):
@@ -117,7 +113,7 @@ class ManParms(Collection):
     VType=ManParm
     uid="name"
 
-    def collect(self, manoeuvre: Manoeuvre, flown: State, template: State) -> Results:
+    def collect(self, manoeuvre: Manoeuvre) -> Results:
         """Collect the comparison downgrades for each manparm for a given manoeuvre.
 
         Args:
@@ -126,7 +122,7 @@ class ManParms(Collection):
         Returns:
             Dict[str, float]: The sum of downgrades for each ManParm
         """
-        return Results("Inter",[mp.get_downgrades(manoeuvre.all_elements(), flown, template) for mp in self if not isinstance(mp.criteria, Combination)])
+        return Results("Inter",[mp.get_downgrades(manoeuvre.all_elements()) for mp in self if not isinstance(mp.criteria, Combination)])
     
     def append_collectors(self, colls: Dict[str, Callable]):
         """Append each of a dict of collector methods to the relevant ManParm
@@ -147,7 +143,7 @@ class ManParms(Collection):
         """
 
         for mp in self:
-            flown_parm = mp.collect(intended.all_elements())
+            flown_parm = list(mp.collect(intended.all_elements()).values())
             if len(flown_parm) > 0:
                 if mp.default is not None:
                     if isinstance(mp.criteria, Combination):

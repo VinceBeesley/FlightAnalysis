@@ -1,20 +1,15 @@
 import numpy as np
 import pandas as pd
 
-from flightanalysis.schedule import Manoeuvre, Schedule
-from flightanalysis.state import State
-
-from flightanalysis.schedule.elements import Line, Loop
+from flightanalysis import Manoeuvre, Schedule, State, SchedDef, Line, Loop
 from geometry import Point, Quaternion, Transformation, Coord
 
 from pytest import fixture
-from flightanalysis.data import get_schedule_definition
-
 
 
 @fixture(scope="session")
 def th_def():
-    return get_schedule_definition("p23")[0]
+    return SchedDef.load("p23")[0]
 
 @fixture(scope="session")
 def itrans(th_def):

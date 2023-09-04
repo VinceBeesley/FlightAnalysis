@@ -1,27 +1,24 @@
 from __future__ import annotations
 import numpy as np
-from typing import List
-from numbers import Number
-from . import Criteria
+import numpy.typing as npt
+from .. import Criteria
+from dataclasses import dataclass, field
 
-
-
+@dataclass
 class Combination(Criteria):
+    desired: np.ndarray = field(default_factory=lambda : None)
     """Handles a series of criteria assessments.
     for example a number of rolls in an element. 
     """
-    def __init__(self, desired: List[List[Number]], *args, **kwargs):
-        self.desired = np.array(desired)
-        super().__init__(*args, **kwargs)
 
     def __getitem__(self, value: int):
         return self.desired[value]
 
-    def get_errors(self, values: np.ndarray):
+    def get_errors(self, values: npt.ArrayLike):
         """get the error between values and desired for all the options"""
         return self.desired - np.array(values)
 
-    def get_option_error(self, option: int, values: np.ndarray) -> np.ndarray:
+    def get_option_error(self, option: int, values: npt.ArrayLike) -> npt.NDArray:
         """The difference between the values and a given option"""
         return np.array(values) - self.desired[option]
 
@@ -29,19 +26,10 @@ class Combination(Criteria):
         """Given a set of values, return the option id which gives the least error"""
         return np.sum(np.abs(self.get_errors(values)), axis=1).argmin()
 
-    def to_dict(self):
-        return dict(
-            desired = list(self.desired),
-            **super().to_dict()
-        )
-
-    def __str__(self):
-        return f'Combination({self.lookup}, {self.errortype}, {self.desired})'
-
     @staticmethod
     def rolllist(rolls, reversable=True) -> Combination:
         rolls = [rolls, [-r for r in rolls]] if reversable else [rolls]
-        return Combination(rolls)
+        return Combination(desired=rolls)
 
     @staticmethod
     def rollcombo(rollstring, reversable=True) -> Combination:

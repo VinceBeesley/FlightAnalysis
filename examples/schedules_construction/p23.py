@@ -105,7 +105,7 @@ p23_def = SchedDef([
         ], 
         roll_option=ManParm(
             "roll_option", 
-            Combination([
+            Combination(desired=[
                 [np.pi, np.pi],
                 [np.pi, -np.pi],
                 [-np.pi, np.pi],
@@ -152,7 +152,7 @@ p23_def = SchedDef([
         ],
         roll_option=ManParm(
             "roll_option", 
-            Combination([
+            Combination(desired=[
                 [np.pi*3/2, np.pi*3/2],
                 [-np.pi*3/2, -np.pi*3/2],
             ]),
@@ -171,7 +171,7 @@ p23_def = SchedDef([
             f3amb.loop(np.pi/4)
         ],
         roll_option=ManParm("roll_option", Combination(
-            [
+            desired=[
                 [-np.pi/2, np.pi/2],
                 [np.pi/2, -np.pi/2]
             ]
@@ -211,16 +211,15 @@ p23_def = SchedDef([
         loop_radius=80,
         roll_option=ManParm(
             "roll_option", 
-            Combination([[np.pi], [-np.pi]]), 0
+            Combination(desired=[[np.pi], [-np.pi]]), 0
         ))
 ])
 
 if __name__ == "__main__":
     
-    p23_def.to_json("flightanalysis/data/p23.json")
-    #from flightplotting import plotsec
-
-    #p23, template = p23_def.create_template(170, 1)
-    #from flightplotting import plotsec
-    
-    #plotsec(template).show()
+    p23_def.to_json("flightanalysis/data/p23_schedule.json")
+#    from flightplotting import plotsec
+#
+#    p23, template = p23_def.create_template(170, 1)
+#    
+#    plotsec(template).show()

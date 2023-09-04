@@ -2,7 +2,8 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 from flightanalysis import State, Collection, Time
-from flightanalysis.schedule.scoring import *
+from flightanalysis.schedule.scoring.criteria.f3a_criteria import F3A
+from flightanalysis.schedule.scoring import Measurement, DownGrade, DownGrades, Result, Results
 from geometry import Transformation, PX, PY, PZ, Point, angle_diff, Coord, Quaternion
 from json import load, dumps
 
@@ -79,9 +80,9 @@ class Element:
     @property
     def exit_scoring(self):
         return DownGrades([
-            DownGrade(Measurement.track_y, f3a.single_track),
-            DownGrade(Measurement.track_z, f3a.single_track),
-            DownGrade(Measurement.roll_angle, f3a.single_roll),
+            DownGrade(Measurement.track_y, F3A.single.track),
+            DownGrade(Measurement.track_z, F3A.single.track),
+            DownGrade(Measurement.roll_angle, F3A.single.roll),
         ])
 
     @classmethod

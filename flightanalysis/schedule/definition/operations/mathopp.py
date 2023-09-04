@@ -29,9 +29,6 @@ class MathOpp(Opp):
     def __str__(self):
         return f"({str(self.a)}{self.opp}{str(self.b)})"
 
-    def list_base_values(self):
-        return self.base_values(self.a) + self.base_values(self.b)
-
     @staticmethod
     def parse_f(inp:str, parser, name:str=None):
         if inp[0] == "(" and inp[-1] == ")":

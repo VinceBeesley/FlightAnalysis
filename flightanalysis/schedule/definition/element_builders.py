@@ -3,7 +3,8 @@ from flightanalysis.schedule.elements import *
 from flightanalysis.base.collection import Collection
 from flightanalysis.schedule.definition.collectors import Collectors
 from flightanalysis.schedule.definition import Opp, ItemOpp
-from flightanalysis.schedule.scoring import *
+from flightanalysis.schedule.scoring.criteria.f3a_criteria import F3A
+from flightanalysis.schedule.scoring import Combination
 from numbers import Number
 import numpy as np
 
@@ -64,7 +65,7 @@ def pad(speed, line_length, eds: ElDefs):
     
     mp = ManParm(
         f"e_{eds[0].id}_pad_length", 
-        f3a.inter_length,
+        F3A.inter.length,
         None, 
         Collectors([e1.get_collector("length"), e3.get_collector("length")])
     )
@@ -120,7 +121,7 @@ def snap(name, rolls, break_angle, rate, speed, break_rate, line_length=100, pad
     if isinstance(break_angle, Number):
         break_angle = ManParm(
             "break_angle", 
-            Combination([[break_angle], [-break_angle]]),
+            Combination(desired=[[break_angle], [-break_angle]]),
             0
         )
         mps.add(break_angle)

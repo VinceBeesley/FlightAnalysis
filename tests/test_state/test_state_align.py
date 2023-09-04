@@ -1,5 +1,4 @@
-from flightanalysis import State, Manoeuvre
-from flightanalysis.data import get_schedule_definition
+from flightanalysis import State, Manoeuvre, SchedDef
 from pytest import fixture, approx
 from geometry import Transformation, Euler, P0
 import numpy as np
@@ -8,7 +7,7 @@ from flightanalysis.schedule.definition import *
 
 @fixture
 def th_def() -> ManDef:
-    return get_schedule_definition("p23")[0]
+    return SchedDef.from_dict("p23")[0]
 
 @fixture
 def initial_transform(th_def) -> Transformation:

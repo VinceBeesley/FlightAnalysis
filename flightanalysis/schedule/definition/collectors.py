@@ -12,7 +12,7 @@ class Collector(Opp):
         self.elname = elname
         super().__init__(f"{self.elname}.{self.pname}")
 
-    def __call__(self, els, flown: State, template:State):
+    def __call__(self, els):
         """return the value"""        
         return getattr(els.data[self.elname], self.pname)#(tp[0].transform, fl))[0]
         # todo think about visibility here.

@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Any, Dict, List, Union
 import numpy as np
+import numpy.typing as npt
 import pandas as pd
 from flightanalysis.base import Collection, Table
 
@@ -15,8 +16,8 @@ class Result:
     """
     name: str
     measurement: Measurement
-    dgs: np.ndarray
-    keys: str=None
+    dgs: npt.ArrayLike
+    keys: npt.ArrayLike
 
     @property
     def value(self):

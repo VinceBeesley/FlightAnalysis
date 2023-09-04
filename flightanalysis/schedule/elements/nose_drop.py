@@ -5,7 +5,7 @@ from flightanalysis.state import State
 from flightanalysis.base.table import Time
 from .element import Element
 from .loop import Loop
-from flightanalysis.schedule.scoring.criteria.f3a_criteria import f3a
+from flightanalysis.schedule.scoring.criteria.f3a_criteria import F3A
 from flightanalysis.schedule.scoring import Measurement, DownGrade, DownGrades
 
 

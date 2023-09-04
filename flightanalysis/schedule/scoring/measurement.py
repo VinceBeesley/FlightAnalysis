@@ -12,6 +12,16 @@ class Measurement:
     expected: Union[Point, Any]
     visibility: np.ndarray
 
+    def __len__(self):
+        return len(self.value)
+
+    def __getitem__(self, sli):
+        return Measurement(
+            self.value[sli], 
+            self.expected[sli],
+            self.visibility[sli],
+        )
+
     def to_dict(self):
         return dict(
             value = self.value.to_dicts() if isinstance(self.value, Point) else list(self.value),
@@ -43,7 +53,7 @@ class Measurement:
     def vector_vis(value: Point, expected: Point, loc: Point, att: Quaternion) -> Measurement:
         return Measurement(
             value, expected, 
-            Measurement._vector_vis(value, loc) * Measurement._pos_vis(loc)
+            Measurement._vector_vis(value, loc) * Measurement._pos_vis(loc),
         )
 
     @staticmethod
@@ -56,7 +66,7 @@ class Measurement:
     def track_vis(value: Point, expected: Point, loc: Point, att: Quaternion) -> Measurement:
         return Measurement(
             value, expected, 
-            Measurement._track_vis(value, loc) * Measurement._pos_vis(loc)
+            Measurement._track_vis(value, loc) * Measurement._pos_vis(loc),
         )
 
     @staticmethod
@@ -70,7 +80,7 @@ class Measurement:
     def roll_vis(value: Point, expected: Point, loc: Point, att: Quaternion) -> Measurement:
         return Measurement(
             value, expected, 
-            Measurement._roll_vis(loc, att) * Measurement._pos_vis(loc)
+            Measurement._roll_vis(loc, att) * Measurement._pos_vis(loc),
         )
     
     @staticmethod
@@ -89,7 +99,7 @@ class Measurement:
     def rad_vis(value: Point, expected: Point, loc: Point, axis: Point) -> Measurement:
         return Measurement(
             value, expected, 
-            Measurement._rad_vis(loc, axis) * Measurement._pos_vis(loc)
+            Measurement._rad_vis(loc, axis) * Measurement._pos_vis(loc),
         )
 
     @staticmethod

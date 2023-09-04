@@ -3,10 +3,8 @@ from pytest import fixture
 from flightanalysis.schedule.definition import *
 from flightanalysis.schedule.elements import *
 from flightanalysis.schedule.scoring import *
-from flightanalysis import Manoeuvre
-from flightanalysis.data import get_schedule_definition
+from flightanalysis import Manoeuvre, SchedDef
 import numpy as np
-import dill as pickle
 from json import load
 
 
@@ -67,9 +65,4 @@ def test_mdef_parse_dict(p23_def_dict):
     iSp = ManDef.from_dict(p23_def_dict["trgle"])
     pass
 
-
-
-def test_get_schedule_definition():
-    p23 = get_schedule_definition("p23")
-    assert len(p23) == 17
 

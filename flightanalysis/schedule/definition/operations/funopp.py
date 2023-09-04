@@ -23,9 +23,6 @@ class FunOpp(Opp):
     def __str__(self):
         return f"{self.opp}({str(self.a)})"
 
-    def list_base_values(self):
-        return self.a.list_base_values()
-
     @staticmethod 
     def parse_f(inp: str, parser, name=None):
         for fun in FunOpp.funs:
