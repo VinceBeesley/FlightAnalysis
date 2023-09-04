@@ -15,24 +15,25 @@ class Result:
     Inter - This result covers the downgrades applicable to a set of loop diameters within a manoevre (one ManParm)
     """
     name: str
-    measurement: Measurement
-    dgs: npt.ArrayLike
-    keys: npt.ArrayLike
+    measurement: Measurement 
+    sample: npt.ArrayLike  # the comparison built from the measurement
+    errors: npt.ArrayLike  # the errors resulting from the comparison
+    dgs: npt.ArrayLike # downgrades for the errors
+    keys: npt.ArrayLike # links from dgs to sample index
 
     @property
-    def value(self):
+    def total(self):
         return sum(self.dgs)
-
-    def downgrade(self):
-        return self.value
     
     def to_dict(self):
         return dict(
             name = self.name,
             measurement = self.measurement.to_dict() if isinstance(self.measurement, Measurement) else list(self.measurement),
+            sample=list(self.sample),
+            errors=list(self.errors),
             dgs = list(self.dgs), 
             keys = self.keys,
-            value = self.value
+            total = self.total
         )
     
     @staticmethod
@@ -40,8 +41,19 @@ class Result:
         return Result(
             data['name'],
             Measurement.from_dict(data['measurement']) if isinstance(data['measurement'], dict) else np.array(data['measurement']),
+            data['sample'],
+            data['errors'],
             np.array(data['dgs']),
             data['keys']
+        )
+
+    def info(self, i: int):
+        return f'downgrade={np.round(self.dgs[i], 3)}\nerror={np.round(self.errors[i],3)}\nvisibility={np.round(self.measurement.visibility[self.keys[i]], 2)}'
+
+    def summary_df(self):
+        return pd.DataFrame(
+            np.column_stack([self.keys, self.sample, self.errors, self.measurement.visibility, self.dgs]),
+            columns = ['collector', 'value', 'error', 'visibility', 'downgrade']
         )
 
 
@@ -57,8 +69,9 @@ class Results(Collection):
         super().__init__(*args, **kwargs)
         self.name = name
 
-    def downgrade(self):
-        return sum([cr.value for cr in self])
+    @property
+    def total(self):
+        return sum([cr.total for cr in self])
 
     def downgrade_summary(self):
         return {r.name: r.dgs for r in self if len(r.dgs > 0)}
@@ -78,14 +91,14 @@ class Results(Collection):
             name = self.name,
             data = {k: v.to_dict() for k, v in self.data.items()},
             summary = self.downgrade_summary(),
-            value = self.downgrade()
+            total = self.total
         )
 
     @staticmethod
     def from_dict(data) -> Results:
         return Results(
             data['name'],
-            [Result.from_dict(v) for v in data.values()]
+            [Result.from_dict(v) for v in data['data'].values()]
         )
 
 
@@ -96,11 +109,13 @@ class ElementsResults(Collection):
     VType=Results
     uid="name"
 
-    def downgrade(self):
-        return sum(er.downgrade() for er in self)
+    @property
+    def total(self):
+        return sum(self.downgrade_list)
     
+    @property
     def downgrade_list(self):
-        return [er.downgrade() for er in self]
+        return [er.total for er in self]
     
     def downgrade_df(self):
         df = pd.concat([idg.downgrade_df().sum() for idg in self], axis=1).T
@@ -113,11 +128,11 @@ class ElementsResults(Collection):
         return dict(
             data = {k: v.to_dict() for k, v in self.data.items()},
             summary = self.downgrade_list(),
-            value = self.downgrade()
+            total = self.total
         )
 
     @staticmethod
     def from_dict(data) -> Results:
         return Results(
-            [Result.from_dict(v) for v in data.values()]
+            [Result.from_dict(v) for v in data['data'].values()]
         )

@@ -30,28 +30,34 @@ class DownGrade:
         kernel = np.ones(width) / width
         return np.convolve(data, kernel, mode='same')
     
-
     def __call__(self, fl, tp, coord) -> Result:
         measurement = self.measure(fl, tp, coord)
 
         vals = self.criteria.prepare(measurement.value, measurement.expected)    
     
         if isinstance(self.criteria, Single):
-            id, dg = self.criteria([len(vals)-1], [vals[-1]])
-
+            id, error, dg = self.criteria([len(vals)-1], [vals[-1]])
+            dg = dg * measurement.visibility[id]
         elif isinstance(self.criteria, Continuous):
             if len(vals) > 11:
-                vals = self.convolve(vals, 5)
-                id, dg = self.criteria(
-                    list(range(5,len(vals)-5,1)), 
-                    vals[5:-5]
+                tempvals = self.convolve(vals, 5)[5:-5]
+                id, error, dg = self.criteria(
+                    list(range(5,len(fl)-5,1)), 
+                    tempvals
                 )
+                vals = np.full(len(fl), np.nan)
+                vals[5:-5] = tempvals
+                
+                #take the average visibility for the given downgrade
+                rids = np.concatenate([[0], id])
+                vis = np.array([np.mean(measurement.visibility[a:b]) for a, b in zip(rids[:-1], rids[1:])])
+                dg = vis * dg
             else:
-                id, dg = len(vals)-1, 0.0
+                id, error, dg = [len(vals)-1], [0.0], [0.0]
         else:
             raise TypeError(f'Expected a Criteria, got {self.criteria.__class__.__name__}')
         
-        return Result(self.measure.__name__, measurement, dg, id)
+        return Result(self.measure.__name__, measurement, vals, error, dg, id)
 
 
 class DownGrades(Collection):

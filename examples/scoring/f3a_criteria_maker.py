@@ -8,10 +8,10 @@ from json import dump
 
 f3a=dict(
     single=dict(
-        track=Criteria(Exponential.fit_points(np.radians([30, 90]), [2, 6]), 'absolute'),
-        roll=Criteria(Exponential.fit_points(np.radians([30, 90]), [1.25, 6]), 'absolute'),
-        angle=Criteria(Exponential.fit_points(np.radians([30, 90]), [2, 6]), 'absolute'),
-        distance=Criteria(Exponential.fit_points([20, 30], [1,2]), 'absolute')
+        track=Single(Exponential.fit_points(np.radians([30, 90]), [2, 6]), 'absolute'),
+        roll=Single(Exponential.fit_points(np.radians([30, 90]), [1.25, 6]), 'absolute'),
+        angle=Single(Exponential.fit_points(np.radians([30, 90]), [2, 6]), 'absolute'),
+        distance=Single(Exponential.fit_points([20, 30], [1,2]), 'absolute')
     ),
     intra=dict(
         track=Continuous(Exponential.fit_points(np.radians([30, 90]), [2.5, 6]), 'absolute'),

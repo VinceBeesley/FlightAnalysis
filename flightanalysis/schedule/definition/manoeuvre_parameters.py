@@ -72,12 +72,12 @@ class ManParm(Opp):
         vs = list(coll.values())
         meas = Measurement(
             vs,
-            [vs[0]] + vs[:-1],
+            np.full(len(vs), self.default),
             np.full(len(vs), 0.4)
         )
 
-        keys, dgs = self.criteria(list(coll.keys()), list(coll.values())) 
-        return Result(self.name, meas, dgs, keys)
+        keys, errors, dgs = self.criteria(list(coll.keys()), list(coll.values())) 
+        return Result(self.name, meas, vs, errors, dgs * meas.visibility, keys)
 
     @property
     def value(self):

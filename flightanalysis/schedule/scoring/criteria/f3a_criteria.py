@@ -5,10 +5,10 @@ from flightanalysis.data import get_json_resource
 import numpy as np
 
 class F3ASingle:
-    track=Criteria(Exponential(3.8197186342054863,1.000000000000001), 'absolute')
-    roll=Criteria(Exponential(3.1486776615143057,1.4278157399964433), 'absolute')
-    angle=Criteria(Exponential(3.8197186342054863,1.000000000000001), 'absolute')
-    distance=Criteria(Exponential(0.005968628275915933,1.7095112913516006), 'absolute')
+    track=Single(Exponential(3.8197186342054863,1.000000000000001), 'absolute')
+    roll=Single(Exponential(3.1486776615143057,1.4278157399964433), 'absolute')
+    angle=Single(Exponential(3.8197186342054863,1.000000000000001), 'absolute')
+    distance=Single(Exponential(0.005968628275915933,1.7095112913516006), 'absolute')
 class F3AIntra:
     track=Continuous(Exponential(4.186644340484932,0.7968859864249862), 'absolute')
     roll=Continuous(Exponential(3.1486776615143057,1.4278157399964433), 'absolute')

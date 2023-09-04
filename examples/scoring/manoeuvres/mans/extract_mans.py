@@ -33,5 +33,5 @@ dgs = []
 
 for mdef in sdef:
     ma = ManoeuvreAnalysis.build(mdef, state.get_manoeuvre(mdef.info.short_name))
-    with open(f'examples/scoring/elements/mans/{mdef.info.short_name}.json', 'w') as f:
+    with open(f'examples/scoring/manoeuvres/mans/{mdef.info.short_name}.json', 'w') as f:
         dump(ma.to_dict(), f, cls=NumpyEncoder)

@@ -1,9 +1,9 @@
 from flightanalysis import ManoeuvreAnalysis as MA
 from flightanalysis.analysis.manoeuvre_analysis import ElementAnalysis as EA
-from json import load
+from json import load, dumps
 import numpy as np
 
-with open('examples/scoring/elements/mans/tHat.json', 'r') as f:
+with open('examples/scoring/manoeuvres/mans/tHat.json', 'r') as f:
     ma = MA.from_dict(load(f))
 
 from flightplotting import plotsec
@@ -21,35 +21,31 @@ x=list(range(0, len(res.measurement),1))
 fig.add_trace(go.Scatter(x=x,y=abs(res.measurement.value), name='flown'))
 fig.add_trace(go.Scatter(x=x, y=abs(res.measurement.expected), name='expected'))
 
-vals = abs(dg.criteria.prepare(res.measurement.value, res.measurement.expected))
-vals = dg.convolve(vals, 5)[5:-5]
+
 fig.add_trace(go.Scatter(
-    x=x[5:-5],
-    y=vals, 
-    name='vals',
-    yaxis='y2'
+    x=x,
+    y=res.sample, 
+    name='sample',
+    yaxis='y',
+    line=dict(width=3)
 ))
+
+hovtxt=[res.info(i) for i in range(len(res.keys))]
 
 fig.add_trace(go.Scatter(
     x=res.keys,
-    y=np.array(vals)[np.array(res.keys)-5],
+    y=res.sample[res.keys],
     text=np.round(res.dgs, 3),
+    hovertext=hovtxt,
     mode='markers+text',
     name='downgrades',
-    yaxis='y2'
+    yaxis='y'
 ))
 
 
 fig.update_layout(
     yaxis=dict(
         title='measurement',
-        range=(0, 100)
-    ),
-    yaxis2=dict(
-        title='ratio',
-        overlaying="y",
-        side="right",
-        range=(0,2)
     )
 )
 

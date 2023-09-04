@@ -33,21 +33,17 @@ dgs = []
 
 for mdef in sdef:
     ma = ManoeuvreAnalysis.build(mdef, state.get_manoeuvre(mdef.info.short_name))
-#    with open(f'examples/scoring/manoeuvre/mans/{mdef.info.short_name}.json', 'w') as f:
-#        dump(ma.to_dict(), f, cls=NumpyEncoder)
 
-    inter_dgs =  ma.mdef.mps.collect(ma.intended)
+    inter_results =  ma.mdef.mps.collect(ma.intended)
 
-    intra_dgs = ma.intended.analyse(ma.aligned,ma.intended_template)
+    intra_results = ma.intended.analyse(ma.aligned,ma.intended_template)
 
     dgs.append(dict(
-        inter = sum([dg.value for dg in inter_dgs]),
-        intra = intra_dgs.downgrade()
+        inter = sum([res.total for res in inter_results]),
+        intra = intra_results.total
     ))
     dgs[-1]["score"] = 10 - dgs[-1]["inter"] - dgs[-1]["intra"]
-#    score = 10 - sum([dg.value for dg in inter_dgs]) - intra_dgs.downgrade()
- #   print(f"{p23[i].uid}: {score} ")
-
+    print(dgs[-1])
 
 df = pd.DataFrame.from_dict(dgs)
 print(df)

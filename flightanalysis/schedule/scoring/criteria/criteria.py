@@ -9,15 +9,6 @@ class Criteria:
     lookup: Exponential = field(default_factory=lambda : free)
     comparison: str='absolute'
 
-    def prepare(self, value: Point, expected: Point):
-        if self.comparison == 'absolute':
-            return abs(expected) - abs(value)
-        elif self.comparison == 'ratio':
-            ae = abs(expected)
-            af = abs(value)
-            return np.maximum(af,ae) / np.minimum(af,ae)
-        else:
-            raise ValueError('self.comparison must be "absolute" or "ratio"')
 
 
     def to_dict(self):
