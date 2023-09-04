@@ -74,7 +74,7 @@ class Results(Collection):
         return sum([cr.total for cr in self])
 
     def downgrade_summary(self):
-        return {r.name: r.dgs for r in self if len(r.dgs > 0)}
+        return {r.name: r.dgs for r in self if len(r.dgs) > 0}
 
     def downgrade_df(self) -> pd.DataFrame:
         dgs = self.downgrade_summary()
@@ -127,7 +127,7 @@ class ElementsResults(Collection):
     def to_dict(self) -> Dict[str, dict]:
         return dict(
             data = {k: v.to_dict() for k, v in self.data.items()},
-            summary = self.downgrade_list(),
+            summary = self.downgrade_list,
             total = self.total
         )
 

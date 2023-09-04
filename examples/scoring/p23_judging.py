@@ -34,15 +34,9 @@ dgs = []
 for mdef in sdef:
     ma = ManoeuvreAnalysis.build(mdef, state.get_manoeuvre(mdef.info.short_name))
 
-    inter_results =  ma.mdef.mps.collect(ma.intended)
+    scores = ma.scores()
 
-    intra_results = ma.intended.analyse(ma.aligned,ma.intended_template)
-
-    dgs.append(dict(
-        inter = sum([res.total for res in inter_results]),
-        intra = intra_results.total
-    ))
-    dgs[-1]["score"] = 10 - dgs[-1]["inter"] - dgs[-1]["intra"]
+    dgs.append(scores.summary())
     print(dgs[-1])
 
 df = pd.DataFrame.from_dict(dgs)

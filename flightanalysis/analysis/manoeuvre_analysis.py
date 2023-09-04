@@ -36,7 +36,7 @@ class ManoeuvreResults:
     distance: Result
 
     def summary(self):
-        return {k: v.downgrade() for k, v in self.__dict__.items() if not v is None} 
+        return {k: v.total for k, v in self.__dict__.items() if not v is None} 
 
     def score(self):
         return max(0, 10 - sum([v for v in self.summary().values()]))
@@ -45,9 +45,9 @@ class ManoeuvreResults:
         return dict(
             inter=self.inter.to_dict(),
             intra=self.intra.to_dict(),
-            side_box=self.side_box.to_dict() if self.side_box else None,
+            side_box=self.side_box.to_dict() if self.side_box else 0,
             top_box=self.top_box.to_dict(),
-            centre=self.centre.to_dict() if self.centre else None,
+            centre=self.centre.to_dict() if self.centre else 0,
             distance=self.distance.to_dict(),
             summary=self.summary(),
             score=self.score()
@@ -167,14 +167,23 @@ class ManoeuvreAnalysis:
 
         outside = 1 - (1.0471975511965976 - min_sb) / (max_sb - min_sb)
         box_dg = max(outside, 0.0) * 5.0
-        return Result("box",np.array([outside]),np.array([box_dg]))
+        return Result(
+            "box",
+            [max_sb, min_sb],
+            [],
+            [outside],
+            [box_dg],
+            []
+        )
 
     def top_box(self):
-        top_box_angle = max(np.arctan(self.aligned.pos.z / self.aligned.pos.y))
-
-        outside_tb = (top_box_angle - 1.0471975511965976) / 1.0471975511965976
+        top_box_angle = np.arctan(self.aligned.pos.z / self.aligned.pos.y)
+        tb = max(top_box_angle)
+        outside_tb = (tb - 1.0471975511965976) / 1.0471975511965976
         top_box_dg = max(outside_tb, 0) * 6
-        return Result("top box", np.array([outside_tb]), np.array([top_box_dg]))
+        return Result(
+            "top box", [], [tb], [outside_tb], [top_box_dg], 
+            [])
 
     def centre(self):
         al = self.aligned#.get_element(slice(1,-1,None))
@@ -185,20 +194,34 @@ class ManoeuvreAnalysis:
             centre_pos = self.intended.elements[self.mdef.info.centre_loc].get_data(self.aligned).pos[0]
             centre = np.arctan2(centre_pos.x, centre_pos.y)[0]
         box_dg = F3A.single.angle.lookup(abs(centre))
-        return Result("centering",np.array([centre]),np.array([box_dg]))
+        return Result(
+            "centering",
+            [],
+            [],
+            [centre],
+            [box_dg],
+            []
+        )
 
     def distance(self):
         #only downgrade distance if the template is narrow
         #TODO doesnt quite cover it, stalled manoeuvres need to be considered
-        dist = np.mean(self.aligned.pos.y)
+        dist = self.aligned.pos.y
 
         tp_width = max(self.corrected_template.y) - min(self.corrected_template.y)
 
         if tp_width < 10:
-            dist_dg = F3A.single.distance.lookup(max(dist, 170) - 170)
+            dist_dg = F3A.single.distance.lookup(max(np.mean(dist), 170) - 170)
         else:
             dist_dg = 0.0
-        return Result("distance", np.array([dist]), np.array([dist_dg])) 
+        return Result(
+            "distance", 
+            self.aligned.pos.y, 
+            dist,
+            np.array([dist]),
+            np.array([dist_dg]),
+            self.aligned.pos.y > 170
+        ) 
 
     def intra(self):
         return self.intended.analyse(self.aligned, self.intended_template)
