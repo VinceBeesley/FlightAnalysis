@@ -36,15 +36,6 @@ class Line(Element):
         d1 = "line" if self.roll==0 else f"{self.roll} roll"
         return f"{d1}, length = {self.length} m"
 
-    def to_dict(self):
-        return dict(
-            kind=self.__class__.__name__,
-            length=self.length,
-            roll=self.roll,
-            speed=self.speed,
-            uid=self.uid
-        )
-
     @property
     def rate(self):
         return self.roll * self.speed / self.length

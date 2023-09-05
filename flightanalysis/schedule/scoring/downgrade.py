@@ -20,6 +20,12 @@ class DownGrade:
     measure: Callable[[State, State, Coord], Measurement]
     criteria: Criteria
 
+    def to_dict(self):
+        return dict(
+            measure=self.measure.__name__,
+            criteria=self.criteria.to_dict()
+        )
+
     @property
     def name(self):
         return self.measure.__name__

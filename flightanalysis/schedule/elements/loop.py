@@ -39,17 +39,6 @@ class Loop(Element):
         d1 = "loop" if self.roll==0 else f"rolling loop"
         return f"{d1}, radius = {self.radius} m, rolls = {self.roll}"
 
-    def to_dict(self):
-        return dict(
-            kind=self.__class__.__name__,
-            angle=self.angle,
-            radius=self.radius,
-            roll=self.roll,
-            speed=self.speed,
-            ke=self.ke,
-            uid=self.uid
-        )
-
     @property
     def diameter(self):
         return self.radius * 2

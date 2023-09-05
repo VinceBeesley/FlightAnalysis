@@ -17,15 +17,6 @@ class Autorotation(Element):
         super().__init__(uid, speed)
         self.length = length
         self.roll = roll
-    
-    def to_dict(self):
-        return dict(
-            kind=self.__class__.__name__,
-            speed=self.speed,
-            length=self.length,
-            roll=self.roll,
-            uid=self.uid
-        )
         
     @property
     def intra_scoring(self):

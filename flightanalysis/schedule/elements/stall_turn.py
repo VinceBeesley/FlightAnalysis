@@ -21,14 +21,6 @@ class StallTurn(Element):
             DownGrade(Measurement.track_y, F3A.single.track)
         ])
 
-    def to_dict(self):
-        return dict(
-            kind=self.__class__.__name__,
-            yaw_rate=self.yaw_rate,
-            speed=self.speed,
-            uid=self.uid
-        )
-
     def describe(self):
         return f"stallturn, yaw rate = {self.yaw_rate}"
 

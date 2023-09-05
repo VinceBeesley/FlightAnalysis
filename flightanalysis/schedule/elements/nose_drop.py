@@ -19,15 +19,6 @@ class NoseDrop(Element):
         self.radius=radius
         self.break_angle = break_angle
 
-    def to_dict(self):
-        return dict(
-            kind=self.__class__.__name__,
-            speed=self.speed,
-            radius=self.radius,
-            break_angle=self.break_angle,
-            uid=self.uid
-        )
-
     def create_template(self, istate: State, time: Time=None) -> State:
         _inverted = 1 if istate.transform.rotation.is_inverted()[0] else -1
         

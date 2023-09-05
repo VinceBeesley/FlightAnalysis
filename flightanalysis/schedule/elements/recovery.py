@@ -15,14 +15,6 @@ class Recovery(Element):
         super().__init__(uid, speed)
         self.length = length
 
-    def to_dict(self):
-        return dict(
-            kind=self.__class__.__name__,
-            speed=self.speed,
-            length=self.length,
-            uid=self.uid
-        )
-
     @property
     def intra_scoring(self) -> DownGrades:
         return DownGrades([

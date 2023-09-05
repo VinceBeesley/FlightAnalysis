@@ -115,3 +115,10 @@ def test_intra_scoring(ql, ql_tp, ql_fl):
     dgs = ql.intra_scoring.apply(ql, ql_fl, ql_tp)
 
     pass
+
+
+def test_serialization(half_loop):
+    dhl = half_loop.to_dict()
+    hl = Element.from_dict(dhl)
+
+    assert half_loop == hl

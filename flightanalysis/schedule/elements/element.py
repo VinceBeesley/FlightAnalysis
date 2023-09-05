@@ -6,7 +6,7 @@ from flightanalysis.schedule.scoring.criteria.f3a_criteria import F3A
 from flightanalysis.schedule.scoring import Measurement, DownGrade, DownGrades, Result, Results
 from geometry import Transformation, PX, PY, PZ, Point, angle_diff, Coord, Quaternion
 from json import load, dumps
-
+import inspect
 
 class Element:   
     parameters = ["speed"]
@@ -36,7 +36,12 @@ class Element:
         return dumps(self.to_dict(), indent=2)
 
     def to_dict(self):
-        return dict(kind=self.__class__.__name__, **self.__dict__)
+        return dict(
+            kind=self.__class__.__name__, 
+            **{p: getattr(self, p) for p in self.parameters},
+            uid=self.uid,
+            intra_scoring = self.intra_scoring.to_dict()
+        )
 
     def set_parms(self, **parms):
         kwargs = {k:v for k, v in self.__dict__.items() if not k[0] == "_"}
@@ -93,8 +98,13 @@ class Element:
 
     @classmethod
     def from_dict(Cls, data: dict):
-        data=data.copy()
-        return Element.from_name(data.pop("kind").lower())(**data)
+        El = Element.from_name(data["kind"].lower())
+        
+        _args = inspect.getfullargspec(El.__init__)[0]
+
+        return El(
+            **{k: v for k, v in data.items() if k in _args}
+        )
     
     @classmethod
     def from_json(Cls, file):
