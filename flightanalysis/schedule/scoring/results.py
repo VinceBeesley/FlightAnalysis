@@ -29,9 +29,9 @@ class Result:
         return dict(
             name = self.name,
             measurement = self.measurement.to_dict() if isinstance(self.measurement, Measurement) else list(self.measurement),
-            sample=list(self.sample),
-            errors=list(self.errors),
-            dgs = list(self.dgs), 
+            sample=list(np.nan_to_num(self.sample)),
+            errors=list(np.nan_to_num(self.errors)),
+            dgs = list(np.nan_to_num(self.dgs)), 
             keys = self.keys,
             total = self.total
         )

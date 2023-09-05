@@ -22,6 +22,7 @@ class Criteria:
     
     @staticmethod
     def from_dict(data: dict):
+        data = data.copy()
         name = data.pop('kind')
         for Crit in Criteria.__subclasses__():
             if Crit.__name__ == name:

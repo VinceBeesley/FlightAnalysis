@@ -1,15 +1,16 @@
 
 from flightanalysis.schedule.definition import *
 from flightanalysis.schedule.scoring import *
+from flightanalysis.schedule.scoring.criteria.f3a_criteria import F3A
 from flightanalysis.schedule.elements import *
-from pytest import fixture
-
+from pytest import fixture, approx
+import numpy as np
  
 @fixture
 def mp():
     return ManParm(
         "length", 
-        inter_f3a_length, 
+        F3A.inter.length, 
         20.0,
         Collectors([
             Collector("e1", "length"),
@@ -28,11 +29,16 @@ def test_mp_value(mp):
     assert mp.value == 20
 
 def test_mp_collect(mp, els):
-    np.testing.assert_array_equal(mp.collect(els), [30, 10]) 
+    np.testing.assert_array_equal(list(mp.collect(els).values()), [30, 10]) 
 
 def test_mp_get_downgrades(mp, els):
     res = mp.get_downgrades(els)
-    np.testing.assert_array_equal(res.downgrades, [0,1.6])
-    assert res.value == 1.6
+    np.testing.assert_array_almost_equal(res.dgs, [0,0.64201464])
+    assert res.total == approx(0.64201464)
 
 
+def test_serialization(mp):
+    mpd = mp.to_dict()
+
+    mp2 = ManParm.from_dict(mpd)
+    assert isinstance(mp2.criteria.lookup, Exponential)
