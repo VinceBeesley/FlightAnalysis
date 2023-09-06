@@ -28,7 +28,7 @@ class Manoeuvre:
 
     def to_dict(self):
         return dict(
-            entry_line=self.entry_line.to_dict() if self.entry_line else None,
+            entry_line=self.entry_line.to_dict(exit_only=True) if self.entry_line else None,
             elements=self.elements.to_dicts(),
             exit_line=self.exit_line.to_dict() if self.exit_line else None,
             uid=self.uid

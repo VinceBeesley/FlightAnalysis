@@ -35,12 +35,12 @@ class Element:
     def __repr__(self):
         return dumps(self.to_dict(), indent=2)
 
-    def to_dict(self):
+    def to_dict(self, exit_only: bool=False):
         return dict(
             kind=self.__class__.__name__, 
             **{p: getattr(self, p) for p in self.parameters},
             uid=self.uid,
-            intra_scoring = self.intra_scoring.to_dict()
+            scoring = self.exit_scoring.to_dict() if exit_only else self.intra_scoring.to_dict() 
         )
 
     def set_parms(self, **parms):

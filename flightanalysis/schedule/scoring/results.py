@@ -29,9 +29,9 @@ class Result:
         return dict(
             name = self.name,
             measurement = self.measurement.to_dict() if isinstance(self.measurement, Measurement) else list(self.measurement),
-            sample=list(np.nan_to_num(self.sample)),
-            errors=list(np.nan_to_num(self.errors)),
-            dgs = list(np.nan_to_num(self.dgs)), 
+            sample=self.sample,
+            errors=self.errors,
+            dgs = self.dgs, 
             keys = self.keys,
             total = self.total
         )
@@ -41,8 +41,8 @@ class Result:
         return Result(
             data['name'],
             Measurement.from_dict(data['measurement']) if isinstance(data['measurement'], dict) else np.array(data['measurement']),
-            data['sample'],
-            data['errors'],
+            np.array(data['sample']),
+            np.array(data['errors']),
             np.array(data['dgs']),
             data['keys']
         )
