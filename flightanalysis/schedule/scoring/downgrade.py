@@ -45,14 +45,15 @@ class DownGrade:
             id, error, dg = self.criteria([len(vals)-1], [vals[-1]])
             dg = dg * measurement.visibility[id]
         elif isinstance(self.criteria, Continuous):
-            if len(vals) > 11:
-                tempvals = self.convolve(vals, 5)[5:-5]
+            endcut = 8
+            if len(vals) > endcut*2+1:
+                tempvals = self.convolve(vals, 10)[endcut:-endcut]
                 id, error, dg = self.criteria(
-                    list(range(5,len(fl)-5,1)), 
+                    list(range(endcut,len(fl)-endcut,1)), 
                     tempvals
                 )
                 vals = np.full(len(fl), np.nan)
-                vals[5:-5] = tempvals
+                vals[endcut:-endcut] = tempvals
                 
                 #take the average visibility for the given downgrade
                 rids = np.concatenate([[0], id])

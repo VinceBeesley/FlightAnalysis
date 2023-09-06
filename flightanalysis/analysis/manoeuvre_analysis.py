@@ -132,7 +132,7 @@ class ManoeuvreAnalysis:
         aligned = State.align(flown, template, radius=10)[1]
         int_tp = man.match_intention(template[0], aligned)[1]
         
-        return State.align(aligned, int_tp, radius=10, mirror=False)[1]
+        return State.align(aligned, int_tp, radius=10, mirror=False)
 
     @staticmethod
     def intention(man: Manoeuvre, aligned: State, template: State) -> Tuple[Manoeuvre, State]:
