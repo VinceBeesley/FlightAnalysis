@@ -11,7 +11,7 @@ from flightplotting import plotsec
 
 ea = ma.e_0
 
-dg = ea.el.intra_scoring.radius
+dg = ea.el.intra_scoring.track_y
 res = dg(ea.fl, ea.tp, ea.ref_frame)
 
 import plotly.graph_objects as go
