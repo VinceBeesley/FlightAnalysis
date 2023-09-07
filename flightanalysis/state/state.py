@@ -2,23 +2,21 @@ from __future__ import annotations
 from typing import Union, List
 import warnings
 from pathlib import Path
-
 import numpy as np
 import pandas as pd
 from pandas.api.types import is_list_like
-
-
 from geometry import Point, Quaternion, Transformation, PX, PY, PZ, P0, Q0, Coord
-
 from flightanalysis import Table, Constructs, SVar, Time, FlightLine, Box, Flow, Environment
 
 from warnings import warn
 try:
     from scipy.spatial.distance import euclidean
+except ImportError as ex:
+    pass
+try:
     from fastdtw import fastdtw
 except ImportError as ex:
     pass
-
 
 
 class State(Table):
