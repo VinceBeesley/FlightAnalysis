@@ -10,6 +10,12 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
+from scipy.signal import butter, filtfilt
+
+
+def butter_filter(data, cutoff):
+    return filtfilt(*butter(2, cutoff / 15, btype='low', analog=False), data)
+
 
 @dataclass
 class DownGrade:
@@ -40,27 +46,40 @@ class DownGrade:
         measurement = self.measure(fl, tp, coord)
 
         vals = self.criteria.prepare(measurement.value, measurement.expected)    
-    
+
         if isinstance(self.criteria, Single):
             id, error, dg = self.criteria([len(vals)-1], [vals[-1]])
             dg = dg * measurement.visibility[id]
         elif isinstance(self.criteria, Continuous):
-            endcut = 8
-            if len(vals) > endcut*2+1:
-                tempvals = self.convolve(vals, 10)[endcut:-endcut]
-                id, error, dg = self.criteria(
-                    list(range(endcut,len(fl)-endcut,1)), 
-                    tempvals
-                )
-                vals = np.full(len(fl), np.nan)
-                vals[endcut:-endcut] = tempvals
-                
-                #take the average visibility for the given downgrade
+            if len(measurement) < 18:
+                #for now, if an element lasts less than 0.5 seconds then we assume it is perfect
+                return Result(self.measure.__name__, measurement, [0], [0], [0], [0])
+
+            endcut = 4 #min(3, int((len(vals) - 5) / 2))
+            
+            tempvals = butter_filter(vals[endcut:-endcut], 2)
+       
+            # for absolute errors you keep getting downgraded for the same error as it becomes more visible.
+            # this is because there is a correct reference value the pilot should be aiming for
+            # roll angle, track, 
+            if self.criteria.comparison == 'absolute':
+                tempvals = tempvals * measurement.visibility[endcut:-endcut] 
+       
+            id, error, dg = self.criteria(
+                list(range(endcut,len(fl)-endcut)), 
+                tempvals
+            )
+            vals = np.full(len(fl), np.nan)
+            vals[endcut:-endcut] = tempvals
+            
+            if self.criteria.comparison == 'ratio':
+                #for ratio errors visiblity factors are applied to the downgrades, so if the initial
+                #error happened when it was hard to see then you don't get downgraded further as
+                #it becomes more apparant. This is because the reference is set by the pilot
+                #rollrate, speed, radius,  
                 rids = np.concatenate([[0], id])
                 vis = np.array([np.mean(measurement.visibility[a:b]) for a, b in zip(rids[:-1], rids[1:])])
                 dg = vis * dg
-            else:
-                id, error, dg = [len(vals)-1], [0.0], [0.0]
         else:
             raise TypeError(f'Expected a Criteria, got {self.criteria.__class__.__name__}')
         

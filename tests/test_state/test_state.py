@@ -102,3 +102,18 @@ def test_state_shift_labels_end(labst):
     assert labst2.get_element("test3").duration == approx(20, abs=0.2)
 
     assert not "test4" in labst2.data.element.unique()
+
+
+
+def fromcsv(n:str):
+    return 
+
+
+def test_from_constructs_weird_problem():
+    st = State.from_constructs(
+        pos=Point(pd.read_csv(f'tests/test_state/pos.csv')), 
+        att=Quaternion(pd.read_csv(f'tests/test_state/att.csv')), 
+        time=Time(pd.read_csv(f'tests/test_state/time.csv'))
+    )
+    assert np.sum(np.isnan(st.rvel.data)) == 0
+

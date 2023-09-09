@@ -20,7 +20,7 @@ requirements:
     - numpy
     - pandas
     - flightdata
-    - geometry
+    - pfc-geometry
   run:
     - future
     - lxml
@@ -28,7 +28,7 @@ requirements:
     - numpy
     - pandas
     - flightdata
-    - geometry
+    - pfc-geometry
 test:
   imports:
     - flightanalysis

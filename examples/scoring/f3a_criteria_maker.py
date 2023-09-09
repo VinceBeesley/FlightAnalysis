@@ -8,22 +8,22 @@ from json import dump
 
 f3a=dict(
     single=dict(
-        track=Single(Exponential.fit_points(np.radians([30, 90]), [1.5, 6]), 'absolute'),
-        roll=Single(Exponential.fit_points(np.radians([30, 90]), [1.25, 6]), 'absolute'),
+        track=Single(Exponential.fit_points(np.radians([30, 90]), [2, 6]), 'absolute'),
+        roll=Single(Exponential.fit_points(np.radians([30, 90]), [1.5, 6]), 'absolute'),
         angle=Single(Exponential.fit_points(np.radians([30, 90]), [2, 6]), 'absolute'),
-        distance=Single(Exponential.fit_points([20, 40], [0.5,2]), 'absolute')
+        distance=Single(Exponential.fit_points([20, 40], [0.5,1]), 'absolute')
     ),
     intra=dict(
-        track=Continuous(Exponential.fit_points(np.radians([30, 90]), [1.5, 6]), 'absolute'),
-        roll=Continuous(Exponential.fit_points(np.radians([30, 90]), [1.25, 6]), 'absolute'),
-        radius=Continuous(Exponential.fit_points([1,3], [1, 4]), 'ratio'),
+        track=Continuous(Exponential.fit_points(np.radians([30, 90]), [2, 6]), 'absolute'),
+        roll=Continuous(Exponential.fit_points(np.radians([30, 90]), [1.5, 6]), 'absolute'),
+        radius=Continuous(Exponential.fit_points([1,3], [0.5, 3]), 'ratio'),
         speed=Continuous(Exponential.fit_points([1,5], [0.15, 0.75]), 'ratio'),
         roll_rate=Continuous(Exponential.fit_points([1,5], [0.15, 0.75]), 'ratio'),
     ),
     inter=dict(
         radius=Comparison(Exponential.fit_points([1,5], [0.5, 2]), 'ratio'),
-        speed=Comparison(Exponential.fit_points([1,5], [0.5, 0.75]), 'ratio'),
-        roll_rate=Comparison(Exponential.fit_points([1,5], [0.15, 0.75]), 'ratio'),
+        speed=Comparison(Exponential.fit_points([1,5], [0.25, 1.0]), 'ratio'),
+        roll_rate=Comparison(Exponential.fit_points([1,5], [0.15, 1.0]), 'ratio'),
         length=Comparison(Exponential.fit_points([1,5], [0.5, 3]), 'ratio'),
         free=Comparison(free, 'ratio'),
     )

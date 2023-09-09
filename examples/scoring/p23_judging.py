@@ -4,17 +4,6 @@ from flightdata import Flight
 from geometry import Transformation, Quaternion
 import numpy as np
 import pandas as pd
-
-class NumpyEncoder(JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, np.ndarray):
-            return obj.tolist()
-        elif isinstance(obj, np.integer):
-            return int(obj)
-        elif isinstance(obj, np.floating):
-            return float(obj)
-        else:
-            return JSONEncoder.default(self, obj)
     
 
 with open("examples/data/manual_F3A_P23_22_05_31_00000350.json", "r") as f:

@@ -21,5 +21,4 @@ class Exponential:
         return Exponential(res.x[0], res.x[1])
 
 
-free = Exponential(0,1)#lambda x: np.zeros_like(x)
-
+free = Exponential(0,1)

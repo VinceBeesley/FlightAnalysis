@@ -211,7 +211,7 @@ class ManoeuvreAnalysis:
         tp_width = max(self.corrected_template.y) - min(self.corrected_template.y)
 
         if tp_width < 10:
-            dist_dg = F3A.single.distance.lookup(max(np.mean(dist), 170) - 170)
+            dist_dg = F3A.single.distance.lookup(max(np.max(dist), 170) - 170)
         else:
             dist_dg = 0.0
         return Result(

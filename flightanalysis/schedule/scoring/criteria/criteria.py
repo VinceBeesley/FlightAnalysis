@@ -1,8 +1,6 @@
 import numpy as np
-from . import Exponential, free
+from .exponential import Exponential, free
 from dataclasses import dataclass, field
-from geometry import Point
-
 
 @dataclass
 class Criteria:
