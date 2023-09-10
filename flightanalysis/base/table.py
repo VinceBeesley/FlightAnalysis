@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 from geometry import Base,  Point, Quaternion, Transformation
-from typing import Union, Dict
+from typing import Union, Dict, Self
 from .constructs import SVar, Constructs
 from numbers import Number
 from time import time
@@ -12,14 +12,14 @@ class Time(Base):
     cols=["t", "dt"]
     
     @staticmethod
-    def from_t(t: np.ndarray):
+    def from_t(t: np.ndarray) -> Self:
         if isinstance(t, Number):
             return Time(t, 1/30)
         else:
             dt = np.array([1/30]) if len(t) == 1 else np.gradient(t)
             return Time(t, dt)
 
-    def scale(self, duration):
+    def scale(self, duration) -> Self:
         old_duration = self.t[-1] - self.t[0]
         sfac = duration / old_duration
         return Time(
@@ -49,7 +49,9 @@ class Table:
     def __init__(self, data: pd.DataFrame, fill=True):
         if len(data) == 0:
             raise Exception("Created with empty dataframe")
-            
+        self._base_cols = [c for c in data.columns if c in self.constructs.cols()]
+        self._label_cols = [[c for c in data.columns if not c in self.constructs.cols()]]
+    
         self.data = data
 
         self.data.index = self.data.index - self.data.index[0]
@@ -65,6 +67,10 @@ class Table:
                 
                 self.data = pd.concat([self.data, newdata], axis=1)
     
+        if np.any(np.isnan(self.data.loc[:,self.constructs.cols()])):
+            raise ValueError("nan values in data")
+        
+
     def __getattr__(self, name: str) -> Union[pd.DataFrame, Base]:
         if name in self.data.columns:
             return self.data[name].to_numpy()

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Union, List
+from typing import Union, List, Tuple, Self
 import warnings
 from pathlib import Path
 import numpy as np
@@ -24,7 +24,7 @@ class State(Table):
         SVar("pos", Point,       ["x", "y", "z"]           , lambda self: P0(len(self))       ), 
         SVar("att", Quaternion,  ["rw", "rx", "ry", "rz"]  , lambda self : Q0(len(self))       ),
         SVar("vel", Point,       ["u", "v", "w"]           , lambda st: P0() if len(st)==1 else st.att.inverse().transform_point(st.pos.diff(st.dt))  ),
-        SVar("rvel", Point,       ["p", "q", "r"]           , lambda st: P0() if len(st)==1 else st.att.body_diff(st.dt).remove_outliers(3)  ),
+        SVar("rvel", Point,       ["p", "q", "r"]           , lambda st: P0() if len(st)==1 else st.att.body_diff(st.dt)),
         SVar("acc", Point,       ["du", "dv", "dw"]        , lambda st : P0() if len(st)==1 else st.att.inverse().transform_point(st.att.transform_point(st.vel).diff(st.dt) + PZ(9.81, len(st)))),
         SVar("racc", Point,       ["dp", "dq", "dr"]        , lambda st: P0() if len(st)==1 else st.rvel.diff(st.dt)),
     ])
@@ -184,7 +184,7 @@ class State(Table):
 
 
     @staticmethod
-    def align(flown: State, template: State, radius=5, mirror=True, white=False, weights = Point(1,1,1)) -> State:
+    def align(flown: State, template: State, radius=5, mirror=True, white=False, weights = Point(1,1,1)) -> Tuple(float, State):
         """Perform a temporal alignment between two sections. return the flown section with labels 
         copied from the template along the warped path
 
@@ -201,8 +201,7 @@ class State(Table):
 
         def get_brv(brv):
             if mirror:
-                brv.data[:,0] = abs(brv.data[:,0])
-                brv.data[:,2] = abs(brv.data[:,2])
+                brv = brv.abs() * Point(1, 0, 1) + brv * Point(0, 1, 0 )
 
             if white:
                 brv = brv.whiten()
@@ -395,29 +394,35 @@ class State(Table):
         return body_axis
 
     def _create_json_data(self: State) -> pd.DataFrame:
-        fcd = pd.DataFrame(columns=["N", "E", "D", "VN", "VE", "VD", "r", "p", "yw", "wN", "wE", "roll", "pitch", "yaw"])
-        fcd["N"], fcd["E"], fcd["D"] = self.x, -self.y, -self.z
-        wvels = self.body_to_world(Point(self.vel))
-        fcd["VN"], fcd["VE"], fcd["VD"] = wvels.x, -wvels.y, -wvels.z
+
+        wvels = self.transform.rotate(self.vel)
 
         transform = Transformation.from_coords(
             Coord.from_xy(Point(0, 0, 0), Point(1, 0, 0), Point(0, 1, 0)),
             Coord.from_xy(Point(0, 0, 0), Point(1, 0, 0), Point(0, -1, 0))
         )
-        eul = transform.rotate(Quaternion(self.att)).to_euler()
-        ex, ey, ez = eul.x, eul.y, eul.z
-        fcd["roll"], fcd["pitch"], fcd["yaw"] = ex, ey, ez
+        eul = transform.rotate(self.att).to_euler()
 
-        fcd["r"] = np.degrees(fcd["roll"])
-        fcd["p"] = np.degrees(fcd["pitch"])
-        fcd["yw"] = np.degrees(fcd["yaw"])
+        fcd = pd.DataFrame(
+            data = dict(
+                time = self.t * 1e6,
+                N=self.x, 
+                E=-self.y, 
+                D=-self.z, 
+                VN=wvels.x, 
+                VE=-wvels.y, 
+                VD=-wvels.z, 
+                r=np.degrees(eul.x), 
+                p=np.degrees(eul.y), 
+                yw=np.degrees(eul.z), 
+                wN=np.zeros(len(self)), 
+                wE=np.zeros(len(self)), 
+                roll=eul.x, 
+                pitch=eul.y, 
+                yaw=eul.z
+            ),
+        )
 
-        fcd["wN"] = np.zeros(len(ex))
-        fcd["wE"] = np.zeros(len(ex))
-
-        fcd = fcd.reset_index()
-        fcd.columns = ["time", "N", "E", "D", "VN", "VE", "VD", "r", "p", "yw", "wN", "wE", "roll", "pitch", "yaw"]
-        fcd["time"] = np.int64(fcd["time"] * 1e6)
         return fcd
 
     def _create_json_mans(self: State, sdef) -> pd.DataFrame:
@@ -480,7 +485,7 @@ class State(Table):
                 "pilotLng": "0.0",
                 "pilotAlt": "0.00",
                 "centerLat": "0.0",
-                "centerLng": "0.0",
+                "centerLng": "-0.1",
                 "centerAlt": "0.00",
                 "schedule": [schedule_category, schedule_name]
             },

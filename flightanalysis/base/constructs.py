@@ -24,6 +24,11 @@ class SVar:
 class Constructs(Collection):
     VType=SVar
     uid = "name"
+
+    def __init__(self, data):
+        super().__init__(data)
+        self._cols = list(chain(*[c.keys for c in self.data.values()]))
+
     def subset(self, names: List[str]):
         """get a subset of the constructs"""
         return Constructs({key: value for key, value in self.data.items() if key in names})
@@ -60,4 +65,4 @@ class Constructs(Collection):
             yield val
 
     def cols(self):
-        return chain(*[c.keys for c in self.data.values()])
+        return self._cols

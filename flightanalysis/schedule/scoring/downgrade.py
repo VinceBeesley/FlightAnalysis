@@ -63,7 +63,7 @@ class DownGrade:
             # this is because there is a correct reference value the pilot should be aiming for
             # roll angle, track, 
             if self.criteria.comparison == 'absolute':
-                tempvals = tempvals * measurement.visibility[endcut:-endcut] 
+                tempvals = tempvals[0] + np.cumsum(np.gradient(tempvals) * measurement.visibility[endcut:-endcut])  
        
             id, error, dg = self.criteria(
                 list(range(endcut,len(fl)-endcut)), 

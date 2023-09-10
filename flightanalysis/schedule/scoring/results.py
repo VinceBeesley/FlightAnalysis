@@ -56,7 +56,37 @@ class Result:
             columns = ['collector', 'value', 'error', 'visibility', 'downgrade']
         )
 
+    def plot(self):
+        import plotly.graph_objects as go
+        fig=go.Figure(layout=dict(yaxis=dict(title='measurement')))
+        
+        x=list(range(0, len(self.measurement),1))
+        fig.add_trace(go.Scatter(x=x,y=abs(self.measurement.value), name='flown'))
+        fig.add_trace(go.Scatter(x=x, y=abs(self.measurement.expected), name='expected'))
 
+
+        fig.add_trace(go.Scatter(
+            x=x,
+            y=self.sample, 
+            name='sample',
+            yaxis='y',
+            line=dict(width=3)
+        ))
+
+        hovtxt=[self.info(i) for i in range(len(self.keys))]
+
+        fig.add_trace(go.Scatter(
+            x=self.keys,
+            y=self.sample[self.keys],
+            text=np.round(self.dgs, 3),
+            hovertext=hovtxt,
+            mode='markers+text',
+            name='downgrades',
+            yaxis='y'
+        ))
+
+        return fig
+    
 class Results(Collection):
     """
     Intra - the Results collection covers all the downgrades in one element

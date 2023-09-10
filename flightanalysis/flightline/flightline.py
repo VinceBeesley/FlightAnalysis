@@ -56,6 +56,9 @@ class Box(object):
     def __str__(self):
         return "Box:{}".format(self.to_dict())
 
+    def __repr__(self):
+        return f'Box(heading={np.degrees(self.heading)},pos={self.pilot_position})'
+
     @staticmethod
     def from_initial(flight):
         from flightdata import Fields

@@ -235,7 +235,9 @@ f25_def = SchedDef([
             f3amb.line(length="ee_pause"),
             f3amb.roll('1/2', padded=False),
         ], 
-        line_length=150
+        line_length=150,
+        partial_roll_rate=np.pi,
+        ee_pause=10,
         #roll_option=need to thing about how to do this
     )
 ])
@@ -243,16 +245,8 @@ f25_def = SchedDef([
 
 
 if __name__ == "__main__":
-#    f25_def.to_json("flightanalysis/data/f25.json")
 
-    f25, template = f25_def.create_template(170, 1)
-#    from flightplotting import plotsec
-   # 
- #   plotsec(template, nmodels=20).show()
-    from json import dump
-    fcj = template.create_fc_json(f25_def, "F25")
-    with open('flight_coach_F25.json', 'w') as f:
-        dump(fcj, f)
-    #from json import dump
-    #with open("test.json", "w") as f:
-    #    dump(fcj, f)
+ 
+    f25_def.plot().show()
+#    f25_def.create_fcj('F25', 'f25_template_fcj.json')
+#    f25_def.save_json("flightanalysis/data/f25_schedule.json")

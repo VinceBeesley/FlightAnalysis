@@ -1,12 +1,11 @@
-from json import load, dump, JSONEncoder
-from flightanalysis import State, Box, SchedDef, ManDef
+from json import load
+from flightanalysis import State, Box, SchedDef
 from flightdata import Flight
-from geometry import Transformation, Quaternion
 import numpy as np
 import pandas as pd
     
-
-with open("examples/data/manual_F3A_P23_22_05_31_00000350.json", "r") as f:
+#examples/data/manual_F3A_P23_22_05_31_00000350.json
+with open("examples/data/FC_P23_Template.json", "r") as f:
     data = load(f)
 
 

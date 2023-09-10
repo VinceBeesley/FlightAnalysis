@@ -128,7 +128,7 @@ class ManoeuvreAnalysis:
         return man, man.create_template(itrans)
 
     @staticmethod
-    def alignment(template: State, man: Manoeuvre, flown: State) -> State:
+    def alignment(template: State, man: Manoeuvre, flown: State) -> Tuple(float, State):
         aligned = State.align(flown, template, radius=10)[1]
         int_tp = man.match_intention(template[0], aligned)[1]
         
@@ -186,7 +186,7 @@ class ManoeuvreAnalysis:
             [])
 
     def centre(self):
-        al = self.aligned#.get_element(slice(1,-1,None))
+        al = self.aligned.get_element(slice(1,-1,None))
         side_box_angle = np.arctan2(al.pos.x, al.pos.y)
         if self.mdef.info.centre_loc == -1:
             centre = max(side_box_angle) + min(side_box_angle)

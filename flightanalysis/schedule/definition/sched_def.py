@@ -10,6 +10,7 @@ from flightanalysis.base.numpy_encoder import NumpyEncoder
 from dataclasses import dataclass
 from flightanalysis.data import list_resources, get_json_resource
 
+
 @dataclass
 class ScheduleInfo:
     category: str
@@ -96,3 +97,22 @@ class SchedDef(Collection):
             name = str(name)
         return SchedDef.from_dict(get_json_resource(f"{name.lower()}_schedule"))
     
+
+    def plot(self):
+        sched, template = self.create_template(170, 1)
+        from flightplotting import plotsec
+        return plotsec(template, nmodels=5)
+
+
+    def create_fcj(self, sname: str, path: str):
+        from flightanalysis import State
+        sched, template = self.create_template(170, 1)
+        template = State.stack([
+            template, 
+            Line(30, 100, uid='exit_line').create_template(template[-1]).label(manoeuvre=self[-1].info.short_name)
+        ])
+
+        from json import dump
+        fcj = template.create_fc_json(self, sname)
+        with open(path, 'w') as f:
+            dump(fcj, f)

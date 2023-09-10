@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
     
 
-with open("examples/data/manual_F3A_P23_23_08_11_00000094.json", "r") as f:
+with open("examples/data/FC_P23_Template.json", "r") as f:
     data = load(f)
 
 
@@ -21,12 +21,12 @@ analysis = ScheduleAnalysis()
 dgs = []
 
 
-mdef = sdef.sFin
+mdef = sdef.tHat
 flown = state.get_manoeuvre(mdef.info.short_name)
 
 itrans = ManoeuvreAnalysis.initial_transform(mdef, flown)
 man, tp = ManoeuvreAnalysis.template(mdef, itrans)
-aligned = ManoeuvreAnalysis.alignment(tp, man, flown)[1]
+dist, aligned = ManoeuvreAnalysis.alignment(tp, man, flown)
 
 from flightplotting import plotdtw
 

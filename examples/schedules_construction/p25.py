@@ -213,13 +213,7 @@ p25_def = SchedDef([
 
 
 if __name__ == "__main__":
-    p25, template = p25_def.create_template(170, 1)
-    from flightplotting import plotsec
-    
-    #plotsec(template, nmodels=5).show()
-    #from json import dump
-    #fcj = template.create_fc_json(p25_def, "P25")
-    #with open('flight_coach_P25.json', 'w') as f:
-    #    dump(fcj, f)
-#
-#     p25_def.to_json("flightanalysis/data/p25.json")
+
+#    p25_def.plot().show()
+    p25_def.create_fcj('P25', 'p25_template_fcj.json')
+#    p25_def.save_json("flightanalysis/data/p25_schedule.json")
