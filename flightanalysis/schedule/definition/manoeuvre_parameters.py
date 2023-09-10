@@ -48,7 +48,7 @@ class ManParm(Opp):
         return ManParm(
             name = data["name"],
             criteria = Criteria.from_dict(data["criteria"]),
-            default = data["default"],
+            default = data["default"] if 'default' in data else data['defaul'], # because default is reserverd in javascript
             collectors = Collectors.from_dict(data["collectors"])
         )
 

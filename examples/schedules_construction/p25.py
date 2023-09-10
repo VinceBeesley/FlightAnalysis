@@ -1,6 +1,7 @@
 from flightanalysis.schedule.definition import *
 from flightanalysis.schedule.elements import *
-from flightanalysis.criteria import *
+from flightanalysis.schedule.scoring.criteria import *
+import numpy as np
 
 c45 = np.cos(np.radians(45))
 
@@ -15,7 +16,7 @@ p25_def = SchedDef([
             f3amb.loop(np.pi/4),
             f3amb.roll("2x4"),
             f3amb.loop(-np.pi*3/4), 
-            f3amb.roll("1/1",line_length=str(2 * f3amb.mps.line_length * c45)),
+            f3amb.roll("1/1",line_length=str(2 * c45 * f3amb.mps.line_length)),
             f3amb.loop(-np.pi*3/4),
             f3amb.roll("2x4"),
             f3amb.loop(np.pi/4)
@@ -85,7 +86,7 @@ p25_def = SchedDef([
             f3amb.roll("1/2", padded=False),
         ], loop_radius=100, 
         roll_option=ManParm("roll_option", Combination(
-            [[np.pi/2, -np.pi/2], [-np.pi/2, np.pi/2]]
+            desired=[[np.pi/2, -np.pi/2], [-np.pi/2, np.pi/2]]
         ), 0)),
     f3amb.create(ManInfo(
             "Humpty", "hB", k=4, position=Position.END, 
@@ -111,7 +112,7 @@ p25_def = SchedDef([
         loop_radius=100,
         roll_option=ManParm(
             "roll_option", 
-            Combination([[np.pi, -np.pi], [-np.pi, np.pi]]), 0
+            Combination(desired=[[np.pi, -np.pi], [-np.pi, np.pi]]), 0
         )),
     f3amb.create(ManInfo(
             "Half Square on Corner", "hsqc", k=4, position=Position.END, 
@@ -204,7 +205,7 @@ p25_def = SchedDef([
             f3amb.loop("rke_opt[2]", ke=True, roll="rke_opt[3]"),
         ],
         rke_opt=ManParm("rke_opt", 
-            Combination([
+            Combination(desired=[
                 [np.pi/2, 3*np.pi/4, np.pi/4, np.pi/2], 
                 [-np.pi/2, -3*np.pi/4, -np.pi/4, -np.pi/2]
         ]), 0))
@@ -215,8 +216,10 @@ if __name__ == "__main__":
     p25, template = p25_def.create_template(170, 1)
     from flightplotting import plotsec
     
-#    plotsec(template, nmodels=5).show()
-
+    #plotsec(template, nmodels=5).show()
+    #from json import dump
     #fcj = template.create_fc_json(p25_def, "P25")
-
-    p25_def.to_json("flightanalysis/data/p25.json")
+    #with open('flight_coach_P25.json', 'w') as f:
+    #    dump(fcj, f)
+#
+#     p25_def.to_json("flightanalysis/data/p25.json")

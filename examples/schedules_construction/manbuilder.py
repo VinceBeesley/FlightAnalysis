@@ -5,18 +5,14 @@ from flightanalysis.schedule.scoring import *
 
 
 mdef = f3amb.create(ManInfo(
-            "Top Hat", "tHat", k=4, position=Position.CENTRE, 
-            start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),
-            end=BoxLocation(Height.BTM)
+            "Half Square Loop", "Hsq", k=4, position=Position.END, 
+            start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.INVERTED),
+            end=BoxLocation(Height.TOP)
         ),[
-            f3amb.loop(np.pi/2),
-            f3amb.roll("2x4"),
-            f3amb.loop(np.pi/2), 
-            f3amb.roll("1/2",line_length=100),
             f3amb.loop(-np.pi/2),
-            f3amb.roll("2x4"),
-            f3amb.loop(-np.pi/2)
-        ])
+            f3amb.roll([2*np.pi, - np.pi]),
+            f3amb.loop(np.pi/2)
+        ], )
 
 it = mdef.info.initial_transform(170, 1)
 man = mdef.create(it)

@@ -57,7 +57,7 @@ class DownGrade:
 
             endcut = 4 #min(3, int((len(vals) - 5) / 2))
             
-            tempvals = butter_filter(vals[endcut:-endcut], 2)
+            tempvals = butter_filter(vals[endcut:-endcut], 1)
        
             # for absolute errors you keep getting downgraded for the same error as it becomes more visible.
             # this is because there is a correct reference value the pilot should be aiming for

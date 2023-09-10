@@ -76,7 +76,6 @@ f3amb = ManoeuvreBuilder(
         ManParm("loop_radius", F3A.inter.radius, 55.0),
         ManParm("line_length", F3A.inter.length, 130.0),
         ManParm("point_length", F3A.inter.length, 20.0),
-        ManParm("continuous_roll_rate", F3A.inter.roll_rate, np.pi/2),
         ManParm("partial_roll_rate", F3A.inter.roll_rate, np.pi/2),
         ManParm("full_roll_rate", F3A.inter.roll_rate, 3*np.pi/4),
         ManParm("snap_rate", F3A.inter.roll_rate, 4*np.pi),

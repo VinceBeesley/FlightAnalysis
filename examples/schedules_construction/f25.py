@@ -1,6 +1,7 @@
 from flightanalysis.schedule.definition import *
 from flightanalysis.schedule.elements import *
-from flightanalysis.criteria import *
+from flightanalysis.schedule.scoring.criteria import *
+import numpy as np
 
 c45 = np.cos(np.radians(45))
 
@@ -22,7 +23,7 @@ f25_def = SchedDef([
             f3amb.line(),
             f3amb.loop("roll_option[4]", roll="roll_option[5]", ke=True),
         ], 
-        roll_option=ManParm("roll_option", Combination([
+        roll_option=ManParm("roll_option", Combination(desired=[
             [np.pi/2, -np.pi/2, np.pi/2, -np.pi/2, np.pi/4, -np.pi/2], 
             [-np.pi/2, np.pi/2, -np.pi/2, np.pi/2, -np.pi/4, -np.pi/2]
         ]), 0),
@@ -36,7 +37,7 @@ f25_def = SchedDef([
             f3amb.loop(-np.pi/2),
             f3amb.roll([2*np.pi,-np.pi]),
             f3amb.loop(-3*np.pi/2),
-        ], ),
+        ], full_roll_rate=np.pi, partial_roll_rate=np.pi ),
     f3amb.create(ManInfo(
             "Roll Combo", "Rc", k=4, position=Position.CENTRE, 
             start=BoxLocation(Height.MID, Direction.DOWNWIND, Orientation.INVERTED),
@@ -59,7 +60,7 @@ f25_def = SchedDef([
             f3amb.loop(np.pi/2),
             f3amb.snap(1.5),
             f3amb.loop(np.pi, roll=np.pi),
-            f3amb.roll(np.pi*3),
+            f3amb.roll('3/2'),
             f3amb.loop(-np.pi/2)
         ], full_roll_rate=np.pi),
     f3amb.create(ManInfo(
@@ -81,7 +82,7 @@ f25_def = SchedDef([
             f3amb.loop("roll_option[4]", roll="roll_option[5]", ke=True)
         ], 
         loop_radius=100,
-         roll_option=ManParm("roll_option", Combination([
+         roll_option=ManParm("roll_option", Combination(desired=[
             [np.pi/2, np.pi, -np.pi, -np.pi, np.pi/2, np.pi], 
             [-np.pi/2, -np.pi, np.pi, np.pi, -np.pi/2, -np.pi]
         ]), 1),
@@ -92,7 +93,7 @@ f25_def = SchedDef([
             end=BoxLocation(Height.BTM)
         ),[
             f3amb.loop(-np.pi/2),
-            f3amb.roll(2*np.pi),
+            f3amb.roll('2/2'),
             f3amb.loop(-3*np.pi/4),
             f3amb.snap([1, -1], line_length=str(f3amb.mps.line_length / c45 + 2*f3amb.mps.loop_radius)),
             #L2 = (L1 + 2*R - 2*R(1-c45)) / c45
@@ -105,22 +106,22 @@ f25_def = SchedDef([
             end=BoxLocation(Height.BTM)
         ),[
             f3amb.loop(np.pi/2),
-            f3amb.roll(np.pi),
+            f3amb.roll('1/2'),
             f3amb.loop(-np.pi/2),
-            f3amb.roll(np.pi*2),
+            f3amb.roll('1/1'),
             f3amb.loop(np.pi/2),
             f3amb.roll("roll_option[0]"),
             f3amb.loop("roll_option[1]", ke=True),
-            f3amb.roll(np.pi*2),
+            f3amb.roll('1/1'),
             f3amb.loop("roll_option[2]", ke=True),
             f3amb.roll("roll_option[3]"),
             f3amb.loop(-np.pi/2),
-            f3amb.roll(np.pi*2),
+            f3amb.roll('1/1'),
             f3amb.loop(np.pi/2),
-            f3amb.roll(np.pi),
+            f3amb.roll('1/2'),
             f3amb.loop(-np.pi/2)
-        ], line_length=60, full_roll_rate=3*np.pi/2, loop_radius=35,
-        roll_option=ManParm("roll_option", Combination([
+        ], line_length=60, full_roll_rate=3*np.pi/2, partial_roll_rate=3*np.pi/2, loop_radius=35,
+        roll_option=ManParm("roll_option", Combination(desired=[
                 [np.pi/2, -np.pi/2, -np.pi/2, np.pi/2], 
                 [-np.pi/2, np.pi/2, np.pi/2, -np.pi/2]
             ]), 0),
@@ -131,9 +132,9 @@ f25_def = SchedDef([
             end=BoxLocation(Height.BTM)
         ),[
             f3amb.loop(-np.pi/2),
-            f3amb.roll(np.pi),
+            f3amb.roll('1/2'),
             f3amb.loop(-np.pi),
-            f3amb.roll(3*np.pi),
+            f3amb.roll('3/2'),
             f3amb.loop(np.pi/2),
         ], ),
     f3amb.create(ManInfo(
@@ -142,12 +143,12 @@ f25_def = SchedDef([
             end=BoxLocation(Height.BTM)
         ),[
             f3amb.loop(3*np.pi/4, roll="roll_option[0]"),
-            f3amb.roll(np.pi),
+            f3amb.roll('1/2'),
             f3amb.loop("roll_option[1]", roll=np.pi, ke=True),
-            f3amb.roll(np.pi),
+            f3amb.roll('1/2'),
             f3amb.loop("roll_option[2]", roll="roll_option[3]", ke=True)
         ], 
-        roll_option=ManParm("roll_option", Combination([
+        roll_option=ManParm("roll_option", Combination(desired=[
                 [-np.pi/2, -np.pi/2, -3*np.pi/4, -np.pi/2], 
                 [np.pi/2, np.pi/2, 3*np.pi/4, np.pi/2]
             ]), 0),
@@ -165,7 +166,7 @@ f25_def = SchedDef([
             f3amb.roll("roll_option[3]"),
             f3amb.loop(np.pi/4)
         ], line_length=65, loop_radius=35,
-        roll_option=ManParm("roll_option", Combination([
+        roll_option=ManParm("roll_option", Combination(desired=[
                 [np.pi/2, -np.pi/4, -np.pi/4, -np.pi/2], 
                 [-np.pi/2, np.pi/4, np.pi/4, np.pi/2]
             ]), 0),
@@ -188,7 +189,7 @@ f25_def = SchedDef([
             f3amb.loop(-np.pi/2),
             f3amb.roll([2*np.pi, - np.pi]),
             f3amb.loop(np.pi/2)
-        ], ),
+        ], full_roll_rate=np.pi, partial_roll_rate=np.pi ),
     f3amb.create(ManInfo(
             "Avalanche", "Av", k=4, position=Position.CENTRE, 
             start=BoxLocation(Height.TOP, Direction.DOWNWIND, Orientation.INVERTED),
@@ -200,7 +201,7 @@ f25_def = SchedDef([
             f3amb.loop("roll_option[2]", ke=True),
             f3amb.loop("roll_option[3]", roll="roll_option[4]", ke=True)
         ], loop_radius=100, 
-        roll_option=ManParm("roll_option", Combination([
+        roll_option=ManParm("roll_option", Combination(desired=[
                 [np.pi/2, -np.pi/2, -np.pi/2, -np.pi/2, -np.pi/2], 
                 [-np.pi/2, np.pi/2, np.pi/2, np.pi/2, np.pi/2]
             ]), 0),
@@ -214,7 +215,7 @@ f25_def = SchedDef([
             f3amb.loop("roll_option[1]", ke=True),
             f3amb.roll("roll_option[2]", padded=False)
         ], loop_radius=122.5,
-        roll_option=ManParm("roll_option", Combination([
+        roll_option=ManParm("roll_option", Combination(desired=[
                 [np.pi/2, -np.pi, np.pi/2], 
                 [-np.pi/2, np.pi, -np.pi/2],
             ]), 0),
@@ -224,7 +225,7 @@ f25_def = SchedDef([
             start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.INVERTED),
             end=BoxLocation(Height.BTM)
         ),[
-            f3amb.roll(np.pi, padded=False),
+            f3amb.roll('1/2', padded=False),
             f3amb.line(length="ee_pause"),
             f3amb.loop(np.pi/2),
             f3amb.roll("3x4"),
@@ -232,7 +233,7 @@ f25_def = SchedDef([
             f3amb.snap(0.75),
             f3amb.loop(-np.pi/2),
             f3amb.line(length="ee_pause"),
-            f3amb.roll(np.pi, padded=False),
+            f3amb.roll('1/2', padded=False),
         ], 
         line_length=150
         #roll_option=need to thing about how to do this
@@ -242,15 +243,16 @@ f25_def = SchedDef([
 
 
 if __name__ == "__main__":
-    f25_def.to_json("flightanalysis/data/f25.json")
+#    f25_def.to_json("flightanalysis/data/f25.json")
 
-    #f25, template = f25_def.create_template(170, 1)
-    #from flightplotting import plotsec
+    f25, template = f25_def.create_template(170, 1)
+#    from flightplotting import plotsec
    # 
-   # plotsec(template, nmodels=20).show()
-
-   # fcj = template.create_fc_json(f25_def, "F25")
-
+ #   plotsec(template, nmodels=20).show()
+    from json import dump
+    fcj = template.create_fc_json(f25_def, "F25")
+    with open('flight_coach_F25.json', 'w') as f:
+        dump(fcj, f)
     #from json import dump
     #with open("test.json", "w") as f:
     #    dump(fcj, f)

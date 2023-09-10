@@ -6,7 +6,7 @@ class F3ASingle:
 class F3AIntra:
     track=Continuous(Exponential(3.8197186342054863,1.000000000000001), 'absolute')
     roll=Continuous(Exponential(3.393716180082528,1.2618595071429148), 'absolute')
-    radius=Continuous(Exponential(0.5,1.6309297535714575), 'ratio')
+    radius=Continuous(Exponential(0.25,1.8927892607143724), 'ratio')
     speed=Continuous(Exponential(0.14999999999999858,1.0000000000000058), 'ratio')
     roll_rate=Continuous(Exponential(0.14999999999999858,1.0000000000000058), 'ratio')
 class F3AInter:
