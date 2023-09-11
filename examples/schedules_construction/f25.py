@@ -248,5 +248,5 @@ if __name__ == "__main__":
 
  
 #    f25_def.plot().show()
-    f25_def.create_fcj('F25', 'f25_template_fcj.json')
-#    f25_def.save_json("flightanalysis/data/f25_schedule.json")
+#    f25_def.create_fcj('F25', 'f25_template_fcj.json')
+    f25_def.to_json("flightanalysis/data/f25_schedule.json")
