@@ -123,6 +123,7 @@ p23_def = SchedDef([
             f3amb.loop(-np.pi/4),
             f3amb.roll([np.pi, -np.pi], line_length=str(2*f3amb.mps.loop_radius)),
             f3amb.loop(7*np.pi/4),
+            MBTags.CENTRE,
             f3amb.roll("2x4", line_length=100),
             f3amb.loop(-np.pi/2)
         ], 
@@ -142,6 +143,7 @@ p23_def = SchedDef([
         ),[
             f3amb.loop(np.pi/2),
             f3amb.roll("roll_option[0]", speed=30),
+            MBTags.CENTRE,
             f3amb.stallturn(),
             f3amb.line(speed=30),
             f3amb.loop(-np.pi),
@@ -218,5 +220,5 @@ p23_def = SchedDef([
 if __name__ == "__main__":
     
 #    p23_def.plot().show()
-    p23_def.create_fcj('P23', 'p23_template_fcj.json')
-#    p23_def.save_json("flightanalysis/data/p23_schedule.json")
+#    p23_def.create_fcj('P23', 'p23_template_fcj.json')
+    p23_def.to_json("flightanalysis/data/p23_schedule.json")

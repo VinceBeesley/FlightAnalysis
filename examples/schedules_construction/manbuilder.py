@@ -5,21 +5,16 @@ from flightanalysis.schedule.scoring import *
 
 
 mdef = f3amb.create(ManInfo(
-            "Half Square Loop", "Hsq", k=4, position=Position.END, 
-            start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.INVERTED),
-            end=BoxLocation(Height.TOP)
+            "Snap", "Sn", k=2, position=Position.CENTRE, 
+            start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),
+            end=BoxLocation(Height.BTM)
         ),[
-            f3amb.loop(-np.pi/2),
-            f3amb.roll([2*np.pi, - np.pi]),
-            f3amb.loop(np.pi/2)
-        ], )
+            f3amb.snap(1, padded=False)
+        ])
 
 it = mdef.info.initial_transform(170, 1)
 man = mdef.create(it)
 
 tp = man.create_template(it)
 
-from flightplotting import plotsec
-
-plotsec(tp, scale=3, nmodels=10).show()
-pass
+print(tp[9.2: 9.6].data)

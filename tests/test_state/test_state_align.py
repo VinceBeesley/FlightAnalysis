@@ -94,3 +94,26 @@ def test_subset(aligned):
 
     al_ss = aligned.get_subset(2, "element")
     assert al_ss.data.element.unique()[0] == els[2]
+
+
+from geometry import PX
+from flightanalysis.base.table import Time
+
+def test_copy_labels_min_len():
+    tp = State.from_transform(Transformation(), vel=PX(30)) \
+        .fill(Time.from_t(np.linspace(0, 1, 10))) \
+            .label(
+                element=list('aaaabbbccc'),
+                manoeuvre=list('mmmmnnnnnn')
+            )
+    
+    path = [[i, i] for i in range(10)]
+    path[4] = [3,4]
+    path[5] = [3,5]
+    path[6] = [3,6]
+
+    al = State.copy_labels(tp, tp.remove_labels(), path, 2)
+    assert len(al.get_element('b')) >=2
+    pass
+
+    

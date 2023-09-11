@@ -73,7 +73,7 @@ class Element:
         if time is None:
             n = int(np.ceil(duration * State._construct_freq))
             return Time.from_t(
-                np.linspace(0, duration, n if n > 1 else n+1))
+                np.linspace(0, duration, max(n,3)))
         else:
             #probably want to extend by one timestep
             return time.reset_zero().scale(duration)

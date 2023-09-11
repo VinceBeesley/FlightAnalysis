@@ -46,11 +46,11 @@ class Table:
          SVar("time", Time,        ["t", "dt"]               , make_time )
     ])
 
-    def __init__(self, data: pd.DataFrame, fill=True):
-        if len(data) == 0:
-            raise Exception("Created with empty dataframe")
-        self._base_cols = [c for c in data.columns if c in self.constructs.cols()]
-        self._label_cols = [[c for c in data.columns if not c in self.constructs.cols()]]
+    def __init__(self, data: pd.DataFrame, fill=True, min_len=1):
+        if len(data) < min_len:
+            raise Exception(f"State constructor length check failed, data length = {len(data)}, min_len = {min_len}")
+        self.base_cols = [c for c in data.columns if c in self.constructs.cols()]
+        self.label_cols = [c for c in data.columns if not c in self.constructs.cols()]
     
         self.data = data
 
@@ -66,8 +66,10 @@ class Table:
                 ).loc[:, [key for key in svar.keys if key not in self.data.columns]]
                 
                 self.data = pd.concat([self.data, newdata], axis=1)
-    
-        if np.any(np.isnan(self.data.loc[:,self.constructs.cols()])):
+            bcs = self.constructs.cols()
+        else:
+            bcs = self.base_cols
+        if np.any(np.isnan(self.data.loc[:,bcs])):
             raise ValueError("nan values in data")
         
 
@@ -145,18 +147,18 @@ class Table:
         kwargs = dict(kwargs, **{list(self.constructs.data.keys())[i]: arg for i, arg in enumerate(args)}) # add the args to the kwargs
         old_constructs = {key: self.__getattr__(key) for key in self.constructs.existing(self.data.columns).data if not key in kwargs}       
         new_constructs = {key: value for key, value in list(kwargs.items()) + list(old_constructs.items())}
-        return self.__class__.from_constructs(**new_constructs).label(**self.labels)
+        return self.__class__.from_constructs(**new_constructs).label(**self.labels.to_dict(orient='list'))
 
     def label(self, **kwargs):
         return self.__class__(self.data.assign(**kwargs))
 
     @property
     def label_keys(self):
-        return [c for c in self.data.columns if not c in self.constructs.cols()]
+        return self.label_cols
     
     @property
     def labels(self) -> Dict[str, np.array]:
-        return {m: getattr(self, m) for m in self.label_keys}
+        return self.data.loc[:, self.label_cols]
 
     def remove_labels(self):
         return self.__class__(
