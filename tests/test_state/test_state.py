@@ -6,7 +6,7 @@ from flightdata import Flight, Fields
 import numpy as np
 import pandas as pd
 from pytest import approx, fixture
-from json import dumps, loads
+from json import dumps, loads, load
 
 flight = Flight.from_csv('tests/test_inputs/test_log_00000052_flight.csv')
 
@@ -117,3 +117,19 @@ def test_from_constructs_weird_problem():
     )
     assert np.sum(np.isnan(st.rvel.data)) == 0
 
+from flightanalysis.schedule import ScheduleInfo
+
+def test_splitter_labels():
+    with open('tests/test_inputs/fcjson/manual_F3A_P23_22_08_23_00000055_1.json', 'r') as f:
+        fcj = load(f)
+    flight = Flight.from_fc_json(fcj)
+
+    box = Box.from_fcjson_parmameters(fcj["parameters"])
+    sdef = ScheduleInfo('f3a', 'p23').definition() 
+
+    state = State.from_flight(flight, box).splitter_labels(
+        fcj["mans"],
+        [m.info.short_name for m in sdef]
+    )
+
+    assert len(state.get_manoeuvre('tHat')) > 0

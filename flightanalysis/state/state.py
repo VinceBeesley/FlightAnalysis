@@ -276,32 +276,39 @@ class State(Table):
                             st = st.label(**old_labels.to_dict(orient='list'))                            
             return st
 
-    def splitter_labels(self: State, mans: List[dict]) -> State:
+    def splitter_labels(self: State, mans: List[dict], better_names: List[str]=None) -> State:
             """label the manoeuvres in a State based on the flight coach splitter information
 
             TODO this assumes the state only contains the dataset contained in the json
 
             Args:
                 mans (list): the mans field of a flight coach json
+                better_names: names to replace the splitter names with. does not include takeoff or landing.
 
             Returns:
                 State: State with labelled manoeuvres
             """
 
+                
             takeoff = self.data.iloc[0:int(mans[0]["stop"])+1]
 
             labels = [mans[0]["name"]]
             labelled = [State(takeoff).label(manoeuvre=labels[0])]
-            
-            for split_man in mans[1:]:
+            if better_names:
+                better_names.append('land')
+
+            for i, split_man in enumerate(mans[1:]):
                 
                 while split_man["name"] in labels:
                     split_man["name"] = split_man["name"] + "2"
 
+
+                name = better_names[i] if better_names else split_man["name"]
+
                 labelled.append(
                     State(
                         self.data.iloc[int(split_man["start"]):int(split_man["stop"])+1]
-                    ).label(manoeuvre=split_man["name"])
+                    ).label(manoeuvre=name)
                 )
                 labels.append(split_man["name"])
 

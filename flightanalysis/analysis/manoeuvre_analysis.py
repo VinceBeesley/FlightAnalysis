@@ -2,7 +2,9 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 from json import load
-from flightanalysis import State, Manoeuvre, State, ManDef, ElDef, Box, Collection
+
+from flightdata import Flight
+from flightanalysis import State, Manoeuvre, State, ManDef, ElDef, Box, Collection, SchedDef
 from flightanalysis.schedule.elements import Element
 from flightanalysis.schedule.scoring import *
 from flightanalysis.schedule.scoring.criteria.f3a_criteria import F3A
@@ -128,11 +130,12 @@ class ManoeuvreAnalysis:
         return man, man.create_template(itrans)
 
     @staticmethod
-    def alignment(template: State, man: Manoeuvre, flown: State) -> Tuple(float, State):
+    def alignment(template: State, man: Manoeuvre, flown: State, radius=None) -> Tuple(float, State):
         aligned = State.align(flown, template, radius=10)[1]
         int_tp = man.match_intention(template[0], aligned)[1]
-        
-        return State.align(aligned, int_tp, radius=10, mirror=False)
+        if radius is None:
+            radius = max(len(template), len(flown))
+        return State.align(aligned, int_tp, radius=radius, mirror=False)
 
     @staticmethod
     def intention(man: Manoeuvre, aligned: State, template: State) -> Tuple[Manoeuvre, State]:
@@ -240,9 +243,31 @@ class ManoeuvreAnalysis:
             self.distance()
         )
 
-
 class ScheduleAnalysis(Collection):
     VType=ManoeuvreAnalysis
+
+    @staticmethod
+    def from_fcj(file: str):
+        with open(file, 'r') as f:
+            data = load(f)
+
+        flight = Flight.from_fc_json(data)
+        box = Box.from_fcjson_parmameters(data["parameters"])
+
+        sdef = SchedDef.load(data["parameters"]["schedule"][1])
+
+        state = State.from_flight(flight, box).splitter_labels(
+            data["mans"],
+            [m.info.short_name for m in sdef]
+        )
+        mas=[]
+        for mdef in sdef:
+            mas.append(ManoeuvreAnalysis.build(
+                mdef, 
+                state.get_manoeuvre(mdef.info.short_name)
+            ))
+        
+        return ScheduleAnalysis(mas)
 
 
 

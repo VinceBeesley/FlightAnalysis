@@ -1,8 +1,8 @@
 {
-  "sqc": {
+  "sLoop": {
     "info": {
       "name": "Square on Corner",
-      "short_name": "sqc",
+      "short_name": "sLoop",
       "k": 4,
       "position": "CENTRE",
       "start": {
@@ -24,7 +24,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 0.861353116146786
+            "exponent": 0.861353116146786,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -43,7 +44,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -61,7 +63,8 @@
           "kind": "Combination",
           "lookup": {
             "factor": 0,
-            "exponent": 1
+            "exponent": 1,
+            "limit": 10
           },
           "comparison": "absolute",
           "desired": [
@@ -188,10 +191,10 @@
       }
     }
   },
-  "P": {
+  "fig9": {
     "info": {
       "name": "Figure P",
-      "short_name": "P",
+      "short_name": "fig9",
       "k": 4,
       "position": "END",
       "start": {
@@ -213,7 +216,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 0.861353116146786
+            "exponent": 0.861353116146786,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -229,7 +233,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -243,8 +248,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.14999999999999858,
-            "exponent": 1.1787469216608066
+            "factor": 0.25,
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -258,8 +264,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.14999999999999858,
-            "exponent": 1.1787469216608066
+            "factor": 0.25,
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -274,7 +281,8 @@
           "kind": "Combination",
           "lookup": {
             "factor": 0,
-            "exponent": 1
+            "exponent": 1,
+            "limit": 10
           },
           "comparison": "absolute",
           "desired": [
@@ -300,7 +308,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -372,10 +381,10 @@
       }
     }
   },
-  "Rc": {
+  "rollC": {
     "info": {
       "name": "Roll Combo",
-      "short_name": "Rc",
+      "short_name": "rollC",
       "k": 4,
       "position": "CENTRE",
       "start": {
@@ -397,7 +406,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -415,8 +425,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.14999999999999858,
-            "exponent": 1.1787469216608066
+            "factor": 0.25,
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -438,7 +449,8 @@
           "kind": "Combination",
           "lookup": {
             "factor": 0,
-            "exponent": 1
+            "exponent": 1,
+            "limit": 10
           },
           "comparison": "absolute",
           "desired": [
@@ -597,10 +609,10 @@
       }
     }
   },
-  "Hlp": {
+  "hLoop": {
     "info": {
       "name": "Half Loop",
-      "short_name": "Hlp",
+      "short_name": "hLoop",
       "k": 4,
       "position": "END",
       "start": {
@@ -622,7 +634,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 0.861353116146786
+            "exponent": 0.861353116146786,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -646,10 +659,10 @@
       }
     }
   },
-  "Hb": {
+  "hB": {
     "info": {
       "name": "Humpty",
-      "short_name": "Hb",
+      "short_name": "hB",
       "k": 4,
       "position": "CENTRE",
       "start": {
@@ -671,7 +684,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 0.861353116146786
+            "exponent": 0.861353116146786,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -688,7 +702,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -703,8 +718,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.14999999999999858,
-            "exponent": 1.1787469216608066
+            "factor": 0.25,
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -718,8 +734,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.14999999999999858,
-            "exponent": 1.1787469216608066
+            "factor": 0.25,
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -734,7 +751,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -750,7 +768,8 @@
           "kind": "Combination",
           "lookup": {
             "factor": 0,
-            "exponent": 1
+            "exponent": 1,
+            "limit": 10
           },
           "comparison": "absolute",
           "desired": [
@@ -773,7 +792,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -891,10 +911,10 @@
       }
     }
   },
-  "Sp": {
+  "spin": {
     "info": {
       "name": "Spins",
-      "short_name": "Sp",
+      "short_name": "spin",
       "k": 4,
       "position": "END",
       "start": {
@@ -916,7 +936,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 0.861353116146786
+            "exponent": 0.861353116146786,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -930,8 +951,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.14999999999999858,
-            "exponent": 1.1787469216608066
+            "factor": 0.25,
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -945,8 +967,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.14999999999999858,
-            "exponent": 1.1787469216608066
+            "factor": 0.25,
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -961,7 +984,8 @@
           "kind": "Combination",
           "lookup": {
             "factor": 0,
-            "exponent": 1
+            "exponent": 1,
+            "limit": 10
           },
           "comparison": "absolute",
           "desired": [
@@ -984,7 +1008,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -1062,10 +1087,10 @@
       }
     }
   },
-  "Cir": {
+  "hCirc": {
     "info": {
       "name": "Rolling Circle",
-      "short_name": "Cir",
+      "short_name": "hCirc",
       "k": 4,
       "position": "CENTRE",
       "start": {
@@ -1087,7 +1112,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 0.861353116146786
+            "exponent": 0.861353116146786,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -1104,7 +1130,8 @@
           "kind": "Combination",
           "lookup": {
             "factor": 0,
-            "exponent": 1
+            "exponent": 1,
+            "limit": 10
           },
           "comparison": "absolute",
           "desired": [
@@ -1198,7 +1225,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 0.861353116146786
+            "exponent": 0.861353116146786,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -1215,7 +1243,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -1229,8 +1258,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.14999999999999858,
-            "exponent": 1.1787469216608066
+            "factor": 0.25,
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -1244,8 +1274,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.14999999999999858,
-            "exponent": 1.1787469216608066
+            "factor": 0.25,
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -1261,7 +1292,8 @@
           "kind": "Combination",
           "lookup": {
             "factor": 0,
-            "exponent": 1
+            "exponent": 1,
+            "limit": 10
           },
           "comparison": "absolute",
           "desired": [
@@ -1284,7 +1316,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -1300,7 +1333,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -1427,10 +1461,10 @@
       }
     }
   },
-  "SqOL": {
+  "sV8": {
     "info": {
       "name": "Square Octagonal Loop",
-      "short_name": "SqOL",
+      "short_name": "sV8",
       "k": 4,
       "position": "CENTRE",
       "start": {
@@ -1452,7 +1486,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 0.861353116146786
+            "exponent": 0.861353116146786,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -1474,7 +1509,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -1494,8 +1530,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.14999999999999858,
-            "exponent": 1.1787469216608066
+            "factor": 0.25,
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -1512,8 +1549,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.14999999999999858,
-            "exponent": 1.1787469216608066
+            "factor": 0.25,
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -1530,7 +1568,8 @@
           "kind": "Combination",
           "lookup": {
             "factor": 0,
-            "exponent": 1
+            "exponent": 1,
+            "limit": 10
           },
           "comparison": "absolute",
           "desired": [
@@ -1562,7 +1601,8 @@
           "kind": "Combination",
           "lookup": {
             "factor": 0,
-            "exponent": 1
+            "exponent": 1,
+            "limit": 10
           },
           "comparison": "absolute",
           "desired": [
@@ -1585,7 +1625,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -1601,7 +1642,8 @@
           "kind": "Combination",
           "lookup": {
             "factor": 0,
-            "exponent": 1
+            "exponent": 1,
+            "limit": 10
           },
           "comparison": "absolute",
           "desired": [
@@ -1624,7 +1666,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -1640,7 +1683,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -1656,7 +1700,8 @@
           "kind": "Combination",
           "lookup": {
             "factor": 0,
-            "exponent": 1
+            "exponent": 1,
+            "limit": 10
           },
           "comparison": "absolute",
           "desired": [
@@ -1679,7 +1724,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -1695,7 +1741,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -1711,7 +1758,8 @@
           "kind": "Combination",
           "lookup": {
             "factor": 0,
-            "exponent": 1
+            "exponent": 1,
+            "limit": 10
           },
           "comparison": "absolute",
           "desired": [
@@ -1734,7 +1782,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -1750,7 +1799,8 @@
           "kind": "Combination",
           "lookup": {
             "factor": 0,
-            "exponent": 1
+            "exponent": 1,
+            "limit": 10
           },
           "comparison": "absolute",
           "desired": [
@@ -1773,7 +1823,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -2064,10 +2115,10 @@
       }
     }
   },
-  "Hb2": {
+  "hB2": {
     "info": {
       "name": "Humpty_2",
-      "short_name": "Hb2",
+      "short_name": "hB2",
       "k": 4,
       "position": "END",
       "start": {
@@ -2089,7 +2140,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 0.861353116146786
+            "exponent": 0.861353116146786,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -2106,7 +2158,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -2121,8 +2174,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.14999999999999858,
-            "exponent": 1.1787469216608066
+            "factor": 0.25,
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -2136,8 +2190,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.14999999999999858,
-            "exponent": 1.1787469216608066
+            "factor": 0.25,
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -2152,7 +2207,8 @@
           "kind": "Combination",
           "lookup": {
             "factor": 0,
-            "exponent": 1
+            "exponent": 1,
+            "limit": 10
           },
           "comparison": "absolute",
           "desired": [
@@ -2175,7 +2231,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -2191,7 +2248,8 @@
           "kind": "Combination",
           "lookup": {
             "factor": 0,
-            "exponent": 1
+            "exponent": 1,
+            "limit": 10
           },
           "comparison": "absolute",
           "desired": [
@@ -2214,7 +2272,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -2315,10 +2374,10 @@
       }
     }
   },
-  "Tri": {
+  "keTrg": {
     "info": {
       "name": "Triangular Loop",
-      "short_name": "Tri",
+      "short_name": "keTrg",
       "k": 4,
       "position": "CENTRE",
       "start": {
@@ -2340,7 +2399,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 0.861353116146786
+            "exponent": 0.861353116146786,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -2357,7 +2417,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -2372,8 +2433,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.14999999999999858,
-            "exponent": 1.1787469216608066
+            "factor": 0.25,
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -2389,7 +2451,8 @@
           "kind": "Combination",
           "lookup": {
             "factor": 0,
-            "exponent": 1
+            "exponent": 1,
+            "limit": 10
           },
           "comparison": "absolute",
           "desired": [
@@ -2421,7 +2484,8 @@
           "kind": "Combination",
           "lookup": {
             "factor": 0,
-            "exponent": 1
+            "exponent": 1,
+            "limit": 10
           },
           "comparison": "absolute",
           "desired": [
@@ -2444,7 +2508,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -2460,7 +2525,8 @@
           "kind": "Combination",
           "lookup": {
             "factor": 0,
-            "exponent": 1
+            "exponent": 1,
+            "limit": 10
           },
           "comparison": "absolute",
           "desired": [
@@ -2483,7 +2549,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -2584,10 +2651,10 @@
       }
     }
   },
-  "h8lp": {
+  "h8L": {
     "info": {
       "name": "Half 8 Sided Loop",
-      "short_name": "h8lp",
+      "short_name": "h8L",
       "k": 4,
       "position": "END",
       "start": {
@@ -2609,7 +2676,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 0.861353116146786
+            "exponent": 0.861353116146786,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -2627,7 +2695,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -2643,8 +2712,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.14999999999999858,
-            "exponent": 1.1787469216608066
+            "factor": 0.25,
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -2660,7 +2730,8 @@
           "kind": "Combination",
           "lookup": {
             "factor": 0,
-            "exponent": 1
+            "exponent": 1,
+            "limit": 10
           },
           "comparison": "absolute",
           "desired": [
@@ -2692,7 +2763,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -2708,7 +2780,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -2829,10 +2902,10 @@
       }
     }
   },
-  "d45": {
+  "dl45": {
     "info": {
       "name": "45 degree downline",
-      "short_name": "d45",
+      "short_name": "dl45",
       "k": 4,
       "position": "CENTRE",
       "start": {
@@ -2854,7 +2927,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 0.861353116146786
+            "exponent": 0.861353116146786,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -2870,7 +2944,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -2884,8 +2959,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.14999999999999858,
-            "exponent": 1.1787469216608066
+            "factor": 0.25,
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -2899,8 +2975,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.14999999999999858,
-            "exponent": 1.1787469216608066
+            "factor": 0.25,
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -2916,7 +2993,8 @@
           "kind": "Combination",
           "lookup": {
             "factor": 0,
-            "exponent": 1
+            "exponent": 1,
+            "limit": 10
           },
           "comparison": "absolute",
           "desired": [
@@ -2942,7 +3020,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -3014,10 +3093,10 @@
       }
     }
   },
-  "Hsq": {
+  "hSLoop": {
     "info": {
       "name": "Half Square Loop",
-      "short_name": "Hsq",
+      "short_name": "hSLoop",
       "k": 4,
       "position": "END",
       "start": {
@@ -3039,7 +3118,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 0.861353116146786
+            "exponent": 0.861353116146786,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -3055,7 +3135,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -3069,8 +3150,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.14999999999999858,
-            "exponent": 1.1787469216608066
+            "factor": 0.25,
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -3084,8 +3166,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.14999999999999858,
-            "exponent": 1.1787469216608066
+            "factor": 0.25,
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -3100,7 +3183,8 @@
           "kind": "Combination",
           "lookup": {
             "factor": 0,
-            "exponent": 1
+            "exponent": 1,
+            "limit": 10
           },
           "comparison": "absolute",
           "desired": [
@@ -3126,7 +3210,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -3198,10 +3283,10 @@
       }
     }
   },
-  "Av": {
+  "Aval": {
     "info": {
       "name": "Avalanche",
-      "short_name": "Av",
+      "short_name": "Aval",
       "k": 4,
       "position": "CENTRE",
       "start": {
@@ -3223,7 +3308,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 0.861353116146786
+            "exponent": 0.861353116146786,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -3240,8 +3326,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.14999999999999858,
-            "exponent": 1.1787469216608066
+            "factor": 0.25,
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -3256,7 +3343,8 @@
           "kind": "Combination",
           "lookup": {
             "factor": 0,
-            "exponent": 1
+            "exponent": 1,
+            "limit": 10
           },
           "comparison": "absolute",
           "desired": [
@@ -3359,10 +3447,10 @@
       }
     }
   },
-  "SpS": {
+  "keS": {
     "info": {
       "name": "Split S",
-      "short_name": "SpS",
+      "short_name": "keS",
       "k": 4,
       "position": "END",
       "start": {
@@ -3384,7 +3472,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 0.861353116146786
+            "exponent": 0.861353116146786,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -3398,8 +3487,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.14999999999999858,
-            "exponent": 1.1787469216608066
+            "factor": 0.25,
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -3415,7 +3505,8 @@
           "kind": "Combination",
           "lookup": {
             "factor": 0,
-            "exponent": 1
+            "exponent": 1,
+            "limit": 10
           },
           "comparison": "absolute",
           "desired": [
@@ -3471,10 +3562,10 @@
       }
     }
   },
-  "St": {
+  "stall": {
     "info": {
       "name": "Stall Turn",
-      "short_name": "St",
+      "short_name": "stall",
       "k": 4,
       "position": "CENTRE",
       "start": {
@@ -3496,7 +3587,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 0.861353116146786
+            "exponent": 0.861353116146786,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -3512,7 +3604,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -3528,7 +3621,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -3543,8 +3637,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.14999999999999858,
-            "exponent": 1.1787469216608066
+            "factor": 0.25,
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -3562,8 +3657,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.14999999999999858,
-            "exponent": 1.1787469216608066
+            "factor": 0.25,
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -3577,8 +3673,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.14999999999999858,
-            "exponent": 1.1787469216608066
+            "factor": 0.25,
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -3593,7 +3690,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -3609,7 +3707,8 @@
           "kind": "Combination",
           "lookup": {
             "factor": 0,
-            "exponent": 1
+            "exponent": 1,
+            "limit": 10
           },
           "comparison": "absolute",
           "desired": [
@@ -3632,7 +3731,8 @@
           "kind": "Combination",
           "lookup": {
             "factor": 0,
-            "exponent": 1
+            "exponent": 1,
+            "limit": 10
           },
           "comparison": "absolute",
           "desired": [
@@ -3661,7 +3761,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -3677,7 +3778,8 @@
           "kind": "Comparison",
           "lookup": {
             "factor": 0.5,
-            "exponent": 1.1132827525593783
+            "exponent": 1.1132827525593783,
+            "limit": 10
           },
           "comparison": "ratio"
         },
@@ -3693,7 +3795,8 @@
           "kind": "Combination",
           "lookup": {
             "factor": 0,
-            "exponent": 1
+            "exponent": 1,
+            "limit": 10
           },
           "comparison": "absolute",
           "desired": [

@@ -9,7 +9,7 @@ c45 = np.cos(np.radians(45))
 
 p25_def = SchedDef([
     f3amb.create(ManInfo(
-            "Triangle", "tri", k=4, position=Position.CENTRE, 
+            "Triangle", "trgle", k=4, position=Position.CENTRE, 
             start=BoxLocation(Height.TOP, Direction.UPWIND, Orientation.INVERTED),
             end=BoxLocation(Height.TOP)
         ),[
@@ -22,7 +22,7 @@ p25_def = SchedDef([
             f3amb.loop(np.pi/4)
         ], line_length=150),
     f3amb.create(ManInfo(
-            "half square", "hsq", k=2, position=Position.END, 
+            "half square", "hSqL", k=2, position=Position.END, 
             start=BoxLocation(Height.TOP, Direction.UPWIND, Orientation.INVERTED),
             end=BoxLocation(Height.BTM)
         ),[
@@ -31,7 +31,7 @@ p25_def = SchedDef([
             f3amb.loop(np.pi/2), 
         ]),
     f3amb.create(ManInfo(
-            "Square on Corner", "sqc", k=4, position=Position.CENTRE, 
+            "Square on Corner", "sqL", k=4, position=Position.CENTRE, 
             start=BoxLocation(Height.BTM, Direction.DOWNWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.BTM)
         ),[
@@ -46,7 +46,7 @@ p25_def = SchedDef([
             f3amb.loop(np.pi/4),
         ], line_length=80),
     f3amb.create(ManInfo(
-            "Figure P", "figP", k=3, position=Position.END, 
+            "Figure P", "fig9", k=3, position=Position.END, 
             start=BoxLocation(Height.BTM, Direction.DOWNWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.MID)
         ),[
@@ -55,14 +55,14 @@ p25_def = SchedDef([
             f3amb.loop(np.pi*3/2),
         ]),
     f3amb.create(ManInfo(
-            "Roll Combo", "rc", k=4, position=Position.CENTRE, 
+            "Roll Combo", "rollC", k=4, position=Position.CENTRE, 
             start=BoxLocation(Height.MID, Direction.UPWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.MID)
         ),[
             f3amb.roll([np.pi/2, np.pi/2, np.pi/2, -np.pi/2, -np.pi/2, -np.pi/2], padded=False),
         ]),
     f3amb.create(ManInfo(
-            "Stall Turn", "st", k=4, position=Position.END, 
+            "Stall Turn", "stall", k=4, position=Position.END, 
             start=BoxLocation(Height.MID, Direction.UPWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.BTM)
         ),[
@@ -73,7 +73,7 @@ p25_def = SchedDef([
             f3amb.loop(-np.pi/2)
         ]),
     f3amb.create(ManInfo(
-            "Double Immelman", "Dimm", k=4, position=Position.CENTRE, 
+            "Double Immelman", "dImm", k=4, position=Position.CENTRE, 
             start=BoxLocation(Height.BTM, Direction.DOWNWIND, Orientation.INVERTED),
             end=BoxLocation(Height.BTM)
         ),[
@@ -100,7 +100,7 @@ p25_def = SchedDef([
             f3amb.loop(np.pi/2),
         ]),
     f3amb.create(ManInfo(
-            "Loop", "lP", k=4, position=Position.CENTRE, 
+            "Loop", "loop", k=4, position=Position.CENTRE, 
             start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.BTM)
         ),[
@@ -115,7 +115,7 @@ p25_def = SchedDef([
             Combination(desired=[[np.pi, -np.pi], [-np.pi, np.pi]]), 0
         )),
     f3amb.create(ManInfo(
-            "Half Square on Corner", "hsqc", k=4, position=Position.END, 
+            "Half Square on Corner", "hSqL2", k=4, position=Position.END, 
             start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.TOP)
         ),[
@@ -126,7 +126,7 @@ p25_def = SchedDef([
             f3amb.loop(np.pi/4),
         ], line_length=130*c45),
     f3amb.create(ManInfo(
-            "Cloverleaf", "Clv", k=4, position=Position.CENTRE, 
+            "Cloverleaf", "hClov", k=4, position=Position.CENTRE, 
             start=BoxLocation(Height.TOP, Direction.DOWNWIND, Orientation.INVERTED),
             end=BoxLocation(Height.TOP)
         ),[
@@ -139,7 +139,7 @@ p25_def = SchedDef([
             f3amb.loop(-np.pi/2),
         ]),
     f3amb.create(ManInfo(
-            "Figure Et", "Et", k=4, position=Position.END, 
+            "Figure Et", "rEt", k=4, position=Position.END, 
             start=BoxLocation(Height.TOP, Direction.DOWNWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.TOP)
         ),[
@@ -150,7 +150,7 @@ p25_def = SchedDef([
             f3amb.loop(np.pi/2),
         ]),
     f3amb.create(ManInfo(
-            "Spin", "Sp", k=4, position=Position.CENTRE, 
+            "Spin", "iSpin", k=4, position=Position.CENTRE, 
             start=BoxLocation(Height.TOP, Direction.UPWIND, Orientation.INVERTED),
             end=BoxLocation(Height.BTM),
         ),[
@@ -160,7 +160,7 @@ p25_def = SchedDef([
             f3amb.loop(np.pi/2),
         ]),
     f3amb.create(ManInfo(
-            "Top Hat", "Th", k=4, position=Position.END, 
+            "Top Hat", "tHat", k=4, position=Position.END, 
             start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.BTM)
         ),[
@@ -195,7 +195,7 @@ p25_def = SchedDef([
         #2 * R1 + L1 * c45 + 2* R1 * c45 = 4*R2*(1 - c45) - 2*R2 + 2 * L2 * c45
         #(1 / c45 + 1) * R1 + 0.5 * L1 - (1/c45 - 2) * R2 = L2
     f3amb.create(ManInfo(
-            "Figure S", "S", k=4, position=Position.CENTRE, 
+            "Figure S", "figS", k=4, position=Position.CENTRE, 
             start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.TOP)
         ),[

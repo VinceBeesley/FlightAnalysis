@@ -9,7 +9,7 @@ c45 = np.cos(np.radians(45))
 
 f25_def = SchedDef([
     f3amb.create(ManInfo(
-            "Square on Corner", "sqc", k=4, position=Position.CENTRE, 
+            "Square on Corner", "sLoop", k=4, position=Position.CENTRE, 
             start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.BTM)
         ),[
@@ -30,7 +30,7 @@ f25_def = SchedDef([
         line_length=70
         ),
     f3amb.create(ManInfo(
-            "Figure P", "P", k=4, position=Position.END, 
+            "Figure P", "fig9", k=4, position=Position.END, 
             start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.INVERTED),
             end=BoxLocation(Height.MID)
         ),[
@@ -39,21 +39,21 @@ f25_def = SchedDef([
             f3amb.loop(-3*np.pi/2),
         ], full_roll_rate=np.pi, partial_roll_rate=np.pi ),
     f3amb.create(ManInfo(
-            "Roll Combo", "Rc", k=4, position=Position.CENTRE, 
+            "Roll Combo", "rollC", k=4, position=Position.CENTRE, 
             start=BoxLocation(Height.MID, Direction.DOWNWIND, Orientation.INVERTED),
             end=BoxLocation(Height.BTM)
         ),[
             f3amb.roll([np.pi/2, np.pi/2, -np.pi/2, -np.pi/2, -np.pi/2, -np.pi/2, np.pi/2, np.pi/2], padded=False)
         ], ),
     f3amb.create(ManInfo(
-            "Half Loop", "Hlp", k=4, position=Position.END, 
+            "Half Loop", "hLoop", k=4, position=Position.END, 
             start=BoxLocation(Height.MID, Direction.DOWNWIND, Orientation.INVERTED),
             end=BoxLocation(Height.TOP)
         ),[
             f3amb.loop(-np.pi, roll=np.pi)
         ], ),
     f3amb.create(ManInfo(
-            "Humpty", "Hb", k=4, position=Position.CENTRE, 
+            "Humpty", "hB", k=4, position=Position.CENTRE, 
             start=BoxLocation(Height.TOP, Direction.UPWIND, Orientation.INVERTED),
             end=BoxLocation(Height.BTM)
         ),[
@@ -64,7 +64,7 @@ f25_def = SchedDef([
             f3amb.loop(-np.pi/2)
         ], full_roll_rate=np.pi),
     f3amb.create(ManInfo(
-            "Spins", "Sp", k=4, position=Position.END, 
+            "Spins", "spin", k=4, position=Position.END, 
             start=BoxLocation(Height.TOP, Direction.UPWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.BTM)
         ),[
@@ -73,7 +73,7 @@ f25_def = SchedDef([
             f3amb.loop(np.pi/2)
         ], ),
     f3amb.create(ManInfo(
-            "Rolling Circle", "Cir", k=4, position=Position.CENTRE, 
+            "Rolling Circle", "hCirc", k=4, position=Position.CENTRE, 
             start=BoxLocation(Height.BTM, Direction.DOWNWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.BTM)
         ),[
@@ -101,7 +101,7 @@ f25_def = SchedDef([
             f3amb.loop(np.pi/4)
         ], line_length=80, full_roll_rate=np.pi, loop_radius=40),
     f3amb.create(ManInfo(
-            "Square Octagonal Loop", "SqOL", k=4, position=Position.CENTRE, 
+            "Square Octagonal Loop", "sV8", k=4, position=Position.CENTRE, 
             start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.BTM)
         ),[
@@ -127,7 +127,7 @@ f25_def = SchedDef([
             ]), 0),
         ),
     f3amb.create(ManInfo(
-            "Humpty_2", "Hb2", k=4, position=Position.END, 
+            "Humpty_2", "hB2", k=4, position=Position.END, 
             start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.INVERTED), 
             end=BoxLocation(Height.BTM)
         ),[
@@ -138,7 +138,7 @@ f25_def = SchedDef([
             f3amb.loop(np.pi/2),
         ], ),
     f3amb.create(ManInfo(
-            "Triangular Loop", "Tri", k=4, position=Position.CENTRE, 
+            "Triangular Loop", "keTrg", k=4, position=Position.CENTRE, 
             start=BoxLocation(Height.BTM, Direction.DOWNWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.BTM)
         ),[
@@ -154,7 +154,7 @@ f25_def = SchedDef([
             ]), 0),
         ),
     f3amb.create(ManInfo(
-            "Half 8 Sided Loop", "h8lp", k=4, position=Position.END, 
+            "Half 8 Sided Loop", "h8L", k=4, position=Position.END, 
             start=BoxLocation(Height.BTM, Direction.DOWNWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.TOP)
         ),[
@@ -172,7 +172,7 @@ f25_def = SchedDef([
             ]), 0),
         ),
     f3amb.create(ManInfo(
-            "45 degree downline", "d45", k=4, position=Position.CENTRE, 
+            "45 degree downline", "dl45", k=4, position=Position.CENTRE, 
             start=BoxLocation(Height.TOP, Direction.UPWIND, Orientation.INVERTED),
             end=BoxLocation(Height.BTM)
         ),[
@@ -182,7 +182,7 @@ f25_def = SchedDef([
         ], full_roll_rate=np.pi, line_length=231/c45 - (2/c45-2)*55 ),
         #231/c45 - (2/c45-2)*R)= L
     f3amb.create(ManInfo(
-            "Half Square Loop", "Hsq", k=4, position=Position.END, 
+            "Half Square Loop", "hSLoop", k=4, position=Position.END, 
             start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.INVERTED),
             end=BoxLocation(Height.TOP)
         ),[
@@ -191,7 +191,7 @@ f25_def = SchedDef([
             f3amb.loop(np.pi/2)
         ], full_roll_rate=np.pi, partial_roll_rate=np.pi ),
     f3amb.create(ManInfo(
-            "Avalanche", "Av", k=4, position=Position.CENTRE, 
+            "Avalanche", "Aval", k=4, position=Position.CENTRE, 
             start=BoxLocation(Height.TOP, Direction.DOWNWIND, Orientation.INVERTED),
             end=BoxLocation(Height.TOP)
         ),[
@@ -207,7 +207,7 @@ f25_def = SchedDef([
             ]), 0),
         ),
     f3amb.create(ManInfo(
-            "Split S", "SpS", k=4, position=Position.END, 
+            "Split S", "keS", k=4, position=Position.END, 
             start=BoxLocation(Height.TOP, Direction.DOWNWIND, Orientation.INVERTED),
             end=BoxLocation(Height.BTM)
         ),[
@@ -221,7 +221,7 @@ f25_def = SchedDef([
             ]), 0),
         ),
     f3amb.create(ManInfo(
-            "Stall Turn", "St", k=4, position=Position.CENTRE, 
+            "Stall Turn", "stall", k=4, position=Position.CENTRE, 
             start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.INVERTED),
             end=BoxLocation(Height.BTM)
         ),[
