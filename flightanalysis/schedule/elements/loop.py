@@ -90,10 +90,14 @@ class Loop(Element):
             self.angle
 
     def match_intention(self, itrans: Transformation, flown: State) -> Loop:
+        rv = flown.rvel # .mean() if self.ke else flown.q.mean()
+        wrv = flown.att.transform_point(rv)
+        itrv = itrans.att.transform_point(wrv)
+
         return self.set_parms(
             radius = self.measure_radius(itrans, flown).mean(),
             roll=abs(self.roll) * np.sign(np.mean(flown.rvel.x)),
-            angle=abs(self.angle) * np.sign(flown.r.mean() if self.ke else flown.q.mean()),
+            angle=abs(self.angle) * np.sign(itrv.z.mean() if self.ke else itrv.y.mean()),
             speed=abs(flown.vel).mean()
         )
     

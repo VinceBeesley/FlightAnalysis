@@ -5,7 +5,7 @@ from flightanalysis.data import get_json_resource
 
 class F3ASingle:
     track=Single(Exponential(3.8197186342054885,0.9999999999999999, 100), 'absolute')
-    roll=Single(Exponential(3.3937161800825275,1.2618595071429148, 100), 'absolute')
+    roll=Single(Exponential(2.872721387028467,1.6309297535714575, 100), 'absolute')
     angle=Single(Exponential(3.8197186342054885,0.9999999999999999, 100), 'absolute')
     distance=Single(Exponential(0.02500000000000001,0.9999999999999999, 10), 'absolute')
 class F3AIntra:
@@ -20,6 +20,7 @@ class F3AInter:
     roll_rate=Comparison(Exponential(0.25,1.1132827525593783, 2), 'ratio')
     length=Comparison(Exponential(0.5,1.1132827525593785, 3), 'ratio')
     free=Comparison(Exponential(0,1, 10), 'ratio')
+
 
 
 

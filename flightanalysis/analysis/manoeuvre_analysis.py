@@ -97,7 +97,7 @@ class ManoeuvreAnalysis:
             intended = self.intended.to_dict(),
             intended_template = self.intended_template.to_dict(),
             corrected = self.corrected.to_dict(),
-            corrected_template = self.corrected_template.to_dict(),
+            corrected_template = self.corrected_template.to_dict()
         )
 
     @staticmethod
@@ -182,9 +182,7 @@ class ManoeuvreAnalysis:
         tb = max(top_box_angle)
         outside_tb = (tb - 1.0471975511965976) / 1.0471975511965976
         top_box_dg = max(outside_tb, 0) * 6
-        return Result(
-            "top box", [], [tb], [outside_tb], [top_box_dg], 
-            [])
+        return Result("top box", [], [tb], [outside_tb], [top_box_dg], [])
 
     def centre(self):
         al = self.aligned.get_element(slice(1,-1,None))
@@ -195,34 +193,20 @@ class ManoeuvreAnalysis:
             centre_pos = self.intended.elements[self.mdef.info.centre_loc].get_data(self.aligned).pos[0]
             centre = np.arctan2(centre_pos.x, centre_pos.y)[0]
         box_dg = F3A.single.angle.lookup(abs(centre))
-        return Result(
-            "centering",
-            [],
-            [],
-            [centre],
-            [box_dg],
-            []
-        )
+        return Result("centering",[],[],[centre],[box_dg],[0])
 
     def distance(self):
-        #only downgrade distance if the template is narrow
-        #TODO doesnt quite cover it, stalled manoeuvres need to be considered
-        dist = self.aligned.pos.y
-
-        tp_width = max(self.corrected_template.y) - min(self.corrected_template.y)
-
+        #TODO doesnt quite cover it, stalled manoeuvres could drift to > 170 for no downgrade
+        tp_width = max(self.corrected_template.y) - min(self.corrected_template.y) #only downgrade distance if the template is narrow
+        dist_key = np.argmax(self.aligned.pos.y)
+        dist = self.aligned.pos.y[dist_key]
         if tp_width < 10:
-            dist_dg = F3A.single.distance.lookup(max(np.max(dist), 170) - 170)
+            dist_key = np.argmax(self.aligned.pos.y)
+            dist = self.aligned.pos.y[dist_key]
+            dist_dg = F3A.single.distance.lookup(max(dist, 170) - 170)
         else:
             dist_dg = 0.0
-        return Result(
-            "distance", 
-            self.aligned.pos.y, 
-            dist,
-            np.array([dist]),
-            np.array([dist_dg]),
-            self.aligned.pos.y > 170
-        ) 
+        return Result("distance", [], [],[dist],[dist_dg],dist_key)
 
     def intra(self):
         return self.intended.analyse(self.aligned, self.intended_template)
@@ -240,7 +224,6 @@ class ManoeuvreAnalysis:
             self.distance()
         )
     
-
     @staticmethod
     def from_fcj(file: str, mid: int):
         with open(file, 'r') as f:
