@@ -242,6 +242,28 @@ class ManoeuvreAnalysis:
             self.centre()if self.mdef.info.position == Position.CENTRE else None, 
             self.distance()
         )
+    
+
+    @staticmethod
+    def from_fcj(file: str, mid: int):
+        with open(file, 'r') as f:
+            data = load(f)
+        flight = Flight.from_fc_json(data)
+        box = Box.from_fcjson_parmameters(data["parameters"])
+
+        sdef = SchedDef.load(data["parameters"]["schedule"][1])
+
+        state = State.from_flight(flight, box).splitter_labels(
+            data["mans"],
+            [m.info.short_name for m in sdef]
+        )
+        mas=[]
+        mdef= sdef[mid]
+        return ManoeuvreAnalysis.build(
+            mdef, 
+            state.get_manoeuvre(mdef.info.short_name)
+        )
+
 
 class ScheduleAnalysis(Collection):
     VType=ManoeuvreAnalysis

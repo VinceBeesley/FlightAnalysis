@@ -17,11 +17,11 @@ class Exponential:
     
     @staticmethod
     def fit_points(xs, ys, limit=10, **kwargs):
-        from scipy.optimize import differential_evolution
-        def f(x):
-            return sum(abs(ys - Exponential(x[0],x[1])(xs)))
-        res = differential_evolution(f, ((0,100),(0,5)), **kwargs)
-        return Exponential(res.x[0], res.x[1], limit)
+        from scipy.optimize import curve_fit
+        def f(x, factor, exponent):
+            return factor * x ** exponent
+        res = curve_fit(f, xs, ys)
 
+        return Exponential(res[0][0], res[0][1], limit)
 
 free = Exponential(0,1)
