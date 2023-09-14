@@ -7,6 +7,8 @@ from flightanalysis.schedule.scoring import Measurement, DownGrade, DownGrades, 
 from geometry import Transformation, PX, PY, PZ, Point, angle_diff, Coord, Quaternion
 from json import load, dumps
 import inspect
+from typing import Self
+
 
 class Element:   
     parameters = ["speed"]
@@ -33,7 +35,8 @@ class Element:
         return np.all([np.isclose(getattr(self, p), getattr(other, p), 0.01) for p in self.__class__.parameters])
 
     def __repr__(self):
-        return dumps(self.to_dict(), indent=2)
+        args = ['uid'] + inspect.getfullargspec(self.__init__).args[1:-1]
+        return f'{self.__class__.__name__}({", ".join([str(getattr(self,a)) for a in args])})'
 
     def to_dict(self, exit_only: bool=False):
         return dict(
@@ -125,6 +128,10 @@ class Element:
     def rate_vec(self, itrans: Transformation, flown: State) -> Point:
         return flown.att[-1].transform_point(np.mean(flown.p))
 
+    def copy(self):
+        return self.__class__(
+            **{p: getattr(self, p) for p in inspect.getfullargspec(self.__init__).args[1:]}
+        )
 
 class Elements(Collection):
     VType=Element
@@ -135,3 +142,6 @@ class Elements(Collection):
     def from_dicts(data):
         return Elements([Element.from_dict(d) for d in data])
             
+    def copy_directions(self, other: Self) -> Self:
+        return Elements([es.copy_direction(eo) for es, eo in zip(self, other)])
+    

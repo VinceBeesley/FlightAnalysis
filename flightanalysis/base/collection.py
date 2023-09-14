@@ -1,14 +1,14 @@
-from typing import Dict, List, Union, Any, Self
+from typing import Dict, List, Union, Any, Self, TypeVar
 import numpy as np
 import pandas as pd
 
-
 class Collection:
     VType = None
+
     uid = "uid"
-    def __init__(self, data: Union[Dict[str,Any], List[Any]]=None, check_types=True):
+    def __init__(self, data: Union[Dict, List]=None, check_types=True):
         
-        self.data = {}
+        self.data: dict[str] = {}
         if isinstance(data, dict):
             self.data = data
         elif isinstance(data, self.__class__):
@@ -45,7 +45,7 @@ class Collection:
     def to_list(self):
         return list(self.data.values())
     
-    def to_dicts(self) -> List[dict]:
+    def to_dicts(self) -> list[dict]:
         return [v.to_dict() for v in self.data.values()]
 
     def to_dict(self) -> Dict[str, dict]:
@@ -66,7 +66,7 @@ class Collection:
             self.data = dict(**self.data, **v.data)
         return v
     
-    def concat(self, vs: list) -> Self:
+    def concat(self, vs: list[Self]) -> Self:
         coll = self.__class__([])
         for v in vs:
             coll.add(v)
@@ -93,8 +93,8 @@ class Collection:
         return str(pd.Series({k: str(v) for k, v in self.data.items()}))
     
     def __repr__(self) -> str:
-        contents = str(pd.Series({k: repr(v) for k, v in self.data.items()}))
-        return f"{self.__class__.__name__}\n{contents}"
+        
+        return str(pd.Series({k: repr(v) for k, v in self.data.items()}))
     
     def __len__(self) -> int:
         return len(self.data)

@@ -130,11 +130,9 @@ class ManoeuvreAnalysis:
         return man, man.create_template(itrans)
 
     @staticmethod
-    def alignment(template: State, man: Manoeuvre, flown: State, radius=None) -> Tuple(float, State):
+    def alignment(template: State, man: Manoeuvre, flown: State, radius=10) -> Tuple(float, State):
         aligned = State.align(flown, template, radius=10)[1]
         int_tp = man.match_intention(template[0], aligned)[1]
-        if radius is None:
-            radius = max(len(template), len(flown))
         return State.align(aligned, int_tp, radius=radius, mirror=False)
 
     @staticmethod
@@ -231,7 +229,6 @@ class ManoeuvreAnalysis:
 
     def inter(self):
         return self.mdef.mps.collect(self.intended)
-
 
     def scores(self):
         return ManoeuvreResults(

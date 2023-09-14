@@ -29,4 +29,4 @@ class Criteria:
         raise ValueError(f'cannot parse Criteria from {data}')
     
     def to_py(self):
-        return f"{self.__class__.__name__}(Exponential({self.lookup.factor},{self.lookup.exponent}), '{self.comparison}')"
+        return f"{self.__class__.__name__}(Exponential({self.lookup.factor},{self.lookup.exponent}, {self.lookup.limit}), '{self.comparison}')"

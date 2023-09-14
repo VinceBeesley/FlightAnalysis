@@ -47,7 +47,7 @@ class Measurement:
         )
 
     def _pos_vis(loc: Point):
-        return loc.y / abs(loc)
+        return abs(Point.vector_rejection(loc, PY())) / abs(loc)
 
     @staticmethod
     def vector_vis(value: Point, expected: Point, loc: Point, att: Quaternion) -> Measurement:

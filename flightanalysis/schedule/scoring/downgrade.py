@@ -43,14 +43,17 @@ class DownGrade:
         return np.convolve(data, kernel, mode='same')
     
     def __call__(self, fl, tp, coord) -> Result:
-        measurement = self.measure(fl, tp, coord)
-
-        vals = self.criteria.prepare(measurement.value, measurement.expected)    
-
+        
         if isinstance(self.criteria, Single):
-            id, error, dg = self.criteria([len(vals)-1], [vals[-1]])
+            measurement = self.measure(fl[-1], tp[-1], coord)
+            vals = self.criteria.prepare(measurement.value, measurement.expected)    
+
+            id, error, dg = self.criteria([0], vals)
             dg = dg * measurement.visibility[id]
         elif isinstance(self.criteria, Continuous):
+            measurement = self.measure(fl, tp, coord)
+            vals = self.criteria.prepare(measurement.value, measurement.expected)    
+
             if len(measurement) < 18:
                 #for now, if an element lasts less than 0.5 seconds then we assume it is perfect
                 return Result(self.measure.__name__, measurement, [0], [0], [0], [0])

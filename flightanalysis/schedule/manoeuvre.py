@@ -120,10 +120,25 @@ class Manoeuvre:
                     
         return Manoeuvre.from_all_elements(self.uid, elms), State.stack(templates[1:]).label(manoeuvre=self.uid)
 
+    def el_matched_tp(self, istate: State, aligned: State) -> State:
+        els = self.all_elements()
+        aligned= self.get_data(aligned)
+        templates = [istate]
+        for i, el in enumerate(els):
+            st = el.get_data(aligned)
+            templates.append(el.create_template(
+                templates[-1][-1].relocate(st[0].pos), 
+                st.time.extend() if i < len(els) - 1 else st.time
+            ))
+        return State.stack(templates[1:])
+
+    def copy(self):
+        return Manoeuvre.from_all_elements(self.uid, self.all_elements().copy(deep=True))
+
     def copy_directions(self, other: Manoeuvre) -> Manoeuvre:
         return Manoeuvre.from_all_elements(
             self.uid, 
-            [es.copy_direction(eo) for es, eo in zip(self.all_elements(), other.all_elements())]
+            Elements(self.all_elements().copy_directions(other.all_elements()))
         )
 
     def analyse(self, flown: State, template: State):
@@ -140,3 +155,6 @@ class Manoeuvre:
 
     def descriptions(self):
         return [e.describe() for e in self.elements]
+    
+    def __repr__(self):
+        return f'Manoeuvre({self.uid}, len={len(self.elements)})'

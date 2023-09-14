@@ -1,6 +1,6 @@
 from . import ManDef, ManInfo, ManParms
 from flightanalysis import State
-from typing import Dict, Tuple, Union
+from typing import Dict, Tuple, Union, Self
 from geometry import Transformation
 from flightanalysis.schedule.schedule import Schedule
 from flightanalysis.schedule.elements import Line
@@ -92,7 +92,7 @@ class SchedDef(Collection):
             return SchedDef.from_dict(load(f))
         
     @staticmethod
-    def load(name: Union[str,ScheduleInfo]):
+    def load(name: Union[str,ScheduleInfo]) -> Self:
         if isinstance(name, ScheduleInfo):
             name = str(name)
         return SchedDef.from_dict(get_json_resource(f"{name.lower()}_schedule"))
