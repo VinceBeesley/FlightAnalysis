@@ -29,6 +29,7 @@ class Opp:
         elif isinstance(arg, Number):
             return lambda mps, **kwargs: arg
 
+
     def __abs__(self) -> FunOpp:
         return FunOpp(self.name, self, "abs")
 
@@ -102,7 +103,6 @@ class Opp:
                 continue
         else:
             return coll[inp]
-
 
 from .mathopp import MathOpp
 from .funopp import FunOpp

@@ -31,7 +31,7 @@ class ElDef:
         self.props = props       
         self.collectors = Collectors.from_eldef(self)
 
-    def get_collector(self, name):
+    def get_collector(self, name) -> Collector:
         return self.collectors[f"{self.name}.{name}"]
 
     def to_dict(self):

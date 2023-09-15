@@ -64,3 +64,12 @@ class MathOpp(Opp):
                     )
                     
         raise ValueError(f"cannot read an MathOpp from the outside of {inp}")
+
+
+    def list_parms(self) -> list[str]:
+        parms = []
+        if isinstance(self.a, Opp):
+            parms = parms + self.a.list_parms()
+        if isinstance(self.b, Opp):
+            parms = parms + self.b.list_parms()
+        return parms

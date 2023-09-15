@@ -212,12 +212,16 @@ class ManoeuvreAnalysis:
         return self.intended.analyse(self.aligned, self.intended_template)
 
     def inter(self):
-        return self.mdef.mps.collect(self.intended)
+        return self.mdef.mps.collect(self.intended, self.intended_template)
 
     def scores(self):
+        
+        intra = self.intra()
+        
+        inter = self.inter()
+
         return ManoeuvreResults(
-            self.inter(), 
-            self.intra(), 
+            inter, intra, 
             self.side_box() if self.mdef.info.position == Position.END else None, 
             self.top_box(), 
             self.centre()if self.mdef.info.position == Position.CENTRE else None, 

@@ -67,13 +67,16 @@ class ManParm(Opp):
     def collect(self, els):
         return {str(collector): collector(els) for collector in self.collectors}
 
-    def get_downgrades(self, els):
+    def collect_vis(self, els, state: State):
+        return [np.mean([c.visibility(els, state) for c in colls.list_parms()]) for colls in self.collectors]
+
+    def get_downgrades(self, els, state: State=None):
         coll = self.collect(els)
         vs = list(coll.values())
         meas = Measurement(
             vs,
             np.full(len(vs), self.default),
-            np.full(len(vs), 0.4)
+            np.full(len(vs), 0.4) if state is None else np.array(self.collect_vis(els, state))
         )
 
         keys, errors, dgs = self.criteria(list(coll.keys()), list(coll.values())) 
@@ -108,12 +111,17 @@ class ManParm(Opp):
     def copy(self):
         return ManParm(name=self.name, criteria=self.criteria, default=self.default, collectors=self.collectors.copy())
 
+    def list_parms(self):
+        return [self]
+
+    def __repr__(self):
+        return f'ManParm({self.name}, {self.criteria.__class__.__name__}, {self.default})'
 
 class ManParms(Collection):
     VType=ManParm
     uid="name"
 
-    def collect(self, manoeuvre: Manoeuvre) -> Results:
+    def collect(self, manoeuvre: Manoeuvre, state: State=None) -> Results:
         """Collect the comparison downgrades for each manparm for a given manoeuvre.
 
         Args:
@@ -122,7 +130,7 @@ class ManParms(Collection):
         Returns:
             Dict[str, float]: The sum of downgrades for each ManParm
         """
-        return Results("Inter",[mp.get_downgrades(manoeuvre.all_elements()) for mp in self if not isinstance(mp.criteria, Combination)])
+        return Results("Inter",[mp.get_downgrades(manoeuvre.all_elements(), state) for mp in self if not isinstance(mp.criteria, Combination)])
     
     def append_collectors(self, colls: Dict[str, Callable]):
         """Append each of a dict of collector methods to the relevant ManParm
@@ -132,7 +140,6 @@ class ManParms(Collection):
         """
         for mp, col in colls.items():
             self.data[mp].append(col)
-
 
     def update_defaults(self, intended: Manoeuvre):
         """Pull the parameters from a manoeuvre object and update the defaults of self based on the result of 

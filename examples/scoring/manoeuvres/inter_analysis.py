@@ -11,7 +11,7 @@ from flightplotting import plotsec
 
 resrr = ma.mdef.mps.partial_roll_rate.get_downgrades(ma.intended.elements)
 
-res = ma.mdef.mps.collect(ma.intended)
+res = ma.mdef.mps.collect(ma.intended, ma.intended_template)
 
 print(res.downgrade_df())
 

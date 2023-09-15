@@ -13,7 +13,8 @@ from .funopp import FunOpp
 
 @dataclass
 class ItemOpp(Opp):
-    """This class creates an Operation that returns a single item from a combination ManParm"""
+    """This class creates an Operation that returns a single item,
+        usually from a Combination manparm"""
     a: Any
     item: int
     
@@ -48,3 +49,8 @@ class ItemOpp(Opp):
     def __abs__(self):
         return FunOpp(self.name, self, "abs")
 
+    def list_parms(self):
+        if isinstance(self.a, Opp):
+            return self.a.list_parms()
+        else:
+            return []

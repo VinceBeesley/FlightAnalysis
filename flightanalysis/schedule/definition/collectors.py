@@ -15,7 +15,10 @@ class Collector(Opp):
     def __call__(self, els):
         """return the value"""        
         return getattr(els.data[self.elname], self.pname)#(tp[0].transform, fl))[0]
-        # todo think about visibility here.
+    
+    def visibility(self, els, state):
+        return getattr(els.data[self.elname], self.pname + '_visibility')(state.get_element(self.elname))
+
     def __str__(self):
         return self.name
 
@@ -36,13 +39,15 @@ class Collector(Opp):
     def copy(self):
         return Collector(self.elname, self.pname)
 
+    def list_parms(self) -> list[str]:
+        return [self]
 
 class Collectors(Collection):
     VType=Opp
     uid="name"
 
     def __str__(self):
-        return str([str(v) for v in self])
+        return ',\n'.join([str(v) for v in self])
     
     @staticmethod
     def parse(ins: str):
@@ -72,5 +77,5 @@ class Collectors(Collection):
     def keys(self):
         return [c.elname for c in self]
     
-
-    
+    def __repr__(self):
+        return ',\n'.join([str(v) for v in self])

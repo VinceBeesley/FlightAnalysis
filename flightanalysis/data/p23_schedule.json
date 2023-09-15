@@ -23,9 +23,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -42,9 +42,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -59,9 +59,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -78,7 +78,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -123,16 +123,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_1_pad1.length": "e_1_pad1.length",
-          "e_1_pad2.length": "e_1_pad2.length"
+          "e_1_pad1.length": "(e_1_pad1.length+40)",
+          "e_1_pad2.length": "(e_1_pad2.length+40)"
         }
       },
       "e_3_rolls": {
@@ -164,16 +164,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_3_pad1.length": "e_3_pad1.length",
-          "e_3_pad2.length": "e_3_pad2.length"
+          "e_3_pad1.length": "(e_3_pad1.length+40)",
+          "e_3_pad2.length": "(e_3_pad2.length+40)"
         }
       },
       "e_5_rolls": {
@@ -208,16 +208,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_5_pad1.length": "e_5_pad1.length",
-          "e_5_pad2.length": "e_5_pad2.length"
+          "e_5_pad1.length": "(e_5_pad1.length+40)",
+          "e_5_pad2.length": "(e_5_pad2.length+40)"
         }
       }
     },
@@ -409,9 +409,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -426,9 +426,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -444,7 +444,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -482,16 +482,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_1_pad1.length": "e_1_pad1.length",
-          "e_1_pad2.length": "e_1_pad2.length"
+          "e_1_pad1.length": "(e_1_pad1.length+40)",
+          "e_1_pad2.length": "(e_1_pad2.length+40)"
         }
       }
     },
@@ -571,9 +571,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -589,9 +589,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -608,7 +608,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -624,7 +624,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -662,16 +662,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_1_pad1.length": "e_1_pad1.length",
-          "e_1_pad2.length": "e_1_pad2.length"
+          "e_1_pad1.length": "(e_1_pad1.length+40)",
+          "e_1_pad2.length": "(e_1_pad2.length+40)"
         }
       },
       "e_3_rolls": {
@@ -703,16 +703,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_3_pad1.length": "e_3_pad1.length",
-          "e_3_pad2.length": "e_3_pad2.length"
+          "e_3_pad1.length": "(e_3_pad1.length+40)",
+          "e_3_pad2.length": "(e_3_pad2.length+40)"
         }
       }
     },
@@ -830,9 +830,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -848,9 +848,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -867,7 +867,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -906,16 +906,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_1_pad1.length": "e_1_pad1.length",
-          "e_1_pad2.length": "e_1_pad2.length"
+          "e_1_pad1.length": "(e_1_pad1.length+40)",
+          "e_1_pad2.length": "(e_1_pad2.length+40)"
         }
       },
       "e_3_rolls": {
@@ -947,16 +947,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_3_pad1.length": "e_3_pad1.length",
-          "e_3_pad2.length": "e_3_pad2.length"
+          "e_3_pad1.length": "(e_3_pad1.length+40)",
+          "e_3_pad2.length": "(e_3_pad2.length+40)"
         }
       }
     },
@@ -1074,9 +1074,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -1091,9 +1091,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -1109,7 +1109,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -1123,16 +1123,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_1_pad1.length": "e_1_pad1.length",
-          "e_1_pad2.length": "e_1_pad2.length"
+          "e_1_pad1.length": "(e_1_pad1.length+40)",
+          "e_1_pad2.length": "(e_1_pad2.length+40)"
         }
       }
     },
@@ -1229,9 +1229,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -1248,9 +1248,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -1360,9 +1360,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -1379,7 +1379,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -1506,9 +1506,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -1524,7 +1524,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -1605,9 +1605,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -1621,9 +1621,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -1639,7 +1639,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -1722,9 +1722,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -1740,9 +1740,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -1759,7 +1759,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -1817,16 +1817,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_1_pad1.length": "e_1_pad1.length",
-          "e_1_pad2.length": "e_1_pad2.length"
+          "e_1_pad1.length": "(e_1_pad1.length+40)",
+          "e_1_pad2.length": "(e_1_pad2.length+40)"
         }
       },
       "e_3_pad_length": {
@@ -1834,16 +1834,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_3_pad1.length": "e_3_pad1.length",
-          "e_3_pad2.length": "e_3_pad2.length"
+          "e_3_pad1.length": "(e_3_pad1.length+40)",
+          "e_3_pad2.length": "(e_3_pad2.length+40)"
         }
       }
     },
@@ -1961,9 +1961,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -1979,9 +1979,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -1997,7 +1997,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -2041,16 +2041,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_1_pad1.length": "e_1_pad1.length",
-          "e_1_pad2.length": "e_1_pad2.length"
+          "e_1_pad1.length": "(e_1_pad1.length+40)",
+          "e_1_pad2.length": "(e_1_pad2.length+40)"
         }
       },
       "e_3_rolls": {
@@ -2085,16 +2085,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_3_pad1.length": "e_3_pad1.length",
-          "e_3_pad2.length": "e_3_pad2.length"
+          "e_3_pad1.length": "(e_3_pad1.length+40)",
+          "e_3_pad2.length": "(e_3_pad2.length+40)"
         }
       }
     },
@@ -2239,9 +2239,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -2256,9 +2256,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -2274,7 +2274,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -2312,16 +2312,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_1_pad1.length": "e_1_pad1.length",
-          "e_1_pad2.length": "e_1_pad2.length"
+          "e_1_pad1.length": "(e_1_pad1.length+40)",
+          "e_1_pad2.length": "(e_1_pad2.length+40)"
         }
       }
     },
@@ -2401,9 +2401,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -2419,9 +2419,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -2440,7 +2440,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -2457,7 +2457,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -2499,16 +2499,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_1_pad1.length": "e_1_pad1.length",
-          "e_1_pad2.length": "e_1_pad2.length"
+          "e_1_pad1.length": "(e_1_pad1.length+40)",
+          "e_1_pad2.length": "(e_1_pad2.length+40)"
         }
       },
       "e_7_pad_length": {
@@ -2516,16 +2516,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_7_pad1.length": "e_7_pad1.length",
-          "e_7_pad2.length": "e_7_pad2.length"
+          "e_7_pad1.length": "(e_7_pad1.length+40)",
+          "e_7_pad2.length": "(e_7_pad2.length+40)"
         }
       }
     },
@@ -2677,9 +2677,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -2695,9 +2695,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -2714,7 +2714,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -2756,16 +2756,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_1_pad1.length": "e_1_pad1.length",
-          "e_1_pad2.length": "e_1_pad2.length"
+          "e_1_pad1.length": "(e_1_pad1.length+40)",
+          "e_1_pad2.length": "(e_1_pad2.length+40)"
         }
       },
       "e_3_pad_length": {
@@ -2773,16 +2773,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_3_pad1.length": "e_3_pad1.length",
-          "e_3_pad2.length": "e_3_pad2.length"
+          "e_3_pad1.length": "(e_3_pad1.length+40)",
+          "e_3_pad2.length": "(e_3_pad2.length+40)"
         }
       }
     },
@@ -2900,9 +2900,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -2918,9 +2918,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -2935,9 +2935,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -2954,7 +2954,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -3024,16 +3024,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_3_pad1.length": "e_3_pad1.length",
-          "e_3_pad2.length": "e_3_pad2.length"
+          "e_3_pad1.length": "(e_3_pad1.length+40)",
+          "e_3_pad2.length": "(e_3_pad2.length+40)"
         }
       },
       "e_5_rolls": {
@@ -3068,16 +3068,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_5_pad1.length": "e_5_pad1.length",
-          "e_5_pad2.length": "e_5_pad2.length"
+          "e_5_pad1.length": "(e_5_pad1.length+40)",
+          "e_5_pad2.length": "(e_5_pad2.length+40)"
         }
       },
       "e_8_rolls": {
@@ -3291,9 +3291,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -3309,9 +3309,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -3327,7 +3327,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -3367,16 +3367,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_1_pad1.length": "e_1_pad1.length",
-          "e_1_pad2.length": "e_1_pad2.length"
+          "e_1_pad1.length": "(e_1_pad1.length+40)",
+          "e_1_pad2.length": "(e_1_pad2.length+40)"
         }
       },
       "e_3_rolls": {
@@ -3411,16 +3411,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_3_pad1.length": "e_3_pad1.length",
-          "e_3_pad2.length": "e_3_pad2.length"
+          "e_3_pad1.length": "(e_3_pad1.length+40)",
+          "e_3_pad2.length": "(e_3_pad2.length+40)"
         }
       }
     },
@@ -3556,9 +3556,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },

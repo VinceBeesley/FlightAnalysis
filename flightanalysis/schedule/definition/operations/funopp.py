@@ -48,3 +48,9 @@ class FunOpp(Opp):
                     fun
                 )
         raise ValueError(f"cannot read a FunOpp from the outside of {inp}")
+
+    def list_parms(self):
+        if isinstance(self.a, Opp):
+            return self.a.list_parms()
+        else:
+            return []

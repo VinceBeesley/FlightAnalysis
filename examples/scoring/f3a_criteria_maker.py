@@ -21,10 +21,10 @@ f3a=dict(
         roll_rate=Continuous(Exponential.fit_points([1,5], [0.15, 0.75], 1), 'ratio'),
     ),
     inter=dict(
-        radius=Comparison(Exponential.fit_points([1,5], [0.5, 2.0], 2), 'ratio'),
+        radius=Comparison(Exponential.fit_points([1,5], [1, 2], 2), 'ratio'),
         speed=Comparison(Exponential.fit_points([1,5], [0.25, 1.0]), 'ratio'),
         roll_rate=Comparison(Exponential.fit_points([1,5], [0.25, 1.5],2), 'ratio'),
-        length=Comparison(Exponential.fit_points([1,5], [0.5, 3], 3), 'ratio'),
+        length=Comparison(Exponential.fit_points([1,5], [1, 3], 3), 'ratio'),
         free=Comparison(free, 'ratio'),
     )
 )

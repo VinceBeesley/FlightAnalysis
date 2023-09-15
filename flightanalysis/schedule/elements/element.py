@@ -114,24 +114,21 @@ class Element:
         with open(file, "r") as f:
             return Element.from_dict(load(f))
 
-    def length_vec(self, itrans: Transformation, flown:State) -> Point:
-        return flown.pos[-1] - flown.pos[0]
-    
-    def roll_vec(self, itrans: Transformation, flown: State) -> Point:
-        return flown.att[-1].transform_point(PX(
-            np.sign(np.mean(flown.p)) * abs(self.roll)
-        ))
-
-    def speed_vec(self, itrans: Transformation, flown: State) -> Point:
-        return flown.att[-1].transform_point(flown.vel.mean())
-
-    def rate_vec(self, itrans: Transformation, flown: State) -> Point:
-        return flown.att[-1].transform_point(np.mean(flown.p))
-
     def copy(self):
         return self.__class__(
             **{p: getattr(self, p) for p in inspect.getfullargspec(self.__init__).args[1:]}
         )
+    
+    def length_visibility(self, st: State):
+        pos = st.pos
+        return Measurement._vector_vis(pos[-1] - pos[0], pos.mean())
+    
+    def rate_visibility(self, st: State):
+        return Measurement._vector_vis(st.vel.mean(), st.pos.mean())
+
+    def length_vec(self, itrans, fl):
+        return fl.pos[-1] - fl.pos[0]
+
 
 class Elements(Collection):
     VType=Element

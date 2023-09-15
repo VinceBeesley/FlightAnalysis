@@ -81,14 +81,6 @@ class Loop(Element):
         bvec = flown.att.inverse().transform_point(wvec)
         return abs(Point.vector_rejection(centre, bvec))
 
-    def radius_vec(self, itrans: Transformation,flown: State) -> Point:
-        return itrans.att.transform_point(PZ() if self.ke else PY()) * \
-            self.measure_radius(itrans, flown).mean()
-        
-    def angle_vec(self, itrans: Transformation,flown: State) -> Point:
-        return itrans.att.transform_point(PZ() if self.ke else PY()) * \
-            self.angle
-
     def match_intention(self, itrans: Transformation, flown: State) -> Loop:
         rv = flown.rvel # .mean() if self.ke else flown.q.mean()
         wrv = flown.att.transform_point(rv)
@@ -113,7 +105,9 @@ class Loop(Element):
             angle=abs(self.angle) * np.sign(other.angle)
         )
 
-
+    def radius_visibility(self, st: State):
+        axial_dir = st[0].att.transform_point(PZ() if self.ke else PY())  
+        return Measurement._rad_vis(st.pos.mean(), axial_dir)
 
 
 def KELoop(*args, **kwargs):
