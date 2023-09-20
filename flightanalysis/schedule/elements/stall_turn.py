@@ -47,3 +47,6 @@ class StallTurn(Element):
         return self.set_parms(
             yaw_rate=abs(self.yaw_rate) * np.sign(other.yaw_rate)
         )
+    
+    def yaw_rate_visibility(self, st: State):
+        return [0.4]

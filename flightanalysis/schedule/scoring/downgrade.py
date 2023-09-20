@@ -16,6 +16,15 @@ from scipy.signal import butter, filtfilt
 def butter_filter(data, cutoff):
     return filtfilt(*butter(2, cutoff / 15, btype='low', analog=False), data)
 
+def convolve(data, width):
+    kernel = np.ones(width) / width
+    l = len(data)
+    outd = np.full(l, np.nan)
+    conv = np.convolve(data, kernel, mode='valid')
+    ld = (len(data) - len(conv))/2
+    outd[int(np.ceil(ld)):-int(np.floor(ld))] = conv
+    return pd.Series(outd).ffill().bfill().to_numpy()
+
 
 @dataclass
 class DownGrade:
@@ -37,10 +46,6 @@ class DownGrade:
         return self.measure.__name__
 
     
-    @staticmethod
-    def convolve(data, width):
-        kernel = np.ones(width) / width
-        return np.convolve(data, kernel, mode='same')
     
     def __call__(self, fl, tp, coord) -> Result:
         
@@ -55,25 +60,30 @@ class DownGrade:
             vals = self.criteria.prepare(measurement.value, measurement.expected)    
 
             if len(measurement) < 18:
-                #for now, if an element lasts less than 0.5 seconds then we assume it is perfect
+                #for now, if an element lasts less than 0.5 seconds we assume it is perfect
                 return Result(self.measure.__name__, measurement, [0], [0], [0], [0])
 
             endcut = 4 #min(3, int((len(vals) - 5) / 2))
             
-            tempvals = butter_filter(vals[endcut:-endcut], 1)
-       
+            #tempvals = butter_filter(vals[endcut:-endcut], 1) # TODO I think weighted average is better
+            tempvals = np.full(len(fl), np.mean(vals))
+            tempvals[endcut:-endcut] = vals[endcut:-endcut]
+            tempvals = convolve(pd.Series(tempvals).ffill().bfill().to_numpy(), 10)
+            #as this can go negative in some cases
+            #        
             # for absolute errors you keep getting downgraded for the same error as it becomes more visible.
             # this is because there is a correct reference value the pilot should be aiming for
             # roll angle, track, 
             if self.criteria.comparison == 'absolute':
-                tempvals = tempvals[0] + np.cumsum(np.gradient(tempvals) * measurement.visibility[endcut:-endcut])  
+                tempvals = tempvals[0] + np.cumsum(np.gradient(tempvals) * measurement.visibility)  
        
             id, error, dg = self.criteria(
-                list(range(endcut,len(fl)-endcut)), 
+                list(range(len(fl))),#list(range(endcut,len(fl)-endcut)), 
                 tempvals
             )
-            vals = np.full(len(fl), np.nan)
-            vals[endcut:-endcut] = tempvals
+            vals = tempvals
+#            vals = np.full(len(fl), np.nan)
+#            vals[endcut:-endcut] = tempvals
             
             if self.criteria.comparison == 'ratio':
                 #for ratio errors visiblity factors are applied to the downgrades, so if the initial

@@ -81,13 +81,18 @@ class Loop(Element):
         bvec = flown.att.inverse().transform_point(wvec)
         return abs(Point.vector_rejection(centre, bvec))
 
+    def weighted_average_radius(self, itrans: Transformation, flown: State) -> float:
+        rads = self.measure_radius(itrans, flown)
+        angles = np.arctan(abs(flown.vel) * flown.dt / rads)
+        return np.sum(rads * angles) / np.sum(angles)
+
     def match_intention(self, itrans: Transformation, flown: State) -> Loop:
         rv = flown.rvel # .mean() if self.ke else flown.q.mean()
         wrv = flown.att.transform_point(rv)
         itrv = itrans.att.transform_point(wrv)
 
         return self.set_parms(
-            radius = self.measure_radius(itrans, flown).mean(),
+            radius = self.weighted_average_radius(itrans, flown),# self.measure_radius(itrans, flown).mean(),
             roll=abs(self.roll) * np.sign(np.mean(flown.rvel.x)),
             angle=abs(self.angle) * np.sign(itrv.z.mean() if self.ke else itrv.y.mean()),
             speed=abs(flown.vel).mean()

@@ -7,7 +7,7 @@ from flightanalysis.schedule.definition import *
 
 @fixture
 def th_def() -> ManDef:
-    return SchedDef.from_dict("p23")[0]
+    return SchedDef.load("p23")[0]
 
 @fixture
 def initial_transform(th_def) -> Transformation:
@@ -26,7 +26,6 @@ def th_def_mod(th_def) -> ManDef:
     th = th_def
     th.mps.loop_radius.default = 100
     th.mps.line_length.default=110
-    th.mps.speed.default = 20
     return th
 
 @fixture
@@ -99,21 +98,78 @@ def test_subset(aligned):
 from geometry import PX
 from flightanalysis.base.table import Time
 
-def test_copy_labels_min_len():
-    tp = State.from_transform(Transformation(), vel=PX(30)) \
-        .fill(Time.from_t(np.linspace(0, 1, 10))) \
-            .label(
-                element=list('aaaabbbccc'),
-                manoeuvre=list('mmmmnnnnnn')
-            )
-    
+
+@fixture
+def labst():
+    return State.from_transform(vel=PX(30)) \
+    .fill(Time.from_t(np.linspace(0, 1, 10))) \
+        .label(
+            manoeuvre=list('mmmmnnnnnn'),
+            element=list('oaaabbbccc'),
+        )
+
+def test_copy_labels_min_len(labst):
     path = [[i, i] for i in range(10)]
+
     path[4] = [3,4]
     path[5] = [3,5]
     path[6] = [3,6]
 
-    al = State.copy_labels(tp, tp.remove_labels(), path, 2)
+    al = State.copy_labels(labst, labst.remove_labels(), path, 2)
     assert len(al.get_element('b')) >=2
+    assert len(al.get_element('o')) >=2
     pass
 
-    
+
+def test_single_labels(labst):
+    single_labs = labst.single_labels()
+    assert single_labs[0] == 'm_o'
+
+def test_extract_single_label(labst):
+    np.testing.assert_array_equal(
+        list('aaa'), 
+        labst.extract_single_label('m_a').data.element
+    )
+
+def test_split_labels(labst):
+    tps = labst.split_labels()
+    assert len(tps['m_a']) == 3
+    assert len(tps) == 4
+
+def test_label_lens(labst):
+    tps = labst.label_lens()
+    np.testing.assert_array_equal(list(tps.keys())[:2], ['m_o', 'm_a'])
+    np.testing.assert_array_equal(list(tps.values()), [1,3, 3, 3])
+
+def test_unique_labels(labst: State):
+    ulabs = labst.unique_labels().to_dict(orient='records')
+    assert len(ulabs) == 4
+    np.testing.assert_array_equal(
+        list(ulabs[0].values()),
+        ['m', 'o']
+    )
+
+def test_label_range(labst: State):
+    res = labst.label_range(t=False, manoeuvre='n', element='b')
+    assert res[0] == 4
+    assert res[1] == 6
+
+def test_label_ranges(labst: State):
+    res = labst.label_ranges()
+    assert res.iloc[1,2] == 1
+
+
+def test_get_label_id(labst: State):
+    assert labst.get_label_id(manoeuvre='m', element='a') == 1
+
+
+def test_shift_label(labst: State):
+    assert labst.shift_label(
+        1,1, manoeuvre='m', element='o'
+        ).get_label_len(manoeuvre='m', element='o') == 2
+    assert labst.shift_label(
+        -1,1, manoeuvre='m', element='o'
+        ).get_label_len(manoeuvre='m', element='o') == 1
+    assert labst.shift_label(
+        -1,1, manoeuvre='m', element='a'
+        ).get_label_len(manoeuvre='m', element='o') == 1

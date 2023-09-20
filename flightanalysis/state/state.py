@@ -37,9 +37,11 @@ class State(Table):
     @property
     def back_transform(self):
         return Transformation(-self.pos, self.att.inverse())
-     
+
     @staticmethod
-    def from_transform(transform: Transformation, **kwargs):
+    def from_transform(transform: Transformation=None, **kwargs):
+        if transform is None:
+            transform = Transformation()
         if not "time" in kwargs: 
             kwargs["time"] = Time.from_t(np.linspace(0, State._construct_freq*len(transform), len(transform)))
         return State.from_constructs(pos=transform.p, att=transform.q, **kwargs)
@@ -73,21 +75,14 @@ class State(Table):
         pos = (att.transform_point(vel) * time.dt).cumsum() + self.pos
         return State.from_constructs(time,pos, att, vel, rvel)
 
-    def extrapolate(self: State, duration: float, min_len=3) -> State:
-        """extrapolate the input state, currently ignores input accelerations
-
-        Args:
-            istate (State): initial state of length 1
-            duration (float): duration of extrapolation in seconds
+    def extrapolate(self, duration: float, min_len=3) -> State:
+        """Extrapolate the input state, currently ignores input accelerations
 
         Returns:
             State: state projected forwards
         """
-
         npoints = np.max([int(np.ceil(duration / self.dt[0])), min_len])
-
         time = Time.from_t(np.linspace(0,duration, npoints))
-
         return self.fill(time)
 
     @staticmethod
@@ -153,15 +148,10 @@ class State(Table):
         return State.from_constructs(time, pos, att, vel, rvel, acc)
 
     @staticmethod
-    def stack(sections: list) -> State:
-        """stack a list of States on top of each other. last row of each is replaced with first row of the next, 
-            indexes are offset so they are sequential
-
-        Args:
-            States (List[State]): list of States to stacked
-
-        Returns:
-            State: the resulting State
+    def stack(sections: list) -> Self:
+        """Stack a list of States on top of each other. last row of each is replaced with first row of the next, 
+            indexes are offset so they are sequential. 
+            TODO this should move into the parent class.
         """
         # first build list of index offsets, to be added to each dataframe
         offsets = np.cumsum([0] + [sec.duration for sec in sections[:-1]])
@@ -180,36 +170,25 @@ class State(Table):
 
         return State(combo)
 
-
-
     @staticmethod
-    def align(flown: State, template: State, radius=5, mirror=True, white=False, weights = Point(1,1,1)) -> Tuple(float, Self):
+    def align(
+        flown: State, 
+        template: State, 
+        radius=5, mirror=True,
+        weights = Point(1,1.2,0.5),
+        tp_weights = Point(0.6,0.6,0.6),
+    ) -> Tuple(float, Self):
         """Perform a temporal alignment between two sections. return the flown section with labels 
         copied from the template along the warped path. 
-
-        Args:
-            flown (Section): An un-labelled Section
-            template (Section): A labelled Section
-            radius (int, optional): The DTW search radius. Defaults to 5.
-            whiten (bool, optional): Whether to whiten the data before performing the alignment. Defaults to False.
-
         """
-        
-        if white:
-            warnings.filterwarnings("ignore", message="Some columns have standard deviation zero. ")
-
         def get_brv(brv):
             if mirror:
                 brv = brv.abs() * Point(1, 0, 1) + brv * Point(0, 1, 0 )
-
-            if white:
-                brv = brv.whiten()
-
             return brv * weights
 
         fl = get_brv(flown.rvel)
 
-        tp = get_brv(template.rvel)
+        tp = get_brv(template.rvel * tp_weights)
 
         distance, path = fastdtw(
             tp.data,
@@ -219,62 +198,6 @@ class State(Table):
         )
 
         return distance, State.copy_labels(template, flown, path, 2)
-
-    @staticmethod
-    def copy_labels(template: State, flown: State, path=None, min_len=0) -> State:
-        """Copy the labels from a template section to a flown section along the index warping path
-
-        Args:
-            template (Section): A labelled section
-            flown (Section): An unlabelled section
-            path (List): A list of lists containing index pairs from template to flown
-            min_len (int): The minimum length to squash a unique label to
-
-        Returns:
-            Section: a labelled section
-        """
-
-        flown = flown.remove_labels()
-
-        if path is None:
-            return State(
-                pd.concat(
-                    [flown.data.reset_index(drop=True), template.data.loc[:,template.label_cols].reset_index(drop=True)], 
-                    axis=1
-                ).set_index("t", drop=False)
-            )
-        else:
-            mans = pd.DataFrame(path, columns=["template", "flight"]).set_index("template").join(
-                    template.data.reset_index(drop=True).loc[:, template.label_cols]
-                ).groupby(['flight']).last().reset_index().set_index("flight")
-
-            st = State(flown.data).label(**mans.to_dict(orient='list'))
-
-            if min_len > 0:
-                unique_labels = template.unique_labels().reset_index(drop=True)
-                
-                for i, row in unique_labels.iterrows():
-                    stlen = st.get_label_len(**row.to_dict())
-                    if stlen < min_len:
-                        _last = unique_labels.iloc[i-1].to_dict()
-                        _next = unique_labels.iloc[i+1].to_dict()
-                        max_fwd = st.get_label_len(**_next) - min_len if i > 0 else 0
-                        max_bck = st.get_label_len(**_last) - min_len if i < len(unique_labels) else 0
-
-                        if max_bck + max_fwd + stlen < min_len:
-                            raise Exception(f'{row[1]} too short and cannot shorten adjacent labels further')
-                        else:
-                            _extend = (min_len - stlen) / 2
-                            efwd = min(max_fwd, int(np.floor(_extend)))
-                            ebck = min(max_bck, int(np.ceil(_extend)))
-                            old_labels = st.data.loc[:, st.label_cols].reset_index(drop=True)
-
-                            start_i = old_labels.loc[np.all(old_labels == _last, axis=1)].iloc[-ebck:].index[0].item()
-                            end_i = old_labels.loc[np.all(old_labels == _next, axis=1)].iloc[:efwd+1].index[-1].item()
-
-                            old_labels.iloc[start_i: end_i, :] = list(row.to_dict().values())
-                            st = st.label(**old_labels.to_dict(orient='list'))                            
-            return st
 
     def splitter_labels(self: State, mans: List[dict], better_names: List[str]=None) -> State:
             """label the manoeuvres in a State based on the flight coach splitter information
@@ -314,7 +237,6 @@ class State(Table):
 
             return State.stack(labelled)
 
-
     def get_subset(self: State, mans: Union[list, slice], col="manoeuvre", min_len=1) -> Self:
         selectors = self.data.loc[:,col].unique()
         if isinstance(mans, slice):
@@ -338,18 +260,6 @@ class State(Table):
     def get_element(self: State, element: Union[str, list, int]) -> Self:
         return self.get_subset(element, "element") 
 
-    def get_label_subset(self, min_len=1, **kwargs) -> Self:
-        dfo = self.data
-        for k, v in kwargs.items():
-            dfo = dfo.loc[dfo[k] == v, :]            
-        return State(dfo, min_len=min_len)
-
-    def get_label_len(self, **kwargs) -> int:
-        try:
-            return len(self.get_label_subset(1, **kwargs))
-        except Exception:
-            return 0
-
     def get_man_or_el(self: State, el: str) -> Self:
         if el in self.data.element.unique():
             return self.get_element([el])
@@ -364,6 +274,7 @@ class State(Table):
             return st
 
     def convert_state(self: State, r: Point) -> State:
+        """Rotate body axis by an axis angle"""
         att = self.att.body_rotate(r)
         q =  att.inverse() * self.att
         return State.from_constructs(
@@ -579,14 +490,13 @@ class State(Table):
         self = self.move(Transformation(-transform.pos, Q0()))
         return self.move(Transformation(P0(), transform.att.inverse()))
 
-
     def relocate(self:State, start_pos: Point) -> State:
         offset = start_pos - self.pos[0]
         return self.move(Transformation(offset, Q0()))
 
     def superimpose_angles(self: State, angles: Point, reference:str="body"): 
         assert reference in ["body", "world"]
-        sec = State.copy_labels(
+        return State.copy_labels(
             self, 
             State.from_constructs(
                 self.time,
@@ -594,11 +504,6 @@ class State(Table):
                 self.att.rotate(angles) if reference=="world" else self.att.body_rotate(angles)
             )
         ) 
-
-        #if "sub_element" in self.data.columns:
-        #   sec = sec.append_columns(self.data["sub_element"])
-        return sec
-
 
     def superimpose_rotation(self: State, axis: Point, angle: float, reference:str="body"):
         """Generate a new section, identical to self, but with a continous rotation integrated
@@ -619,7 +524,6 @@ class State(Table):
             angle (float): the amount of roll to integrate
         """
         return self.superimpose_rotation(PX(), angle)
-
 
     def smooth_rotation(self: State, axis: Point, angle: float, reference:str="body", w: float=0.25, w2=0.1):
         """Accelerate for acc_prop * t, flat rate for middle, slow down for acc_prop * t.
@@ -652,44 +556,6 @@ class State(Table):
         angles = Point.full(axis.unit(), len(t)) * np.concatenate([angles_0, angles_1, angles_2])
 
         return self.superimpose_angles(angles, reference)
-
-
-    def unique_labels(self):
-        return self.labels.reset_index(drop=True).drop_duplicates()
-
-    def shift_labels(self, col, elname, offset, allow_label_loss=True) -> State:
-        
-        new_t = self.label_ts("element")[elname][1] +  offset
-        
-        odata = self.data.copy()
-
-        elnames = list(odata[col].unique())
-        elid = elnames.index(elname)
-        elt = odata.loc[odata[col] == elname].index.to_numpy()       
-        nelt = self.data.loc[odata[col] == elnames[elid+1]].index.to_numpy()
-        
-        if allow_label_loss:
-            new_t = max(new_t, self.data.index[0])
-            new_t = min(new_t, self.data.index[-1])
-        else:
-            new_t = max(new_t, elt[0])
-            new_t = min(new_t, nelt[-1])
-
-        if elt[-1] > new_t:    
-            odata.loc[new_t:nelt[-1], col] = elnames[elid+1]
-        else:
-            odata.loc[elt[0]:new_t, col] = elname
-        
-        return State(odata)
-    
-    def label_ts(self, col, t=False):
-        labels = list(self.data[col].unique())
-        rng = lambda arr: (min(arr), max(arr))
-        if t:
-            return {lab: rng(self.data.loc[self.data[col]==lab].t.to_numpy()) for lab in labels}    
-        else:
-            return {lab: rng(self.data.loc[self.data[col]==lab].index.to_numpy()) for lab in labels}
-        
     
     def zero_g_acc(self):
         return self.att.inverse().transform_point(PZ(-9.81)) + self.acc

@@ -67,7 +67,6 @@ def labst():
     al.data.t = al.data.t + 100
     return al
 
-
 def test_label_inds(labst):
     lts = labst.label_ts("element")
     for i in range(5):

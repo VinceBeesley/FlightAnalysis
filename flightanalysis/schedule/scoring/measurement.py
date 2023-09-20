@@ -177,8 +177,10 @@ class Measurement:
         fl_rad_lc = Point.vector_rejection(fl_loop_centre_lc, loop_plane) - fl_lc.pos #loop frame radius vector
         tp_rad_lc = Point.vector_rejection(tp_loop_centre_lc, loop_plane) - tp_lc.pos
 
+        ab = abs(fl_rad_lc)
+
         return Measurement.rad_vis(
-            ref_frame.att.transform_point(fl_rad_lc), 
+            ref_frame.att.transform_point(fl_rad_lc.unit() * np.maximum(np.minimum(ab, 400), 10)), 
             ref_frame.att.transform_point(tp_rad_lc), 
             fl.pos, ref_frame.att.transform_point(loop_plane)
         )

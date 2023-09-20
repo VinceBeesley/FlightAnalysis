@@ -27,6 +27,10 @@ class ElementAnalysis:
         fig = plotsec(self.fl, color="red", **kwargs)
         return plotsec(self.tp, color="green", fig=fig, **kwargs)
 
+    def to_dict(self):
+        return {k: v.to_dict() for k, v in self.__dict__.items()}
+
+
 
 @dataclass
 class ManoeuvreResults:
