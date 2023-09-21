@@ -1,3 +1,0 @@
-
-from flightanalysis import *
-pass

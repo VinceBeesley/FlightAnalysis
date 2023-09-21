@@ -4,10 +4,8 @@ from flightdata import Flight
 import numpy as np
 import pandas as pd
     
-#examples/data/manual_F3A_P23_22_05_31_00000350.json
-with open("examples/data/FC_P23_Template.json", "r") as f:
+with open("examples/data/manual_F3A_P23_22_05_31_00000350.json", "r") as f:
     data = load(f)
-
 
 flight = Flight.from_fc_json(data)
 box = Box.from_fcjson_parmameters(data["parameters"])
@@ -32,11 +30,5 @@ df = pd.DataFrame.from_dict(dgs)
 print(df)
 pass
 
-#with open("_trials/temp/dgs.json", "w") as f:
-#    dump(dgs)
-#
-#aligned.data.to_csv("_trials/temp/aligned.csv")
-#intended_template.data.to_csv("_trials/temp/intended_template.csv")
-#corrected_template.data.to_csv("_trials/temp/corrected_template.csv")
 
 

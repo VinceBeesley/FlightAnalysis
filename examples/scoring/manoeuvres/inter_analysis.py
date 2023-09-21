@@ -6,8 +6,6 @@ import numpy as np
 with open('examples/scoring/manoeuvres/mans/tHat.json', 'r') as f:
     ma = MA.from_dict(load(f))
 
-from flightplotting import plotsec
-
 
 resrr = ma.mdef.mps.partial_roll_rate.get_downgrades(ma.intended.elements)
 
