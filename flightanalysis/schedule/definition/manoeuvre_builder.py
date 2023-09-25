@@ -22,8 +22,8 @@ class ManoeuvreBuilder():
             return partial(self.el, name)
     
     def el(self, kind, *args, **kwargs):
-        #setup kwargs to pull defaults from mpmaps
-        #returns a function that appends the created elements to a ManDef
+        """Setup kwargs to pull defaults from mpmaps
+        returns a function that appends the created elements to a ManDef"""
         
         all_kwargs = self.mpmaps[kind]["kwargs"].copy() # take the defaults
         for k,a in kwargs.items():

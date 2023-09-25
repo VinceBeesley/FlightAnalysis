@@ -125,7 +125,7 @@ class Measurement:
         )
     
     @staticmethod
-    def track_y(fl: State, tp:State, ref_frame: Transformation) -> Measurement:
+    def _track_y(fl: State, tp:State, ref_frame: Transformation) -> Measurement:
         """angle error in the velocity vector about the coord y axis"""
         tr = ref_frame.q.inverse()
 
@@ -135,25 +135,47 @@ class Measurement:
         flycvel = Point(flcvel.x, flcvel.y, tpcvel.z)
 
         cyerr = (Point.cross(flycvel, tpcvel) / (abs(flycvel) * abs(tpcvel))).arcsin
-        #cyerr = Point.vector_projection(cerr, PY())
         
         wyerr = tr.inverse().transform_point(cyerr)
+
+        
         return Measurement.track_vis(wyerr, P0(len(wyerr)), fl.pos, fl.att)
 
     @staticmethod
-    def track_z(fl: State, tp:State, ref_frame: Transformation) -> Measurement:
+    def track_y(fl: State, tp: State, ref_frame: Transformation) -> Measurement:
         tr = ref_frame.q.inverse()
-
-        flcvel = tr.transform_point(fl.att.transform_point(fl.vel)) 
-        tpcvel = tr.transform_point(tp.att.transform_point(tp.vel)) 
-
-        flzcvel = Point(flcvel.x, tpcvel.y, flcvel.z)
-
-        czerr = (Point.cross(flzcvel, tpcvel) / (abs(flzcvel) * abs(tpcvel))).arcsin
-        #czerr = Point.vector_projection(cerr, PZ())
         
-        wzerr = tr.inverse().transform_point(czerr)
-        return Measurement.track_vis(wzerr, P0(len(wzerr)), fl.pos, fl.att)
+        fcvel = tr.transform_point(fl.att.transform_point(fl.vel)) #flown ref frame vel
+        tcvel = tr.transform_point(tp.att.transform_point(tp.vel)) # template ref frame vel
+
+        cverr = Point.vector_rejection(fcvel, tcvel)
+        wverr = ref_frame.q.transform_point(cverr)
+
+        angle_err = np.arcsin(cverr.y / abs(fl.vel) )
+
+        wz_angle_err = fl.att.transform_point(PZ() * angle_err)
+
+        return Measurement(wz_angle_err, P0(len(wz_angle_err)), Measurement._vector_vis(wverr, fl.pos))
+
+
+
+    @staticmethod
+    def track_z(fl: State, tp: State, ref_frame: Transformation) -> Measurement:
+        tr = ref_frame.q.inverse()
+        
+        fcvel = tr.transform_point(fl.att.transform_point(fl.vel)) #flown ref frame vel
+        tcvel = tr.transform_point(tp.att.transform_point(tp.vel)) # template ref frame vel
+
+        cverr = Point.vector_rejection(fcvel, tcvel)
+        wverr = ref_frame.q.transform_point(cverr)
+
+        angle_err = np.arcsin(cverr.z / abs(fl.vel) )
+
+        wz_angle_err = fl.att.transform_point(PY() * angle_err)
+
+        return Measurement(wz_angle_err, P0(len(wz_angle_err)), Measurement._vector_vis(wverr, fl.pos))
+
+
 
     @staticmethod
     def radius(fl:State, tp:State, ref_frame: Transformation) -> Measurement:
