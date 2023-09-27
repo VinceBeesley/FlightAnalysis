@@ -12,12 +12,12 @@ class Channels(Base):
     cols = ["th", "al", "ar", "e", "r"]
 
 
-class Surfaces(Base):
+class Actuators(Base):
     cols = ["thr", "ail", "ele", "rud", "flp"]
 
     @staticmethod
     def from_channels(chans: Channels):
-        return Surfaces(
+        return Actuators(
             chans.thr, 
             np.mean([chans.al, -chans.ar]), 
             chans.e,
@@ -28,7 +28,7 @@ class Surfaces(Base):
 
 class Controls(Table):
     constructs = Table.constructs + Constructs([
-        SVar("surfaces", Surfaces),
+        SVar("actuators", Actuators),
         SVar("channels", Channels)
     ])
 
@@ -50,12 +50,12 @@ class Controls(Table):
         )
 
 
-def cold_draft_controls(chans: Channels) -> Surfaces:
+def cold_draft_controls(chans: Channels) -> Actuators:
     """convert a Channels of PWM values to a channels of surface deflections"""
 
     chs = (chans - chans[0]) / (chans.max() - chans.min())
 
-    return Surfaces(
+    return Actuators(
         chs.th,
         np.mean([chs.al, chs.ar], axis=0) * 30,
         chs.e * 30,

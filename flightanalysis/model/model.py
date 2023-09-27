@@ -20,7 +20,7 @@ class AeroModel:
     def forward(self, control: Controls, flow: Flow) -> Coefficients:
         pass
 
-    def backward(self, coefficients: Coefficients, q) -> tuple(Controls, Flows):
+    def backward(self, coefficients: Coefficients, q) -> tuple(Controls, Flow):
         pass
 
 
