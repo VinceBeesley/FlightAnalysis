@@ -11,7 +11,7 @@ class Measurement:
     value: Union[Point, Any]
     expected: Union[Point, Any]
     visibility: np.ndarray
-
+    
     def __len__(self):
         return len(self.value)
 
