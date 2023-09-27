@@ -62,12 +62,12 @@ class Result:
     def plot(self):
         import plotly.graph_objects as go
         fig=go.Figure(layout=dict(
-            yaxis=dict(title='measurement'), 
-            yaxis2=dict(title='visibility', overlaying="y")
+            yaxis=dict(title='measurement', range=[0,np.max(self.sample)*2]), 
+            yaxis2=dict(title='visibility', overlaying="y", range=[0,1])
         ))
         
         x=list(range(0, len(self.measurement),1))
-        fig.add_trace(go.Scatter(x=x,y=abs(self.measurement.value), name='flown'))
+        fig.add_trace(go.Scatter(x=x,y=self.measurement.value, name='flown'))
 
         fig.add_trace(go.Scatter(
             x=x, y=self.sample, 

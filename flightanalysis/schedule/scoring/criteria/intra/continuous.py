@@ -28,7 +28,7 @@ class Continuous(Criteria):
         ma_vec = (cumsum_vec[window_width:] - cumsum_vec[:-window_width]) / window_width
         return ma_vec
 
-    def prepare(self, value: Point, expected: Point):
+    def prepare(self, value: npt.NDArray, expected: float):
         if self.comparison == 'absolute':
             return abs(expected - value)
         elif self.comparison == 'ratio':

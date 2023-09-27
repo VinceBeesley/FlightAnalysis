@@ -44,8 +44,6 @@ class DownGrade:
     @property
     def name(self):
         return self.measure.__name__
-
-    
     
     def __call__(self, fl, tp, coord) -> Result:
         
@@ -65,12 +63,10 @@ class DownGrade:
 
             endcut = 4 #min(3, int((len(vals) - 5) / 2))
             
-            #tempvals = butter_filter(vals[endcut:-endcut], 1) # TODO I think weighted average is better
             tempvals = np.full(len(fl), np.mean(vals))
             tempvals[endcut:-endcut] = vals[endcut:-endcut]
             tempvals = convolve(pd.Series(tempvals).ffill().bfill().to_numpy(), 10)
-            #as this can go negative in some cases
-            #        
+                        #        
             # for absolute errors you keep getting downgraded for the same error as it becomes more visible.
             # this is because there is a correct reference value the pilot should be aiming for
             # roll angle, track, 

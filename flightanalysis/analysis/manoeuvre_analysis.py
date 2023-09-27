@@ -24,8 +24,7 @@ class ElementAnalysis:
 
     def plot_3d(self, **kwargs):
         from flightplotting import plotsec
-        fig = plotsec(self.fl, color="red", **kwargs)
-        return plotsec(self.tp, color="green", fig=fig, **kwargs)
+        return plotsec([self.fl, self.tp], 2, 5, origin=True)
 
     def to_dict(self):
         return {k: v.to_dict() for k, v in self.__dict__.items()}

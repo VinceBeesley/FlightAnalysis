@@ -8,16 +8,6 @@ from pandas.api.types import is_list_like
 from geometry import Point, Quaternion, Transformation, PX, PY, PZ, P0, Q0, Coord
 from flightanalysis import Table, Constructs, SVar, Time, FlightLine, Box, Flow, Environment
 
-from warnings import warn
-try:
-    from scipy.spatial.distance import euclidean
-except ImportError as ex:
-    pass
-try:
-    from fastdtw import fastdtw
-except ImportError as ex:
-    pass
-
 
 class State(Table):
     constructs = Table.constructs + Constructs([
@@ -181,6 +171,8 @@ class State(Table):
         """Perform a temporal alignment between two sections. return the flown section with labels 
         copied from the template along the warped path. 
         """
+        from fastdtw import fastdtw
+        from scipy.spatial.distance import euclidean
         def get_brv(brv):
             if mirror:
                 brv = brv.abs() * Point(1, 0, 1) + brv * Point(0, 1, 0 )

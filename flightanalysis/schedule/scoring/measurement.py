@@ -2,30 +2,35 @@ from __future__ import annotations
 from flightanalysis.state import State
 from geometry import Point, Coord, Quaternion, PX, PY, PZ, P0, Transformation
 import numpy as np
+import numpy.typing as npt
 from dataclasses import dataclass
-from typing import Union, Any
+from typing import Union, Any, Self
+from flightanalysis.base import Table, Constructs
 
 
 @dataclass()
 class Measurement:
-    value: Union[Point, Any]
-    expected: Union[Point, Any]
-    visibility: np.ndarray
-    
+    value: npt.NDArray
+    expected: float
+    direction: Point
+    visibility: npt.NDArray
+
     def __len__(self):
         return len(self.value)
 
     def __getitem__(self, sli):
         return Measurement(
             self.value[sli], 
-            self.expected[sli],
+            self.expected,
+            self.direction[sli],
             self.visibility[sli],
         )
 
     def to_dict(self):
         return dict(
-            value = self.value.to_dicts() if isinstance(self.value, Point) else list(self.value),
-            expected = self.expected.to_dicts() if isinstance(self.expected, Point) else list(self.expected),
+            value = list(self.value),
+            expected = self.expected,
+            direction = self.direction.to_dict(),
             visibility = list(self.visibility)
         )
     
@@ -34,15 +39,17 @@ class Measurement:
         fac[-1] = 1
         return Measurement(
             self.value * fac,
-            self.expected * fac,
+            self.expected,
+            self.direction,
             self.visibility * fac
         )
 
     @staticmethod
     def from_dict(data) -> Measurement:
         return Measurement(
-            Point(**data['value']) if isinstance(data['value'], dict) else np.array(data['value']),
-            Point(**data['expected']) if isinstance(data['expected'], dict) else np.array(data['expected']),
+            np.array(data['value']),
+            data['expected'],
+            Point.from_dict(data['direction']),
             np.array(data['visibility'])
         )
 
@@ -50,99 +57,46 @@ class Measurement:
         return abs(Point.vector_rejection(loc, PY())) / abs(loc)
 
     @staticmethod
-    def vector_vis(value: Point, expected: Point, loc: Point, att: Quaternion) -> Measurement:
-        return Measurement(
-            value, expected, 
-            Measurement._vector_vis(value, loc) * Measurement._pos_vis(loc),
-        )
-
-    @staticmethod
-    def _vector_vis(direction: Point, loc: Point) -> np.ndarray:
+    def _vector_vis(direction: Point, loc: Point) -> Union[Point, npt.NDArray]:
         #a vector error is more visible if it is perpendicular to the viewing vector
         # 0 to np.pi, pi/2 gives max, 0&np.pi give min
-        return 1 - 0.8* np.abs(Point.cos_angle_between(loc, direction))
+        return direction,  1 - 0.8* np.abs(Point.cos_angle_between(loc, direction))
 
     @staticmethod
-    def track_vis(value: Point, expected: Point, loc: Point, att: Quaternion) -> Measurement:
-        return Measurement(
-            value, expected, 
-            Measurement._track_vis(value, loc) * Measurement._pos_vis(loc),
-        )
-
-    @staticmethod
-    def _track_vis(axis: Point, loc: Point) -> np.ndarray:
-        #a track error is more visible if it is parrallel to the viewing vector
-        # 0 to np.pi, pi/2 gives max, 0&np.pi give min
-        return 0.2 + 0.8 * np.abs(Point.cos_angle_between(loc, axis))
-    
-
-    @staticmethod
-    def roll_vis(value: Point, expected: Point, loc: Point, att: Quaternion) -> Measurement:
-        return Measurement(
-            value, expected, 
-            Measurement._roll_vis(loc, att) * Measurement._pos_vis(loc),
-        )
-    
-    @staticmethod
-    def _roll_vis(loc: Point, att: Quaternion) -> np.ndarray:
+    def _roll_vis(loc: Point, att: Quaternion) -> Union[Point, npt.NDArray]:
         #a roll error is more visible if the movement of the wing tips is perpendicular to the view vector
         #the wing tips move in the local body Z axis
         world_tip_movement_direction = att.transform_point(PZ()) 
-        return 1-0.8*np.abs(Point.cos_angle_between(loc, world_tip_movement_direction))
+        return world_tip_movement_direction, 1-0.8*np.abs(Point.cos_angle_between(loc, world_tip_movement_direction))
 
     @staticmethod
-    def _rad_vis(loc:Point, axial_dir: Point) -> np.ndarray:
+    def _rad_vis(loc:Point, axial_dir: Point) -> Union[Point, npt.NDArray]:
         #radial error more visible if axis is parallel to the view vector
-        return 0.2+0.8*np.abs(Point.cos_angle_between(loc, axial_dir))
+        return axial_dir, 0.2+0.8*np.abs(Point.cos_angle_between(loc, axial_dir))
 
     @staticmethod
-    def rad_vis(value: Point, expected: Point, loc: Point, axis: Point) -> Measurement:
-        return Measurement(
-            value, expected, 
-            Measurement._rad_vis(loc, axis) * Measurement._pos_vis(loc),
-        )
-
-    @staticmethod
-    def speed(fl: State, tp: State, ref_frame: Transformation) -> Measurement:
-        return Measurement.vector_vis(fl.att.transform_point(fl.vel), tp.att.transform_point(tp.vel), fl.pos, fl.att)
+    def speed(fl: State, tp: State, ref_frame: Transformation) -> Self:
+        wvel = fl.att.transform_point(fl.vel) 
+        spd = abs(wvel)
+        return Measurement(spd, np.mean(spd),*Measurement._vector_vis(wvel.unit(), fl.pos))
     
     @staticmethod
-    def roll_angle(fl: State, tp: State, ref_frame: Transformation) -> Measurement:
+    def roll_angle(fl: State, tp: State, ref_frame: Transformation) -> Self:
         """vector in the body X axis, length is equal to the roll angle difference from template"""
-
         body_roll_error = Quaternion.body_axis_rates(tp.att, fl.att) * PX()
         world_roll_error = fl.att.transform_point(body_roll_error)
-        return Measurement.roll_vis(world_roll_error, P0(len(world_roll_error)), fl.pos, fl.att)
+        return Measurement(abs(world_roll_error), 0, *Measurement._roll_vis(fl.pos, fl.att))
 
     @staticmethod
     def roll_rate(fl: State, tp: State, ref_frame: Transformation) -> Measurement:
         """vector in the body X axis, length is equal to the roll rate"""
-        return Measurement.roll_vis(
-            fl.att.transform_point(fl.p * PX()), 
-            tp.att.transform_point(tp.p * PX()),
-            fl.pos, 
-            fl.att
-        )
+        wrvel = fl.att.transform_point(fl.p * PX())
+        wrate = abs(wrvel)
+        return Measurement.roll_vis(wrate, np.mean(wrate), *Measurement._roll_vis(fl.pos, fl.att))
     
     @staticmethod
-    def _track_y(fl: State, tp:State, ref_frame: Transformation) -> Measurement:
+    def track_y(fl: State, tp:State, ref_frame: Transformation) -> Measurement:
         """angle error in the velocity vector about the coord y axis"""
-        tr = ref_frame.q.inverse()
-
-        flcvel = tr.transform_point(fl.att.transform_point(fl.vel)) 
-        tpcvel = tr.transform_point(tp.att.transform_point(tp.vel))
-
-        flycvel = Point(flcvel.x, flcvel.y, tpcvel.z)
-
-        cyerr = (Point.cross(flycvel, tpcvel) / (abs(flycvel) * abs(tpcvel))).arcsin
-        
-        wyerr = tr.inverse().transform_point(cyerr)
-
-        
-        return Measurement.track_vis(wyerr, P0(len(wyerr)), fl.pos, fl.att)
-
-    @staticmethod
-    def track_y(fl: State, tp: State, ref_frame: Transformation) -> Measurement:
         tr = ref_frame.q.inverse()
         
         fcvel = tr.transform_point(fl.att.transform_point(fl.vel)) #flown ref frame vel
@@ -155,9 +109,7 @@ class Measurement:
 
         wz_angle_err = fl.att.transform_point(PZ() * angle_err)
 
-        return Measurement(wz_angle_err, P0(len(wz_angle_err)), Measurement._vector_vis(wverr, fl.pos))
-
-
+        return Measurement(abs(wz_angle_err), 0, *Measurement._vector_vis(wverr.unit(), fl.pos))
 
     @staticmethod
     def track_z(fl: State, tp: State, ref_frame: Transformation) -> Measurement:
@@ -173,21 +125,16 @@ class Measurement:
 
         wz_angle_err = fl.att.transform_point(PY() * angle_err)
 
-        return Measurement(wz_angle_err, P0(len(wz_angle_err)), Measurement._vector_vis(wverr, fl.pos))
-
-
+        return Measurement(abs(wz_angle_err), 0, *Measurement._vector_vis(wverr.unit(), fl.pos))
 
     @staticmethod
     def radius(fl:State, tp:State, ref_frame: Transformation) -> Measurement:
         """error in radius as a vector in the radial direction"""
-        tprad = tp.arc_centre() # body frame vector to centre of loop
         flrad = fl.arc_centre() 
 
         fl_loop_centre = fl.body_to_world(flrad)  # centre of loop in world frame
-        tp_loop_centre = tp.body_to_world(tprad)  
         tr = ref_frame.att.inverse()
         fl_loop_centre_lc = tr.transform_point(fl_loop_centre - ref_frame.pos)
-        tp_loop_centre_lc = tr.transform_point(tp_loop_centre - ref_frame.pos)
 
         #figure out whether its a KE loop
         loop_plane = PY()
@@ -196,14 +143,10 @@ class Measurement:
         if (tp_lc.y.max() - tp_lc.y.min()) > (tp_lc.z.max() - tp_lc.z.min()):
             loop_plane = PZ()
         
-        fl_rad_lc = Point.vector_rejection(fl_loop_centre_lc, loop_plane) - fl_lc.pos #loop frame radius vector
-        tp_rad_lc = Point.vector_rejection(tp_loop_centre_lc, loop_plane) - tp_lc.pos
-
+        #loop frame radius vector
+        fl_rad_lc = Point.vector_rejection(fl_loop_centre_lc, loop_plane) - fl_lc.pos 
+        
         ab = abs(fl_rad_lc)
-
-        return Measurement.rad_vis(
-            ref_frame.att.transform_point(fl_rad_lc.unit() * np.maximum(np.minimum(ab, 400), 10)), 
-            ref_frame.att.transform_point(tp_rad_lc), 
-            fl.pos, ref_frame.att.transform_point(loop_plane)
+        return Measurement(ab, np.mean(ab), 
+            *Measurement._rad_vis(fl.pos, ref_frame.att.transform_point(loop_plane))  
         )
-    

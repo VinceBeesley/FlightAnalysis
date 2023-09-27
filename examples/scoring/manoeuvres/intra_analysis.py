@@ -12,13 +12,13 @@ from flightanalysis.schedule.scoring import Result, DownGrade
 
 ea = ma.e_0
 
-dg: DownGrade = ea.el.intra_scoring.track_y
+dg: DownGrade = ea.el.intra_scoring.roll_angle
 res: Result = dg(ea.fl, ea.tp, ea.ref_frame)
 
 res.plot().show()
 
-fig = plotsec([ea.fl, ea.tp], 2, 5, origin=True)
+fig = ea.plot_3d()
 
-fig.add_traces(vectors(10, ea.fl, res.measurement.value.degrees()))
+fig.add_traces(vectors(10, ea.fl, -res.measurement.direction * np.degrees(res.sample)))
 fig.show()
 pass
