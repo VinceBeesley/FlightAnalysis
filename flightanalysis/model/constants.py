@@ -14,6 +14,6 @@ cold_draft = ACConstants(
     0.569124, 
     0.31211, 
     1.8594, 
-    Mass.cuboid(4.5, 1800, 1800, 100), 
+    Mass.cuboid(4.5, 800, 400, 100), 
     Point(0.6192,0.0,0.0)
 )

@@ -315,7 +315,7 @@ class State(Table):
 
         # the yaw rotation required to align the xz plane with the local wind vector:
         yaw_rotation = (jwind + self.vel).angles(
-            self.att.inverse().transform_point(PX())
+            PX()
         ) * Point(0,0,1) 
 
         #transform the data by this yaw rotation:
@@ -325,9 +325,7 @@ class State(Table):
         intwind = int_axis.att.inverse().transform_point(env.wind) 
 
         #the pitch rotation required to align the xy plane with the local wind vector:
-        pitch_rotation = (intwind + int_axis.vel).angles(
-            int_axis.att.inverse().transform_point(PX())
-        ) * Point(0,1,0)
+        pitch_rotation = (intwind + int_axis.vel).angles(PX()) * Point(0,1,0)
 
         #transform by this pitch rotation to get the wind axis state
         return int_axis.convert_state(pitch_rotation)

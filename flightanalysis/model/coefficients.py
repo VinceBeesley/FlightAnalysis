@@ -1,5 +1,5 @@
 from flightanalysis.base.table import Table, SVar, Constructs, SVar
-from geometry import Point
+from geometry import Point, P0
 
 
 class Coefficients(Table):
@@ -9,20 +9,16 @@ class Coefficients(Table):
     ])
 
     @staticmethod
-    def build(sec, flow, consts):
-        I = consts.inertia
+    def build(sec, q, consts):
+        I = consts.mass.I[0]
         u = sec.vel
         du = sec.acc
         w = sec.rvel
         dw = sec.racc
-        moment=I*(dw + w.cross(w)) / (flow.q * consts.s) 
-        #not correct need to extend geometry module to include inertia matrix
+        moment=P0(len(sec))#I*(dw + w.cross(w)) / (q * consts.s) 
 
         return Coefficients.from_constructs(
             sec.time,
-            force=(du + w.cross(u)) * consts.mass / (flow.q * consts.s),
+            force=(du + w.cross(u)) * consts.mass.m[0] / (q * consts.s),
             moment=moment / Point(consts.b, consts.c, consts.b).tile(len(moment))
         )
-
-
-
