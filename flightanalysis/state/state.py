@@ -279,7 +279,7 @@ class State(Table):
             racc=q.transform_point(self.racc),
         )
 
-    def to_judging(self: State) -> State:
+    def to_track(self: State) -> State:
         """This rotates the body so the x axis is in the velocity vector"""
         return self.body_to_wind()
 
@@ -299,18 +299,18 @@ class State(Table):
         return self.body_to_stability(flow).stability_to_wind(flow)
 
 
-    def judging_to_wind(self: State, env: Environment) -> State:
-        """I think the correct way to go from judging axis to wind axis is to do a yaw rotation then a pitch 
-        rotation, as this keeps the wing vector in the judging axis XY plane.
+    def track_to_wind(self: State, env: Environment) -> State:
+        """I think the correct way to go from track axis to wind axis is to do a yaw rotation then a pitch 
+        rotation, as this keeps the wing vector in the track axis XY plane.
 
         Args:
-            self (State): the judging axis data
+            self (State): the track axis data
             env (Environment): the environment
 
         Returns:
             State: the wind axis data
         """
-        # the local wind vector in the judging frame:
+        # the local wind vector in the track frame:
         jwind = self.att.inverse().transform_point(env.wind)  
 
         # the yaw rotation required to align the xz plane with the local wind vector:
