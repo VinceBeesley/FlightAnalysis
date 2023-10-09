@@ -30,7 +30,6 @@ class ElementAnalysis:
         return {k: v.to_dict() for k, v in self.__dict__.items()}
 
 
-
 @dataclass
 class ManoeuvreResults:
     inter: Results
