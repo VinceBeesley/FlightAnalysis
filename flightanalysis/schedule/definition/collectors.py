@@ -3,7 +3,7 @@ from flightanalysis.base.collection import Collection
 from flightanalysis.state import State
 from . import Opp
 from uuid import uuid1
-
+from typing import Self
 
 
 class Collector(Opp):

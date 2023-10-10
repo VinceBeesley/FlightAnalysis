@@ -19,10 +19,9 @@ dgs = []
 
 for mdef in sdef:
     ma = ManoeuvreAnalysis.build(mdef, state.get_manoeuvre(mdef.info.short_name))
-
+    
     scores = ma.scores()
-    if not scores.score() > 9.8:
-        pass
+
     dgs.append(scores.summary())
     print(mdef.info.short_name, scores.score(), dgs[-1])
 

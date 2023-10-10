@@ -92,7 +92,7 @@ class Measurement:
         """vector in the body X axis, length is equal to the roll rate"""
         wrvel = fl.att.transform_point(fl.p * PX())
         wrate = abs(wrvel)
-        return Measurement.roll_vis(wrate, np.mean(wrate), *Measurement._roll_vis(fl.pos, fl.att))
+        return Measurement(wrate, np.mean(wrate), *Measurement._roll_vis(fl.pos, fl.att))
     
     @staticmethod
     def track_y(fl: State, tp:State, ref_frame: Transformation) -> Measurement:
