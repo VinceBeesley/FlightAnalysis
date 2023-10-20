@@ -1,7 +1,7 @@
 from . import ManDef, ManParm, ManParms, ElDef, ElDefs
 from flightanalysis.schedule.elements import *
 
-from typing import Dict, List
+from typing import Dict, Any, Callable
 from numbers import Number
 from functools import partial
 from .element_builders import *
@@ -11,6 +11,10 @@ import numpy as np
 class MBTags:
     CENTRE=0
 
+
+def centred(elb):
+    setattr(elb, 'centred', True)
+    return elb
 
 class ManoeuvreBuilder():
     def __init__(self, mps: ManParms, mpmaps:Dict[str, dict]):
@@ -32,7 +36,7 @@ class ManoeuvreBuilder():
         for k, a in zip(self.mpmaps[kind]["args"], args):
             all_kwargs[k] = a  # take the *args
         
-        def append_el(md: ManDef, **kwargs):
+        def append_el(md: ManDef, **kwargs) -> ElDefs:
             full_kwargs = {}
             for k, a in kwargs.items():
                 try:
@@ -41,13 +45,14 @@ class ManoeuvreBuilder():
                     full_kwargs[k] = a
             
             eds, mps = self.mpmaps[kind]["func"](md.eds.get_new_name(),**full_kwargs)            
-            md.eds.add(eds)
+            neds = md.eds.add(eds)
             md.mps.add(mps)
+            return neds
                         
         return partial(append_el, **all_kwargs)
 
 
-    def create(self, maninfo, elmakers, **kwargs) -> ManDef:
+    def create(self, maninfo, elmakers: list[Callable[[ManDef], ElDef]], **kwargs) -> ManDef:
         mps = self.mps.copy()
         for k, v in kwargs.items():
             if isinstance(v, ManParm):
@@ -61,12 +66,25 @@ class ManoeuvreBuilder():
         for em in elmakers:
             if isinstance(em, int):
                 if em == MBTags.CENTRE:
-                    md.info.centre_loc = len(md.eds.data)
+                    md.info.centre_points.append(len(md.eds.data))
             else:
-                em(md)
+                c1 = len(md.eds.data)
+                new_eds = em(md)
+                c2 = len(md.eds.data)
+
+                if hasattr(em, 'centred'):
+                    if c2 - c1 == 1:
+                        md.info.centred_els.append((c1, 0.5))
+                    else:
+                        ceid, fac = ElDefs(new_eds).get_centre(mps) 
+                        if abs(int(fac) - fac) < 0.05:
+                            md.info.centre_points.append(c1 + ceid + int(fac))
+                        else:
+                            md.info.centred_els.append((ceid + c1, fac))  
+
         md.mps = md.mps.remove_unused()
         return md
-    
+        
 
 from flightanalysis.schedule.scoring.criteria.f3a_criteria import F3A
 

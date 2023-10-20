@@ -7,6 +7,7 @@ import numpy as np
 c45 = np.cos(np.radians(45))
 
 
+
 p23_def = SchedDef([
     f3amb.create(ManInfo(
             "Top Hat", "tHat", k=4, position=Position.CENTRE, 
@@ -16,7 +17,7 @@ p23_def = SchedDef([
             f3amb.loop(np.pi/2),
             f3amb.roll("2x4"),
             f3amb.loop(np.pi/2), 
-            f3amb.roll("1/2",line_length=100),
+            centred(f3amb.roll("1/2",line_length=100)),
             f3amb.loop(-np.pi/2),
             f3amb.roll("2x4"),
             f3amb.loop(-np.pi/2)
@@ -33,11 +34,13 @@ p23_def = SchedDef([
             BoxLocation(Height.TOP, Direction.DOWNWIND, Orientation.INVERTED),
             BoxLocation(Height.TOP)
         ),[
+            MBTags.CENTRE,
             f3amb.loop(np.pi/2),
             f3amb.roll("1/1"), # TODO this should change to 1 sometime
-            f3amb.loop(np.pi),
+            centred(f3amb.loop(np.pi)),
             f3amb.roll("1/2"),
-            f3amb.loop(-np.pi/2)
+            f3amb.loop(-np.pi/2),
+            MBTags.CENTRE,
         ]),
     f3amb.create(ManInfo("Half Square on Corner", "hSqLC", 3, Position.END,
             BoxLocation(Height.TOP, Direction.DOWNWIND, Orientation.UPRIGHT),
@@ -54,7 +57,7 @@ p23_def = SchedDef([
             BoxLocation(Height.TOP)
         ),[
             f3amb.loop(-np.pi/4),
-            f3amb.snap(1.5),
+            centred(f3amb.snap(1.5)),
             f3amb.loop(-np.pi/4) 
         ], line_length=110 + 130/c45),
     f3amb.create(ManInfo("Half 8 Sided Loop", "h8L", 3, Position.END,
@@ -73,7 +76,7 @@ p23_def = SchedDef([
             BoxLocation(Height.BTM, Direction.DOWNWIND, Orientation.INVERTED),
             BoxLocation(Height.BTM)
         ),[
-            f3amb.roll([np.pi, np.pi, -np.pi, -np.pi], padded=False)
+            centred(f3amb.roll([np.pi, np.pi, -np.pi, -np.pi], padded=False))
         ]),
     f3amb.create(ManInfo("Immelman Turn", "pImm", 2, Position.END,
             BoxLocation(Height.BTM, Direction.DOWNWIND, Orientation.INVERTED),
@@ -182,15 +185,15 @@ p23_def = SchedDef([
             BoxLocation(Height.BTM, Direction.DOWNWIND, Orientation.UPRIGHT),
             BoxLocation(Height.BTM)
         ),[
-            f3amb.roll("1/2", padded=False),
+            centred(f3amb.roll("1/2", padded=False)),
             f3amb.line(length=str(f3amb.mps.line_length*c45-0.5*np.pi*30/f3amb.mps.partial_roll_rate)),
             f3amb.loop(-np.pi*3/4),
             f3amb.roll("2x4"),
-            f3amb.loop(np.pi/2),
+            centred(f3amb.loop(np.pi/2)),
             f3amb.roll("2x4"),
             f3amb.loop(-np.pi*3/4),
             f3amb.line(length=str(f3amb.mps.line_length*c45-0.5*np.pi*30/f3amb.mps.partial_roll_rate)),
-            f3amb.roll("1/2", padded=False)
+            centred(f3amb.roll("1/2", padded=False))
         ]),
     f3amb.create(ManInfo("Shark Fin", "sFin", 3,Position.END,
             BoxLocation(Height.BTM, Direction.DOWNWIND, Orientation.UPRIGHT),
@@ -206,9 +209,11 @@ p23_def = SchedDef([
             BoxLocation(Height.BTM, Direction.UPWIND, Orientation.INVERTED),
             BoxLocation(Height.BTM)
         ),[
+            0,
             f3amb.loop(-np.pi*3/4),
-            f3amb.loop(-np.pi/2,roll="roll_option"),
-            f3amb.loop(np.pi*3/4)    
+            centred(f3amb.loop(-np.pi/2,roll="roll_option")),
+            f3amb.loop(np.pi*3/4),
+            0
         ],
         loop_radius=80,
         roll_option=ManParm(

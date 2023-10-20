@@ -85,18 +85,15 @@ def roll_f3a(name, rolls, speed, partial_rate, full_rate, pause_length, line_len
                 _rolls = ManParm.parse(rolls)
             except Exception as e:
                 _rolls = ManParm(f"{name}_rolls", Combination.rollcombo(rolls, reversible), 0)
-        elif isinstance(rolls, list):
-            _rolls = ManParm(f"{name}_rolls", Combination.rolllist(rolls, reversible), 0) 
-        elif isinstance(rolls, Number):
-            if reversible:
-                _rolls = ManParm(f"{name}_rolls", Combination([[rolls], [-rolls]]), 0)
-            else:
-                _rolls = ManParm(f"{name}_rolls", Combination([[rolls]]), 0)
+        else:
+            _rolls = ManParm(f"{name}_rolls", 
+                Combination.rolllist(
+                    [rolls] if np.isscalar(rolls) else rolls, 
+                    reversible
+            ), 0) 
         mps.add(_rolls)
-
     else:
         _rolls = rolls
-
     
     if isinstance(_rolls, ItemOpp):
         _r=_rolls.a.value[_rolls.item]

@@ -35,10 +35,7 @@ class ElementAnalysis:
 class ManoeuvreResults:
     inter: Results
     intra: ElementsResults
-    side_box: Result
-    top_box: Result
-    centre: Result
-    distance: Result
+    positioning: Results
 
     def summary(self):
         return {k: v.total for k, v in self.__dict__.items() if not v is None} 
@@ -50,10 +47,7 @@ class ManoeuvreResults:
         return dict(
             inter=self.inter.to_dict(),
             intra=self.intra.to_dict(),
-            side_box=self.side_box.to_dict() if self.side_box else 0,
-            top_box=self.top_box.to_dict(),
-            centre=self.centre.to_dict() if self.centre else 0,
-            distance=self.distance.to_dict(),
+            positioning=self.positioning.to_dict(),
             summary=self.summary(),
             score=self.score()
         )
@@ -63,10 +57,7 @@ class ManoeuvreResults:
         return Manoeuvre(
             Results.from_dict(data['inter']),
             ElementsResults.from_dict(data['intra']),
-            Result.from_dict(data['side_box']) if data['side_box'] else None,
-            Result.from_dict(data['top_box']),
-            Result.from_dict(data['centre']) if data['centre'] else None,
-            Result.from_dict(data['distance'])
+            Result.from_dict(data['positioning']),
         )
 
 
@@ -188,27 +179,41 @@ class ManoeuvreAnalysis:
         return Result("top box", [], [tb], [outside_tb], [top_box_dg], [])
 
     def centre(self):
-        al = self.aligned.get_element(slice(1,-1,None))
-        side_box_angle = np.arctan2(al.pos.x, al.pos.y)
-        if self.mdef.info.centre_loc == -1:
-            centre = max(side_box_angle) + min(side_box_angle)
-        else:
-            centre_pos = self.intended.elements[self.mdef.info.centre_loc].get_data(self.aligned).pos[0]
-            centre = np.arctan2(centre_pos.x, centre_pos.y)[0]
-        box_dg = F3A.single.angle.lookup(abs(centre))
-        return Result("centering",[],[],[centre],[box_dg],[0])
+        centres = []
+        centre_names = []
+        for cpid in self.mdef.info.centre_points:
+            centre_pos = self.intended.elements[cpid].get_data(self.aligned).pos[0]
+            centres.append(np.arctan2(centre_pos.x, centre_pos.y)[0])
+            centre_names.append(f'centre point {cpid}')
+
+        for ceid, fac in self.mdef.info.centred_els:
+            ce = self.intended.elements[ceid].get_data(self.aligned)
+            centre_pos = ce.pos[int(len(ce) * fac)]
+            centres.append(np.arctan2(centre_pos.x, centre_pos.y)[0])
+            centre_names.append(f'centred el {ceid}')
+
+        if len(centres) == 0:
+            al = self.aligned.get_element(slice(1,-1,None))
+            side_box_angle = np.arctan2(al.pos.x, al.pos.y)
+            centres.append(max(side_box_angle) + min(side_box_angle))
+            centre_names.append(f'global centre')
+
+        results = Results('centres')
+        for centre, cn in zip(centres, centre_names):
+            results.add(Result(
+                cn,[],[],[centre],
+                [F3A.single.angle.lookup(abs(centre))],
+                [0]
+            ))
+        return results
 
     def distance(self):
         #TODO doesnt quite cover it, stalled manoeuvres could drift to > 170 for no downgrade
-        tp_width = max(self.corrected_template.y) - min(self.corrected_template.y) #only downgrade distance if the template is narrow
         dist_key = np.argmax(self.aligned.pos.y)
         dist = self.aligned.pos.y[dist_key]
-        if tp_width < 10:
-            dist_key = np.argmax(self.aligned.pos.y)
-            dist = self.aligned.pos.y[dist_key]
-            dist_dg = F3A.single.distance.lookup(max(dist, 170) - 170)
-        else:
-            dist_dg = 0.0
+        
+        dist_dg = F3A.single.distance.lookup(max(dist, 170) - 170)
+        
         return Result("distance", [], [],[dist],[dist_dg],dist_key)
 
     def intra(self):
@@ -217,18 +222,23 @@ class ManoeuvreAnalysis:
     def inter(self):
         return self.mdef.mps.collect(self.intended, self.intended_template)
 
-    def scores(self):
-        
-        intra = self.intra()
-        
-        inter = self.inter()
+    def positioning(self):
+        pres = Results('positioning')
+        match self.mdef.info.position:
+            case Position.END:
+                pres.add(self.side_box())
+            case Position.CENTRE:
+                pres.add(self.centre())
+        tp_width = max(self.corrected_template.y) - min(self.corrected_template.y)
+        if tp_width < 10:
+            pres.add(self.distance())
+        return pres
 
+    def scores(self):
         return ManoeuvreResults(
-            inter, intra, 
-            self.side_box() if self.mdef.info.position == Position.END else None, 
-            self.top_box(), 
-            self.centre()if self.mdef.info.position == Position.CENTRE else None, 
-            self.distance()
+            self.inter(), 
+            self.intra(), 
+            self.positioning()
         )
     
     @staticmethod
@@ -244,7 +254,6 @@ class ManoeuvreAnalysis:
             data["mans"],
             [m.info.short_name for m in sdef]
         )
-        mas=[]
         mdef= sdef[mid]
         return ManoeuvreAnalysis.build(
             mdef, 

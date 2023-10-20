@@ -76,7 +76,7 @@ class ManParm(Opp):
         meas = Measurement(
             vs,
             np.full(len(vs), self.default),
-            np.full(len(vs), 0.4) if state is None else np.array(self.collect_vis(els, state))
+            np.array(self.collect_vis(els, state))
         )
 
         keys, errors, dgs = self.criteria(list(coll.keys()), list(coll.values())) 

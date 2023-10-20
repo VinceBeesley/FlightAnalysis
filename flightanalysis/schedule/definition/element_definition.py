@@ -1,5 +1,5 @@
 import enum
-from typing import List, Callable, Union, Dict
+from typing import List, Callable, Union, Dict, Tuple
 import numpy as np
 from flightanalysis.schedule.elements import *
 from inspect import getfullargspec
@@ -82,6 +82,7 @@ class ElDef:
     def id(self):
         return int(self.name.split("_")[1])
 
+
 class ElDefs(Collection):
     VType=ElDef
     uid="name"
@@ -139,3 +140,20 @@ class ElDefs(Collection):
             opp.name = uuid1() if oppname is None else oppname
         return opp
     
+
+    def get_centre(self, mps: ManParms) -> Tuple[int, float]:
+        """Get the centre element id and the location of the centre within it.
+
+        Returns:
+            Tuple[int, float]: elementid, position within element
+        """
+        lengths = [el(mps).length for el in self]
+        cumlength = np.cumsum(lengths)
+        mid_point = cumlength[-1] / 2
+
+        for i, clen in enumerate(cumlength):
+            if clen > mid_point:
+
+                return i,  (mid_point - cumlength[i-1]) / lengths[i]
+        else:
+            raise Exception('should not happen')

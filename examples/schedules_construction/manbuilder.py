@@ -1,20 +1,21 @@
 from flightanalysis.schedule import *
 import numpy as np
-from flightanalysis.schedule.definition.manoeuvre_builder import f3amb
+from flightanalysis.schedule.definition.manoeuvre_builder import *
 from flightanalysis.schedule.scoring import *
+from examples.schedules_construction.f25 import f25_def
 
 
-mdef = f3amb.create(ManInfo(
-            "Snap", "Sn", k=2, position=Position.CENTRE, 
-            start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),
-            end=BoxLocation(Height.BTM)
-        ),[
-            f3amb.snap(1, padded=False)
-        ])
 
-it = mdef.info.initial_transform(170, 1)
-man = mdef.create(it)
+for i in range(0, 17, 2):
+    mdef = f25_def[i]
 
-tp = man.create_template(it)
+    it = mdef.info.initial_transform(170, 1)
+    man = mdef.create(it)
 
-print(tp[9.2: 9.6].data)
+    tp = man.create_template(it)
+
+    from flightplotting import plotsec, boxtrace
+    fig = plotsec(tp)
+    fig.add_traces(boxtrace())
+    fig.show()
+

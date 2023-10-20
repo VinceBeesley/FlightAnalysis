@@ -7,7 +7,8 @@ WIP, very vague ideas at the moment.
 import numpy as np
 from geometry import Point, Transformation, Euler
 from enum import Enum
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Tuple
 
 
 class Orientation(Enum):
@@ -101,7 +102,8 @@ class ManInfo:
     position: Position
     start: BoxLocation
     end: BoxLocation
-    centre_loc: int = -1 # -1 for standard definitino, >=0 for the start of an element ID
+    centre_points: list[int] = field(default_factory=lambda: []) # points that should be centered, ids correspond to the previous element
+    centred_els: list[Tuple[int, float]] = field(default_factory=lambda: [])  # element ids that should be centered
 
     def initial_position(self, depth: float, wind: int) -> Transformation: 
         return Point(
@@ -137,7 +139,8 @@ class ManInfo:
             position = self.position.name,
             start = self.start.to_dict(),
             end = self.end.to_dict(),
-            centre_loc = self.centre_loc
+            centre_points = self.centre_points,
+            centre_els = self.centred_els
         )
 
     @staticmethod
@@ -149,6 +152,7 @@ class ManInfo:
             Position[inp["position"]],
             BoxLocation.from_dict(inp["start"]),
             BoxLocation.from_dict(inp["end"]),
-            centre_loc=inp["centre_loc"] if "centre_loc" in inp else -1
+            inp["centre_points"],
+            inp["centre_els"]
         )
         

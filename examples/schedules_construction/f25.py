@@ -13,15 +13,17 @@ f25_def = SchedDef([
             start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.BTM)
         ),[
+            MBTags.CENTRE,
             f3amb.loop(np.pi/4, roll="roll_option[0]"),
             f3amb.line(),
             f3amb.loop("roll_option[1]", roll=np.pi, ke=True),
             f3amb.line(),
-            f3amb.loop("roll_option[2]", roll=np.pi, ke=True),
+            centred(f3amb.loop("roll_option[2]", roll=np.pi, ke=True)),
             f3amb.line(),
             f3amb.loop("roll_option[3]", roll=np.pi, ke=True),
             f3amb.line(),
             f3amb.loop("roll_option[4]", roll="roll_option[5]", ke=True),
+            MBTags.CENTRE
         ], 
         roll_option=ManParm("roll_option", Combination(desired=[
             [np.pi/2, -np.pi/2, np.pi/2, -np.pi/2, np.pi/4, -np.pi/2], 
@@ -43,7 +45,10 @@ f25_def = SchedDef([
             start=BoxLocation(Height.MID, Direction.DOWNWIND, Orientation.INVERTED),
             end=BoxLocation(Height.BTM)
         ),[
-            f3amb.roll([np.pi/2, np.pi/2, -np.pi/2, -np.pi/2, -np.pi/2, -np.pi/2, np.pi/2, np.pi/2], padded=False)
+            centred(f3amb.roll(
+                [np.pi/2, np.pi/2, -np.pi/2, -np.pi/2, -np.pi/2, -np.pi/2, np.pi/2, np.pi/2], 
+                padded=False
+            ))
         ], ),
     f3amb.create(ManInfo(
             "Half Loop", "hLoop", k=4, position=Position.END, 
@@ -59,7 +64,7 @@ f25_def = SchedDef([
         ),[
             f3amb.loop(np.pi/2),
             f3amb.snap(1.5),
-            f3amb.loop(np.pi, roll=np.pi),
+            centred(f3amb.loop(np.pi, roll=np.pi)),
             f3amb.roll('3/2'),
             f3amb.loop(-np.pi/2)
         ], full_roll_rate=np.pi),
@@ -77,9 +82,11 @@ f25_def = SchedDef([
             start=BoxLocation(Height.BTM, Direction.DOWNWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.BTM)
         ),[
+            MBTags.CENTRE,
             f3amb.loop("roll_option[0]", roll="roll_option[1]", ke=True),
-            f3amb.loop("roll_option[2]", roll="roll_option[3]", ke=True),
-            f3amb.loop("roll_option[4]", roll="roll_option[5]", ke=True)
+            centred(f3amb.loop("roll_option[2]", roll="roll_option[3]", ke=True)),
+            f3amb.loop("roll_option[4]", roll="roll_option[5]", ke=True),
+            MBTags.CENTRE
         ], 
         loop_radius=100,
          roll_option=ManParm("roll_option", Combination(desired=[
@@ -108,15 +115,15 @@ f25_def = SchedDef([
             f3amb.loop(np.pi/2),
             f3amb.roll('1/2'),
             f3amb.loop(-np.pi/2),
-            f3amb.roll('1/1'),
+            centred(f3amb.roll(2*np.pi)),
             f3amb.loop(np.pi/2),
             f3amb.roll("roll_option[0]"),
             f3amb.loop("roll_option[1]", ke=True),
-            f3amb.roll('1/1'),
+            centred(f3amb.roll(2*np.pi)),
             f3amb.loop("roll_option[2]", ke=True),
             f3amb.roll("roll_option[3]"),
             f3amb.loop(-np.pi/2),
-            f3amb.roll('1/1'),
+            centred(f3amb.roll(2*np.pi)),
             f3amb.loop(np.pi/2),
             f3amb.roll('1/2'),
             f3amb.loop(-np.pi/2)
@@ -144,7 +151,7 @@ f25_def = SchedDef([
         ),[
             f3amb.loop(3*np.pi/4, roll="roll_option[0]"),
             f3amb.roll('1/2'),
-            f3amb.loop("roll_option[1]", roll=np.pi, ke=True),
+            centred(f3amb.loop("roll_option[1]", roll=np.pi, ke=True)),
             f3amb.roll('1/2'),
             f3amb.loop("roll_option[2]", roll="roll_option[3]", ke=True)
         ], 
@@ -177,7 +184,7 @@ f25_def = SchedDef([
             end=BoxLocation(Height.BTM)
         ),[
             f3amb.loop(np.pi/4),
-            f3amb.roll([9*np.pi/4, -9*np.pi/4]),
+            centred(f3amb.roll([9*np.pi/4, -9*np.pi/4])),
             f3amb.loop(-np.pi/4)
         ], full_roll_rate=np.pi, line_length=231/c45 - (2/c45-2)*55 ),
         #231/c45 - (2/c45-2)*R)= L
@@ -195,11 +202,13 @@ f25_def = SchedDef([
             start=BoxLocation(Height.TOP, Direction.DOWNWIND, Orientation.INVERTED),
             end=BoxLocation(Height.TOP)
         ),[
+            MBTags.CENTRE,
             f3amb.loop(np.pi/2, roll="roll_option[0]"),
             f3amb.loop("roll_option[1]", ke=True),
-            f3amb.snap(1, padded=False),
+            centred(f3amb.snap(1, padded=False)),
             f3amb.loop("roll_option[2]", ke=True),
-            f3amb.loop("roll_option[3]", roll="roll_option[4]", ke=True)
+            f3amb.loop("roll_option[3]", roll="roll_option[4]", ke=True),
+            MBTags.CENTRE
         ], loop_radius=100, 
         roll_option=ManParm("roll_option", Combination(desired=[
                 [np.pi/2, -np.pi/2, -np.pi/2, -np.pi/2, -np.pi/2], 
@@ -228,6 +237,7 @@ f25_def = SchedDef([
             f3amb.roll('1/2', padded=False),
             f3amb.line(length="ee_pause"),
             f3amb.loop(np.pi/2),
+            MBTags.CENTRE,
             f3amb.roll("3x4"),
             f3amb.stallturn(),
             f3amb.snap(0.75),

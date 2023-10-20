@@ -80,10 +80,15 @@ class ManDef:
         )))
           
         if self.info.position == Position.CENTRE:
-            if self.info.centre_loc == -1:
-                man_start_x = -(max(template.pos.x) + min(template.pos.x))/2  # distance from start to centre
+            if len(self.info.centre_points) > 0:
+                man_start_x = -man.elements[self.info.centre_points[0]].get_data(template).pos.x[0]
+            elif len(self.info.centred_els) > 0:
+                ce, fac = self.info.centred_els[0]
+                _x = man.elements[ce].get_data(template).pos.x
+                man_start_x = -_x[int(len(_x) * fac)]
             else:
-                man_start_x = -man.elements[self.info.centre_loc].get_data(template).pos.x[0]
+                man_start_x = -(max(template.pos.x) + min(template.pos.x))/2
+                
         elif self.info.position ==  Position.END:
                 box_edge = np.tan(np.radians(60)) * (np.abs(template.pos.y) + itrans.pos.y[0]) #x location of box edge at every point
                 #TODO this should be rotated not absoluted 

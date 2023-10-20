@@ -15,7 +15,16 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [
+        0,
+        9
+      ],
+      "centre_els": [
+        [
+          4,
+          0.5
+        ]
+      ]
     },
     "mps": {
       "loop_radius": {
@@ -23,9 +32,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -43,9 +52,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -207,7 +216,8 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [],
+      "centre_els": []
     },
     "mps": {
       "loop_radius": {
@@ -215,9 +225,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -232,9 +242,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -250,7 +260,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -266,7 +276,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -307,16 +317,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_1_pad1.length": "e_1_pad1.length",
-          "e_1_pad2.length": "e_1_pad2.length"
+          "e_1_pad1.length": "(e_1_pad1.length+40)",
+          "e_1_pad2.length": "(e_1_pad2.length+40)"
         }
       }
     },
@@ -397,7 +407,13 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [],
+      "centre_els": [
+        [
+          6,
+          0.5
+        ]
+      ]
     },
     "mps": {
       "point_length": {
@@ -405,9 +421,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -427,7 +443,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -625,7 +641,8 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [],
+      "centre_els": []
     },
     "mps": {
       "loop_radius": {
@@ -633,9 +650,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -675,7 +692,13 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [],
+      "centre_els": [
+        [
+          6,
+          0.5
+        ]
+      ]
     },
     "mps": {
       "loop_radius": {
@@ -683,9 +706,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -701,9 +724,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -720,7 +743,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -736,7 +759,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -750,16 +773,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_1_pad1.length": "e_1_pad1.length",
-          "e_1_pad2.length": "e_1_pad2.length"
+          "e_1_pad1.length": "(e_1_pad1.length+40)",
+          "e_1_pad2.length": "(e_1_pad2.length+40)"
         }
       },
       "e_3_rolls": {
@@ -791,16 +814,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_3_pad1.length": "e_3_pad1.length",
-          "e_3_pad2.length": "e_3_pad2.length"
+          "e_3_pad1.length": "(e_3_pad1.length+40)",
+          "e_3_pad2.length": "(e_3_pad2.length+40)"
         }
       }
     },
@@ -927,7 +950,8 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [],
+      "centre_els": []
     },
     "mps": {
       "loop_radius": {
@@ -935,9 +959,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -953,7 +977,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -969,7 +993,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -1007,16 +1031,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_1_pad1.length": "e_1_pad1.length",
-          "e_1_pad2.length": "e_1_pad2.length"
+          "e_1_pad1.length": "(e_1_pad1.length+40)",
+          "e_1_pad2.length": "(e_1_pad2.length+40)"
         }
       }
     },
@@ -1103,7 +1127,16 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [
+        0,
+        3
+      ],
+      "centre_els": [
+        [
+          1,
+          0.5
+        ]
+      ]
     },
     "mps": {
       "loop_radius": {
@@ -1111,9 +1144,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -1216,7 +1249,8 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [],
+      "centre_els": []
     },
     "mps": {
       "loop_radius": {
@@ -1224,9 +1258,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -1242,9 +1276,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -1260,7 +1294,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -1276,7 +1310,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -1315,16 +1349,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_1_pad1.length": "e_1_pad1.length",
-          "e_1_pad2.length": "e_1_pad2.length"
+          "e_1_pad1.length": "(e_1_pad1.length+40)",
+          "e_1_pad2.length": "(e_1_pad2.length+40)"
         }
       },
       "e_3_pad_length": {
@@ -1332,16 +1366,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_3_pad1.length": "e_3_pad1.length",
-          "e_3_pad2.length": "e_3_pad2.length"
+          "e_3_pad1.length": "(e_3_pad1.length+40)",
+          "e_3_pad2.length": "(e_3_pad2.length+40)"
         }
       }
     },
@@ -1477,7 +1511,21 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [],
+      "centre_els": [
+        [
+          6,
+          0.5
+        ],
+        [
+          14,
+          0.5
+        ],
+        [
+          22,
+          0.5
+        ]
+      ]
     },
     "mps": {
       "loop_radius": {
@@ -1485,9 +1533,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -1508,9 +1556,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -1532,7 +1580,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -1551,7 +1599,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -1624,16 +1672,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_1_pad1.length": "e_1_pad1.length",
-          "e_1_pad2.length": "e_1_pad2.length"
+          "e_1_pad1.length": "(e_1_pad1.length+40)",
+          "e_1_pad2.length": "(e_1_pad2.length+40)"
         }
       },
       "e_3_rolls": {
@@ -1665,16 +1713,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_3_pad1.length": "e_3_pad1.length",
-          "e_3_pad2.length": "e_3_pad2.length"
+          "e_3_pad1.length": "(e_3_pad1.length+40)",
+          "e_3_pad2.length": "(e_3_pad2.length+40)"
         }
       },
       "e_5_pad_length": {
@@ -1682,16 +1730,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_5_pad1.length": "e_5_pad1.length",
-          "e_5_pad2.length": "e_5_pad2.length"
+          "e_5_pad1.length": "(e_5_pad1.length+40)",
+          "e_5_pad2.length": "(e_5_pad2.length+40)"
         }
       },
       "e_7_rolls": {
@@ -1723,16 +1771,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_7_pad1.length": "e_7_pad1.length",
-          "e_7_pad2.length": "e_7_pad2.length"
+          "e_7_pad1.length": "(e_7_pad1.length+40)",
+          "e_7_pad2.length": "(e_7_pad2.length+40)"
         }
       },
       "e_9_pad_length": {
@@ -1740,16 +1788,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_9_pad1.length": "e_9_pad1.length",
-          "e_9_pad2.length": "e_9_pad2.length"
+          "e_9_pad1.length": "(e_9_pad1.length+40)",
+          "e_9_pad2.length": "(e_9_pad2.length+40)"
         }
       },
       "e_11_rolls": {
@@ -1781,16 +1829,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_11_pad1.length": "e_11_pad1.length",
-          "e_11_pad2.length": "e_11_pad2.length"
+          "e_11_pad1.length": "(e_11_pad1.length+40)",
+          "e_11_pad2.length": "(e_11_pad2.length+40)"
         }
       },
       "e_13_rolls": {
@@ -1822,16 +1870,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_13_pad1.length": "e_13_pad1.length",
-          "e_13_pad2.length": "e_13_pad2.length"
+          "e_13_pad1.length": "(e_13_pad1.length+40)",
+          "e_13_pad2.length": "(e_13_pad2.length+40)"
         }
       }
     },
@@ -2131,7 +2179,8 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [],
+      "centre_els": []
     },
     "mps": {
       "loop_radius": {
@@ -2139,9 +2188,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -2157,9 +2206,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -2176,7 +2225,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -2192,7 +2241,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -2230,16 +2279,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_1_pad1.length": "e_1_pad1.length",
-          "e_1_pad2.length": "e_1_pad2.length"
+          "e_1_pad1.length": "(e_1_pad1.length+40)",
+          "e_1_pad2.length": "(e_1_pad2.length+40)"
         }
       },
       "e_3_rolls": {
@@ -2271,16 +2320,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_3_pad1.length": "e_3_pad1.length",
-          "e_3_pad2.length": "e_3_pad2.length"
+          "e_3_pad1.length": "(e_3_pad1.length+40)",
+          "e_3_pad2.length": "(e_3_pad2.length+40)"
         }
       }
     },
@@ -2390,7 +2439,13 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [],
+      "centre_els": [
+        [
+          4,
+          0.5
+        ]
+      ]
     },
     "mps": {
       "loop_radius": {
@@ -2398,9 +2453,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -2416,9 +2471,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -2435,7 +2490,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -2507,16 +2562,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_1_pad1.length": "e_1_pad1.length",
-          "e_1_pad2.length": "e_1_pad2.length"
+          "e_1_pad1.length": "(e_1_pad1.length+40)",
+          "e_1_pad2.length": "(e_1_pad2.length+40)"
         }
       },
       "e_3_rolls": {
@@ -2548,16 +2603,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_3_pad1.length": "e_3_pad1.length",
-          "e_3_pad2.length": "e_3_pad2.length"
+          "e_3_pad1.length": "(e_3_pad1.length+40)",
+          "e_3_pad2.length": "(e_3_pad2.length+40)"
         }
       }
     },
@@ -2667,7 +2722,8 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [],
+      "centre_els": []
     },
     "mps": {
       "loop_radius": {
@@ -2675,9 +2731,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -2694,9 +2750,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -2714,7 +2770,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -2762,16 +2818,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_1_pad1.length": "e_1_pad1.length",
-          "e_1_pad2.length": "e_1_pad2.length"
+          "e_1_pad1.length": "(e_1_pad1.length+40)",
+          "e_1_pad2.length": "(e_1_pad2.length+40)"
         }
       },
       "e_5_pad_length": {
@@ -2779,16 +2835,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_5_pad1.length": "e_5_pad1.length",
-          "e_5_pad2.length": "e_5_pad2.length"
+          "e_5_pad1.length": "(e_5_pad1.length+40)",
+          "e_5_pad2.length": "(e_5_pad2.length+40)"
         }
       }
     },
@@ -2918,7 +2974,10 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [
+        3
+      ],
+      "centre_els": []
     },
     "mps": {
       "loop_radius": {
@@ -2926,9 +2985,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -2943,9 +3002,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -2961,7 +3020,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -2977,7 +3036,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -3019,16 +3078,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_1_pad1.length": "e_1_pad1.length",
-          "e_1_pad2.length": "e_1_pad2.length"
+          "e_1_pad1.length": "(e_1_pad1.length+40)",
+          "e_1_pad2.length": "(e_1_pad2.length+40)"
         }
       }
     },
@@ -3109,7 +3168,8 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [],
+      "centre_els": []
     },
     "mps": {
       "loop_radius": {
@@ -3117,9 +3177,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -3134,9 +3194,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -3152,7 +3212,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -3168,7 +3228,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -3209,16 +3269,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_1_pad1.length": "e_1_pad1.length",
-          "e_1_pad2.length": "e_1_pad2.length"
+          "e_1_pad1.length": "(e_1_pad1.length+40)",
+          "e_1_pad2.length": "(e_1_pad2.length+40)"
         }
       }
     },
@@ -3299,7 +3359,16 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [
+        0,
+        7
+      ],
+      "centre_els": [
+        [
+          3,
+          0.5
+        ]
+      ]
     },
     "mps": {
       "loop_radius": {
@@ -3307,9 +3376,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -3328,7 +3397,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -3463,7 +3532,8 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [],
+      "centre_els": []
     },
     "mps": {
       "loop_radius": {
@@ -3471,9 +3541,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -3489,7 +3559,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -3578,7 +3648,10 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [
+        3
+      ],
+      "centre_els": []
     },
     "mps": {
       "loop_radius": {
@@ -3586,9 +3659,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 0.861353116146786,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.4306765580733931,
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -3603,9 +3676,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -3620,9 +3693,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -3639,7 +3712,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -3659,7 +3732,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -3675,7 +3748,7 @@
           "lookup": {
             "factor": 0.25,
             "exponent": 1.1132827525593783,
-            "limit": 10
+            "limit": 2
           },
           "comparison": "ratio"
         },
@@ -3689,9 +3762,9 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
@@ -3760,16 +3833,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_3_pad1.length": "e_3_pad1.length",
-          "e_3_pad2.length": "e_3_pad2.length"
+          "e_3_pad1.length": "(e_3_pad1.length+40)",
+          "e_3_pad2.length": "(e_3_pad2.length+40)"
         }
       },
       "e_5_pad_length": {
@@ -3777,16 +3850,16 @@
         "criteria": {
           "kind": "Comparison",
           "lookup": {
-            "factor": 0.5,
-            "exponent": 1.1132827525593783,
-            "limit": 10
+            "factor": 1.0,
+            "exponent": 0.6826061944859854,
+            "limit": 3
           },
           "comparison": "ratio"
         },
         "default": null,
         "collectors": {
-          "e_5_pad1.length": "e_5_pad1.length",
-          "e_5_pad2.length": "e_5_pad2.length"
+          "e_5_pad1.length": "(e_5_pad1.length+40)",
+          "e_5_pad2.length": "(e_5_pad2.length+40)"
         }
       },
       "e_8_rolls": {

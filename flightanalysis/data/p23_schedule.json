@@ -15,7 +15,13 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [],
+      "centre_els": [
+        [
+          8,
+          0.5
+        ]
+      ]
     },
     "mps": {
       "loop_radius": {
@@ -401,7 +407,8 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [],
+      "centre_els": []
     },
     "mps": {
       "loop_radius": {
@@ -563,7 +570,16 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [
+        0,
+        9
+      ],
+      "centre_els": [
+        [
+          4,
+          0.5
+        ]
+      ]
     },
     "mps": {
       "loop_radius": {
@@ -822,7 +838,8 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [],
+      "centre_els": []
     },
     "mps": {
       "loop_radius": {
@@ -1066,7 +1083,13 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [],
+      "centre_els": [
+        [
+          3,
+          0.5
+        ]
+      ]
     },
     "mps": {
       "loop_radius": {
@@ -1221,7 +1244,8 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [],
+      "centre_els": []
     },
     "mps": {
       "loop_radius": {
@@ -1352,7 +1376,10 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [
+        3
+      ],
+      "centre_els": []
     },
     "mps": {
       "point_length": {
@@ -1498,7 +1525,8 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [],
+      "centre_els": []
     },
     "mps": {
       "loop_radius": {
@@ -1597,7 +1625,10 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": 0
+      "centre_points": [
+        0
+      ],
+      "centre_els": []
     },
     "mps": {
       "loop_radius": {
@@ -1714,7 +1745,8 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [],
+      "centre_els": []
     },
     "mps": {
       "loop_radius": {
@@ -1953,7 +1985,10 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": 6
+      "centre_points": [
+        6
+      ],
+      "centre_els": []
     },
     "mps": {
       "loop_radius": {
@@ -2231,7 +2266,8 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [],
+      "centre_els": []
     },
     "mps": {
       "loop_radius": {
@@ -2393,7 +2429,10 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": 4
+      "centre_points": [
+        4
+      ],
+      "centre_els": []
     },
     "mps": {
       "loop_radius": {
@@ -2669,7 +2708,8 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [],
+      "centre_els": []
     },
     "mps": {
       "loop_radius": {
@@ -2892,7 +2932,21 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [],
+      "centre_els": [
+        [
+          0,
+          0.5
+        ],
+        [
+          8,
+          0.5
+        ],
+        [
+          16,
+          0.5
+        ]
+      ]
     },
     "mps": {
       "loop_radius": {
@@ -3283,7 +3337,8 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [],
+      "centre_els": []
     },
     "mps": {
       "loop_radius": {
@@ -3548,7 +3603,16 @@
         "d": "DRIVEN",
         "o": "DRIVEN"
       },
-      "centre_loc": -1
+      "centre_points": [
+        0,
+        3
+      ],
+      "centre_els": [
+        [
+          1,
+          0.5
+        ]
+      ]
     },
     "mps": {
       "loop_radius": {
