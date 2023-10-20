@@ -19,10 +19,7 @@ wind = track.track_to_wind(env)
 
 
 flow = Flow.build(wind, env)
-
 coeffs = Coefficients.build(wind, flow.q, constants)
-
-
 flow = flow.rotate(coeffs, 10, 5)
 px.line(np.degrees(flow.flow.to_pandas().iloc[:,:-1])).show()
 

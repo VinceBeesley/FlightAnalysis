@@ -30,7 +30,6 @@ class ElementAnalysis:
         return {k: v.to_dict() for k, v in self.__dict__.items()}
 
 
-
 @dataclass
 class ManoeuvreResults:
     inter: Results
@@ -182,7 +181,10 @@ class ManoeuvreAnalysis:
         centres = []
         centre_names = []
         for cpid in self.mdef.info.centre_points:
-            centre_pos = self.intended.elements[cpid].get_data(self.aligned).pos[0]
+            if cpid == 0:
+                centre_pos = self.intended.elements[cpid].get_data(self.aligned).pos[0]
+            else:
+                centre_pos = self.intended.elements[cpid-1].get_data(self.aligned).pos[-1]
             centres.append(np.arctan2(centre_pos.x, centre_pos.y)[0])
             centre_names.append(f'centre point {cpid}')
 

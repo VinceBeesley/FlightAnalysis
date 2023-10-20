@@ -1,5 +1,5 @@
 import enum
-from typing import List, Dict, Callable, Union
+from typing import List, Dict, Callable, Union, Tuple
 import numpy as np
 import pandas as pd
 from numbers import Number
@@ -12,7 +12,7 @@ from . import Collector, Collectors, MathOpp, FunOpp, ItemOpp, Opp
 from dataclasses import dataclass, field
 from typing import Any
 import numpy as np
-
+from geometry import Point
 
 @dataclass
 class ManParm(Opp):
@@ -67,20 +67,26 @@ class ManParm(Opp):
     def collect(self, els):
         return {str(collector): collector(els) for collector in self.collectors}
 
-    def collect_vis(self, els, state: State):
-        return [np.mean([c.visibility(els, state) for c in colls.list_parms()]) for colls in self.collectors]
+    def collect_vis(self, els, state: State) -> Tuple[Point, list[float]]:
+        vis = [[c.visibility(els, state) for c in collector.list_parms()] for collector in self.collectors]
 
-    def get_downgrades(self, els, state: State=None):
+        return Point.concatenate([Point.concatenate([v[0] for v in vi]).mean() for vi in vis ]), [np.mean([v[1]for v in vi]) for vi in vis]
+
+
+    def get_downgrades(self, els, state: State):
         coll = self.collect(els)
-        vs = list(coll.values())
+        values = list(coll.values())
+        direction, vis = self.collect_vis(els, state)
+
         meas = Measurement(
-            vs,
-            np.full(len(vs), self.default),
-            np.array(self.collect_vis(els, state))
+            values,
+            self.default,
+            direction,
+            vis
         )
 
         keys, errors, dgs = self.criteria(list(coll.keys()), list(coll.values())) 
-        return Result(self.name, meas, vs, errors, dgs * meas.visibility, keys)
+        return Result(self.name, meas, values, errors, dgs * meas.visibility, keys)
 
     @property
     def value(self):
@@ -122,22 +128,14 @@ class ManParms(Collection):
     uid="name"
 
     def collect(self, manoeuvre: Manoeuvre, state: State=None) -> Results:
-        """Collect the comparison downgrades for each manparm for a given manoeuvre.
-
-        Args:
-            manoeuvre (Manoeuvre): The Manoeuvre to assess
-
-        Returns:
-            Dict[str, float]: The sum of downgrades for each ManParm
-        """
-        return Results("Inter",[mp.get_downgrades(manoeuvre.all_elements(), state) for mp in self if not isinstance(mp.criteria, Combination)])
+        """Collect the comparison downgrades for each manparm for a given manoeuvre."""
+        return Results(
+            "Inter",
+            [mp.get_downgrades(manoeuvre.all_elements(), state) for mp in self if not isinstance(mp.criteria, Combination)]
+        )
     
     def append_collectors(self, colls: Dict[str, Callable]):
-        """Append each of a dict of collector methods to the relevant ManParm
-
-        Args:
-            colls (Dict[str, Callable]): dict of parmname: collector method
-        """
+        """Append each of a dict of collector methods to the relevant ManParm"""
         for mp, col in colls.items():
             self.data[mp].append(col)
 

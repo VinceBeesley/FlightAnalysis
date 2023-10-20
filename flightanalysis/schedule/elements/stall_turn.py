@@ -49,4 +49,7 @@ class StallTurn(Element):
         )
     
     def yaw_rate_visibility(self, st: State):
-        return [0.4]
+        return Measurement._vector_vis(
+            st.att.transform_point(PZ(1)).mean(), 
+            st.pos.mean()
+        )

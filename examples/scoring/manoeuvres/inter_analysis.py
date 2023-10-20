@@ -3,11 +3,11 @@ from flightanalysis.analysis.manoeuvre_analysis import ElementAnalysis as EA
 from json import load, dumps
 import numpy as np
 
-with open('examples/scoring/manoeuvres/mans/tHat.json', 'r') as f:
+with open('examples/scoring/manoeuvres/mans/M.json', 'r') as f:
     ma = MA.from_dict(load(f))
 
 
-resrr = ma.mdef.mps.partial_roll_rate.get_downgrades(ma.intended.elements)
+resrr = ma.mdef.mps.stallturn_rate.get_downgrades(ma.intended.elements, ma.aligned)
 
 res = ma.mdef.mps.collect(ma.intended, ma.intended_template)
 
