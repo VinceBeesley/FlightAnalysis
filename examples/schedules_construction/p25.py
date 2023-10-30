@@ -81,16 +81,16 @@ p25_def = SchedDef([
             start=BoxLocation(Height.BTM, Direction.DOWNWIND, Orientation.INVERTED),
             end=BoxLocation(Height.BTM)
         ),[
-            f3amb.roll("1/1", padded=False),
+            f3amb.roll(2*np.pi, padded=False),
             f3amb.loop(-np.pi),
             f3amb.roll("roll_option[0]", padded=False),
             centred(f3amb.line(length=30)),
             f3amb.roll("roll_option[1]", padded=False),
             f3amb.loop(-np.pi),
-            f3amb.roll("1/2", padded=False),
+            f3amb.roll(np.pi, padded=False),
         ], loop_radius=100, 
         roll_option=ManParm("roll_option", Combination(
-            desired=[[np.pi/2, -np.pi/2], [-np.pi/2, np.pi/2]]
+            desired=[[-np.pi/2, np.pi/2], [np.pi/2, -np.pi/2]]
         ), 0)),
     f3amb.create(ManInfo(
             "Humpty", "hB", k=4, position=Position.END, 

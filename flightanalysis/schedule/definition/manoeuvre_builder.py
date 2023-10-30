@@ -11,7 +11,6 @@ import numpy as np
 class MBTags:
     CENTRE=0
 
-
 def centred(elb):
     setattr(elb, 'centred', True)
     return elb

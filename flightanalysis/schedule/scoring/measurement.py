@@ -60,19 +60,19 @@ class Measurement:
     def _vector_vis(direction: Point, loc: Point) -> Union[Point, npt.NDArray]:
         #a vector error is more visible if it is perpendicular to the viewing vector
         # 0 to np.pi, pi/2 gives max, 0&np.pi give min
-        return direction,  1 - 0.8* np.abs(Point.cos_angle_between(loc, direction))
+        return direction,  (1 - 0.8* np.abs(Point.cos_angle_between(loc, direction))) * Measurement._pos_vis(loc)
 
     @staticmethod
     def _roll_vis(loc: Point, att: Quaternion) -> Union[Point, npt.NDArray]:
         #a roll error is more visible if the movement of the wing tips is perpendicular to the view vector
         #the wing tips move in the local body Z axis
         world_tip_movement_direction = att.transform_point(PZ()) 
-        return world_tip_movement_direction, 1-0.8*np.abs(Point.cos_angle_between(loc, world_tip_movement_direction))
+        return world_tip_movement_direction, (1-0.8*np.abs(Point.cos_angle_between(loc, world_tip_movement_direction))) * Measurement._pos_vis(loc)
 
     @staticmethod
     def _rad_vis(loc:Point, axial_dir: Point) -> Union[Point, npt.NDArray]:
         #radial error more visible if axis is parallel to the view vector
-        return axial_dir, 0.2+0.8*np.abs(Point.cos_angle_between(loc, axial_dir))
+        return axial_dir, (0.2+0.8*np.abs(Point.cos_angle_between(loc, axial_dir))) * Measurement._pos_vis(loc)
 
     @staticmethod
     def speed(fl: State, tp: State, ref_frame: Transformation) -> Self:
@@ -85,14 +85,18 @@ class Measurement:
         """vector in the body X axis, length is equal to the roll angle difference from template"""
         body_roll_error = Quaternion.body_axis_rates(tp.att, fl.att) * PX()
         world_roll_error = fl.att.transform_point(body_roll_error)
-        return Measurement(abs(world_roll_error), 0, *Measurement._roll_vis(fl.pos, fl.att))
+
+        return Measurement(
+            np.unwrap(abs(world_roll_error) * np.sign(body_roll_error.x)), 
+            0, 
+            *Measurement._roll_vis(fl.pos, fl.att)
+        )
 
     @staticmethod
     def roll_rate(fl: State, tp: State, ref_frame: Transformation) -> Measurement:
         """vector in the body X axis, length is equal to the roll rate"""
         wrvel = fl.att.transform_point(fl.p * PX())
-        wrate = abs(wrvel)
-        return Measurement(wrate, np.mean(wrate), *Measurement._roll_vis(fl.pos, fl.att))
+        return Measurement(abs(wrvel) * np.sign(fl.p), np.mean(fl.p), *Measurement._roll_vis(fl.pos, fl.att))
     
     @staticmethod
     def track_y(fl: State, tp:State, ref_frame: Transformation) -> Measurement:
@@ -109,7 +113,7 @@ class Measurement:
 
         wz_angle_err = fl.att.transform_point(PZ() * angle_err)
 
-        return Measurement(abs(wz_angle_err), 0, *Measurement._vector_vis(wverr.unit(), fl.pos))
+        return Measurement(np.unwrap(abs(wz_angle_err) * np.sign(angle_err)), 0, *Measurement._vector_vis(wverr.unit(), fl.pos))
 
     @staticmethod
     def track_z(fl: State, tp: State, ref_frame: Transformation) -> Measurement:
@@ -125,7 +129,7 @@ class Measurement:
 
         wz_angle_err = fl.att.transform_point(PY() * angle_err)
 
-        return Measurement(abs(wz_angle_err), 0, *Measurement._vector_vis(wverr.unit(), fl.pos))
+        return Measurement(np.unwrap(abs(wz_angle_err) * np.sign(angle_err)), 0, *Measurement._vector_vis(wverr.unit(), fl.pos))
 
     @staticmethod
     def radius(fl:State, tp:State, ref_frame: Transformation) -> Measurement:

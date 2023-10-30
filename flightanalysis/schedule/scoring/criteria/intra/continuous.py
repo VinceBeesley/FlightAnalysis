@@ -30,7 +30,7 @@ class Continuous(Criteria):
 
     def prepare(self, value: npt.NDArray, expected: float):
         if self.comparison == 'absolute':
-            return abs(expected - value)
+            return  value - expected
         elif self.comparison == 'ratio':
             return abs(value)
         else:

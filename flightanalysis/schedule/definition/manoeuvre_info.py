@@ -140,7 +140,7 @@ class ManInfo:
             start = self.start.to_dict(),
             end = self.end.to_dict(),
             centre_points = self.centre_points,
-            centre_els = self.centred_els
+            centred_els = self.centred_els
         )
 
     @staticmethod
@@ -153,6 +153,6 @@ class ManInfo:
             BoxLocation.from_dict(inp["start"]),
             BoxLocation.from_dict(inp["end"]),
             inp["centre_points"],
-            inp["centre_els"]
+            inp["centred_els"]
         )
         

@@ -162,7 +162,7 @@ class ManoeuvreAnalysis:
         outside = 1 - (1.0471975511965976 - min_sb) / (max_sb - min_sb)
         box_dg = max(outside, 0.0) * 5.0
         return Result(
-            "box",
+            "side box",
             [max_sb, min_sb],
             [],
             [outside],
@@ -175,7 +175,7 @@ class ManoeuvreAnalysis:
         tb = max(top_box_angle)
         outside_tb = (tb - 1.0471975511965976) / 1.0471975511965976
         top_box_dg = max(outside_tb, 0) * 6
-        return Result("top box", [], [tb], [outside_tb], [top_box_dg], [])
+        return Result("top box", [tb], [], [outside_tb], [top_box_dg], [])
 
     def centre(self):
         centres = []
@@ -226,14 +226,13 @@ class ManoeuvreAnalysis:
 
     def positioning(self):
         pres = Results('positioning')
-        match self.mdef.info.position:
-            case Position.END:
-                pres.add(self.side_box())
-            case Position.CENTRE:
-                pres.add(self.centre())
+        if self.mdef.info.position == Position.CENTRE:
+            pres.add(self.centre())
         tp_width = max(self.corrected_template.y) - min(self.corrected_template.y)
         if tp_width < 10:
             pres.add(self.distance())
+        pres.add(self.top_box())
+        pres.add(self.side_box())
         return pres
 
     def scores(self):

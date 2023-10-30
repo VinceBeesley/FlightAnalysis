@@ -66,29 +66,19 @@ class DownGrade:
             tempvals = np.full(len(fl), np.mean(vals))
             tempvals[endcut:-endcut] = vals[endcut:-endcut]
             tempvals = convolve(pd.Series(tempvals).ffill().bfill().to_numpy(), 10)
-                        #        
-            # for absolute errors you keep getting downgraded for the same error as it becomes more visible.
-            # this is because there is a correct reference value the pilot should be aiming for
-            # roll angle, track, 
-            if self.criteria.comparison == 'absolute':
-                tempvals = tempvals[0] + np.cumsum(np.gradient(tempvals) * measurement.visibility)  
        
             id, error, dg = self.criteria(
                 list(range(len(fl))),#list(range(endcut,len(fl)-endcut)), 
-                tempvals
+                abs(tempvals)
             )
             vals = tempvals
-#            vals = np.full(len(fl), np.nan)
-#            vals[endcut:-endcut] = tempvals
-            
-            if self.criteria.comparison == 'ratio':
-                #for ratio errors visiblity factors are applied to the downgrades, so if the initial
-                #error happened when it was hard to see then you don't get downgraded further as
-                #it becomes more apparant. This is because the reference is set by the pilot
-                #rollrate, speed, radius,  
-                rids = np.concatenate([[0], id])
-                vis = np.array([np.mean(measurement.visibility[a:b]) for a, b in zip(rids[:-1], rids[1:])])
-                dg = vis * dg
+
+            #visiblity factors are now applied to the downgrades for absolute and ratio errrors, 
+            # so if the initial error happened when it was hard to see then you don't
+            #  get downgraded further as it becomes more apparant. 
+            rids = np.concatenate([[0], id])
+            vis = np.array([np.mean(measurement.visibility[a:b]) for a, b in zip(rids[:-1], rids[1:])])
+            dg = vis * dg
         else:
             raise TypeError(f'Expected a Criteria, got {self.criteria.__class__.__name__}')
         
