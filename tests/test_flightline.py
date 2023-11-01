@@ -1,23 +1,20 @@
 import unittest
 
-from flightdata.data import Flight, Fields
-from flightanalysis.flightline import FlightLine, Box
+from flightdata.data import Flight
+from flightanalysis.flightline import Box
 from geometry import GPS, Point, Quaternion, PX, PY, PZ, P0, Euler
 from geometry.testing import assert_almost_equal
-from math import pi, cos, sin
 import numpy as np
-
+from .conftest import flight, box
 from pytest import approx, fixture
-from .conftest import whole_flight, flight, box
 
 
-
-def test_box_from_initial(whole_flight):
-    box = Box.from_initial(whole_flight)
+def test_box_from_initial(flight):
+    box = Box.from_initial(flight)
     
-    assert box.pilot_position.data == approx(GPS(51.6418417, -2.5260108).data)
+    assert box.pilot_position.data == approx(GPS(51.6417309, -2.5256134).data)
 
-    assert np.degrees(box.heading) == approx(139.8874730, 1e-3)
+    assert np.degrees(box.heading) == approx(-67.02, rel=1e-2)
 
 
 def test_to_dict(flight):

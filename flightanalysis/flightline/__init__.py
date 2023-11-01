@@ -1,1 +1,1 @@
-from .flightline import Box, FlightLine
+from .box import Box

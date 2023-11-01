@@ -3,8 +3,10 @@ from flightdata import Flight
 from pytest import approx, fixture, raises
 from geometry import Transformation, PX, PY, P0, Point
 import numpy as np
-from ..conftest import flight, box
+from ..conftest import box, flight
+from .conftest import state
 from time import sleep, time
+
 
 def test_extrapolate_no_rot():
     initial = State.from_transform(
@@ -48,16 +50,9 @@ def test_extrapolate_first_point():
     np.testing.assert_array_almost_equal(extrapolated[0].pos.data, initial.pos.data)
     
 
-
-
-
-@fixture
-def state(flight, box):
-    return State.from_flight(flight, box)
-
 def test_from_flight(flight, state):
     assert len(state.data) == len(flight.data)
-
+    assert not np.any(np.isnan(state.pos.data))
 
 def test_stack_singles():
     start=time()
@@ -71,8 +66,3 @@ def test_stack_singles():
     assert time()-start == approx(st.duration, abs=1e-2)
 
 
-def test_from_fl():
-    fl = Flight.from_csv("tests/test_inputs/00000129.csv")
-    st = State.from_flight(fl, Box.from_initial(fl))
-    
-    assert not np.any(np.isnan(st.pos.data))

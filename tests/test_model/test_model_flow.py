@@ -1,14 +1,10 @@
 from pytest import approx, fixture
-from flightanalysis.flightline import Box
 from flightanalysis.environment import Environment
 from flightanalysis.environment.wind import WindModelBuilder
 from flightanalysis.model.flow import Flow
-from flightanalysis.state import State
 from flightanalysis.schedule.elements import Line
 from pytest import approx
 import numpy as np
-from flightdata import Flight
-from ..conftest import flight, box, st
 from geometry import Transformation, Point, P0, Euler
 
 

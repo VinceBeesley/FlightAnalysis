@@ -1,35 +1,16 @@
-import pytest
+from pytest import fixture
 from flightdata import Flight
-from flightanalysis import Box, State
-
-@pytest.fixture(scope="session")
-def whole_flight():
-    return Flight.from_csv('tests/test_inputs/test_log_00000052_flight.csv')
-
-@pytest.fixture(scope="session")
-def flight(whole_flight):
-    return whole_flight.flying_only()
+from flightanalysis import Box
 
 
-@pytest.fixture(scope="session")
+
+@fixture(scope="session")
+def flight():
+    return Flight.from_csv('tests/data/p23.csv')
+
+
+@fixture(scope="session")
 def box():
-    return Box.from_json('tests/test_inputs/test_log_box.json')
+    return Box.from_f3a_zone('tests/data/p23_box.f3a')
 
 
-@pytest.fixture(scope="session")
-def st(flight, box):
-    return State.from_flight(flight, box)
-
-#
-#@pytest.fixture(scope="session")
-#def p21():
-#    return get_schedule(Categories.F3A, "P21")
-#
-#@pytest.fixture(scope="session")
-#def seq(flight, box): 
-#    return Section.from_flight(flight.flying_only(), box)
-#
-#@pytest.fixture(scope="session")
-#def aligned():
-#    return Section.from_csv("tests/test_inputs/test_log_00000052_aligned.csv")
-#

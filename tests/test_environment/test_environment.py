@@ -2,7 +2,6 @@ from pytest import fixture
 
 from flightanalysis.environment import Environment
 from flightanalysis.environment.wind import WindModelBuilder
-from ..conftest import flight, box, st
 import numpy as np
 import pandas as pd
 from geometry import Point

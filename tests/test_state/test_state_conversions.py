@@ -5,7 +5,6 @@ from pytest import approx, fixture
 from flightanalysis.schedule.elements.line import Line
 from flightanalysis import State
 from geometry import Transformation, Point, P0, Euler, PY
-from ..conftest import st, flight, box
 from flightanalysis.environment import Environment
 from flightanalysis.model.flow import Flow
 

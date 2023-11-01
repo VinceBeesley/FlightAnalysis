@@ -4,7 +4,6 @@ from flightanalysis.environment.wind import WindModelBuilder
 from flightanalysis.model.flow import Flow
 from pytest import approx
 import numpy as np
-from ..conftest import flight, box, st
 from flightanalysis.model.constants import cold_draft
 from flightanalysis.model.coefficients import Coefficients
 from flightanalysis.state import State

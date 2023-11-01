@@ -5,8 +5,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from pandas.api.types import is_list_like
-from geometry import Point, Quaternion, Transformation, PX, PY, PZ, P0, Q0, Coord
-from flightanalysis import Table, Constructs, SVar, Time, FlightLine, Box, Flow, Environment
+from geometry import Point, Quaternion, Transformation, PX, PY, PZ, P0, Q0, Coord, GPS, Euler
+from flightanalysis import Table, Constructs, SVar, Time, Box, Flow, Environment
 
 
 class State(Table):
@@ -86,55 +86,24 @@ class State(Table):
                 df = df.rename({"time_index":"t"}, axis=1)
         return State(df.set_index("t", drop=False))
 
-    @staticmethod
-    def from_flight(flight, box:Union[FlightLine, Box, str] = None) -> State:
-        from flightdata import Flight, Fields
-        if isinstance(flight, str):
-            flight = {
-                ".csv": Flight.from_csv,
-                ".BIN": Flight.from_log
-            }[Path(flight).suffix](flight)
-        if box is None:
-            box = Box.from_initial(flight)
-        if isinstance(box, FlightLine):
-            return State._from_flight(flight, box)
-        if isinstance(box, Box):
-            return State._from_flight(flight, FlightLine.from_box(box, flight.origin))
-        if isinstance(box, str):
-            box = Box.from_json(box)
-            return State._from_flight(flight, FlightLine.from_box(box, flight.origin))
-        raise NotImplementedError()
 
     @staticmethod
-    def _from_flight(flight, flightline: FlightLine) -> State:
+    def from_flight(flight, box: Union[Box, str] = None) -> State:
         from flightdata import Fields
         """Read position and attitude directly from the log(after transforming to flightline)"""
+
         time = Time.from_t(np.array(flight.data.time_flight))
-        pos = flightline.transform_from.point(Point(flight.read_fields(Fields.POSITION)))
-        qs = flight.read_fields(Fields.QUATERNION)
-        
-        if not pd.isna(qs).all().all():  # for back compatibility with old csv files
-            att = flightline.transform_from.rotate(
-                Quaternion(flight.read_fields(Fields.QUATERNION))
-            )
-        else:
-            att = flightline.transform_from.rotate(
-                Quaternion.from_euler(Point(
-                    flight.read_numpy(Fields.ATTITUDE).T
-                )))
 
+        rotation = Euler(0, 0, box.heading)
         
-        vel = att.inverse().transform_point(
-            flightline.transform_from.rotate(
-                Point(flight.read_numpy(Fields.VELOCITY).T)
-            )
+        pos = rotation.transform_point(
+            GPS(flight.gps.iloc[:,:2]) - box.pilot_position - PZ() * np.array(flight.gps_altitude)
         )
-        accs=flight.read_fields(Fields.ACCELERATION)
-        acc = Point(accs) if not pd.isna(accs).all().all() else None
-
-        rvels=flight.read_fields(Fields.AXISRATE)
-        rvel = Point(rvels) if not pd.isna(rvels).all().all() else None
-        
+        att = rotation * Euler(flight.attitude) 
+        vel =  rotation.transform_point(Point(flight.velocity))
+        rvel=Point(flight.axisrate)
+        acc=Point(flight.acceleration)
+                
         return State.from_constructs(time, pos, att, vel, rvel, acc)
 
     @staticmethod

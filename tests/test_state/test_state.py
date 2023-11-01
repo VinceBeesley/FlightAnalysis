@@ -1,5 +1,5 @@
 from flightanalysis.state.state import State
-from flightanalysis.flightline import Box, FlightLine
+from flightanalysis.flightline import Box
 from flightanalysis.base.table import Time
 from geometry import Point, Quaternion, Transformation, PX
 from flightdata import Flight, Fields
@@ -8,25 +8,22 @@ import pandas as pd
 from pytest import approx, fixture
 from json import dumps, loads, load
 
-flight = Flight.from_csv('tests/test_inputs/test_log_00000052_flight.csv')
-
-df = pd.DataFrame(np.random.random((200,8)), columns=['t', 'x', 'y', 'z', 'rw', 'rx', 'ry', 'rz'])
-df['t'] = np.linspace(0, 200/30, 200)
-df = df.set_index("t", drop=False)
+from ..conftest import flight, box
 
 
-@fixture
+@fixture(scope='session')
 def state():
+    df = pd.DataFrame(np.random.random((200,8)), columns=['t', 'x', 'y', 'z', 'rw', 'rx', 'ry', 'rz'])
+    df['t'] = np.linspace(0, 200/30, 200)
+    df = df.set_index("t", drop=False)
     return State(df) 
 
 def test_child_init(state):
     assert all([col in state.data.columns for col in state.constructs.cols()])
 
 def test_child_getattr(state):
-
     assert isinstance(state.x, np.ndarray)
     assert isinstance(state.pos, Point)
-
     assert isinstance(state.att, Quaternion)
 
     
