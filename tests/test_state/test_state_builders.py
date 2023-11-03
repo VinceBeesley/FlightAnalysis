@@ -2,26 +2,23 @@ from flightanalysis import State, Box, Time
 from flightdata import Flight
 from pytest import approx, fixture, raises
 from geometry import Transformation, PX, PY, P0, Point
+from geometry.testing import assert_almost_equal
 import numpy as np
 from ..conftest import box, flight
 from .conftest import state
 from time import sleep, time
 
 
-def test_extrapolate_no_rot():
+def test_extrapolate():
     initial = State.from_transform(
         Transformation(),
         vel=PX(30)
     )
 
     extrapolated = initial.extrapolate(10)
+    assert extrapolated.x[-2] == approx(300)
     
-    np.testing.assert_array_almost_equal(
-        extrapolated[-1].pos.data, 
-        (initial.pos + PX(30) * 10).data
-    )
-    
-    assert len(extrapolated) == 10*30-1
+    assert len(extrapolated) == 300
 
 
 def test_extrapolate_rot():
@@ -33,9 +30,9 @@ def test_extrapolate_rot():
 
     extrapolated = initial.extrapolate(10)
     
-    np.testing.assert_array_almost_equal(
-        extrapolated[-2].pos.data, 
-        P0().data
+    assert_almost_equal(
+        extrapolated.pos[-2], 
+        P0()
     )
     
 
@@ -46,13 +43,14 @@ def test_extrapolate_first_point():
         rvel=PX(1)
     )
     extrapolated = initial.extrapolate(10)
-    np.testing.assert_array_almost_equal(extrapolated[0].att.data, initial.att.data)
-    np.testing.assert_array_almost_equal(extrapolated[0].pos.data, initial.pos.data)
+    assert_almost_equal(extrapolated.att[0], initial.att)
+    assert_almost_equal(extrapolated.pos[0], initial.pos)
     
 
 def test_from_flight(flight, state):
     assert len(state.data) == len(flight.data)
     assert not np.any(np.isnan(state.pos.data))
+    assert state.z.mean() > 0
 
 def test_stack_singles():
     start=time()

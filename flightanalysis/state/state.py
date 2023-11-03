@@ -92,9 +92,18 @@ class State(Table):
         from flightdata import Fields
         """Read position and attitude directly from the log(after transforming to flightline)"""
 
+        if isinstance(box, str):
+            extension = Path(box).split()[1]
+            if extension == "f3a":
+                box = Box.from_f3a_zone(box)
+            elif extension == "json":
+                box = Box.from_json(box)
+        elif box is None:
+            box = Box.from_initial(flight)
+
         time = Time.from_t(np.array(flight.data.time_flight))
 
-        rotation = Euler(0, 0, box.heading)
+        rotation = Euler(np.pi, 0, box.heading + np.pi/2)
         
         pos = rotation.transform_point(
             GPS(flight.gps.iloc[:,:2]) - box.pilot_position - PZ() * np.array(flight.gps_altitude)

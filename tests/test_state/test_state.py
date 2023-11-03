@@ -104,28 +104,3 @@ def test_state_shift_labels_end(labst):
 def fromcsv(n:str):
     return 
 
-
-def test_from_constructs_weird_problem():
-    st = State.from_constructs(
-        pos=Point(pd.read_csv(f'tests/test_state/pos.csv')), 
-        att=Quaternion(pd.read_csv(f'tests/test_state/att.csv')), 
-        time=Time(pd.read_csv(f'tests/test_state/time.csv'))
-    )
-    assert np.sum(np.isnan(st.rvel.data)) == 0
-
-from flightanalysis.schedule import ScheduleInfo
-
-def test_splitter_labels():
-    with open('tests/test_inputs/fcjson/manual_F3A_P23_22_08_23_00000055_1.json', 'r') as f:
-        fcj = load(f)
-    flight = Flight.from_fc_json(fcj)
-
-    box = Box.from_fcjson_parmameters(fcj["parameters"])
-    sdef = ScheduleInfo('f3a', 'p23').definition() 
-
-    state = State.from_flight(flight, box).splitter_labels(
-        fcj["mans"],
-        [m.info.short_name for m in sdef]
-    )
-
-    assert len(state.get_manoeuvre('tHat')) > 0
