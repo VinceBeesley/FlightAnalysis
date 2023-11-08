@@ -14,15 +14,14 @@ from geometry import GPS, Coord, Point, Transformation, PX, PY, PZ, P0, Euler
 import numpy as np
 from json import load, dump
 from flightdata import Flight
+from typing import Self
 
 class Box(object):
     '''This class defines an aerobatic box in the world, it uses the pilot position and the direction 
     in which the pilot is facing (normal to the main aerobatic manoeuvering plane)'''
 
-    def __init__(self, name, pilot_position: GPS, heading: float, club:str=None, country:str=None):
+    def __init__(self, name, pilot_position: GPS, heading: float):
         self.name = name
-        self.club=club
-        self.country=country
         self.pilot_position = pilot_position # position of pilot
         self.heading = heading  # direction pilot faces in radians from North (clockwise)
         self.rotation = Euler(0, 0, -self.heading)
@@ -33,23 +32,26 @@ class Box(object):
         return temp
 
     @staticmethod
+    def from_dict(data: dict) -> Self:
+        return Box(
+            data['name'], 
+            GPS(**data['pilot_position']), 
+            data['heading']
+        )
+
+    @staticmethod
     def from_json(file):
         if hasattr(file, 'read'):
             data = load(file)
         else:
             with open(file, 'r') as f:
                 data = load(f)
-        read_box = Box(
-            data['name'], 
-            GPS(**data['pilot_position']), 
-            data['heading'],
-            data['club'],
-            data['country'])
-        return read_box
+        return Box.from_dict(data)
 
     def to_json(self, file):
         with open(file, 'w') as f:
             dump(self.to_dict(), f)
+        return file
 
     def __str__(self):
         return "Box:{}".format(self.to_dict())
@@ -63,10 +65,10 @@ class Box(object):
         This is a convenient, but not very accurate way to setup the box. 
         '''
         
-        position = GPS(flight.gps_latitude[0], flight.gps_longitude[0])
+        position = GPS(flight.gps_latitude[0], flight.gps_longitude[0], flight.gps_altitude[0])
         heading = Euler(flight.attitude)[0].transform_point(PX())
 
-        return Box('origin', position, np.arctan2(heading.y, heading.x)[0], "unknown", "unknown")
+        return Box('origin', position, np.arctan2(heading.y, heading.x)[0])
 
     @staticmethod
     def from_points(name, pilot: GPS, centre: GPS):
@@ -105,16 +107,16 @@ class Box(object):
                 lines = f.read().splitlines()
         return Box.from_points(
             lines[1],
-            GPS(float(lines[2]), float(lines[3])),
-            GPS(float(lines[4]), float(lines[5]))
+            GPS(float(lines[2]), float(lines[3]), 0),
+            GPS(float(lines[4]), float(lines[5]), 0)
         )
 
     @staticmethod
     def from_fcjson_parmameters(data: dict):
         return Box.from_points(
             "FCJ_box",
-            GPS(float(data['pilotLat']), float(data['pilotLng'])),
-            GPS(float(data['centerLat']), float(data['centerLng']))
+            GPS(float(data['pilotLat']), float(data['pilotLng']), 0),
+            GPS(float(data['centerLat']), float(data['centerLng']), 0)
         )
 
 

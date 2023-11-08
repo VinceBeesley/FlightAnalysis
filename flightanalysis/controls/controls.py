@@ -41,7 +41,7 @@ class Controls(Table):
                 ".BIN": Flight.from_log
             }[Path(flight).suffix](flight)
         t=flight.data.index
-        controls = Channels(flight.read_fields(Fields.TXCONTROLS).iloc[:,:5])
+        controls = Channels(flight.rcin.iloc[:,:5])
 
         return Controls.from_constructs(
             Time.from_t(t.to_numpy()),

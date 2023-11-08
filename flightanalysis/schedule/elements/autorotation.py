@@ -48,10 +48,8 @@ class Autorotation(Element):
 
     def match_intention(self, transform: Transformation, flown: State):
         # TODO this assumes the plane is traveling forwards, create_template does not
-        jit = flown.judging_itrans(transform)
-        
         return self.set_parms(
-            length=jit.att.inverse().transform_point(flown.pos - jit.pos).x[-1],
+            length=abs(self.length_vec(transform, flown))[0],
             roll=np.sign(np.mean(flown.p)) * abs(self.roll),
             speed=np.mean(abs(flown.vel))
         )

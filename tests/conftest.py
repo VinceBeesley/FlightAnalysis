@@ -6,7 +6,7 @@ from flightanalysis import Box
 
 @fixture(scope="session")
 def flight():
-    return Flight.from_csv('tests/data/p23.csv')
+    return Flight.from_json('tests/data/p23_flight.json')
 
 
 @fixture(scope="session")

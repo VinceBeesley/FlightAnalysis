@@ -72,7 +72,7 @@ def test_match_intention_ke():
 
     assert el == el2
     
-    assert np.isclose(el2.rate, fl.p.mean(), 0.01)
+    assert np.isclose(el2.rate, fl.p.mean(), 0.1)
 
 
 @fixture

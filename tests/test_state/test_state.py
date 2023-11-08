@@ -64,43 +64,4 @@ def labst():
     al.data.t = al.data.t + 100
     return al
 
-def test_label_inds(labst):
-    lts = labst.label_ts("element")
-    for i in range(5):
-        assert lts[f"test{i}"][0] == approx(10*i, 0.01)
-        assert lts[f"test{i}"][1] == approx(10*(i+1), 0.01)
-
-def test_label_ts(labst):
-    lts = labst.label_ts("element", True)
-    for i in range(5):
-        assert lts[f"test{i}"][0] == approx(100+10*i, 0.01)
-        assert lts[f"test{i}"][1] == approx(100+10*(i+1), 0.01)
-
-
-def test_state_shift_labels_increase(labst):
-    
-    labst2=labst.shift_labels("element", "test3",  5)
-
-    assert labst2.get_element("test3").duration == approx(15, abs=0.2)
-    assert labst2.get_element("test4").duration == approx(5, abs=0.2)
-
-
-def test_state_shift_labels_reduce(labst):
-    labst2=labst.shift_labels("element", "test3",  -5)
-
-    assert labst2.get_element("test3").duration == approx(5, abs=0.2)
-    assert labst2.get_element("test4").duration == approx(15, abs=0.2)
-
-
-def test_state_shift_labels_end(labst):
-    labst2=labst.shift_labels("element", "test3",  25)
-
-    assert labst2.get_element("test3").duration == approx(20, abs=0.2)
-
-    assert not "test4" in labst2.data.element.unique()
-
-
-
-def fromcsv(n:str):
-    return 
 

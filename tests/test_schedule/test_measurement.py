@@ -31,7 +31,5 @@ def test_track_y_line(line_tp: State):
 def test_track_y_loop(loop_tp: State):
     tp = loop_tp.move(Transformation(PY(100),Euldeg(0, 270, 0)))
     fl = track_setup(tp, Euldeg(0, 0, 10))
-    from flightplotting import plotsec
-    plotsec([fl,tp], nmodels=3, origin=True).show()
     m = Measurement.track_y(fl, tp, tp[0].transform)
     np.testing.assert_array_almost_equal(np.degrees(abs(m.value)), np.full(len(m.value), 0.0))

@@ -6,7 +6,7 @@ import pandas as pd
 
 @pytest.fixture
 def flight():
-    return Flight.from_csv("tests/test_inputs/test_log_00000052_flight.csv")
+    return Flight.from_json("tests/data/p23_flight.json")
 
 
 def test_init(flight):

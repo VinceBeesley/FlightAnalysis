@@ -89,7 +89,6 @@ class State(Table):
 
     @staticmethod
     def from_flight(flight, box: Union[Box, str] = None) -> State:
-        from flightdata import Fields
         """Read position and attitude directly from the log(after transforming to flightline)"""
 
         if isinstance(box, str):
@@ -105,14 +104,18 @@ class State(Table):
 
         rotation = Euler(np.pi, 0, box.heading + np.pi/2)
         
-        pos = rotation.transform_point(
-            GPS(flight.gps.iloc[:,:2]) - box.pilot_position - PZ() * np.array(flight.gps_altitude)
-        )
+        if all(flight.contains('gps')) and flight.primary_pos_source == 'gps':
+            pos = rotation.transform_point(GPS(flight.gps) - box.pilot_position)
+        else: 
+            pos = rotation.transform_point(
+                flight.origin.offset(Point(flight.position)) - box.pilot_position
+            )
+        
         att = rotation * Euler(flight.attitude) 
-        vel =  rotation.transform_point(Point(flight.velocity))
-        rvel=Point(flight.axisrate)
-        acc=Point(flight.acceleration)
-                
+        vel =  att.inverse().transform_point(rotation.transform_point(Point(flight.velocity))) if all(flight.contains('velocity')) else None
+        rvel = Point(flight.axisrate) if all(flight.contains('axisrate')) else None
+        acc = Point(flight.acceleration) if all(flight.contains('acceleration')) else None
+          
         return State.from_constructs(time, pos, att, vel, rvel, acc)
 
     @staticmethod
