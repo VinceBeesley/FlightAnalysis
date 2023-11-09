@@ -21,7 +21,7 @@ def comparison():
     return Comparison(Exponential(1,1), 'ratio')
 
 
-def test_single_to_dict(single):
+def test_single_to_dict(single: Single):
     res = single.to_dict()
     
     assert res['kind'] == 'Single'
@@ -30,7 +30,7 @@ def test_single_from_dict(single):
     res = Criteria.from_dict(single.to_dict())
     assert res == single
 
-def test_single_call(single):
+def test_single_call(single: Single):
     ids, dgs = single([0,1,2,3], [1,2,3,4])
     assert_array_almost_equal(dgs, [1,2,3,4])
     assert_array_almost_equal(ids, [0,1,2,3])

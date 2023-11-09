@@ -74,9 +74,11 @@ class Element:
     @staticmethod
     def create_time(duration: float, time: Time=None):
         if time is None:
-            n = int(np.ceil(duration * State._construct_freq))
+            n = max(int(np.ceil(duration * State._construct_freq)), 3)
+
             return Time.from_t(
-                np.linspace(0, duration, max(n,3)))
+                np.linspace(0, duration, n)
+            )
         else:
             #probably want to extend by one timestep
             return time.reset_zero().scale(duration)

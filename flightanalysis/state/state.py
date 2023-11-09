@@ -57,19 +57,20 @@ class State(Table):
             return self.back_transform.point(pin)
 
     def fill(self, time: Time) -> State:
-        vel = self.vel.tile(len(time))   
-        rvel = self.rvel.tile(len(time))
-        att = self.att.body_rotate(rvel * time.t)
-        #pos = Point.concatenate([P0(), (att[1:].transform_point(vel[1:]) * time.dt[1:]).cumsum()]) + istate.pos
-        #TODO improve the position accuracy by extrapolating the points round a circle
-        pos = (att.transform_point(vel) * time.dt).cumsum() + self.pos
+        '''Project forward through time assuming small angles and uniform circular motion'''
+        st = self[-1]
+        vel = st.vel.tile(len(time))   
+        rvel = st.rvel.tile(len(time))
+        att = st.att.body_rotate(rvel * time.t)
+        pos = Point.concatenate([
+            P0(), 
+            (att.transform_point(vel)).cumsum()[:-1]
+        ]) * time.dt + st.pos
         return State.from_constructs(time,pos, att, vel, rvel)
+    
 
     def extrapolate(self, duration: float, min_len=3) -> State:
-        """Extrapolate the input state, currently ignores input accelerations
-
-        Returns:
-            State: state projected forwards
+        """Extrapolate the input state assuming uniform circular motion and small angles
         """
         npoints = np.max([int(np.ceil(duration / self.dt[0])), min_len])
         time = Time.from_t(np.linspace(0,duration, npoints))

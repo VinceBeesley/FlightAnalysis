@@ -102,9 +102,9 @@ class Table:
         return self.data.index[-1] - self.data.index[0]
 
     def __getitem__(self, sli):
-        if isinstance(sli, int) or isinstance(sli, float): 
-            if sli==-1:
-                return self.__class__(self.data.iloc[[-1], :])
+        if isinstance(sli, Number):
+            if sli<0:
+                return self.__class__(self.data.iloc[[int(sli)], :])
 
             return self.__class__(
                 self.data.iloc[self.data.index.get_indexer([sli], method="nearest"), :]

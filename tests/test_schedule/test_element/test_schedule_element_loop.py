@@ -18,19 +18,17 @@ def hl_template(half_loop):
     return half_loop.create_template(State.from_transform(Transformation(), vel=PX(30)))
 
 
-def test_create_template_final_position(half_loop, hl_template):
-    assert_almost_equal(
-        hl_template[-1].pos,
-        PZ(-half_loop.diameter),
-        2
-    )
-
-def test_create_template_final_attitude(half_loop, hl_template):
+def test_create_template_no_t(half_loop, hl_template):
     assert_almost_equal(
         hl_template[-1].att.transform_point(PX(1)),
         PX(-1)
     )
 
+    assert_almost_equal(
+        hl_template[-1].pos,
+        PZ(-half_loop.diameter),
+        2
+    )
 
 def test_match_intention():
 

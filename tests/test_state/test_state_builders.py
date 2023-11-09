@@ -18,9 +18,10 @@ def test_extrapolate():
     )
 
     extrapolated = initial.extrapolate(10)
-    assert extrapolated.x[-2] == approx(300)
+    assert extrapolated.x[-1] == approx(300)
     
     assert len(extrapolated) == 300
+    assert_almost_equal(extrapolated.pos[0], initial.pos)
 
 
 def test_extrapolate_rot():
@@ -34,21 +35,11 @@ def test_extrapolate_rot():
     
     assert_almost_equal(
         extrapolated.pos[-2], 
-        P0()
+        P0(),
+        0
     )
     
 
-@mark.skip
-def test_extrapolate_first_point():
-    initial = State.from_transform(
-        Transformation(),
-        vel=PX(30),
-        rvel=PX(1)
-    )
-    extrapolated = initial.extrapolate(10)
-    assert_almost_equal(extrapolated.att[0], initial.att)
-    assert_almost_equal(extrapolated.pos[0], initial.pos)
-    
 
 def test_from_flight(flight, state):
     assert len(state.data) == len(flight.data)
@@ -82,3 +73,11 @@ def test_stack_singles():
 
     assert time()-start == approx(st.duration, abs=1e-2)
 
+def test_fill():
+    _t = Time.from_t(np.linspace(0, 1, 11))
+    st0 = State.from_transform(Transformation.zero(), vel=PX(10))
+    st = st0.fill(_t)
+    assert len(st) == 11
+    assert st.pos.x[0] == approx(0)
+    assert st.pos.x[-1] == approx(10)
+    
