@@ -204,7 +204,7 @@
     "info": {
       "name": "Figure P",
       "short_name": "fig9",
-      "k": 4,
+      "k": 3,
       "position": "END",
       "start": {
         "h": "BTM",
@@ -680,7 +680,7 @@
     "info": {
       "name": "Humpty",
       "short_name": "hB",
-      "k": 4,
+      "k": 5,
       "position": "CENTRE",
       "start": {
         "h": "TOP",
@@ -938,7 +938,7 @@
     "info": {
       "name": "Spins",
       "short_name": "spin",
-      "k": 4,
+      "k": 3,
       "position": "END",
       "start": {
         "h": "TOP",
@@ -1115,7 +1115,7 @@
     "info": {
       "name": "Rolling Circle",
       "short_name": "hCirc",
-      "k": 4,
+      "k": 5,
       "position": "CENTRE",
       "start": {
         "h": "BTM",
@@ -1499,7 +1499,7 @@
     "info": {
       "name": "Square Octagonal Loop",
       "short_name": "sV8",
-      "k": 4,
+      "k": 5,
       "position": "CENTRE",
       "start": {
         "h": "BTM",
@@ -2167,7 +2167,7 @@
     "info": {
       "name": "Humpty_2",
       "short_name": "hB2",
-      "k": 4,
+      "k": 3,
       "position": "END",
       "start": {
         "h": "BTM",
@@ -2427,7 +2427,7 @@
     "info": {
       "name": "Triangular Loop",
       "short_name": "keTrg",
-      "k": 4,
+      "k": 5,
       "position": "CENTRE",
       "start": {
         "h": "BTM",
@@ -2710,7 +2710,7 @@
     "info": {
       "name": "Half 8 Sided Loop",
       "short_name": "h8L",
-      "k": 4,
+      "k": 3,
       "position": "END",
       "start": {
         "h": "BTM",
@@ -3156,7 +3156,7 @@
     "info": {
       "name": "Half Square Loop",
       "short_name": "hSLoop",
-      "k": 4,
+      "k": 3,
       "position": "END",
       "start": {
         "h": "BTM",
@@ -3347,7 +3347,7 @@
     "info": {
       "name": "Avalanche",
       "short_name": "Aval",
-      "k": 4,
+      "k": 6,
       "position": "CENTRE",
       "start": {
         "h": "TOP",
@@ -3636,7 +3636,7 @@
     "info": {
       "name": "Stall Turn",
       "short_name": "stall",
-      "k": 4,
+      "k": 5,
       "position": "CENTRE",
       "start": {
         "h": "BTM",

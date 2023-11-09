@@ -9,7 +9,7 @@ c45 = np.cos(np.radians(45))
 
 p25_def = SchedDef([
     f3amb.create(ManInfo(
-            "Triangle", "trgle", k=4, position=Position.CENTRE, 
+            "Triangle", "trgle", k=3, position=Position.CENTRE, 
             start=BoxLocation(Height.TOP, Direction.UPWIND, Orientation.INVERTED),
             end=BoxLocation(Height.TOP)
         ),[
@@ -33,7 +33,7 @@ p25_def = SchedDef([
             f3amb.loop(np.pi/2), 
         ]),
     f3amb.create(ManInfo(
-            "Square on Corner", "sqL", k=4, position=Position.CENTRE, 
+            "Square on Corner", "sqL", k=5, position=Position.CENTRE, 
             start=BoxLocation(Height.BTM, Direction.DOWNWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.BTM)
         ),[
@@ -66,7 +66,7 @@ p25_def = SchedDef([
             centred(f3amb.roll([np.pi/2, np.pi/2, np.pi/2, -np.pi/2, -np.pi/2, -np.pi/2], padded=False)),
         ]),
     f3amb.create(ManInfo(
-            "Stall Turn", "stall", k=4, position=Position.END, 
+            "Stall Turn", "stall", k=3, position=Position.END, 
             start=BoxLocation(Height.MID, Direction.UPWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.BTM)
         ),[
@@ -93,7 +93,7 @@ p25_def = SchedDef([
             desired=[[-np.pi/2, np.pi/2], [np.pi/2, -np.pi/2]]
         ), 0)),
     f3amb.create(ManInfo(
-            "Humpty", "hB", k=4, position=Position.END, 
+            "Humpty", "hB", k=3, position=Position.END, 
             start=BoxLocation(Height.BTM, Direction.DOWNWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.BTM)
         ),[
@@ -104,7 +104,7 @@ p25_def = SchedDef([
             f3amb.loop(np.pi/2),
         ]),
     f3amb.create(ManInfo(
-            "Loop", "loop", k=4, position=Position.CENTRE, 
+            "Loop", "loop", k=5, position=Position.CENTRE, 
             start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.BTM)
         ),[
@@ -120,7 +120,7 @@ p25_def = SchedDef([
             Combination(desired=[[np.pi, -np.pi], [-np.pi, np.pi]]), 0
         )),
     f3amb.create(ManInfo(
-            "Half Square on Corner", "hSqL2", k=4, position=Position.END, 
+            "Half Square on Corner", "hSqL2", k=2, position=Position.END, 
             start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.TOP)
         ),[
@@ -131,7 +131,7 @@ p25_def = SchedDef([
             f3amb.loop(np.pi/4),
         ], line_length=130*c45),
     f3amb.create(ManInfo(
-            "Cloverleaf", "hClov", k=4, position=Position.CENTRE, 
+            "Cloverleaf", "hClov", k=5, position=Position.CENTRE, 
             start=BoxLocation(Height.TOP, Direction.DOWNWIND, Orientation.INVERTED),
             end=BoxLocation(Height.TOP)
         ),[
@@ -157,7 +157,7 @@ p25_def = SchedDef([
             f3amb.loop(np.pi/2),
         ]),
     f3amb.create(ManInfo(
-            "Spin", "iSpin", k=4, position=Position.CENTRE, 
+            "Spin", "iSpin", k=3, position=Position.CENTRE, 
             start=BoxLocation(Height.TOP, Direction.UPWIND, Orientation.INVERTED),
             end=BoxLocation(Height.BTM),
         ),[
@@ -167,7 +167,7 @@ p25_def = SchedDef([
             f3amb.loop(np.pi/2),
         ]),
     f3amb.create(ManInfo(
-            "Top Hat", "tHat", k=4, position=Position.END, 
+            "Top Hat", "tHat", k=3, position=Position.END, 
             start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.BTM)
         ),[
@@ -189,7 +189,7 @@ p25_def = SchedDef([
             f3amb.loop(-3*np.pi/4),
         ], line_length=60, loop_radius=50),
     f3amb.create(ManInfo(
-            "Comet", "Com", k=4, position=Position.END, 
+            "Comet", "Com", k=3, position=Position.END, 
             start=BoxLocation(Height.TOP, Direction.DOWNWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.BTM)
         ),[
@@ -198,11 +198,9 @@ p25_def = SchedDef([
             f3amb.loop(-3*np.pi/2),
             f3amb.roll("1/1"),
             f3amb.loop(np.pi/4),
-        ], line_length=(1/c45 + 1) * 50 + 0.5 * 60 - (1/c45 - 2) * 50, loop_radius=50),  
-        #2 * R1 + L1 * c45 + 2* R1 * c45 = 4*R2*(1 - c45) - 2*R2 + 2 * L2 * c45
-        #(1 / c45 + 1) * R1 + 0.5 * L1 - (1/c45 - 2) * R2 = L2
+        ], line_length=(1/c45 + 1) * 50 + 30 - (1/c45 - 2) * 50, loop_radius=50),  
     f3amb.create(ManInfo(
-            "Figure S", "figS", k=4, position=Position.CENTRE, 
+            "Figure S", "figS", k=5, position=Position.CENTRE, 
             start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.TOP)
         ),[

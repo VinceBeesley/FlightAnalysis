@@ -151,6 +151,10 @@ class Measurement:
         fl_rad_lc = Point.vector_rejection(fl_loop_centre_lc, loop_plane) - fl_lc.pos 
         
         ab = abs(fl_rad_lc)
-        return Measurement(ab, np.mean(ab), 
-            *Measurement._rad_vis(fl.pos, ref_frame.att.transform_point(loop_plane))  
+        return Measurement(
+            ab, np.mean(ab), 
+            *Measurement._rad_vis(
+                fl.pos, 
+                ref_frame.att.transform_point(loop_plane)
+            )  
         )

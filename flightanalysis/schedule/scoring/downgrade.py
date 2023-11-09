@@ -26,6 +26,17 @@ def convolve(data, width):
     return pd.Series(outd).ffill().bfill().to_numpy()
 
 
+def remove_outliers(data, nstds = 1):
+    std = np.nanstd(data)
+    mean = np.nanmean(data)
+    data = data.copy()
+
+    data[abs(data - mean) > nstds * std] = np.nan
+
+    return pd.Series(data).ffill().bfill().to_numpy()
+
+
+
 @dataclass
 class DownGrade:
     """This is for Intra scoring, it sits within an El and defines how errors should be measured and the criteria to apply
@@ -55,7 +66,10 @@ class DownGrade:
             dg = dg * measurement.visibility[id]
         elif isinstance(self.criteria, Continuous):
             measurement = self.measure(fl, tp, coord)
-            vals = self.criteria.prepare(measurement.value, measurement.expected)    
+            vals = self.criteria.prepare(
+                remove_outliers(measurement.value), 
+                measurement.expected
+            )    
 
             if len(measurement) < 18:
                 #for now, if an element lasts less than 0.5 seconds we assume it is perfect

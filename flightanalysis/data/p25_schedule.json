@@ -3,7 +3,7 @@
     "info": {
       "name": "Triangle",
       "short_name": "trgle",
-      "k": 4,
+      "k": 3,
       "position": "CENTRE",
       "start": {
         "h": "TOP",
@@ -576,7 +576,7 @@
     "info": {
       "name": "Square on Corner",
       "short_name": "sqL",
-      "k": 4,
+      "k": 5,
       "position": "CENTRE",
       "start": {
         "h": "BTM",
@@ -1351,7 +1351,7 @@
     "info": {
       "name": "Stall Turn",
       "short_name": "stall",
-      "k": 4,
+      "k": 3,
       "position": "END",
       "start": {
         "h": "MID",
@@ -1753,7 +1753,7 @@
     "info": {
       "name": "Humpty",
       "short_name": "hB",
-      "k": 4,
+      "k": 3,
       "position": "END",
       "start": {
         "h": "BTM",
@@ -2011,7 +2011,7 @@
     "info": {
       "name": "Loop",
       "short_name": "loop",
-      "k": 4,
+      "k": 5,
       "position": "CENTRE",
       "start": {
         "h": "BTM",
@@ -2127,7 +2127,7 @@
     "info": {
       "name": "Half Square on Corner",
       "short_name": "hSqL2",
-      "k": 4,
+      "k": 2,
       "position": "END",
       "start": {
         "h": "BTM",
@@ -2372,7 +2372,7 @@
     "info": {
       "name": "Cloverleaf",
       "short_name": "hClov",
-      "k": 4,
+      "k": 5,
       "position": "CENTRE",
       "start": {
         "h": "TOP",
@@ -2988,7 +2988,7 @@
     "info": {
       "name": "Spin",
       "short_name": "iSpin",
-      "k": 4,
+      "k": 3,
       "position": "CENTRE",
       "start": {
         "h": "TOP",
@@ -3167,7 +3167,7 @@
     "info": {
       "name": "Top Hat",
       "short_name": "tHat",
-      "k": 4,
+      "k": 3,
       "position": "END",
       "start": {
         "h": "BTM",
@@ -3572,7 +3572,7 @@
     "info": {
       "name": "Comet",
       "short_name": "Com",
-      "k": 4,
+      "k": 3,
       "position": "END",
       "start": {
         "h": "TOP",
@@ -3870,7 +3870,7 @@
     "info": {
       "name": "Figure S",
       "short_name": "figS",
-      "k": 4,
+      "k": 5,
       "position": "CENTRE",
       "start": {
         "h": "BTM",
