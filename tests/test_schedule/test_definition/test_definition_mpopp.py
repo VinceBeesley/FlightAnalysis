@@ -1,6 +1,6 @@
 from pytest import fixture
 
-from flightanalysis.schedule.definition import *
+from flightanalysis.definition import *
 
 
 @fixture

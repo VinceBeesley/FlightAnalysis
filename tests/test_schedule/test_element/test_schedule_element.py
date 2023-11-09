@@ -1,6 +1,6 @@
 import numpy as np
-from flightanalysis import State
-from flightanalysis.schedule.elements import Element
+from flightdata import State
+from flightanalysis.elements import Element
 
 
 class SubEl(Element):

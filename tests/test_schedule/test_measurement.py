@@ -1,5 +1,5 @@
-from flightanalysis import State
-from flightanalysis.schedule.scoring import Measurement
+from flightdata import State
+from flightanalysis.scoring import Measurement
 from geometry import Point, Quaternion, Transformation, PX, PY, Euldeg, P0, Q0
 from pytest import fixture
 import numpy as np

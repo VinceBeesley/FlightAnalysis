@@ -1,11 +1,11 @@
 
 
-from flightanalysis.schedule.elements import Line
+from flightanalysis.elements import Line
 import unittest
 from geometry import Transformation, Point, Quaternion, PX, Euler, P0
 import numpy as np
 from pytest import approx
-from flightanalysis import State
+from flightdata import State
 
 
 def test_create_template():

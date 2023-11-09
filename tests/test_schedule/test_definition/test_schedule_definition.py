@@ -1,8 +1,8 @@
 from pytest import fixture
 
-from flightanalysis.schedule.definition import *
-from flightanalysis.schedule.elements import *
-from flightanalysis.schedule.scoring import *
+from flightanalysis.definition import *
+from flightanalysis.elements import *
+from flightanalysis.scoring import *
 from flightanalysis import Manoeuvre, SchedDef
 import numpy as np
 from json import load

@@ -1,7 +1,7 @@
-from flightanalysis.schedule.elements import Recovery
+from flightanalysis.elements import Recovery
 from geometry import Transformation, Euler, P0, PX, PY, PZ, Point
 import numpy as np
-from flightanalysis import State
+from flightdata import State
 from pytest import fixture, approx
 
 

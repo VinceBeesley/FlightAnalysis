@@ -1,7 +1,7 @@
-from flightanalysis.schedule.elements import PitchBreak
+from flightanalysis.elements import PitchBreak
 from geometry import Transformation, Euler, P0, PX, PY, PZ, Point
 import numpy as np
-from flightanalysis import State
+from flightdata import State
 from pytest import fixture
 
 

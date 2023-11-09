@@ -1,8 +1,8 @@
 
 
-from flightanalysis.schedule.elements import Loop, Element
+from flightanalysis.elements import Loop, Element
 from pytest import approx, fixture, mark
-from flightanalysis import State
+from flightdata import State
 from geometry import Transformation, Point, Quaternion, PZ, PX, Euler, P0
 import numpy as np
 from geometry.testing import assert_almost_equal, assert_equal

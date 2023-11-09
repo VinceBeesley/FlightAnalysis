@@ -1,7 +1,5 @@
 from pytest import fixture
-from flightdata import Flight
-from flightanalysis import Box
-
+from flightdata import Flight, Origin
 
 
 @fixture(scope="session")
@@ -11,6 +9,6 @@ def flight():
 
 @fixture(scope="session")
 def box():
-    return Box.from_f3a_zone('tests/data/p23_box.f3a')
+    return Origin.from_f3a_zone('tests/data/p23_box.f3a')
 
 

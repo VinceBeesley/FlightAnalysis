@@ -1,8 +1,8 @@
 
-from flightanalysis.schedule.definition import *
-from flightanalysis.schedule.scoring import *
-from flightanalysis.schedule.scoring.criteria.f3a_criteria import F3A
-from flightanalysis.schedule.elements import *
+from flightanalysis.definition import *
+from flightanalysis.scoring import *
+from flightanalysis.scoring.criteria.f3a_criteria import F3A
+from flightanalysis.elements import *
 from pytest import fixture, approx
 import numpy as np
  

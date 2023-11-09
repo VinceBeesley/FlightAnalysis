@@ -1,8 +1,8 @@
 from pytest import fixture
 import numpy as np
-from flightanalysis.schedule.definition import ElDef, ElDefs, _a
-from flightanalysis.schedule.elements import Loop, Line
-from flightanalysis.schedule.definition import ManParm, ManParms
+from flightanalysis.definition import ElDef, ElDefs, _a
+from flightanalysis.elements import Loop, Line
+from flightanalysis.definition import ManParm, ManParms
 
 @fixture
 def mps():

@@ -1,5 +1,5 @@
 from pytest import fixture
-from flightanalysis.schedule.scoring.criteria import Criteria, Single, Exponential, Continuous, Combination, Comparison
+from flightanalysis.scoring.criteria import Criteria, Single, Exponential, Continuous, Combination, Comparison
 from numpy.testing import assert_array_almost_equal
 
 @fixture

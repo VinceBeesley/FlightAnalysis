@@ -1,5 +1,6 @@
 from json import load
-from flightanalysis import State, Box, SchedDef
+from flightdata import State, Origin
+from flightanalysis import SchedDef, ScheduleAnalysis, ManoeuvreAnalysis
 from flightdata import Flight
 import numpy as np
 import pandas as pd
@@ -8,11 +9,11 @@ with open("examples/data/manual_F3A_P23_22_05_31_00000350.json", "r") as f:
     data = load(f)
 
 flight = Flight.from_fc_json(data)
-box = Box.from_fcjson_parmameters(data["parameters"])
+box = Origin.from_fcjson_parmameters(data["parameters"])
 state = State.from_flight(flight, box).splitter_labels(data["mans"])
 sdef = SchedDef.load(data["parameters"]["schedule"][1])
 
-from flightanalysis import ScheduleAnalysis, ManoeuvreAnalysis
+
 
 analysis = ScheduleAnalysis()
 dgs = []

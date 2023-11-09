@@ -1,6 +1,6 @@
 import unittest
 from flightanalysis.schedule import Schedule
-from flightanalysis.state import State
+from flightdata import State
 from json import load
 
 from flightdata import Flight
