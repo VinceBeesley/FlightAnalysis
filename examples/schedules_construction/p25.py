@@ -1,6 +1,6 @@
-from flightanalysis.schedule.definition import *
-from flightanalysis.schedule.elements import *
-from flightanalysis.schedule.scoring.criteria import *
+from flightanalysis.definition import *
+from flightanalysis.elements import *
+from flightanalysis.scoring.criteria import *
 import numpy as np
 
 c45 = np.cos(np.radians(45))

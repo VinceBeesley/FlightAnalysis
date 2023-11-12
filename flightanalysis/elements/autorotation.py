@@ -23,7 +23,7 @@ class Autorotation(Element):
     
     @property
     def angle(self):
-        return 2 * np.pi * self.roll
+        return self.roll
 
     @property
     def rate(self):

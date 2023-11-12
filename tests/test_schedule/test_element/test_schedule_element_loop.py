@@ -1,13 +1,13 @@
 
 
-from flightanalysis.elements import Loop, Element
+from flightanalysis import Loop, Element
 from pytest import approx, fixture, mark
 from flightdata import State
 from geometry import Transformation, Point, Quaternion, PZ, PX, Euler, P0
 import numpy as np
 from geometry.testing import assert_almost_equal, assert_equal
 import json 
-
+from flightplotting import plotsec
 
 @fixture
 def half_loop():
@@ -26,16 +26,16 @@ def test_create_template_no_t(half_loop, hl_template):
 
     assert_almost_equal(
         hl_template[-1].pos,
-        PZ(-half_loop.diameter),
+        Point(1, 0, -half_loop.diameter),
         2
     )
 
 def test_match_intention():
 
-    el = Loop(30, 100, np.radians(180), np.pi, False)
+    el = Loop(30, 100, np.radians(180), 0, False)
 
     tp = el.create_template(State.from_transform(Transformation(),vel=PX(30))) 
-
+    plotsec(tp, nmodels=5).show()
     att = Euler(0, np.radians(20), 0)
 
     fl = el.create_template(State.from_transform(
@@ -52,7 +52,7 @@ def test_match_intention():
 
 def test_match_intention_ke():
 
-    el = Loop(30, 100, np.radians(180), np.pi, True)
+    el = Loop(30, 100, np.radians(180), 0, True)
 
     tp = el.create_template(State.from_transform(Transformation(),vel=PX(30))) 
 

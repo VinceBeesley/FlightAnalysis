@@ -28,6 +28,7 @@ class Combination(Criteria):
 
     @staticmethod
     def rolllist(rolls, reversable=True) -> Combination:
+        rolls = [r * 2*np.pi for r in rolls]
         rolls = [rolls, [-r for r in rolls]] if reversable else [rolls]
         return Combination(desired=rolls)
 
@@ -38,7 +39,5 @@ class Combination(Criteria):
         if rollstring[1] == "/":
             rolls = [float(rollstring[0])/float(rollstring[2])]
         elif rollstring[1] in ["X", "x", "*"]:
-            rolls = [1/int(rollstring[2]) for _ in range(int(rollstring[0]))]
-        rolls = [r*2*np.pi for r in rolls]
-        
+            rolls = [1/int(rollstring[2]) for _ in range(int(rollstring[0]))]        
         return Combination.rolllist(rolls, reversable)

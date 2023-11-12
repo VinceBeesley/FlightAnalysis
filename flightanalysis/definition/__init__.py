@@ -19,4 +19,4 @@ def _a(arg):
 from .element_definition import ElDef, ElDefs
 from .manoeuvre_definition import ManDef
 from .sched_def import SchedDef, ScheduleInfo
-from .manoeuvre_builder import ManoeuvreBuilder, f3amb, MBTags, centred
+from .manoeuvre_builder import ManoeuvreBuilder, f3amb, MBTags, centred, imacmb

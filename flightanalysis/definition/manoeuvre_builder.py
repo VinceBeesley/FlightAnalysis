@@ -120,7 +120,7 @@ f3amb = ManoeuvreBuilder(
             )
         ),
         roll=dict(
-            func=roll_f3a,
+            func=rollmaker,
             args=["rolls"],
             kwargs=dict(
                 padded=True,
@@ -130,6 +130,11 @@ f3amb = ManoeuvreBuilder(
                 partial_rate="partial_roll_rate",
                 full_rate="full_roll_rate",
                 pause_length="point_length",
+                mode='f3a',
+                break_angle=np.radians(10), 
+                snap_rate='snap_rate', 
+                break_rate=2*np.pi,
+                rolltypes='roll'
             )    
         ),
         stallturn=dict(
@@ -141,16 +146,115 @@ f3amb = ManoeuvreBuilder(
             )
         ),
         snap=dict(
-            func=snap,
+            func=rollmaker,
             args=["rolls"],
             kwargs=dict(
+                padded=True,
+                reversible=True,
                 speed=30.0,
-                break_angle=np.radians(10),
-                rate="snap_rate",
-                break_rate=2*np.pi,
                 line_length="line_length",
-                padded=True
+                partial_rate="partial_roll_rate",
+                full_rate="full_roll_rate",
+                pause_length="point_length",
+                mode='f3a',
+                break_angle=np.radians(10), 
+                snap_rate='snap_rate', 
+                break_rate=2*np.pi,
+                rolltypes='snap'
+            )    
+        ),
+        spin=dict(
+            func=spin,
+            args=["turns"],
+            kwargs=dict(
+                speed=10,
+                break_angle=np.radians(30),
+                rate="spin_rate",
+                break_rate=6,
+                reversible=True
             )
+        )
+
+    )
+)
+
+
+imacmb = ManoeuvreBuilder(
+    ManParms([
+        ManParm("speed", F3A.inter.speed, 30.0),
+        ManParm("loop_radius", F3A.inter.radius, 55.0),
+        ManParm("line_length", F3A.inter.length, 130.0),
+        ManParm("point_length", F3A.inter.length, 20.0),
+        ManParm("partial_roll_rate", F3A.inter.roll_rate, np.pi),
+        ManParm("full_roll_rate", F3A.inter.roll_rate, np.pi),
+        ManParm("snap_rate", F3A.inter.roll_rate, 4*np.pi),
+        ManParm("stallturn_rate", F3A.inter.roll_rate, 2*np.pi),
+        ManParm("spin_rate", F3A.inter.roll_rate, 1.7*np.pi),
+        ManParm("ee_pause", F3A.inter.length, 20.0)
+    ]),
+    mpmaps=dict(
+        line=dict(
+            func=line,
+            args=[],
+            kwargs=dict(
+                roll=0.0,
+                speed=30.0,
+                length=130
+            )
+        ),
+        loop=dict(
+            func=loop,
+            args=["angle"],
+            kwargs=dict(
+                roll=0.0,
+                ke=False,
+                speed=30.0,
+                radius=50   
+            )
+        ),
+        roll=dict(
+            func=rollmaker,
+            args=["rolls"],
+            kwargs=dict(
+                padded=True,
+                reversible=True,
+                speed=30.0,
+                line_length=130,
+                partial_rate="partial_roll_rate",
+                full_rate="full_roll_rate",
+                pause_length="point_length",
+                mode='imac',
+                break_angle=np.radians(15), 
+                snap_rate='snap_rate', 
+                break_rate=2*np.pi,
+                rolltypes='roll'
+            )    
+        ),
+        stallturn=dict(
+            func=stallturn,
+            args=[],
+            kwargs=dict(
+                speed=0.0,
+                yaw_rate="stallturn_rate"   
+            )
+        ),
+        snap=dict(
+            func=rollmaker,
+            args=["rolls"],
+            kwargs=dict(
+                padded=True,
+                reversible=True,
+                speed=30.0,
+                line_length="line_length",
+                partial_rate="partial_roll_rate",
+                full_rate="full_roll_rate",
+                pause_length="point_length",
+                mode='imac',
+                break_angle=np.radians(15), 
+                snap_rate='snap_rate', 
+                break_rate=2*np.pi,
+                rolltypes='snap'
+            )    
         ),
         spin=dict(
             func=spin,

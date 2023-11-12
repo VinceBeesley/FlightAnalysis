@@ -1,21 +1,27 @@
 from flightanalysis.schedule import *
 import numpy as np
-from flightanalysis.schedule.definition.manoeuvre_builder import *
-from flightanalysis.schedule.scoring import *
-from examples.schedules_construction.f25 import f25_def
+from flightanalysis import *
+
+mdef = imacmb.create(ManInfo(
+            "Loop", "Lp", k=28, position=Position.CENTRE, 
+            start=BoxLocation(Height.BTM, Direction.DOWNWIND, Orientation.UPRIGHT), 
+            end=BoxLocation(Height.BTM)
+        ),[
+            imacmb.loop(np.pi*5/8),
+            
+        ]
+    )
 
 
 
-for i in range(0, 17, 2):
-    mdef = f25_def[i]
 
-    it = mdef.info.initial_transform(170, 1)
-    man = mdef.create(it)
+it = mdef.info.initial_transform(170, 1)
+man = mdef.create(it)
 
-    tp = man.create_template(it)
+tp = man.create_template(it)
 
-    from flightplotting import plotsec, boxtrace
-    fig = plotsec(tp)
-    fig.add_traces(boxtrace())
-    fig.show()
+from flightplotting import plotsec, boxtrace
+fig = plotsec(tp, nmodels=20)
+fig.add_traces(boxtrace())
+fig.show()
 

@@ -91,7 +91,7 @@ class Loop(Element):
         itrv = itrans.att.transform_point(wrv)
 
         return self.set_parms(
-            radius = self.weighted_average_radius(itrans, flown),# self.measure_radius(itrans, flown).mean(),
+            radius = self.weighted_average_radius(itrans, flown), #self.measure_radius(itrans, flown).mean(), # 
             roll=abs(self.roll) * np.sign(np.mean(flown.rvel.x)),
             angle=abs(self.angle) * np.sign(itrv.z.mean() if self.ke else itrv.y.mean()),
             speed=abs(flown.vel).mean()
