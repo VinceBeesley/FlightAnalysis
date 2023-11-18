@@ -100,8 +100,8 @@ class SchedDef(Collection):
 
     def plot(self):
         sched, template = self.create_template(170, 1)
-        from flightplotting import plotsec
-        return plotsec(template, nmodels=5)
+        from flightplotting import plotsec, plotdtw
+        return plotdtw(template, template.data.manoeuvre.unique())
 
 
     def create_fcj(self, sname: str, path: str):

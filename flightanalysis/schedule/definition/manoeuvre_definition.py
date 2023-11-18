@@ -135,3 +135,11 @@ class ManDef:
                 rates.append(self.mps.partial_roll_rate)
         return rates            
 
+    def plot(self, itrans=None, depth=None, wind=None, **kwargs):
+        if itrans is None:
+            itrans = self.info.initial_transform(depth, wind)
+        man = self.create(itrans)
+        template = man.create_template(itrans)
+
+        from flightplotting import plotsec
+        return plotsec(template, **kwargs)
