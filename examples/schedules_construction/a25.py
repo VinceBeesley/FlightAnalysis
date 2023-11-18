@@ -1,3 +1,5 @@
+'''Author Vince Beesley 18/11/2023'''
+
 from flightanalysis.schedule.definition import *
 from flightanalysis.schedule.elements import *
 from flightanalysis.schedule.scoring.criteria import *
