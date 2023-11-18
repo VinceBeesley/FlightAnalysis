@@ -2,6 +2,7 @@ from flightanalysis.definition import *
 from flightanalysis.elements import *
 from flightanalysis.scoring.criteria import *
 import numpy as np
+from flightanalysis.definition.angles import *
 
 c45 = np.cos(np.radians(45))
 
@@ -12,7 +13,7 @@ sdef = SchedDef([
             start=BoxLocation(Height.MID, Direction.UPWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.BTM)
         ),[
-            imacmb.roll([0.125, 0.125, -1.75], rolltypes='rrs', padded=False),
+            imacmb.roll([r0125, r0125, -r175], rolltypes='rrs', padded=False),
             imacmb.loop(-2*np.pi*7/8),
             imacmb.roll('2x2'),
             imacmb.loop(-np.pi/4)
@@ -22,11 +23,11 @@ sdef = SchedDef([
             start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.INVERTED), 
             end=BoxLocation(Height.BTM)
         ),[
-            imacmb.loop(-np.pi/2),
-            imacmb.roll([0.25, -1.25], rolltypes='rs'),
+            imacmb.loop(-r05),
+            imacmb.roll([r025, -r125], rolltypes='rs'),
             imacmb.stallturn(),
             imacmb.roll('2x4'),
-            imacmb.loop(np.pi/2),
+            imacmb.loop(r025),
         ]),
     imacmb.create(ManInfo(
             "Rolling Circle", "rcirc", k=46, position=Position.CENTRE, 
@@ -37,8 +38,8 @@ sdef = SchedDef([
             imacmb.loop('directions[2]', ke=True, roll='directions[3]', radius='loop_radius'),
         ], 
         directions=ManParm('directions', Combination(desired=[
-            [np.pi, -2*np.pi, np.pi, 2*np.pi],
-            [-np.pi, 2*np.pi, -np.pi, -2*np.pi]
+            [r05, -r1, r05, r1],
+            [-r05, r1, -r05, -r1]
         ]), 1),
         loop_radius=100),
     imacmb.create(ManInfo(
@@ -46,9 +47,9 @@ sdef = SchedDef([
                 start=BoxLocation(Height.BTM, Direction.DOWNWIND, Orientation.UPRIGHT), 
                 end=BoxLocation(Height.TOP)
             ),[
-                imacmb.roll([3/4, -1/4, -1/4, -1/4], padded=False),
+                imacmb.roll([r075, -r025, -r025, -r025], padded=False),
                 imacmb.loop(np.pi, radius=100),
-                imacmb.snap(1.5, break_angle=np.radians(-15), padded=False),            
+                imacmb.snap(r15, break_angle=np.radians(-15), padded=False),            
             ]
         ),
     imacmb.create(ManInfo(
@@ -57,7 +58,7 @@ sdef = SchedDef([
             end=BoxLocation(Height.TOP)
         ),[
             imacmb.loop(-3*np.pi/4, radius=40),
-            imacmb.roll([1.75, -0.25], rolltypes='sr', break_angle=np.radians(-15)),
+            imacmb.roll([r175, -r025], rolltypes='sr', break_angle=np.radians(-15)),
             imacmb.loop(np.pi, radius=40),
             imacmb.roll('4x4'),
             imacmb.loop(np.pi/8)
@@ -76,8 +77,8 @@ sdef = SchedDef([
             imacmb.loop(np.pi/2)
         ],
         directions=ManParm('directions', Combination(desired=[
-            [1.75, 1.75],
-            [-1.75, -1.75]
+            [r175, r175],
+            [-r175, -r175]
         ]), 1),
         full_roll_rate=2*np.pi
     ),

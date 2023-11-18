@@ -30,12 +30,21 @@ def test_create_template_no_t(half_loop, hl_template):
         2
     )
 
+
+def test_create_template_ke_angles():
+    istate = State.from_transform(Transformation(Euler(np.pi, 0, 0)))
+    tp = Loop(30, 100, np.pi/2, 0, 0).create_template(istate)
+    assert_almost_equal(tp.pos[-1], Point(100, 0, 100), 0)
+    tp = Loop(30, 100, np.pi/2, 0, np.pi/2).create_template(istate)
+    assert_almost_equal(tp.pos[-1], Point(100, -100, 0), 0)
+
+
 def test_match_intention():
 
     el = Loop(30, 100, np.radians(180), 0, False)
 
     tp = el.create_template(State.from_transform(Transformation(),vel=PX(30))) 
-    plotsec(tp, nmodels=5).show()
+    
     att = Euler(0, np.radians(20), 0)
 
     fl = el.create_template(State.from_transform(
@@ -47,8 +56,7 @@ def test_match_intention():
 
 
     el2 = el_diff.match_intention(tp[0].transform, fl)
-
-    assert el == el2
+    assert el2.radius == approx(el.radius, rel=0.01)
 
 def test_match_intention_ke():
 

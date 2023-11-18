@@ -1,22 +1,28 @@
 from __future__ import annotations
 import numpy as np
 from geometry import Transformation, Coord, Point, PX, PY, PZ
-
+from typing import Union
 from flightdata import State, Time
 from flightanalysis.scoring.criteria.f3a_criteria import F3A
 from flightanalysis.scoring import Measurement, DownGrade, DownGrades
 from . import Element
-
+from numbers import Number
 
 class Loop(Element):
     parameters = Element.parameters + "radius,angle,roll,ke,rate".split(",")
 
-    def __init__(self, speed: float, radius: float, angle: float, roll:float=0.0, ke: bool = False, uid: str=None):
+    def __init__(self, speed: float, radius: float, angle: float, roll:float=0.0, ke: Union[bool, Number] = False, uid: str=None):
+        '''Create a loop element
+        ke should be a number between 0 and 2*pi, or False for 0, True for np.pi/2. 
+        angle represents the amount of loop to perform. Can be positive to produce an outside loop if ke==0.
+        '''
         super().__init__(uid, speed)
         assert not radius == 0 and not angle == 0
         self.angle = angle
         self.radius = radius
         self.roll = roll
+        if not isinstance(ke, Number):
+            ke=0 if ke else np.pi/2
         self.ke = ke
 
     @property
@@ -65,7 +71,7 @@ class Loop(Element):
         return self._add_rolls(
             istate.copy(
                 vel=v,
-                rvel=PZ(self.angle / duration) if self.ke else PY(self.angle / duration)
+                rvel=Point(0, np.cos(self.ke), np.sin(self.ke)) * self.angle / duration 
             ).fill(
                 Element.create_time(duration, time)
             ), 
@@ -76,7 +82,7 @@ class Loop(Element):
         """The radius vector in m given a state in the loop coordinate frame"""
         centre = flown.arc_centre()
 
-        wvec = itrans.att.transform_point(PZ() if self.ke else PY())
+        wvec = itrans.att.transform_point(Point(0, np.cos(self.ke), np.sin(self.ke)))
         bvec = flown.att.inverse().transform_point(wvec)
         return abs(Point.vector_rejection(centre, bvec))
 
@@ -89,7 +95,7 @@ class Loop(Element):
         rv = flown.rvel # .mean() if self.ke else flown.q.mean()
         wrv = flown.att.transform_point(rv)
         itrv = itrans.att.transform_point(wrv)
-
+        #TODO need to fix angle direction for new ke definitino.
         return self.set_parms(
             radius = self.weighted_average_radius(itrans, flown), #self.measure_radius(itrans, flown).mean(), # 
             roll=abs(self.roll) * np.sign(np.mean(flown.rvel.x)),
@@ -110,7 +116,7 @@ class Loop(Element):
         )
 
     def radius_visibility(self, st: State):
-        axial_dir = st[0].att.transform_point(PZ() if self.ke else PY())  
+        axial_dir = st[0].att.transform_point(Point(0, np.cos(self.ke), np.sin(self.ke)))  
         return Measurement._rad_vis(st.pos.mean(), axial_dir)
 
 

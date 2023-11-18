@@ -16,11 +16,11 @@ def loop(name, speed, radius, angle, roll, ke):
     if isinstance(roll, str):
         roll = ManParm.parse(roll)
     if isinstance(angle, str):
-        roll = ManParm.parse(angle)
+        angle = ManParm.parse(angle)
     return ElDef.build(Loop, name, speed, radius, angle, roll, ke), ManParms()
 
-def roll(name, speed, rate, angle):
-    el = ElDef.build(Line, name, speed, abs(angle) * speed / rate, angle)
+def roll(name, speed, rate, rolls):
+    el = ElDef.build(Line, name, speed, abs(rolls) * speed / rate, rolls)
     if isinstance(rate, ManParm):
         rate.collectors.add(el.get_collector("rate"))
     return el, ManParms()
@@ -169,7 +169,7 @@ def spin(name, turns, break_angle, rate, speed, break_rate, reversible):
                       radius=speed * break_angle/break_rate, break_angle=break_angle)
     
     autorotation = ElDef.build(Autorotation, f"{name}_autorotation", speed=speed,
-                        length=(2 * np.pi * speed * abs(turns))/rate, roll=2*np.pi*turns)
+                        length=(speed * abs(turns))/rate, roll=turns)
     
     if isinstance(rate, ManParm):
         if isinstance(rate, ManParm):

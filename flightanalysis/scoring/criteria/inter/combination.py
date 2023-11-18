@@ -10,7 +10,7 @@ class Combination(Criteria):
     """Handles a series of criteria assessments.
     for example a number of rolls in an element. 
     """
-
+    
     def __getitem__(self, value: int):
         return self.desired[value]
 
@@ -28,7 +28,7 @@ class Combination(Criteria):
 
     @staticmethod
     def rolllist(rolls, reversable=True) -> Combination:
-        rolls = [r * 2*np.pi for r in rolls]
+        rolls = [r for r in rolls]
         rolls = [rolls, [-r for r in rolls]] if reversable else [rolls]
         return Combination(desired=rolls)
 
