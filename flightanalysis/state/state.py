@@ -251,7 +251,7 @@ class State(Table):
         """Rotate body axis by an axis angle"""
         att = self.att.body_rotate(r)
         q =  att.inverse() * self.att
-        return State.from_constructs(
+        return State.copy_labels(self, State.from_constructs(
             time=self.time,
             pos=self.pos,
             att=att,
@@ -259,7 +259,18 @@ class State(Table):
             rvel=q.transform_point(self.rvel),
             acc=q.transform_point(self.acc),
             racc=q.transform_point(self.racc),
-        )
+        ))
+
+    def scale(self: State, factor: float) -> State:
+        return State.copy_labels(self, State.from_constructs(
+            time=self.time,
+            pos=self.pos * factor,
+            att=self.att,
+            vel=self.vel * factor,
+            rvel=self.rvel,
+            acc=self.acc * factor,
+            racc=self.racc,
+        ))
 
     def to_track(self: State) -> State:
         """This rotates the body so the x axis is in the velocity vector"""

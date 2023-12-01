@@ -241,12 +241,12 @@ a25_def = SchedDef([
 
 if __name__ == "__main__":
     
-    #a25_def.plot().show()
+    a25_def.plot().show()
 
 #    for mdef in a25_def:
 #        mdef.plot(depth=170, wind=1).show()
 
-    a25_def.create_fcj('a25', 'a25_template_fcj.json')
+#    a25_def.create_fcj('a25', 'a25_template_fcj.json')
 
    # a25_def.to_json("flightanalysis/data/a25_schedule.json")
 

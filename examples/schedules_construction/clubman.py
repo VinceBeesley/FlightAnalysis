@@ -45,7 +45,7 @@ clubman_def = SchedDef([
             start=BoxLocation(Height.BTM, Direction.DOWNWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.BTM)
         ),[
-           f3amb.line(length =50, roll =6),
+           f3amb.roll(2*np.pi, full_rate = np.pi/2, padded=False),
         ],),       
 
      f3amb.create(ManInfo
@@ -55,10 +55,10 @@ clubman_def = SchedDef([
             end=BoxLocation(Height.BTM)
         ),[  
             f3amb.loop(np.pi/4),
-            centred(f3amb.roll(np.pi, line_length = 2*65)),
+            centred(f3amb.roll(np.pi, line_length = 2*45)),
             f3amb.loop(5*np.pi/4),     
         ],
-        loop_radius=65),
+        loop_radius=45),
         
     f3amb.create(ManInfo(
             "Immelman combo", "Immel", k=3, position=Position.CENTRE, 
@@ -148,9 +148,9 @@ clubman_def = SchedDef([
             end=BoxLocation(Height.BTM)
         ),[  
             f3amb.loop(5*np.pi/4),            
-            centred(f3amb.line(np.pi/4, roll=np.pi)),                       
+            centred(f3amb.roll(np.pi)),                       
             f3amb.loop(3*np.pi/2), 
-            centred(f3amb.line(np.pi/4, roll=np.pi)),                    
+            centred(f3amb.roll(np.pi)),                    
             f3amb.loop(np.pi/4),          
         ],
         loop_radius = 100, line_length = 200,
@@ -171,12 +171,12 @@ clubman_def = SchedDef([
 
     f3amb.create(ManInfo
         (
-            "3 Turn Spin", "3spin", k=3, position=Position.CENTRE, 
+            "3 Turn Spin", "spin", k=3, position=Position.CENTRE, 
             start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.BTM)
         ),            
             [ 
-
+            MBTags.CENTRE,
             f3amb.spin(3),           
             f3amb.line(),
             f3amb.loop(np.pi/2),  
@@ -202,5 +202,9 @@ clubman_def = SchedDef([
 if __name__ == "__main__":
 
     #clubman_def.plot().show()
-   clubman_def.create_fcj('clubman', 'clubman_template_fcj.json')
+    clubman_def.create_fcj('clubman', 'clubman_template_fcj_170.json', 1)
+    clubman_def.create_fcj('clubman', 'clubman_template_fcj_170_b.json', -1)
+    clubman_def.create_fcj('clubman', 'clubman_template_fcj_150.json', 1, 150/170)
+    clubman_def.create_fcj('clubman', 'clubman_template_fcj_150_b.json', -1, 150/170)
+    #clubman_def.create_fcj('clubman', 'clubman_template_fcj.json')
    # clubman_def.to_json("FlightAnalysis/flightanalysis/data/clubman_schedule.json")

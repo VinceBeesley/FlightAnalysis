@@ -16,7 +16,7 @@ intermediate_def = SchedDef([
             end=BoxLocation(Height.BTM)
         ),[  
             f3amb.loop(np.pi/4),
-            centred(f3amb.roll(np.pi, line_length = 2*65)),
+            f3amb.roll(np.pi, line_length = 2*65),
             f3amb.loop(5*np.pi/4),     
         ],
         loop_radius=65),    
@@ -67,7 +67,7 @@ intermediate_def = SchedDef([
             end=BoxLocation(Height.TOP)
         ),[  
             f3amb.loop(np.pi),
-            f3amb.roll(np.pi),     
+            f3amb.roll(np.pi, padded=False),     
         ],loop_radius = 125,
         ),
         
@@ -77,13 +77,10 @@ intermediate_def = SchedDef([
             end=BoxLocation(Height.TOP)            
         ),
         [   
-            f3amb.line(),          
             f3amb.loop(-np.pi/2),            
             f3amb.line(roll=np.pi),
             f3amb.loop(np.pi/2), 
-            MBTags.CENTRE,           
-            f3amb.line(),
-            MBTags.CENTRE,
+            centred(f3amb.line()),
             f3amb.loop(np.pi/2), 
             f3amb.line(roll=np.pi),       
             f3amb.loop(-np.pi/2),                               
@@ -95,7 +92,7 @@ intermediate_def = SchedDef([
             start=BoxLocation(Height.TOP, Direction.UPWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.BTM)
         ),
-        [   f3amb.roll(2*np.pi),         
+        [   f3amb.roll(2*np.pi, padded=False),         
             f3amb.loop(-np.pi),                    
         ],loop_radius = 125,
         ),
@@ -106,9 +103,9 @@ intermediate_def = SchedDef([
             end=BoxLocation(Height.BTM)
         ),[  
             f3amb.loop(-5*np.pi/4),            
-            centred(f3amb.line(np.pi/4, roll=np.pi)),                       
+            centred(f3amb.roll(np.pi)),                       
             f3amb.loop(-3*np.pi/2), 
-            centred(f3amb.line(np.pi/4, roll=np.pi)),                    
+            centred(f3amb.roll(np.pi)),
             f3amb.loop(-np.pi/4),          
         ],
         loop_radius=100, line_length=200
@@ -179,36 +176,31 @@ intermediate_def = SchedDef([
 
     f3amb.create(ManInfo
         (
-            "3 Turn Spin", "3spin", k=4, position=Position.CENTRE, 
+            "3 Turn Spin", "spin", k=4, position=Position.CENTRE, 
             start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),
             end=BoxLocation(Height.BTM)
         ),            
             [ 
-
+            MBTags.CENTRE,
             f3amb.spin(3),           
             f3amb.line(),
             f3amb.loop(np.pi/2),  
         ],
         ),
-    
-    f3amb.create(ManInfo
-        (
-            "Landing", "land", k=1, position=Position.END, 
-            start=BoxLocation(Height.BTM, Direction.UPWIND, Orientation.UPRIGHT),
-            end=BoxLocation(Height.BTM)
-        ),            
-            [ 
-             f3amb.line(),
-             ],
-        ),
-   
+       
 ]#Close Sched_def array 
 )    # close of Sched_def
 
 
 
+
+
+
 if __name__ == "__main__":
 
-    #intermediate_def_def.plot().show()
-   intermediate_def.create_fcj('intermediate', 'intermediate_template_fcj.json')
+    #intermediate_def.plot().show()
+    intermediate_def.create_fcj('intermediate', 'intermediate_template_fcj_170.json', 1)
+    intermediate_def.create_fcj('intermediate', 'intermediate_template_fcj_170_b.json', -1)
+    intermediate_def.create_fcj('intermediate', 'intermediate_template_fcj_150.json', 1, 150/170)
+    intermediate_def.create_fcj('intermediate', 'intermediate_template_fcj_150_b.json', -1, 150/170)
    # intermediate_def.to_json("FlightAnalysis/flightanalysis/data/intermediate_schedule.json")
