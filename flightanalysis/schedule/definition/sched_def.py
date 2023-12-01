@@ -104,15 +104,15 @@ class SchedDef(Collection):
         return plotdtw(template, template.data.manoeuvre.unique())
 
 
-    def create_fcj(self, sname: str, path: str):
+    def create_fcj(self, sname: str, path: str, wind=1, scale=1):
         from flightanalysis import State
-        sched, template = self.create_template(170, 1)
+        sched, template = self.create_template(170, wind)
         template = State.stack([
             template, 
             Line(30, 100, uid='exit_line').create_template(template[-1]).label(manoeuvre=self[-1].info.short_name)
         ])
 
         from json import dump
-        fcj = template.create_fc_json(self, sname)
+        fcj = template.scale(scale).create_fc_json(self, sname)
         with open(path, 'w') as f:
             dump(fcj, f)
