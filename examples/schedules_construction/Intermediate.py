@@ -157,7 +157,7 @@ intermediate_def = SchedDef([
             end=BoxLocation(Height.MID)
         ),
         [  
-            f3amb.roll(np.pi/2, padded=False),
+            f3amb.roll(np.pi/2),
             centred(f3amb.line(length=100)),
             f3amb.roll(np.pi/2),
         ],         
@@ -192,10 +192,6 @@ intermediate_def = SchedDef([
 )    # close of Sched_def
 
 
-
-
-
-
 if __name__ == "__main__":
 
     #intermediate_def.plot().show()
@@ -203,4 +199,4 @@ if __name__ == "__main__":
     intermediate_def.create_fcj('intermediate', 'intermediate_template_fcj_170_b.json', -1)
     intermediate_def.create_fcj('intermediate', 'intermediate_template_fcj_150.json', 1, 150/170)
     intermediate_def.create_fcj('intermediate', 'intermediate_template_fcj_150_b.json', -1, 150/170)
-   # intermediate_def.to_json("FlightAnalysis/flightanalysis/data/intermediate_schedule.json")
+    # intermediate_def.to_json("FlightAnalysis/flightanalysis/data/intermediate_schedule.json")

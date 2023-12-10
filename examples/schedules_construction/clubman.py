@@ -202,9 +202,9 @@ clubman_def = SchedDef([
 if __name__ == "__main__":
 
     #clubman_def.plot().show()
-    clubman_def.create_fcj('clubman', 'clubman_template_fcj_170.json', 1)
-    clubman_def.create_fcj('clubman', 'clubman_template_fcj_170_b.json', -1)
-    clubman_def.create_fcj('clubman', 'clubman_template_fcj_150.json', 1, 150/170)
-    clubman_def.create_fcj('clubman', 'clubman_template_fcj_150_b.json', -1, 150/170)
+    #clubman_def.create_fcj('clubman', 'clubman_template_fcj_170.json', 1)
+    #clubman_def.create_fcj('clubman', 'clubman_template_fcj_170_b.json', -1)
+    # clubman_def.create_fcj('clubman', 'clubman_template_fcj_150.json', 1, 150/170)
+     clubman_def.create_fcj('clubman', 'clubman_template_fcj_150_b.json', -1, 150/170)
     #clubman_def.create_fcj('clubman', 'clubman_template_fcj.json')
    # clubman_def.to_json("FlightAnalysis/flightanalysis/data/clubman_schedule.json")
